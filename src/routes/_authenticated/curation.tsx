@@ -2,11 +2,19 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { neonAuth } from "@/integrations/neon/auth-client";
 import { PageHead } from "@/components/immune/ui";
-import { getMyRole, importManifest, runChecks, suggestSources, updateRecord } from "@/lib/evidence.functions";
+import {
+  getMyRole,
+  importManifest,
+  listEvidenceRecords,
+  runChecks,
+  suggestSources,
+  updateRecord,
+} from "@/lib/evidence.functions";
 import HealthReport from "@/components/immune/HealthReport";
 import manifest from "@/data/citation-manifest.json";
+import relationshipQueue from "@/data/relationship-evidence-queue.json";
 import { byId, human, inn, out, relId } from "@/lib/immune/engine";
 
 export const Route = createFileRoute("/_authenticated/curation")({
@@ -42,6 +50,7 @@ const STATUS_CLASS: Record<string, string> = {
 function Curation() {
   const navigate = useNavigate();
   const roleFn = useServerFn(getMyRole);
+  const listFn = useServerFn(listEvidenceRecords);
   const importFn = useServerFn(importManifest);
   const checkFn = useServerFn(runChecks);
   const updateFn = useServerFn(updateRecord);
@@ -58,10 +67,14 @@ function Curation() {
   const isAdmin = role === "admin";
 
   const load = useCallback(async () => {
-    const { data, error } = await supabase.from("evidence_records").select("*").order("evidence_id");
-    if (error) setMsg(error.message); else setRows(data as Rec[]);
+    try {
+      const data = await listFn();
+      setRows(data as Rec[]);
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Failed to load evidence records");
+    }
     setLoading(false);
-  }, []);
+  }, [listFn]);
 
   useEffect(() => {
     roleFn().then((r) => { setRole(r.role); setEmail(r.email); }).catch(() => setRole("reader"));
@@ -145,7 +158,25 @@ function Curation() {
     }
   };
 
+  const importRelationshipQueue = async () => {
+    setMsg("");
+    try {
+      const r = await importFn({ data: relationshipQueue as any });
+      const n = (relationshipQueue as { meta?: { stats?: { relationshipsWithCite?: number } } }).meta?.stats?.relationshipsWithCite ?? "?";
+      setMsg(
+        `Imported ${r.received} relationship-mapped candidates (${r.added} new) covering ${n} cited links. All stay unreviewed with claim_support=unassessed — approve only after assessing each directional claim.`,
+      );
+      await load();
+    } catch (e) {
+      setMsg(e instanceof Error ? `Import failed: ${e.message}` : "Import failed.");
+    }
+  };
+
   const verifiedUnapproved = rows.filter((r) => (r.check_status === "verified" || r.check_status === "matched") && r.curation === "unreviewed");
+  const claimMapped = rows.filter((r) => r.relationship_id && r.claim_support && r.claim_support !== "unassessed");
+  const approvedClaimLinks = new Set(
+    rows.filter((r) => r.curation === "approved" && r.relationship_id && r.claim_support === "supports").map((r) => r.relationship_id),
+  ).size;
   const approveVerified = async () => {
     const ids = verifiedUnapproved.map((r) => r.id);
     setProgress({ done: 0, total: ids.length });
@@ -154,7 +185,9 @@ function Curation() {
       setProgress({ done: i + 1, total: ids.length });
     }
     setProgress(null);
-    setMsg(`Approved ${ids.length} records whose identifiers matched PubMed or Crossref.`);
+    setMsg(
+      `Approved ${ids.length} records whose identifiers matched PubMed or Crossref. Identifier match ≠ claim support — set relationship + claim_support before counting Gate C coverage.`,
+    );
     await load();
   };
 
@@ -176,7 +209,7 @@ function Curation() {
       />
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
         <span className="xs muted">Signed in as {email ?? "…"} · {isAdmin ? "admin" : "read-only"}</span>
-        <button className="btn sm" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
+        <button className="btn sm" onClick={async () => { await neonAuth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
       </div>
       {role && !isAdmin ? (
         <p className="callout" style={{ marginBottom: 20 }}>
@@ -187,13 +220,18 @@ function Curation() {
       {isAdmin ? (
         <div className="card" style={{ marginBottom: 16 }}>
           <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Import citations</h3>
-          <p className="small muted" style={{ marginBottom: 10 }}>Load the bundled commercial-priority manifest (60 concepts) in one click, or upload another manifest JSON. New slots are added; existing ones keep their decisions.</p>
-          <div className="row" style={{ gap: 10, alignItems: "center" }}>
-            <button className="btn primary" disabled={!!progress} onClick={importBundled}>Load priority manifest</button>
+          <p className="small muted" style={{ marginBottom: 10 }}>
+            Load the relationship evidence queue (KG bibliographic cites mapped to <code>relId</code>s, still unreviewed),
+            the commercial-priority concept manifest (60 concepts), or upload another manifest JSON.
+            New slots are added; existing ones keep their decisions. Nothing is auto-approved.
+          </p>
+          <div className="row" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+            <button className="btn primary" disabled={!!progress} onClick={importRelationshipQueue}>Load relationship queue</button>
+            <button className="btn" disabled={!!progress} onClick={importBundled}>Load priority manifest</button>
             <input type="file" accept="application/json,.json" aria-label="Upload a manifest file" onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
           </div>
           <ol className="small muted" style={{ marginTop: 12, paddingLeft: 18 }}>
-            <li>Import → 2. Check identifiers → 3. Suggest sources for empty slots → 4. Approve. Approved sources appear on the public graph.</li>
+            <li>Import relationship queue → 2. Check identifiers → 3. Assess claim_support per link → 4. Approve. Only approved + supports counts toward claim-level coverage.</li>
           </ol>
         </div>
       ) : null}
@@ -202,8 +240,8 @@ function Curation() {
         <div className="ev-stat"><b>{stats.total}</b><span>citation slots</span></div>
         <div className="ev-stat"><b>{stats.withSource}</b><span>name a source</span></div>
         <div className="ev-stat"><b>{stats.verified}</b><span>matched in PubMed / Crossref</span></div>
-        <div className="ev-stat"><b>{stats.review}</b><span>need a closer look</span></div>
-        <div className="ev-stat"><b>{stats.research}</b><span>research required</span></div>
+        <div className="ev-stat"><b>{claimMapped.length}</b><span>claim-assessed</span></div>
+        <div className="ev-stat"><b>{approvedClaimLinks}</b><span>approved claim links</span></div>
         <div className="ev-stat"><b>{stats.approved}</b><span>approved to publish</span></div>
       </div>
 

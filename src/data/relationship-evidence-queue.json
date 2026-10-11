@@ -1,0 +1,677 @@
+{
+  "meta": {
+    "kind": "relationship_evidence_queue",
+    "curation": "unreviewed",
+    "based_on_kg": "immunology_os_kg_v0_3 + extensions",
+    "generatedAt": "2026-10-11T10:22:16.550Z",
+    "note": "Candidates only. Import via /curation does not approve claims. claim_support stays unassessed until a human curator assesses the directional link. Bulk approval of empty RESEARCH_REQUIRED slots is forbidden.",
+    "stats": {
+      "relationshipsWithCite": 37,
+      "candidateSlots": 40,
+      "uniqueCiteStrings": 34,
+      "withPmid": 17,
+      "runtimeRelationships": 536,
+      "remainingWithoutCite": 499
+    }
+  },
+  "evidence_records": [
+    {
+      "node_id": "C006",
+      "node_type": "CELL",
+      "node_name": "Natural killer cell",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-C006-is_evaded_in-D017-C1",
+          "source_ref": "Vivier 2008 Nat Immunol",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Vivier 2008 Nat Immunol",
+          "relationship_id": "REL-C006-is_evaded_in-D017",
+          "claim_support": "unassessed",
+          "claim_text": "NK cell ADCC via FcγRIIIa (for IgG-coated tumour cells) and direct perforin/granzyme killing of missing-MHC-I cells",
+          "pmid": "18425107",
+          "doi": "10.1038/ni1582"
+        }
+      ]
+    },
+    {
+      "node_id": "R011",
+      "node_type": "RECEPTOR",
+      "node_name": "PD-1",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-R011-drives_immune_exhaustion_in-D012-C1",
+          "source_ref": "Dong 2002 Nat Med",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Dong 2002 Nat Med",
+          "relationship_id": "REL-R011-drives_immune_exhaustion_in-D012",
+          "claim_support": "unassessed",
+          "claim_text": "Tumour cell PD-L1 + TIL PD-1 → ZAP-70 dephosphorylation → CTL inactivation → tumour survival",
+          "pmid": "12091876",
+          "doi": "10.1038/nm730"
+        }
+      ]
+    },
+    {
+      "node_id": "D012",
+      "node_type": "DISEASE",
+      "node_name": "Melanoma",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-D012-has_high-B010-C1",
+          "source_ref": "Champiat 2016 Ann Oncol",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Champiat 2016 Ann Oncol",
+          "relationship_id": "REL-D012-has_high-B010",
+          "claim_support": "unassessed",
+          "claim_text": "UV-induced high somatic mutation burden in melanoma → many neoantigens → TIL-rich tumour → PD-1+ exhausted CTLs available for rescue by anti-PD-1",
+          "pmid": "26715621",
+          "doi": "10.1093/annonc/mdv623"
+        }
+      ]
+    },
+    {
+      "node_id": "I006",
+      "node_type": "INTERVENTION",
+      "node_name": "Dupilumab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I006-targets-R017-C1",
+          "source_ref": "Wenzel 2013 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Wenzel 2013 NEJM",
+          "relationship_id": "REL-I006-targets-R017",
+          "claim_support": "unassessed",
+          "claim_text": "Dupilumab binds IL-4Rα → prevents IL-4 binding (Type I receptor) and IL-13 binding (Type II receptor shared with IL-13Rα1) → downstream JAK1/JAK3/STAT6 signalling blocked"
+        },
+        {
+          "evidence_id": "RELQ-REL-I006-targets-R017-C2",
+          "source_ref": "SOLO 1/2 NEJM 2016",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "SOLO 1/2 NEJM 2016",
+          "relationship_id": "REL-I006-targets-R017",
+          "claim_support": "unassessed",
+          "claim_text": "Dupilumab binds IL-4Rα → prevents IL-4 binding (Type I receptor) and IL-13 binding (Type II receptor shared with IL-13Rα1) → downstream JAK1/JAK3/STAT6 signalling blocked"
+        }
+      ]
+    },
+    {
+      "node_id": "I008",
+      "node_type": "INTERVENTION",
+      "node_name": "Pembrolizumab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I008-blocks-R011-C1",
+          "source_ref": "Ribas 2016 Science",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Ribas 2016 Science",
+          "relationship_id": "REL-I008-blocks-R011",
+          "claim_support": "unassessed",
+          "claim_text": "Pembrolizumab binds PD-1 on T cells → blocks PD-L1/PD-L2 interaction → restores ZAP-70 phosphorylation → rescues progenitor exhausted CTLs (TCF-1+/PD-1+/TIM-3-) from functional inactivation"
+        },
+        {
+          "evidence_id": "RELQ-REL-I008-blocks-R011-C2",
+          "source_ref": "KEYnote-006 NEJM 2019",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "KEYnote-006 NEJM 2019",
+          "relationship_id": "REL-I008-blocks-R011",
+          "claim_support": "unassessed",
+          "claim_text": "Pembrolizumab binds PD-1 on T cells → blocks PD-L1/PD-L2 interaction → restores ZAP-70 phosphorylation → rescues progenitor exhausted CTLs (TCF-1+/PD-1+/TIM-3-) from functional inactivation"
+        },
+        {
+          "evidence_id": "RELQ-REL-I008-demonstrates_in-TR003-C1",
+          "source_ref": "Robert 2019 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Robert 2019 NEJM",
+          "relationship_id": "REL-I008-demonstrates_in-TR003",
+          "claim_support": "unassessed",
+          "claim_text": "KEYnote-006: pembrolizumab (anti-PD-1) vs ipilimumab in advanced melanoma → proved PD-1 axis dominant over CTLA-4 axis as primary checkpoint in melanoma",
+          "pmid": "31166680",
+          "doi": "10.1056/NEJMoa1904059"
+        }
+      ]
+    },
+    {
+      "node_id": "I009",
+      "node_type": "INTERVENTION",
+      "node_name": "Nivolumab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I009-rescues_from_exhaustion-C015-C1",
+          "source_ref": "Chen 2016 Nature",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Chen 2016 Nature",
+          "relationship_id": "REL-I009-rescues_from_exhaustion-C015",
+          "claim_support": "unassessed",
+          "claim_text": "Nivolumab (anti-PD-1) blocks PD-1 on progenitor exhausted CD8 CTLs → prevents SHP-2-mediated ZAP-70 dephosphorylation → restores T cell activation capacity"
+        },
+        {
+          "evidence_id": "RELQ-REL-I009-rescues_from_exhaustion-C015-C2",
+          "source_ref": "CheckMate-067 NEJM 2015",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "CheckMate-067 NEJM 2015",
+          "relationship_id": "REL-I009-rescues_from_exhaustion-C015",
+          "claim_support": "unassessed",
+          "claim_text": "Nivolumab (anti-PD-1) blocks PD-1 on progenitor exhausted CD8 CTLs → prevents SHP-2-mediated ZAP-70 dephosphorylation → restores T cell activation capacity"
+        }
+      ]
+    },
+    {
+      "node_id": "C015",
+      "node_type": "CELL",
+      "node_name": "CD8 cytotoxic T lymphocyte",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-C015-expresses-R011-C1",
+          "source_ref": "Barber 2006 Nature",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Barber 2006 Nature",
+          "relationship_id": "REL-C015-expresses-R011",
+          "claim_support": "unassessed",
+          "claim_text": "CD8+ CTLs upregulate PD-1 upon TCR activation; chronic antigen stimulation → sustained PD-1 expression → functional exhaustion",
+          "pmid": "16382236",
+          "doi": "10.1038/nature04444"
+        }
+      ]
+    },
+    {
+      "node_id": "D017",
+      "node_type": "DISEASE",
+      "node_name": "Cancer immune escape",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-D017-upregulates-R012-C1",
+          "source_ref": "Chen 2012 Immunity",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Chen 2012 Immunity",
+          "relationship_id": "REL-D017-upregulates-R012",
+          "claim_support": "unassessed",
+          "claim_text": "Tumour cells upregulate PD-L1 via: (1) oncogenic signalling (EGFR/KRAS/PI3K/MYC→STAT3→PD-L1 transcription); (2) adaptive immune resistance (TIL IFN-γ→JAK1/2→STAT1→PD-L1), tumour upregulates PD-L1 in RESPONSE to the very T cells attacking it"
+        }
+      ]
+    },
+    {
+      "node_id": "R012",
+      "node_type": "RECEPTOR",
+      "node_name": "PD-L1",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-R012-suppresses-C015-C1",
+          "source_ref": "Chemnitz 2004 J Immunol",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Chemnitz 2004 J Immunol",
+          "relationship_id": "REL-R012-suppresses-C015",
+          "claim_support": "unassessed",
+          "claim_text": "PD-L1 on tumour cell binds PD-1 on CTL → SHP-2 (phosphatase) recruitment to PD-1 ITSm → ZAP-70 dephosphorylation → TCR signalling disruption → T cell functional inactivation (exhaustion)",
+          "pmid": "15240681",
+          "doi": "10.4049/jimmunol.173.2.945"
+        }
+      ]
+    },
+    {
+      "node_id": "R013",
+      "node_type": "RECEPTOR",
+      "node_name": "CTLA-4",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-R013-suppresses-C010-C1",
+          "source_ref": "Qureshi 2011 Science",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Qureshi 2011 Science",
+          "relationship_id": "REL-R013-suppresses-C010",
+          "claim_support": "unassessed",
+          "claim_text": "CTLA-4 on activated T cells/Tregs competitively outcompetes CD28 for B7 binding (higher affinity) + trans-endocytosis of B7 from APCs → reduced Signal 2 availability → T cell anergy/suppression",
+          "pmid": "21474713",
+          "doi": "10.1126/science.1202947"
+        }
+      ]
+    },
+    {
+      "node_id": "M018",
+      "node_type": "MOLECULE",
+      "node_name": "Type I interferon",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-M018-induces-M016-C1",
+          "source_ref": "Groom 2007 J Exp Med",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Groom 2007 J Exp Med",
+          "relationship_id": "REL-M018-induces-M016",
+          "claim_support": "unassessed",
+          "claim_text": "IFN-α (produced by pDC after TLR7/9 activation by NETs) directly upregulates BAFF transcription in monocytes/DCs → elevated serum BAFF → autoreactive B cell rescue from apoptosis",
+          "pmid": "17664289",
+          "doi": "10.1084/jem.20062567"
+        }
+      ]
+    },
+    {
+      "node_id": "M016",
+      "node_type": "MOLECULE",
+      "node_name": "BAFF",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-M016-rescues-C017-C1",
+          "source_ref": "Mackay 2010 Nat Rev Immunol",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Mackay 2010 Nat Rev Immunol",
+          "relationship_id": "REL-M016-rescues-C017",
+          "claim_support": "unassessed",
+          "claim_text": "Elevated BAFF provides survival signal (BAFFR/TACI/BCMA → NF-κB) to autoreactive B cells that should be eliminated by peripheral tolerance → they survive, enter GC, produce anti-dsDNA"
+        }
+      ]
+    },
+    {
+      "node_id": "I018",
+      "node_type": "INTERVENTION",
+      "node_name": "Belimumab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I018-neutralises-M016-C1",
+          "source_ref": "Stohl 2012 Ann Rheum Dis",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Stohl 2012 Ann Rheum Dis",
+          "relationship_id": "REL-I018-neutralises-M016",
+          "claim_support": "unassessed",
+          "claim_text": "Belimumab binds free BAFF/BLyS → prevents BAFFR engagement → restores normal autoreactive B cell attrition → reduced autoantibody production",
+          "pmid": "22307942",
+          "doi": "10.1136/annrheumdis-2011-200706"
+        }
+      ]
+    },
+    {
+      "node_id": "I013",
+      "node_type": "INTERVENTION",
+      "node_name": "Teplizumab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I013-shifts_ratio_in-D013-C1",
+          "source_ref": "Herold 2019 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Herold 2019 NEJM",
+          "relationship_id": "REL-I013-shifts_ratio_in-D013",
+          "claim_support": "unassessed",
+          "claim_text": "Teplizumab (anti-CD3 Fc-silent) shifts Th1:Treg ratio in pancreatic islets → reduces insulitis intensity → slows beta-cell destruction → delays threshold crossing to clinical T1DM"
+        },
+        {
+          "evidence_id": "RELQ-REL-I013-evaluates_in-TR008-C1",
+          "source_ref": "Herold 2019 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Herold 2019 NEJM",
+          "relationship_id": "REL-I013-evaluates_in-TR008",
+          "claim_support": "unassessed",
+          "claim_text": "TN10 trial: teplizumab vs placebo in Stage 2 T1DM → T1DM onset delayed 25 months; FDA approved as Tzield 2022; first autoimmune disease prevention drug in history"
+        }
+      ]
+    },
+    {
+      "node_id": "C017",
+      "node_type": "CELL",
+      "node_name": "B cell",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-C017-produces-B008-C1",
+          "source_ref": "Jennette 2013 Annu Rev Pathol",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Jennette 2013 Annu Rev Pathol",
+          "relationship_id": "REL-C017-produces-B008",
+          "claim_support": "unassessed",
+          "claim_text": "GC B cells undergo SHM and class switching to produce high-affinity IgG ANCA (anti-PR3 or anti-MPO) under Tfh cell help",
+          "pmid": "23347350",
+          "doi": "10.1146/annurev-pathol-011811-132453"
+        },
+        {
+          "evidence_id": "RELQ-REL-C017-accumulates_in-T004-C1",
+          "source_ref": "Magliozzi 2007 Brain",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Magliozzi 2007 Brain",
+          "relationship_id": "REL-C017-accumulates_in-T004",
+          "claim_support": "unassessed",
+          "claim_text": "B cells form leptomeningeal ectopic lymphoid follicle-like aggregates in progressive MS (compartmentalised behind closed BBB); produce pro-inflammatory cytokines, autoantibodies, and locally sustain CNS inflammation",
+          "pmid": "17438020",
+          "doi": "10.1093/brain/awm038"
+        }
+      ]
+    },
+    {
+      "node_id": "B008",
+      "node_type": "BIOMARKER",
+      "node_name": "ANCA",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-B008-activates-C001-C1",
+          "source_ref": "Falk 1988 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Falk 1988 NEJM",
+          "relationship_id": "REL-B008-activates-C001",
+          "claim_support": "unassessed",
+          "claim_text": "ANCA IgG binds PR3 or MPO antigens expressed on surface of cytokine-primed neutrophils → FcγRIII (CD16) cross-linking → neutrophil activation INSIDE vessel wall → superoxide production + degranulation → necrotising vasculitis with fibrinoid necrosis"
+        }
+      ]
+    },
+    {
+      "node_id": "I011",
+      "node_type": "INTERVENTION",
+      "node_name": "Rituximab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I011-depletes_producers_of-B008-C1",
+          "source_ref": "Stone 2010 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Stone 2010 NEJM",
+          "relationship_id": "REL-I011-depletes_producers_of-B008",
+          "claim_support": "unassessed",
+          "claim_text": "Rituximab (anti-CD20) depletes CD20+ B cells including ANCA-producing GC B cells → ANCA IgG titres fall (to undetectable in 90% of responders in RAVE) → neutrophil FcγRIII activation reduced → vasculitis activity decreases"
+        },
+        {
+          "evidence_id": "RELQ-REL-I011-evaluates_in-TR006-C1",
+          "source_ref": "Stone 2010 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Stone 2010 NEJM",
+          "relationship_id": "REL-I011-evaluates_in-TR006",
+          "claim_support": "unassessed",
+          "claim_text": "RAVE trial: rituximab vs cyclophosphamide in ANCA GPA/MPA → CR 64% vs 53%; ANCA undetectable 90% rituximab; superior for relapsing disease"
+        }
+      ]
+    },
+    {
+      "node_id": "I012",
+      "node_type": "INTERVENTION",
+      "node_name": "Ocrelizumab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I012-depletes-C017-C1",
+          "source_ref": "Hauser 2017 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Hauser 2017 NEJM",
+          "relationship_id": "REL-I012-depletes-C017",
+          "claim_support": "unassessed",
+          "claim_text": "Ocrelizumab (humanised anti-CD20) partially penetrates CNS via disrupted BBB → depletes leptomeningeal B cell aggregates in addition to peripheral B cells → slows compartmentalised CNS inflammation"
+        },
+        {
+          "evidence_id": "RELQ-REL-I012-evaluates_in-TR007-C1",
+          "source_ref": "Montalban 2017 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Montalban 2017 NEJM",
+          "relationship_id": "REL-I012-evaluates_in-TR007",
+          "claim_support": "unassessed",
+          "claim_text": "ORATORIO trial: ocrelizumab vs placebo in PPMS → first positive Phase 3 PPMS trial in history; 24% slower CDP"
+        }
+      ]
+    },
+    {
+      "node_id": "T003",
+      "node_type": "COMPARTMENT",
+      "node_name": "Gut mucosa",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-T003-harbours-M022-C1",
+          "source_ref": "Routy 2018 Science",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Routy 2018 Science",
+          "relationship_id": "REL-T003-harbours-M022",
+          "claim_support": "unassessed",
+          "claim_text": "Gut mucosa exposed to 3.8×10^13 commensal bacteria; F. prausnitzii/Akkermansia → SCFAs (butyrate) → HDAC inhibition → Foxp3 stabilisation → Treg induction in GALT; dysbiosis → reduced Treg induction → lower tolerance threshold",
+          "pmid": "29097494",
+          "doi": "10.1126/science.aan3706"
+        }
+      ]
+    },
+    {
+      "node_id": "T008",
+      "node_type": "COMPARTMENT",
+      "node_name": "Granuloma",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-T008-requires-M001-C1",
+          "source_ref": "Keane 2001 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Keane 2001 NEJM",
+          "relationship_id": "REL-T008-requires-M001",
+          "claim_support": "unassessed",
+          "claim_text": "TNF required for granuloma formation and structural integrity: TNF → macrophage activation → granuloma aggregation and containment of intracellular pathogen; anti-TNF → granuloma dissolution → pathogen dissemination",
+          "pmid": "11596589",
+          "doi": "10.1056/NEJMoa011110"
+        }
+      ]
+    },
+    {
+      "node_id": "M022",
+      "node_type": "MOLECULE",
+      "node_name": "TSLP",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-M022-activates-C009-C1",
+          "source_ref": "Moro 2010 Nature",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Moro 2010 Nature",
+          "relationship_id": "REL-M022-activates-C009",
+          "claim_support": "unassessed",
+          "claim_text": "TSLP released by stressed epithelium (FLG mutation, allergen, ozone) → TSLPC receptor on ILC2 → ILC2 proliferation and IL-4/IL-5/IL-13 production WITHOUT requiring antigen-specific receptor",
+          "pmid": "20023630",
+          "doi": "10.1038/nature08636"
+        }
+      ]
+    },
+    {
+      "node_id": "M020",
+      "node_type": "MOLECULE",
+      "node_name": "IL-2",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-M020-expands-C014-C1",
+          "source_ref": "Hartemann 2013 Lancet Diabetes",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Hartemann 2013 Lancet Diabetes",
+          "relationship_id": "REL-M020-expands-C014",
+          "claim_support": "unassessed",
+          "claim_text": "Low-dose IL-2 (1-3M IU SC, 5-day cycles) preferentially expands Tregs because Tregs express highest CD25 (IL-2Rα, high-affinity chain) → 4-fold greater sensitivity to low IL-2 vs effector T cells",
+          "pmid": "24622415",
+          "doi": "10.1016/S2213-8587(13)70113-X"
+        }
+      ]
+    },
+    {
+      "node_id": "P011",
+      "node_type": "PATHWAY",
+      "node_name": "cGAS-STING pathway",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-P011-induces-M018-C1",
+          "source_ref": "Chen 2016 Science",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Chen 2016 Science",
+          "relationship_id": "REL-P011-induces-M018",
+          "claim_support": "unassessed",
+          "claim_text": "cGAS detects cytoplasmic dsDNA → cGAMP → STING → TBK1 → IRF3 → IFN-β transcription + NF-κB; also activates type I IFN production; in tumours: absent cGAS-STING = cold TME"
+        }
+      ]
+    },
+    {
+      "node_id": "B005",
+      "node_type": "BIOMARKER",
+      "node_name": "Interferon-stimulated gene signature",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-B005-enriches_for_response_to-I015-C1",
+          "source_ref": "Morand 2020 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Morand 2020 NEJM",
+          "relationship_id": "REL-B005-enriches_for_response_to-I015",
+          "claim_support": "unassessed",
+          "claim_text": "IFN gene signature-high SLE patients (75% of SLE population) have greater absolute BICLA response to anifrolumab (47.8% vs 31.5% in TULIP-2), the IFN signature identifies the patients with most active IFN-driven pathology"
+        }
+      ]
+    },
+    {
+      "node_id": "P003",
+      "node_type": "PATHWAY",
+      "node_name": "NLRP3 inflammasome",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-P003-implicated_in-D002-C1",
+          "source_ref": "Ridker 2017 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Ridker 2017 NEJM",
+          "relationship_id": "REL-P003-implicated_in-D002",
+          "claim_support": "unassessed",
+          "claim_text": "NLRP3 inflammasome activated by cholesterol crystals in foam cells (atherosclerotic plaques) → IL-1β production → plaque instability + endothelial activation → MACE"
+        }
+      ]
+    },
+    {
+      "node_id": "TR002",
+      "node_type": "TRIAL",
+      "node_name": "CANTOS",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-TR002-supports_axis_of-P003-C1",
+          "source_ref": "Ridker 2017 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Ridker 2017 NEJM",
+          "relationship_id": "REL-TR002-supports_axis_of-P003",
+          "claim_support": "unassessed",
+          "claim_text": "CANTOS trial: canakinumab (anti-IL-1β) → MACE -15% with LDL unchanged → proved NLRP3-IL-1β causally drives post-MI MACE (not just biomarker of inflammation)"
+        }
+      ]
+    },
+    {
+      "node_id": "I014",
+      "node_type": "INTERVENTION",
+      "node_name": "Baricitinib",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I014-demonstrates_in-TR009-C1",
+          "source_ref": "Kalil 2021 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Kalil 2021 NEJM",
+          "relationship_id": "REL-I014-demonstrates_in-TR009",
+          "claim_support": "unassessed",
+          "claim_text": "ACTT-2 and COV-BARRIER trials: baricitinib reduces hospitalisation duration and mortality in COVID-19; BenevolentAI KG identified baricitinib mechanism (JAK1/2 + AAK1 → viral endocytosis reduction) 8 weeks into pandemic, fastest AI drug discovery to FDA approval",
+          "pmid": "33306283",
+          "doi": "10.1056/NEJMoa2031994"
+        }
+      ]
+    },
+    {
+      "node_id": "I016",
+      "node_type": "INTERVENTION",
+      "node_name": "Cilta-cel",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-I016-evaluates_in-TR010-C1",
+          "source_ref": "San-Miguel 2023 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "San-Miguel 2023 NEJM",
+          "relationship_id": "REL-I016-evaluates_in-TR010",
+          "claim_support": "unassessed",
+          "claim_text": "CARTITUDE-4: cilta-cel vs SoC in 1-3 prior line MM → PFS HR 0.26 (74% risk reduction); 12-month PFS 76% vs 49%",
+          "pmid": "37272512",
+          "doi": "10.1056/NEJMoa2303379"
+        }
+      ]
+    },
+    {
+      "node_id": "TR006",
+      "node_type": "TRIAL",
+      "node_name": "RAVE",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-TR006-evaluates-I011-C1",
+          "source_ref": "Stone 2010 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Stone 2010 NEJM",
+          "relationship_id": "REL-TR006-evaluates-I011",
+          "claim_support": "unassessed",
+          "claim_text": "RAVE trial: rituximab (anti-CD20) vs cyclophosphamide in ANCA GPA/MPA; proved rituximab non-inferior (superior for relapsing disease)"
+        }
+      ]
+    },
+    {
+      "node_id": "TR007",
+      "node_type": "TRIAL",
+      "node_name": "ORATORIO",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-TR007-evaluates-I012-C1",
+          "source_ref": "Montalban 2017 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Montalban 2017 NEJM",
+          "relationship_id": "REL-TR007-evaluates-I012",
+          "claim_support": "unassessed",
+          "claim_text": "ORATORIO trial: ocrelizumab (anti-CD20) vs placebo in PPMS; CDP slowed 24% (HR 0.76); first positive PPMS trial in history"
+        }
+      ]
+    },
+    {
+      "node_id": "TR008",
+      "node_type": "TRIAL",
+      "node_name": "TN10 Teplizumab",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-TR008-evaluates-I013-C1",
+          "source_ref": "Herold 2019 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "Herold 2019 NEJM",
+          "relationship_id": "REL-TR008-evaluates-I013",
+          "claim_support": "unassessed",
+          "claim_text": "TN10: teplizumab vs placebo in Stage 2 T1DM; T1DM delayed 25 months (HR 0.41); FDA 2022"
+        }
+      ]
+    },
+    {
+      "node_id": "TR009",
+      "node_type": "TRIAL",
+      "node_name": "RECOVERY",
+      "evidence": [
+        {
+          "evidence_id": "RELQ-REL-TR009-evaluates-I010-C1",
+          "source_ref": "RECOVERY Group 2021 NEJM",
+          "status": "candidate",
+          "source_type": "kg_source_ref",
+          "search_query": "RECOVERY Group 2021 NEJM",
+          "relationship_id": "REL-TR009-evaluates-I010",
+          "claim_support": "unassessed",
+          "claim_text": "RECOVERY dexamethasone arm: mortality 23% vs 26% in oxygen-requiring COVID-19 (RR 0.64); harm in non-oxygen-requiring (RR 1.19)"
+        }
+      ]
+    }
+  ]
+}

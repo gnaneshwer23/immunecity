@@ -23,11 +23,13 @@
 
 ### **CONDITIONAL GO** for public educational beta on **https://immunecity.vercel.app** (canonical), pending owner follow-ups below
 
-**Publication update (2026-10-11, post-blocker pass):** Ask hardening + OpenAI BYOK fallback pushed to `main` / Vercel (`ecbbec7`, `a79750a`). Live smoke on https://immunecity.vercel.app: homepage **200**; clinical Ask **200** educational refusal (no 500); TNF/RA educational Ask **200** streaming via OpenAI Responses (`OPEN_API_KEY`). Migration `0003` **not** applied (no MCP/CLI access to Supabase project `dynvfnkqvostabfdglve`). Claim-level approved evidence remains **0/536**. Full WCAG + SME gold-set still unsigned.
+**Publication update (2026-10-11, post-blocker pass):** Ask hardening + OpenAI BYOK fallback pushed to `main` / Vercel (`ecbbec7`, `a79750a`). Live smoke on https://immunecity.vercel.app: homepage **200**; clinical Ask **200** educational refusal (no 500); TNF/RA educational Ask **200** streaming via OpenAI Responses.
 
-**Migration 0003 apply attempt (2026-10-11, authorised):** **BLOCKED.** Supabase MCP `list_projects` returned only `DeliverX` (`jibmyxaldetyycmtlxet`) and `fluent-institute` (`bzefudyjvgwwtlalmrxk`). Target Immune City project `dynvfnkqvostabfdglve` was **not** visible — no SQL executed (wrong-project guard). Owner must apply via Dashboard SQL Editor (see §11).
+**Migration 0003 + admin (2026-10-11):** MCP path **BLOCKED** (account cannot see `dynvfnkqvostabfdglve`). **Owner applied** migration `0003` (`assign_initial_role` always inserts `'user'`) via Lovable Cloud SQL editor, then provisioned their own explicit `user_roles` admin row. Gate A admin bootstrap **closed**.
 
-**Still required for unqualified GO:** apply `0003` + explicit admin grant; curator evidence pack; WCAG/SME sign-off; prefer renaming `OPEN_API_KEY` → `OPENAI_API_KEY` (or set `LOVABLE_API_KEY` for Lovable gateway). Keep Lovable host as secondary; do not delete.
+**Release items pass (2026-10-11, local):** Relationship evidence **queue** seeded from 37 KG-cited links (40 candidate slots; 17 PMIDs resolved via PubMed agreement — all `curation=unreviewed`, `claim_support=unassessed`). Approved claim links remain **0/536** until human curator assesses + approves. Automated a11y suite added (`bun run a11y`); SME gold-set checklist at `docs/SME_GOLD_SET_SIGNOFF.md` status **awaiting SME**. Prefer `OPENAI_API_KEY` (compat still reads `OPEN_API_KEY`).
+
+**Still required for unqualified GO:** human claim approve (Gate C); SME gold-set signature + human a11y remainder (Gates E/F). Keep Lovable host as secondary; do not delete.
 
 ---
 
@@ -116,13 +118,16 @@ All returned **200**. Approximate TTFB (HTML):
 | Dangling subject/object IDs | **0** |
 | Duplicate `relId`s | **0** |
 | Spine steps | **15** |
-| `evidence_records` total (anon) | **0** |
+| `evidence_records` total (anon) | **0** (DB still empty until admin imports queue) |
+| Relationship queue candidates (repo) | **40** slots / **37** cited links (`src/data/relationship-evidence-queue.json`) |
+| Queue PMIDs resolved (PubMed agreement) | **17 / 34** unique cites — still `unreviewed` / `unassessed` |
 | Approved claim-linked records | **0** |
 | Coverage honesty (UI logic) | Counts only `relationship_id` + approved cites; concept cites do not inflate links |
-| Claim-level support of core links | **0 / 395 (0.0%)** |
+| Claim-level support of runtime links | **0 / 536 (0.0%)** approved; queue covers **37 / 536 (6.9%)** as candidates only |
+| Remaining links without KG cite | **499** — need curator literature work (not bulk-approvable) |
 | Exemplar pathways | Connected scaffolds; maturity labelled `scaffold` |
 
-**Conclusion:** Graph integrity for IDs is sound. Scientific release maturity for claim-level evidence is **not** ready — empty evidence store is honestly reflected in coverage UI but blocks Gate C for any claim of reviewed support.
+**Conclusion:** Graph integrity for IDs is sound. A honest draft→approve pipeline and relationship queue now exist; **approved** claim-level coverage is still **0** and blocks Gate C for any claim of reviewed support. Do not mass-approve RESEARCH_REQUIRED / empty slots.
 
 ---
 
@@ -130,15 +135,17 @@ All returned **200**. Approximate TTFB (HTML):
 
 ### 6.1 Authentication & authorisation
 
-- Curation mutations use `requireSupabaseAuth` + `has_role(..., 'admin')` server-side (`evidence.functions.ts`).
-- `/_authenticated` route redirects unauthenticated users to `/auth`.
-- **P0 — First signup admin:** migration `0000` trigger `assign_initial_role` grants admin if no admin exists. **Open signup → privilege escalation race.** Local fix: `0003_explicit_admin_provisioning.sql` (always assign `user`). **Not applied to live DB** → remaining P0 until migration + explicit admin grant.
+- **Neon cutover (2026-10-11, local, uncommitted):** Runtime auth + curation use **Neon Managed Better Auth** + **drizzle/postgres** (`src/integrations/neon/*`, `evidence.functions.ts`, `citations.functions.ts`). Supabase PostgREST path is no longer called from those routes.
+- Curation mutations use `requireNeonAuth` (JWKS/`jose`) + `has_role(..., 'admin')` via SQL.
+- `/_authenticated` route redirects unauthenticated users to `/auth` (Neon session cookie + JWT for server fns).
+- **Admin:** Neon Auth signup trigger assigns `'user'` only (`assign_initial_role_neon`). Explicit admin: `INSERT INTO public.user_roles (user_id, role) VALUES ('<uuid>', 'admin') ON CONFLICT DO NOTHING`.
+- **Rotate** any Neon DB password pasted in chat; prefer Vercel Neon integration URLs.
 
-### 6.2 RLS (from migrations)
+### 6.2 Data access (post-cutover)
 
-- `evidence_records`: authenticated read-all; write admin-only; anon SELECT only `curation = 'approved'`.
-- `user_roles`: users read own roles; no self-promotion policy observed in migrations.
-- Supabase MCP: **needsAuth** — live policy re-verify **BLOCKED** without user auth.
+- Server functions read/write `public.evidence_records` on Neon; public approved citations filter `curation = 'approved'` in SQL (no Supabase RLS).
+- Legacy Supabase migrations `0000–0003` retained for Lovable history; Neon DDL is `drizzle/neon/0000_immune_city_public_schema.sql`.
+- Preview now also has `DATABASE_URL*` + Neon Auth env names (CLI); prefer Neon branch-sync for Preview DB when available.
 
 ### 6.3 AI endpoint & spend
 
@@ -155,11 +162,10 @@ All returned **200**. Approximate TTFB (HTML):
 
 ### 6.4 Secrets
 
-- Vercel env **names** (re-checked 2026-10-11): Production has `OPEN_API_KEY` (added by owner; not the Lovable name), plus `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PROJECT_ID`, `VITE_SUPABASE_*` on Production/Preview/Development. **No `LOVABLE_API_KEY`**, **no `OPENAI_API_KEY`**, **no `IMMUNE_ASK_DISABLED`** (correct for normal ops).
+- Vercel env **names** (re-checked 2026-10-11 Neon cutover): `DATABASE_URL` / `DATABASE_URL_UNPOOLED` on Production + Development; `VITE_NEON_AUTH_URL` / `NEON_AUTH_BASE_URL` / `NEON_AUTH_JWKS_URL` on Production + Development (+ Preview attempted). Production still has `OPEN_API_KEY` (prefer `OPENAI_API_KEY`). Legacy `SUPABASE_*` / `VITE_SUPABASE_*` may remain but are unused by cutover paths. **No `LOVABLE_API_KEY`**, **no `IMMUNE_ASK_DISABLED`**.
 - Ask provider resolution (server): `LOVABLE_API_KEY` → Lovable gateway; else `OPENAI_API_KEY` or `OPEN_API_KEY` → OpenAI Responses BYOK (`gpt-4o` default, override via `OPENAI_MODEL`).
-- Local `.env` names only: Supabase URL/publishable/project (no Ask key in file).
-- Client bundle scan (`/assets/index-*.js` ~788 KB): **no** matches for `LOVABLE_API_KEY`, `sb_secret_`, `service_role`, long `sk-` patterns.
-- `SUPABASE_SERVICE_ROLE_KEY` referenced in server client code — confirm never in VITE_* (not listed in Vercel env inventory).
+- Local `.env.local`: Neon `DATABASE_URL*` + Neon Auth URLs (gitignored). Smoke: `bun scripts/smoke-neon-cutover.ts`.
+- Install note: `bun add` hung on disk/peers; `jose` declared in `package.json` and present in `node_modules`; lockfile may need a successful install on a machine with free disk before deploy. Orphan `@neondatabase/neon-js` in `node_modules` is **not** used (thin fetch client instead).
 
 ### 6.5 Privacy
 
@@ -187,11 +193,13 @@ All returned **200**. Approximate TTFB (HTML):
 | Landmark / nav labels | Primary nav, pillar menus, Ask dialog labels |
 | Educational disclaimer | Footer + Ask copy |
 | Graph alternative | Methods page references text table |
-| Automated axe/WCAG suite | **Not run** — **BLOCKED** |
-| Full keyboard tour of graph | **Partial** — Ask/dialog OK; deep graph keyboard **not fully verified** |
-| Contrast audit | **Not run** |
+| Automated source a11y suite | **Runnable** — `bun run a11y` (skip link, landmarks, Ask labels, Methods disclosure) |
+| Optional axe fixture | `bun scripts/a11y-suite.ts --axe` (requires `axe-core`) |
+| Full keyboard tour of graph | **Partial** — Ask/dialog OK; deep graph keyboard **human-only** |
+| Contrast audit | **Not run** — **human-only** |
+| SME gold-set sign-off | **Awaiting SME** — `docs/SME_GOLD_SET_SIGNOFF.md` + `bun run sme:status` |
 
-Material a11y: no critical blocker proven; Gate F remains **conditional** pending automated + manual sign-off.
+Material a11y: automated invariants green when suite is run; Gate F remains **conditional** until human keyboard/contrast/SME items close.
 
 ---
 
@@ -202,8 +210,8 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 | D-01 | **P0** | Vercel Ask: model key mis-named / Lovable key absent | Owner set `OPEN_API_KEY` only | Dual-path: Lovable or OpenAI BYOK (`OPENAI_API_KEY`/`OPEN_API_KEY`) | Manual Ask after deploy | **Closed (prod smoke 200 stream)** |
 | D-02 | **P0** | Ask requires API key before abstentions | Clinical on Vercel → 500 instead of refusal | `ask.server.ts` reorder | smoke + curl after deploy | **Closed (prod clinical 200 refusal)** |
 | D-03 | **P0** | No emergency Ask disable | N/A | `isAskEmergencyDisabled` + env | smoke checks | **Deployed (env unset = normal)** |
-| D-04 | **P0** | First-signup auto-admin | Open signup when no admin | Migration `0003` | Apply migration; role tests | **Code ready / DB apply BLOCKED (MCP cannot see `dynvfnkqvostabfdglve`)** |
-| D-05 | **P0** | Zero approved claim-level evidence | Anon select count = 0 | Curator workflow (human) | Coverage dashboard | **Open (science)** |
+| D-04 | **P0** | First-signup auto-admin | Open signup when no admin | Migration `0003` | Apply migration; role tests | **Closed** (0003 via Lovable Cloud; explicit admin provisioned by owner) |
+| D-05 | **P0** | Zero approved claim-level evidence | Anon select count = 0 | Relationship queue + curation import path shipped; human claim assess/approve still required | Coverage dashboard | **Open (science)** — queue ready, 0 approved |
 | D-06 | **P1** | Dual public URLs diverge | Title/content mismatch | Designate single RC | Smoke both | **Open (product)** |
 | D-07 | **P1** | Lovable unsupported may still call model | Gibberish streamed via OpenAI path | Deploy latest `prepareAsk` | Eval unsupported cases | **Likely stale deploy** |
 | D-08 | **P1** | In-memory rate limit not cross-instance | Multi-instance flood | Gateway/Redis later | Load test | **Accepted risk for beta** |
@@ -218,36 +226,30 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 | File | Rationale |
 |------|-----------|
-| `src/lib/ask.server.ts` | Abstentions before key; emergency disable; 503 when key missing |
+| `src/lib/ask.server.ts` | Abstentions before key; emergency disable; 503 when key missing; prefer `OPENAI_API_KEY` |
 | `src/lib/askGrounding.ts` | Shared `isAskEmergencyDisabled` + message |
 | `drizzle/migrations/0003_explicit_admin_provisioning.sql` | Stop first-user auto-admin |
 | `drizzle/migrations/meta/_journal.json` | Register migration |
 | `src/test/eval/scientific-eval-set.ts` | Expand to **50** automated cases |
 | `scripts/smoke-prd-a2.ts` | Cover emergency disable |
+| `src/lib/immune/relationshipEvidenceQueue.ts` | Build unreviewed relationship candidates from KG cites |
+| `src/data/relationship-evidence-queue.json` | Seed queue (40 slots / 17 PMIDs; never approved) |
+| `scripts/build-relationship-evidence-queue.ts` | Rebuild + optional PubMed resolve |
+| `scripts/a11y-suite.ts` / `bun run a11y` | Automated WCAG-oriented invariants |
+| `docs/SME_GOLD_SET_SIGNOFF.md` + `scripts/sme-gold-set-status.ts` | SME harness; status awaiting SME |
+| `docs/CURATOR_EVIDENCE_QUEUE.md` | Curator import/approve steps |
+| `src/routes/_authenticated/curation.tsx` | Load relationship queue; claim-link stats |
 | `docs/RELEASE_AUDIT.md` | This report |
 
 ---
 
 ## 11. Unresolved blockers / remaining owner actions
 
-1. **Owner: DBA / Supabase** — Apply migration `0003` (**BLOCKED** via MCP: account sees other projects only, not `dynvfnkqvostabfdglve`). In [Supabase Dashboard](https://supabase.com/dashboard/project/dynvfnkqvostabfdglve/sql/new) → SQL Editor, run the full contents of `drizzle/migrations/0003_explicit_admin_provisioning.sql`, then verify + grant admin **explicitly** to the intended curator only:
-
-   ```sql
-   -- Verify function no longer auto-promotes first signup:
-   SELECT pg_get_functiondef('public.assign_initial_role()'::regprocedure);
-
-   -- After the curator has signed up once (role = user):
-   INSERT INTO public.user_roles (user_id, role)
-   SELECT id, 'admin' FROM auth.users WHERE email = '<owner@example.com>'
-   ON CONFLICT (user_id, role) DO NOTHING;
-   ```
-
-   Do **not** auto-grant by “first user” heuristics. Existing admin rows are left unchanged by `0003`.
-
-2. **Owner: Vercel (optional cleanup)** — Rename `OPEN_API_KEY` → `OPENAI_API_KEY`, or add `LOVABLE_API_KEY` if using Lovable gateway. Leave `IMMUNE_ASK_DISABLED` unset for normal ops.
-3. **Owner: Scientific curator** — Seed and approve relationship-level claim assessments; publish baseline coverage (still 0 approved). **Do not fabricate approvals.**
+1. ~~**Owner: DBA / Lovable Cloud** — Migration `0003` + explicit admin grant.~~ **Done** (Lovable Cloud SQL; owner provisioned admin).
+2. **Owner: Vercel dashboard** — Add `OPENAI_API_KEY` with the same secret currently in `OPEN_API_KEY`, then remove `OPEN_API_KEY` after a successful Ask smoke. (CLI cannot read sensitive values to rename safely; empty `OPENAI_API_KEY` was attempted and removed.) Code still accepts `OPEN_API_KEY` temporarily. Optional: add `LOVABLE_API_KEY` for Lovable gateway. Leave `IMMUNE_ASK_DISABLED` unset for normal ops.
+3. **Owner: Scientific curator** — In `/curation` (admin): **Load relationship queue** → Check identifiers → set `claim_support` per link → Approve. Starts at **0 approved / 37 candidate cited links / 499 uncited**. **Do not fabricate approvals or PMIDs.**
 4. **Canonical URL** — Prefer **https://immunecity.vercel.app**; keep Lovable as secondary; do not delete Lovable.
-5. **Owner: a11y / SME** — Full WCAG suite + expert gold-set sign-off still open.
+5. **Owner: a11y / SME** — Run `bun run a11y`; complete human keyboard/contrast; SME signs `docs/SME_GOLD_SET_SIGNOFF.md` (status **awaiting SME**).
 
 ---
 
@@ -255,8 +257,8 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 - Pushed to `origin/main` (Ask abstention-before-key, emergency disable, migration file `0003`, eval-50, OpenAI BYOK dual-path, this audit update).
 - Canonical production: **https://immunecity.vercel.app** (Vercel project `immunecity`).
-- Migration `0003` remains **BLOCKED / not applied** to production Postgres (`dynvfnkqvostabfdglve`) until owner runs SQL in §11.
-- Curator evidence pack and full WCAG/SME sign-off: **remaining** (cannot complete in this pass).
+- Migration `0003` applied via Lovable Cloud SQL; explicit admin provisioned by owner (§11 item 1 closed).
+- Relationship evidence queue + a11y/SME harness: **shipped locally** (not committed unless owner asks). Human claim approve + SME signature still required.
 
 ---
 
@@ -277,10 +279,10 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 | Role | Status | Notes |
 |------|--------|-------|
 | Product owner | ☐ | Must accept NO-GO or clear §11 |
-| Engineering | ☐ | Deploy + env + migration |
-| Security | ☐ | Admin trigger + RLS live verify **BLOCKED** |
-| Scientific review | ☐ | Empty evidence; gold set unsigned |
-| Accessibility | ☐ | Automated suite not run |
+| Engineering | ☐ | Deploy done; optional env rename; migration + admin done |
+| Security | ☐ | Admin bootstrap done; RLS live verify **BLOCKED** (no MCP) |
+| Scientific review | ☐ | Queue candidates ready; 0 approved; gold set **awaiting SME** |
+| Accessibility | ☐ | Automated suite runnable; human remainder open |
 | Release owner | ☐ | Single production URL decision |
 
 ---
@@ -289,12 +291,12 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 | Gate | Result | Evidence |
 |------|--------|----------|
-| **A — Security** | **CONDITIONAL** | Ask kill-switch + abstention published; auto-admin trigger **still live** until `0003` applied |
+| **A — Security** | **CONDITIONAL** | Ask kill-switch + abstention published; `0003` + explicit admin done via Lovable Cloud; live RLS re-verify still blocked without MCP |
 | **B — Data integrity** | **PASS** (graph) | No dangling/duplicate IDs; counts consistent in footer/snapshot |
-| **C — Scientific honesty** | **FAIL** for “supported” claims | 0 approved claim links; draft labelling OK; empty evidence honest but immature |
+| **C — Scientific honesty** | **FAIL** for “supported” claims | 0 approved claim links; 37-link unreviewed queue ready; draft labelling OK |
 | **D — Functional integrity** | **CONDITIONAL** | 12 layers load; Ask re-smoke after publication |
 | **E — AI reliability** | **CONDITIONAL** | Local 50/50; prod clinical refusal + TNF stream verified; SME gold-set still open |
-| **F — Accessibility** | **CONDITIONAL** | Skip/nav/Ask OK; full WCAG **BLOCKED** |
+| **F — Accessibility** | **CONDITIONAL** | `bun run a11y` invariants; human keyboard/contrast still open |
 | **G — Operations** | **CONDITIONAL** | Canonical = Vercel; Lovable secondary; monitoring still soft |
 | **H — Public deployment** | **CONDITIONAL** | Fixes on `main`/Vercel; dual hosts remain until product retires secondary |
 
@@ -304,11 +306,10 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 # **CONDITIONAL GO** (canonical: https://immunecity.vercel.app)
 
-Engineering P0s for Ask (abstention-before-key, emergency disable, model key path via `OPEN_API_KEY`/`OPENAI_API_KEY` or `LOVABLE_API_KEY`) are published. Remaining blockers are **ops/science**, not missing Ask code:
+Engineering P0s for Ask are published. Admin bootstrap is **done**. Relationship evidence **queue** (unreviewed), a11y suite, and SME sign-off harness are ready. Remaining blockers are **human-only**:
 
-- Apply Supabase `0003` + explicit admin grant (Gate A still incomplete until then)
-- Curator claim-level evidence pack (Gate C)
-- WCAG suite + SME gold-set (Gates E/F)
-- Confirm live Ask TNF path after deploy (Gate E re-smoke)
+- Curator: import queue → assess claim_support → approve (Gate C; still 0/536 approved)
+- SME: sign `docs/SME_GOLD_SET_SIGNOFF.md` + human a11y remainder (Gates E/F)
+- Vercel dashboard: set `OPENAI_API_KEY` (copy from `OPEN_API_KEY`), then drop the mis-named key
 
 Do not claim full GO until those owner actions close.

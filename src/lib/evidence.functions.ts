@@ -1,19 +1,58 @@
 import { createServerFn } from "@tanstack/react-start";
+import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
+import { getDb, getSqlClient } from "@/lib/db.server";
+import { evidenceRecords } from "@/lib/db/schema.server";
 import { edgeByRel } from "./immune/engine";
 import { checkRecord, suggestFor, type CheckInput } from "./evidenceCheck";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-  if (!data) throw new Error("Only atlas admins can change curation records.");
+async function assertAdmin(userId: string) {
+  const rows = await getSqlClient()`SELECT public.has_role(${userId}::uuid, 'admin'::public.app_role) AS ok`;
+  if (!rows[0]?.ok) throw new Error("Only atlas admins can change curation records.");
+}
+
+function rowToClient(r: typeof evidenceRecords.$inferSelect) {
+  return {
+    id: r.id,
+    evidence_id: r.evidenceId,
+    node_id: r.nodeId,
+    node_name: r.nodeName,
+    node_type: r.nodeType,
+    source_type: r.sourceType,
+    source_ref: r.sourceRef,
+    pmid: r.pmid,
+    doi: r.doi,
+    search_query: r.searchQuery,
+    manifest_status: r.manifestStatus,
+    check_status: r.checkStatus,
+    check_detail: r.checkDetail,
+    checked_at: r.checkedAt?.toISOString?.() ?? r.checkedAt,
+    curation: r.curation,
+    notes: r.notes,
+    created_at: r.createdAt?.toISOString?.() ?? r.createdAt,
+    updated_at: r.updatedAt?.toISOString?.() ?? r.updatedAt,
+    relationship_id: r.relationshipId,
+    claim_support: r.claimSupport,
+    reviewed_by: r.reviewedBy,
+    reviewed_at: r.reviewedAt?.toISOString?.() ?? r.reviewedAt,
+  };
 }
 
 export const getMyRole = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireNeonAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
-    return { role: data ? "admin" : "reader", email: (context.claims as any)?.email ?? null };
+    const rows = await getSqlClient()`SELECT public.has_role(${context.userId}::uuid, 'admin'::public.app_role) AS ok`;
+    return { role: rows[0]?.ok ? "admin" : "reader", email: context.email ?? null };
+  });
+
+/** Signed-in readers can list all evidence rows (admin gates writes separately). */
+export const listEvidenceRecords = createServerFn({ method: "GET" })
+  .middleware([requireNeonAuth])
+  .handler(async () => {
+    const db = getDb();
+    const rows = await db.select().from(evidenceRecords).orderBy(evidenceRecords.evidenceId);
+    return rows.map(rowToClient);
   });
 
 const pmidRe = /PMID[:\s]*(\d+)/i;
@@ -56,10 +95,10 @@ const manifestSchema = z.object({
 });
 
 export const importManifest = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => manifestSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertAdmin(context.userId);
     const rows = data.evidence_records.flatMap((r) =>
       r.evidence.map((e) => {
         const ref = e.source_ref ?? null;
@@ -68,98 +107,133 @@ export const importManifest = createServerFn({ method: "POST" })
           ? `[literature candidate] ${e.claim_text}`.slice(0, 2000)
           : null;
         return {
-          evidence_id: e.evidence_id,
-          node_id: r.node_id,
-          node_name: r.node_name,
-          node_type: r.node_type,
-          source_type: e.source_type ?? null,
-          source_ref: ref,
+          evidenceId: e.evidence_id,
+          nodeId: r.node_id,
+          nodeName: r.node_name,
+          nodeType: r.node_type,
+          sourceType: e.source_type ?? null,
+          sourceRef: ref,
           pmid: e.pmid ?? (ref ? ref.match(pmidRe)?.[1] ?? null : null),
           doi: e.doi ?? (ref ? ref.match(doiRe)?.[1] ?? null : null),
-          search_query: e.search_query ?? null,
-          manifest_status: e.status,
-          check_status: ref || e.pmid || e.doi ? "pending" : "research_required",
+          searchQuery: e.search_query ?? null,
+          manifestStatus: e.status,
+          checkStatus: ref || e.pmid || e.doi ? "pending" : "research_required",
           // Always unreviewed on insert — scientific claim approval is a separate human step.
           curation: "unreviewed",
-          relationship_id: rid,
-          claim_support: rid ? (e.claim_support ?? "unassessed") : "unassessed",
+          relationshipId: rid,
+          claimSupport: rid ? (e.claim_support ?? "unassessed") : "unassessed",
           notes,
         };
       }),
     );
+    const db = getDb();
     // Existing records keep their curation decisions; only new evidence IDs are added.
-    const { error, count } = await context.supabase
-      .from("evidence_records")
-      .upsert(rows, { onConflict: "evidence_id", ignoreDuplicates: true, count: "exact" });
-    if (error) throw new Error(error.message);
-    return { received: rows.length, added: count ?? 0 };
+    const inserted = await db
+      .insert(evidenceRecords)
+      .values(rows)
+      .onConflictDoNothing({ target: evidenceRecords.evidenceId })
+      .returning({ evidenceId: evidenceRecords.evidenceId });
+    return { received: rows.length, added: inserted.length };
   });
 
 export const runChecks = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => z.object({ ids: z.array(z.string().uuid()).max(8) }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
-    const { data: recs, error } = await context.supabase
-      .from("evidence_records")
-      .select("id, node_name, source_ref, pmid, doi")
-      .in("id", data.ids);
-    if (error) throw new Error(error.message);
+    await assertAdmin(context.userId);
+    const db = getDb();
+    const recs = await db
+      .select({
+        id: evidenceRecords.id,
+        node_name: evidenceRecords.nodeName,
+        source_ref: evidenceRecords.sourceRef,
+        pmid: evidenceRecords.pmid,
+        doi: evidenceRecords.doi,
+      })
+      .from(evidenceRecords)
+      .where(inArray(evidenceRecords.id, data.ids));
     const results = [];
     for (const r of recs as CheckInput[]) {
       const res = await checkRecord(r);
-      await context.supabase
-        .from("evidence_records")
-        .update({ check_status: res.status, check_detail: res.detail as any, checked_at: new Date().toISOString() })
-        .eq("id", r.id);
+      await db
+        .update(evidenceRecords)
+        .set({
+          checkStatus: res.status,
+          checkDetail: res.detail as Record<string, unknown>,
+          checkedAt: new Date(),
+        })
+        .where(eq(evidenceRecords.id, r.id));
       results.push({ id: r.id, status: res.status });
     }
     return results;
   });
 
 export const updateRecord = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireNeonAuth])
   .inputValidator((d: unknown) =>
-    z.object({
-      id: z.string().uuid(),
-      curation: z.enum(["unreviewed", "approved", "rejected"]).optional(),
-      pmid: z.string().max(20).nullable().optional(),
-      doi: z.string().max(200).nullable().optional(),
-      source_ref: z.string().max(500).nullable().optional(),
-      notes: z.string().max(2000).nullable().optional(),
-      relationship_id: z.string().max(200).nullable().optional().refine((v) => !v || !!edgeByRel[v], "Unknown relationship ID"),
-      claim_support: z.enum(["unassessed", "supports", "partial", "contradicts", "unrelated"]).optional(),
-    }).parse(d),
+    z
+      .object({
+        id: z.string().uuid(),
+        curation: z.enum(["unreviewed", "approved", "rejected"]).optional(),
+        pmid: z.string().max(20).nullable().optional(),
+        doi: z.string().max(200).nullable().optional(),
+        source_ref: z.string().max(500).nullable().optional(),
+        notes: z.string().max(2000).nullable().optional(),
+        relationship_id: z
+          .string()
+          .max(200)
+          .nullable()
+          .optional()
+          .refine((v) => !v || !!edgeByRel[v], "Unknown relationship ID"),
+        claim_support: z.enum(["unassessed", "supports", "partial", "contradicts", "unrelated"]).optional(),
+      })
+      .parse(d),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
+    await assertAdmin(context.userId);
     const { id, ...patch } = data;
     const touchesSource = "pmid" in patch || "doi" in patch || "source_ref" in patch;
-    const update: any = { ...patch };
-    if (touchesSource) update["check_status"] = "pending";
-    if ("relationship_id" in patch && !patch.relationship_id) update["claim_support"] = "unassessed";
+    const set: Partial<typeof evidenceRecords.$inferInsert> = {};
+    if ("curation" in patch) set.curation = patch.curation;
+    if ("pmid" in patch) set.pmid = patch.pmid;
+    if ("doi" in patch) set.doi = patch.doi;
+    if ("source_ref" in patch) set.sourceRef = patch.source_ref;
+    if ("notes" in patch) set.notes = patch.notes;
+    if ("relationship_id" in patch) set.relationshipId = patch.relationship_id;
+    if ("claim_support" in patch) set.claimSupport = patch.claim_support;
+    if (touchesSource) set.checkStatus = "pending";
+    if ("relationship_id" in patch && !patch.relationship_id) set.claimSupport = "unassessed";
     if ("curation" in patch || "claim_support" in patch) {
-      update["reviewed_by"] = (context.claims as any)?.email ?? context.userId;
-      update["reviewed_at"] = new Date().toISOString();
+      set.reviewedBy = context.email ?? context.userId;
+      set.reviewedAt = new Date();
     }
-    const { error } = await context.supabase.from("evidence_records").update(update).eq("id", id);
-    if (error) throw new Error(error.message);
+    const db = getDb();
+    await db.update(evidenceRecords).set(set).where(eq(evidenceRecords.id, id));
     return { ok: true };
   });
 
 export const suggestSources = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => z.object({ ids: z.array(z.string().uuid()).max(6) }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
-    const { data: recs, error } = await context.supabase
-      .from("evidence_records").select("id, node_name, search_query").in("id", data.ids);
-    if (error) throw new Error(error.message);
+    await assertAdmin(context.userId);
+    const db = getDb();
+    const recs = await db
+      .select({
+        id: evidenceRecords.id,
+        node_name: evidenceRecords.nodeName,
+        search_query: evidenceRecords.searchQuery,
+      })
+      .from(evidenceRecords)
+      .where(inArray(evidenceRecords.id, data.ids));
     let found = 0;
-    for (const r of recs ?? []) {
+    for (const r of recs) {
       const detail = await suggestFor(r);
       if (detail.candidates.length) found++;
-      await context.supabase.from("evidence_records").update({ check_detail: detail as any, checked_at: new Date().toISOString() }).eq("id", r.id);
+      await db
+        .update(evidenceRecords)
+        .set({ checkDetail: detail as Record<string, unknown>, checkedAt: new Date() })
+        .where(eq(evidenceRecords.id, r.id));
     }
-    return { found, total: recs?.length ?? 0 };
+    return { found, total: recs.length };
   });

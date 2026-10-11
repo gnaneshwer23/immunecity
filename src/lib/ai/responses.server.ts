@@ -45,7 +45,7 @@ export function createResponsesCall(
 
 /**
  * Direct OpenAI Responses API — intentional BYOK fallback when LOVABLE_API_KEY is absent.
- * Accepts OPENAI_API_KEY or the common mis-name OPEN_API_KEY.
+ * Caller supplies the key (prefer env OPENAI_API_KEY; OPEN_API_KEY is temporary compat).
  * Omits Lovable gateway headers and encrypted-reasoning options (stock OpenAI rejects those).
  */
 export function createOpenAIDirectCall(

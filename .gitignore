@@ -39,3 +39,4 @@ dist-ssr
 # Accidental nested workspace
 Untitled/
 .vercel
+.env*.local

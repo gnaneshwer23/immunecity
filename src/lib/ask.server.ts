@@ -21,7 +21,7 @@ function resolveAskProvider(env: NodeJS.ProcessEnv = process.env): AskProvider |
   const lovable = env["LOVABLE_API_KEY"]?.trim();
   if (lovable) return { kind: "lovable", apiKey: lovable, model: LOVABLE_MODEL };
 
-  // Prefer the standard name; also accept OPEN_API_KEY (common mis-name set in Vercel).
+  // Prefer OPENAI_API_KEY. OPEN_API_KEY kept temporarily for Vercel backward compat.
   const openai = env["OPENAI_API_KEY"]?.trim() || env["OPEN_API_KEY"]?.trim();
   if (openai) {
     const model = env["OPENAI_MODEL"]?.trim() || DEFAULT_OPENAI_MODEL;
