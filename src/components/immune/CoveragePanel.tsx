@@ -11,13 +11,14 @@ const ORDER: ReviewStatus[] = ["approved", "claim-assessed", "conflicting", "sou
 /* Honest relationship-level coverage: a link counts as supported only when an approved
    source was mapped to that exact claim and assessed as supporting it. */
 export default function CoveragePanel() {
-  const { data: approved = [] } = useQuery(approvedQuery);
+  const { data: approved, isError, isPending, isFetching } = useQuery(approvedQuery);
   const m = useMemo(() => {
+    const cites = approved ?? [];
     const counts: Record<string, number> = {};
     const by: Record<string, { n: number; c: number }> = {};
     let core = 0, coreSup = 0, draft = 0, draftSup = 0;
     const st = KG.relationships.map((r) => {
-      const s = relationshipStatus(r, approved);
+      const s = relationshipStatus(r, cites);
       counts[s] = (counts[s] || 0) + 1;
       const sup = s === "approved";
       const t = byId[r.subject_id]?.node_type ?? "DATA";
@@ -33,10 +34,25 @@ export default function CoveragePanel() {
   const pct = (a: number, b: number) => (b ? ((a / b) * 100).toFixed(1) : "0.0");
   const supported = m.counts["approved"] || 0;
 
+  if (isError) {
+    return (
+      <section className="section">
+        <h2>Evidence coverage</h2>
+        <p className="lede" role="alert">
+          Evidence service unavailable. Coverage cannot be computed right now — this is a database/service error, not a finding that the graph has zero reviewed citations. Retry shortly.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className="section">
       <h2>Evidence coverage</h2>
-      <p className="lede">{supported} of {m.total} causal links ({pct(supported, m.total)}%) are supported by an approved, claim-checked source. Concept-level citations and unassessed identifiers are reported separately and do not count as support.</p>
+      <p className="lede">
+        {isPending || (isFetching && !approved)
+          ? "Loading reviewed citations…"
+          : `${supported} of ${m.total} causal links (${pct(supported, m.total)}%) are supported by an approved, claim-checked source. Concept-level citations and unassessed identifiers are reported separately and do not count as support.`}
+      </p>
       <div className="grid g3" style={{ marginBottom: 16 }}>
         <div className="card"><span className="xs mono muted">CORE GRAPH</span><h3>{pct(m.coreSup, m.core)}%</h3><p className="xs muted">{m.coreSup} of {m.core} curated links supported</p></div>
         <div className="card"><span className="xs mono muted">DRAFT EXTENSIONS</span><h3>{pct(m.draftSup, m.draft)}%</h3><p className="xs muted">{m.draftSup} of {m.draft} draft links supported</p></div>

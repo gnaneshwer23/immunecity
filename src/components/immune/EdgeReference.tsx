@@ -15,7 +15,7 @@ export function useApproved(nodeId: string | undefined): ApprovedCitation[] {
 
 export default function EdgeReference({ edge }: { edge: KGEdge }) {
   const ref = edgeRef(edge);
-  const { data } = useQuery(approvedQuery);
+  const { data, isError } = useQuery(approvedQuery);
   const approved = data?.find((c) => c.relationship_id === relId(edge));
   const level = LEVEL[edge.evidence_status] ?? edge.evidence_status?.toLowerCase();
   return (
@@ -25,6 +25,8 @@ export default function EdgeReference({ edge }: { edge: KGEdge }) {
           <a href={ref.url} target="_blank" rel="noreferrer">{ref.label}</a>
           {ref.kind === "citation" ? <span className="badge ev-chk-missing" title="Hand-written reference, not yet matched to a PubMed ID or DOI">unverified</span> : null}
         </span>
+      ) : isError ? (
+        <span className="edge-ref needs" title="Evidence database query failed">evidence service unavailable</span>
       ) : approved ? (
         <span className="edge-ref">
           <a href={approved.url} target="_blank" rel="noreferrer">{approved.label}</a>

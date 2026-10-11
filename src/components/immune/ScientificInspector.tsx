@@ -9,7 +9,10 @@ import { inspect, useInspected } from "@/lib/immune/inspector";
 import { CONTENT } from "@/data/content";
 
 export function StatusBadge({ edge }: { edge: KGEdge }) {
-  const { data = [] } = useQuery(approvedQuery);
+  const { data = [], isError } = useQuery(approvedQuery);
+  if (isError) {
+    return <span className="badge rs" title="Evidence service unavailable — status not loaded">status unavailable</span>;
+  }
   const s = relationshipStatus(edge, data);
   return <span className={`badge rs rs-${s}`} title={STATUS_INFO[s].desc}>{STATUS_INFO[s].label}</span>;
 }
@@ -27,7 +30,7 @@ function EdgeRow({ e, dir }: { e: KGEdge; dir: "out" | "in" }) {
 }
 
 function ConceptBody({ id }: { id: string }) {
-  const { data = [] } = useQuery(approvedQuery);
+  const { data = [], isError } = useQuery(approvedQuery);
   const n = byId[id];
   if (!n) return <p className="small">Unknown concept.</p>;
   const ups = inn[id] || [];
@@ -38,6 +41,7 @@ function ConceptBody({ id }: { id: string }) {
     <>
       <span className="si-kicker">Concept · {TYPES[n.node_type].label} · <span className="mono">{n.id}</span></span>
       <h2 className="si-title">{n.name}</h2>
+      {isError ? <p className="si-warn" role="alert">Evidence service unavailable — approved sources could not be loaded (not the same as zero citations).</p> : null}
       {n.draft ? <p className="si-warn">Draft concept — added to close a coverage gap, awaiting expert review.</p> : null}
       <section><h3>Definition</h3><p className="small">{n.desc || "No definition recorded."}</p></section>
       <section><h3>Upstream ({ups.length})</h3>{ups.length ? <ul className="si-list">{ups.map((e) => <EdgeRow key={relId(e)} e={e} dir="in" />)}</ul> : <p className="xs muted">None recorded.</p>}</section>
@@ -72,7 +76,7 @@ function limitations(e: KGEdge, status: string): string[] {
 }
 
 function RelationshipBody({ id }: { id: string }) {
-  const { data = [] } = useQuery(approvedQuery);
+  const { data = [], isError } = useQuery(approvedQuery);
   const e = edgeByRel[id];
   if (!e) return <p className="small">Unknown relationship.</p>;
   const s = byId[e.subject_id], o = byId[e.object_id];
@@ -87,6 +91,9 @@ function RelationshipBody({ id }: { id: string }) {
         <em>{human(e.relation)}</em>
         <button type="button" className="si-row" onClick={() => inspect({ kind: "concept", id: e.object_id })}>{o?.name}</button>
       </h2>
+      {isError ? (
+        <p className="si-warn" role="alert">Evidence service unavailable — review status below may be incomplete.</p>
+      ) : null}
       <p className="si-status"><span className={`badge rs rs-${status}`}>{STATUS_INFO[status].label}</span> <span className="xs muted">{STATUS_INFO[status].desc}</span></p>
       <section><h3>Mechanism</h3><p className="small">{e.mechanism || "No mechanism text recorded."}</p></section>
       <section>

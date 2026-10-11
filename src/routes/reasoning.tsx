@@ -35,7 +35,7 @@ function Reasoning() {
   useEffect(() => { if (urlFrom && byId[urlFrom]) setFrom(urlFrom); }, [urlFrom]);
 
   const path = useMemo(() => (!byId[from] || !byId[to] || from === to ? null : shortestPath(from, to, false)), [from, to]);
-  const { data: approvedCites = [] } = useQuery(approvedQuery);
+  const { data: approvedCites = [], isError: evidenceUnavailable } = useQuery(approvedQuery);
   const c = CONTENT.cases[openCase]!;
 
   return (
@@ -57,7 +57,11 @@ function Reasoning() {
       </section>
       <section className="section">
         <h2>Exemplar pathways</h2>
-        <p className="lede">PRD priority scaffolds — connected in the graph, but claim-level reviewed support is incomplete. Maturity is labelled honestly.</p>
+        {evidenceUnavailable ? (
+          <p className="lede" role="alert">Evidence service unavailable — pathway maturity below cannot be recomputed from live approvals (not the same as zero reviewed support).</p>
+        ) : (
+          <p className="lede">PRD priority scaffolds — connected in the graph, but claim-level reviewed support is incomplete. Maturity is labelled honestly.</p>
+        )}
         <div className="grid auto">
           {EXEMPLAR_PATHWAYS.map((p) => {
             const report = reportExemplar(p, approvedCites);

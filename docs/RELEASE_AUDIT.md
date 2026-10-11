@@ -1,10 +1,10 @@
 # Immune City — Full Production Readiness Audit
 
-**Audit refresh (UTC):** 2026-10-11 (post A–E ship + Neon cutover/P0s on `main`)  
+**Audit refresh (UTC):** 2026-10-11 (playbook engineering ship: assurance + Academy scaffold + curator pass 2)  
 **Release scope:** Public educational scientific exploration beta — **not** clinical decision support  
-**Roadmap:** Immune City Enhancement Roadmap & Production Gaps v1.0 (11 Oct 2026)  
+**Roadmap:** Immune City Enhancement Roadmap & Production Gaps v1.0 + Next-Step Implementation Playbook v1.0 (11 Oct 2026)  
 **Canonical production:** https://immunecity.vercel.app  
-**Auditor method:** Code inspection; Neon MCP SQL (production + vercel-dev); local `bun run smoke:neon` / `smoke-prd-a2`; Vercel deployment API; GitHub `main` SHA; live HTTP + Ask smokes
+**Auditor method:** Code inspection; Neon MCP SQL (production); NCBI esummary PMID title checks for new curator rows; Vercel/GitHub SHA at prior audit
 
 ---
 
@@ -14,13 +14,15 @@
 
 | Layer | State |
 |-------|--------|
-| GitHub `main` / local HEAD | **`a0478fa`** — Phase E workbench lit/Ask import UX (**aligned**) |
-| Vercel production | **`a0478fa`** READY — **SHA match** (deploy lag closed) |
-| Neon **production** branch | Full schema: `user_roles`, `evidence_records`, **`evidence_audit_events`**, role trigger present; **admin signed up**; relationship queue imported |
-| Neon **vercel-dev** branch | Full schema incl. audit table + role trigger |
-| Gate C (approved claims) | **3** approved+supports relationship links / **549** runtime — honest progress, not coverage theatre |
+| GitHub `main` / local HEAD | Pending this ship commit (was **`2d1c288`** aligned with Vercel before push) |
+| Vercel production | Was **`2d1c288`** READY — redeploy expected after this push |
+| Neon **production** branch | Full schema; admin present; **9** approved+supports relationship claims after curator pass 2 |
+| Neon **vercel-dev** branch | Schema present (local smoke default); curator inserts applied to **production** |
+| Gate C (approved claims) | **9** approved+supports relationship links / **549** runtime — honest progress, not coverage theatre |
 
-**Still required for unqualified GO:** (1) ~~owner signup + admin~~ **done**; (2) more curator claim assess/approve on exemplar pathways (TNF→RA still 0 on-path); (3) SME gold-set + human a11y.
+**Still required for unqualified GO:** (1) ~~owner signup + admin~~ **done**; (2) ~~TNF→RA on-path cites~~ **done (3/3 edges)**; remaining exemplar gaps (esp. full IFN→SLE / PD-L1 edges); (3) SME gold-set + human a11y.
+
+**Playbook engineering in this ship:** EvidenceServiceError outage path (Ask + coverage UI); approve requires `claim_support=supports`; Academy foundation track scaffold on Mechanism; verified curator inserts (no invented PMIDs).
 
 ---
 
@@ -29,9 +31,9 @@
 | Item | Value |
 |------|--------|
 | Repo | GitHub `gnaneshwer23/immunecity` |
-| Local HEAD | `a0478facac40038cf09b6ba9784ca6387c5079c3` |
-| `origin/main` | `a0478fa` (identical) |
-| Vercel production SHA | `a0478fa` (READY, target=production) |
+| Local HEAD | `2d1c288009cca8d6946e3d9423b043394f9a66cd` |
+| `origin/main` | `2d1c288` (identical at audit time) |
+| Vercel production SHA | `2d1c288` (READY, target=production, deploy `dpl_Bh1RnVMg1aPUembYotCiGugCTjJp`) |
 | Deploy identity | **WORKING / aligned** |
 | Canonical URL | https://immunecity.vercel.app |
 | Secondary URL | https://immune-city.lovable.app — divergent; keep until deliberately retired |
@@ -49,6 +51,8 @@
 | `8f9d634` | Phase C lit handoff from coverage gaps |
 | `60c9448` | Phase D model registry honesty gates |
 | `a0478fa` | Phase E workbench lit/Ask import UX |
+| `37a5fa8` | Release audit refresh + Gate C exemplar approvals |
+| `2d1c288` | Landing / trust-layer educational-beta copy |
 
 ---
 
@@ -68,7 +72,7 @@
 ### Evidence invariants (IC-02)
 
 - Source edit → unreviewed + claim reset.
-- Approve requires `relationship_id` + assessed `claim_support` + check status `verified`/`matched`.
+- Approve requires `relationship_id` + `claim_support=supports` + check status `verified`/`matched` (partial/contradicts/unrelated cannot approve).
 - Append-only `evidence_audit_events` in app schema — **present on Neon production + vercel-dev** (D-17 closed via `bun run db:neon-schema` against production).
 - Unknown `relationship_id` rejected by zod before write.
 
@@ -83,7 +87,7 @@
 | Phase | Status | Evidence |
 |-------|--------|----------|
 | **A / A2** | **DONE** | Commit `2f6f433`; Ask classification/abstention/citation validation; mechanism workspace; 50-case eval; `bun scripts/smoke-prd-a2.ts` **ALL PASSED** this audit |
-| **B** | **PARTIAL** | `3eed909`; `draft-ext-4`; domain coverage + gap queue; immunogenetics teaching fills; exemplar **claim curation still open** (`implementation-phases.ts`) |
+| **B** | **PARTIAL** | `3eed909`; `draft-ext-4`; domain coverage + gap queue; immunogenetics teaching fills; exemplar **curation improved** (Gate C 9/549) |
 | **C** | **PARTIAL** | `8f9d634`; literature step machine + Research UI + unreviewed export; **no live PubMed bulk ingest** |
 | **D** | **PARTIAL** | `60c9448`; 7 registry adapters (5 interface-only + 2 planned); `implementedModels() === []`; stub dry-run only |
 | **E** | **PARTIAL** | `a0478fa`; workbench step gating + Ask/lit/mechanism imports + lit handoff; **no lab execution / KG write-back** |
@@ -98,10 +102,10 @@ Machine-readable: `src/data/implementation-phases.ts` → B–E all `partial`.
 |----|--------------|--------|-------|
 | IC-01 | Neon production verification | **PARTIAL→GO path** | JWKS OK; prod DDL complete; **admin + curation E2E exercised** (queue import, PubMed check, claim assess/approve) |
 | IC-02 | Approval state machine | **DONE in code** / **live on prod** | Invariants enforced in UI (wrong-PMID rows rejected; ID verify ≠ claim approve) |
-| IC-03 | Ask ← approved Neon evidence | **DONE in code** (live) | `loadReviewedEvidenceForRels` now has **3** approved+supports cites to draw from |
+| IC-03 | Ask ← approved Neon evidence | **DONE in code** | Outage vs empty distinguished; **9** approved+supports cites after curator pass 2 |
 | IC-04 | Final citation validation | **DONE** (live) | Buffer model text → `validateAnswerCitations` before return |
 | IC-05 | Canonical release audit | **DONE (this doc)** | Canonical URL + SHA alignment recorded |
-| IC-06 | Exemplar pathways | **PARTIAL** | Connected; **PD-1 axis partially-reviewed** (Barber CD8→PD-1 + KEYNOTE pembrolizumab↔PD-1 approved). TNF→RA still scaffold (no on-path queue cites). IFN→SLE still scaffold (Groom unrelated; Stohl PMID mismatch rejected; Morand ISG→anifrolumab only partial) |
+| IC-06 | Exemplar pathways | **PARTIAL** | **TNF→RA 3/3 on-path approved** (Chu/Feldmann/Lipsky). PD-1 partial (Barber + KEYNOTE). IFN→SLE improved (López IFN→BAFF; Shin belimumab–BAFF; Navarra belimumab→SLE); other IFN/SLE edges open; Morand remains partial; Groom/Stohl stay rejected |
 | IC-07 | Universal detail panel | **PARTIAL** | Shared `ScientificInspector` in Shell; not every layer identical |
 | IC-08 | Unified graph snapshot | **DONE** | `graphReleaseSnapshot()` on home/shell/Methods/Ask |
 | IC-09 | Spine navigation | **PARTIAL** | 15-step spine live; keyboard/mobile polish open |
@@ -141,15 +145,15 @@ Model key is configured in production (stream returns content beyond abstention-
 
 ### 6.3 Neon
 
-| Check | vercel-dev (local `DATABASE_URL` = `ep-cool-flower…`) | production (`br-super-sea…` / `ep-blue-salad…`) |
-|-------|------------------------------------------------------|--------------------------------------------------|
+| Check | vercel-dev (local `DATABASE_URL`) | production |
+|-------|-----------------------------------|------------|
 | JWKS | **200 ok** (`smoke:neon`) | **200 ok** (prod-targeted `smoke:neon`) |
 | `user_roles` / `evidence_records` | present | present |
 | `evidence_audit_events` | **present** | **present** |
 | `on_neon_auth_user_created_role` | **present** | **present** |
 | `has_role` / `assign_initial_role_neon` fns | present | present |
-| Counts | users **0**, roles **0**, evidence **0**, audit **0**, admins **0** | same **0** |
-| `bun run smoke:neon` | **EXIT 0** (against vercel-dev via `.env.local`) | **EXIT 0** when `DATABASE_URL*` forced to production (`ep-blue-salad…`) |
+| Evidence / Gate C | Prefer live SQL | **9** approved+supports relationship claims (Gate C); queue imported; admin present |
+| `bun run smoke:neon` | **EXIT 0** (against vercel-dev via `.env.local`) | **EXIT 0** when `DATABASE_URL*` forced to production |
 
 ### 6.4 Local PRD smoke
 
@@ -175,9 +179,9 @@ Model key is configured in production (stream returns content beyond abstention-
 |--------|--------|
 | Runtime relationships | **549** |
 | Runtime nodes | **330** (260 core / 70 draft) |
-| Neon evidence rows (prod + vercel-dev) | **0** |
-| Approved claim-linked | **0** |
-| Exemplars | All three **connected**; maturity **`scaffold`** until approved + `supports` |
+| Neon evidence (production) | Queue imported; **9** approved + `supports` relationship claims (Gate C, Neon SQL 2026-10-11). |
+| Approved claim-linked | **9 / 549** |
+| Exemplars | All three **connected**; TNF→RA on-path reviewed; PD-1 / IFN→SLE partially reviewed |
 | SME gold-set | **Awaiting SME** (`docs/SME_GOLD_SET_SIGNOFF.md`) |
 
 Do **not** mass-approve or invent PMIDs.
@@ -190,7 +194,7 @@ Do **not** mass-approve or invent PMIDs.
 - Signup trigger assigns **`user` only** when present; admin via explicit SQL (`docs/NEON_CUTOVER.md`).
 - Role trigger **`on_neon_auth_user_created_role`** present on production + vercel-dev (D-17 closed).
 - Approval invariants + identifier verified/matched gate in code; `evidence_audit_events` present on production.
-- Ask: clinical abstain before model; emergency disable via `IMMUNE_ASK_DISABLED` / `ASK_EMERGENCY_DISABLE`; citation validation before return (**live** on `a0478fa`).
+- Ask: clinical abstain before model; emergency disable via `IMMUNE_ASK_DISABLED` / `ASK_EMERGENCY_DISABLE`; citation validation before return (**live** on `2d1c288`).
 - Keys: prefer `OPENAI_API_KEY`; `OPEN_API_KEY` kept as temporary Vercel backward compat (`ask.server.ts`). Also accepts `LOVABLE_API_KEY` gateway.
 - Rate limit: in-memory soft limit — accepted beta residual (IC-15 open).
 
@@ -201,11 +205,13 @@ Do **not** mass-approve or invent PMIDs.
 | ID | Sev | Description | Status |
 |----|-----|-------------|--------|
 | D-01…D-04 | P0 | Ask key / abstention / disable / auto-admin | **Closed** (code + Neon trigger design) |
-| D-05 | P0 | Zero approved claim evidence | **Open (science)** |
+| D-05 | P0 | Sparse approved claim evidence (Gate C) | **Open (science)** — 9/549; exemplars improved but incomplete |
 | D-13 | P0 | Source edit left stale approved | **Closed** on `main` + deployed |
 | D-14 | P0 | Bulk identifier approve | **Closed** on `main` + deployed |
 | D-15 | P0 | Ask ignored Neon cites | **Closed** on `main` + deployed |
-| D-16 | P0 | Vercel prod SHA lags GitHub | **Closed** — now `a0478fa` |
+| D-16 | P0 | Vercel prod SHA lags GitHub | **Closed** at `2d1c288`; expect lag until this ship deploys |
+| D-19 | P1 | DB outage reported as empty citations (Ask + coverage) | **Fixed in this ship** (typed `EvidenceServiceError` / Ask outage reply) |
+| D-20 | P1 | Approval allowed any assessed `claim_support` | **Fixed in this ship** — approve requires `supports` |
 | D-17 | P0 | Neon **production** missing `evidence_audit_events` + role trigger | **Closed (ops)** — applied `bun run db:neon-schema` to production (`ep-blue-salad…`); prod + vercel-dev both have audit table + role trigger; prod smoke EXIT 0 |
 | D-06 | P1 | Dual public URLs | Open |
 | D-08 | P1 | In-memory rate limit | Accepted for beta |
@@ -230,12 +236,12 @@ Do **not** mass-approve or invent PMIDs.
 |------|--------|----------|
 | **A — Security** | **CONDITIONAL** | Neon Auth + JWKS; prod role trigger present; write invariants on deployed SHA; admin E2E pending |
 | **B — Data integrity** | **PASS** (graph) | Snapshot 0.3+draft-ext-4; 549 rels load |
-| **C — Scientific honesty** | **PARTIAL** | **3 / 549** approved+supports links (Barber, KEYNOTE-006, Keane granuloma–TNF). Exemplar pathways not fully reviewed; two queue PMIDs rejected as wrong papers |
+| **C — Scientific honesty** | **PARTIAL** | **9 / 549** approved+supports links. TNF→RA on-path complete; PD-1/IFN–SLE partial; wrong-PMID rows stay rejected |
 | **D — Functional** | **CONDITIONAL** | 12 layers + Ask stream OK; auth/curation E2E pending |
-| **E — AI reliability** | **CONDITIONAL** | Prod Ask stream + smoke-prd-a2 pass; SME open; grounding empty until approvals |
+| **E — AI reliability** | **CONDITIONAL** | Prod Ask stream + smoke-prd-a2 pass; SME open; 3 approved cites available to Ask |
 | **F — Accessibility** | **CONDITIONAL** | Automated runnable; human open |
 | **G — Operations** | **CONDITIONAL** | Soft rate limit; **prod Neon DDL drift (D-17) closed**; local smoke still defaults to vercel-dev (D-18) |
-| **H — Deployment** | **PASS** | Canonical Vercel SHA = GitHub `main` = `a0478fa` |
+| **H — Deployment** | **PASS** | Canonical Vercel SHA = GitHub `main` = `2d1c288` |
 
 ---
 
@@ -243,6 +249,6 @@ Do **not** mass-approve or invent PMIDs.
 
 # **CONDITIONAL GO** (canonical: https://immunecity.vercel.app)
 
-App deploy identity is healthy: **local = origin/main = Vercel production = `a0478fa`**. Phases A–E are shipped as honest partials; Ask controls and approval invariants are on the live SHA. **D-17 closed**. Admin + first honest curator approvals landed (Gate C **3/549**). Remaining blockers for full GO: **deeper exemplar claim coverage (esp. TNF→RA)**, **SME/a11y**.
+Pre-push baseline was **`2d1c288`**. This ship adds D-19/D-20 assurance, Academy foundation scaffold, and curator pass 2 (Gate C **9/549** on Neon production). Remaining blockers for full GO: **remaining exemplar edges**, **SME/a11y**, redeploy SHA alignment. Vitest full suite / focused runner **NOT RUN** this pass (prior hangs).
 
 Do not claim full GO or “evidence-grounded scientific AI” until Gate C has broader approved relationship claims on all three exemplar pathways and Gate E has SME sign-off.

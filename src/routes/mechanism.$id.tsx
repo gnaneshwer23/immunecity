@@ -4,6 +4,7 @@ import { CONTENT } from "@/data/content";
 import { LEGACY } from "@/data/legacy";
 import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
+import AcademyTrack from "@/components/immune/AcademyTrack";
 
 export const Route = createFileRoute("/mechanism/$id")({
   head: ({ params }) => {
@@ -62,6 +63,8 @@ function Mechanism() {
           { v: perts.length, l: "PERTURBATION EXPERIMENTS" },
         ]}
       />
+      <AcademyTrack lessonId={lesson.id} />
+
       <div className="lesson-tabs">
         {lessons.map((l) => (
           <button key={l.id} className={l.id === lesson.id ? "on" : undefined} onClick={() => navigate({ to: "/mechanism/$id", params: { id: l.id } })}>

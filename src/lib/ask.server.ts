@@ -10,9 +10,17 @@ import {
   rateLimited,
   validateAnswerCitations,
 } from "@/lib/askGrounding";
+import { EvidenceServiceError } from "@/lib/citations.functions";
 import { getDb } from "@/lib/db.server";
 import { evidenceRecords } from "@/lib/db/schema.server";
 import type { CitationLike } from "@/lib/immune/evidenceStatus";
+
+export type ReviewedEvidenceResult =
+  | { ok: true; cites: CitationLike[] }
+  | { ok: false; error: "unavailable"; message: string };
+
+const EVIDENCE_OUTAGE_REPLY =
+  "The evidence database is temporarily unavailable, so I cannot confirm reviewed sources for this answer. This is a service outage, not a finding that no evidence exists. Please try again shortly, or browse the graph and Methods & trust without Ask.";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
 const LOVABLE_MODEL = "openai/gpt-6-astra";
@@ -47,8 +55,8 @@ function textReply(text: string) {
 }
 
 /** Approved Neon evidence for retrieved relationship IDs (claim-level context for Ask). */
-export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<CitationLike[]> {
-  if (!relIds.length) return [];
+export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<ReviewedEvidenceResult> {
+  if (!relIds.length) return { ok: true, cites: [] };
   try {
     const db = getDb();
     const rows = await db
@@ -64,25 +72,32 @@ export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<Cit
       })
       .from(evidenceRecords)
       .where(and(eq(evidenceRecords.curation, "approved"), inArray(evidenceRecords.relationshipId, relIds)));
-    return rows.map(
-      (r): CitationLike => ({
-        evidence_id: r.evidenceId,
-        relationship_id: r.relationshipId ?? null,
-        claim_support: r.claimSupport ?? "unassessed",
-        reviewed_at: r.reviewedAt?.toISOString?.() ?? (r.reviewedAt as string | null) ?? null,
-        curation: r.curation,
-        pmid: r.pmid,
-        doi: r.doi,
-        label: r.pmid ? `PMID ${r.pmid}` : r.doi ? `DOI ${r.doi}` : (r.sourceRef ?? r.evidenceId),
-        url: r.pmid
-          ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`
-          : r.doi
-            ? `https://doi.org/${r.doi}`
-            : `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(r.sourceRef ?? "")}`,
-      }),
-    );
-  } catch {
-    return [];
+    return {
+      ok: true,
+      cites: rows.map(
+        (r): CitationLike => ({
+          evidence_id: r.evidenceId,
+          relationship_id: r.relationshipId ?? null,
+          claim_support: r.claimSupport ?? "unassessed",
+          reviewed_at: r.reviewedAt?.toISOString?.() ?? (r.reviewedAt as string | null) ?? null,
+          curation: r.curation,
+          pmid: r.pmid,
+          doi: r.doi,
+          label: r.pmid ? `PMID ${r.pmid}` : r.doi ? `DOI ${r.doi}` : (r.sourceRef ?? r.evidenceId),
+          url: r.pmid
+            ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`
+            : r.doi
+              ? `https://doi.org/${r.doi}`
+              : `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(r.sourceRef ?? "")}`,
+        }),
+      ),
+    };
+  } catch (err) {
+    const message =
+      err instanceof EvidenceServiceError
+        ? err.message
+        : "Evidence database query failed while loading reviewed relationship citations.";
+    return { ok: false, error: "unavailable", message };
   }
 }
 
@@ -130,8 +145,11 @@ export async function handleAsk(request: Request): Promise<Response> {
     );
   }
 
-  const cites = await loadReviewedEvidenceForRels(preliminary.grounding.relIds);
-  const prepared = prepareAsk(question, cites);
+  const evidence = await loadReviewedEvidenceForRels(preliminary.grounding.relIds);
+  if (!evidence.ok) {
+    return textReply(EVIDENCE_OUTAGE_REPLY);
+  }
+  const prepared = prepareAsk(question, evidence.cites);
 
   const system =
     SYSTEM +

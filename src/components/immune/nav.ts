@@ -2,7 +2,7 @@ export const NAV_GROUPS = [
   { label: "Foundations", items: [
     { n: "01", path: "/", title: "Overview", desc: "Educational beta: spine, layers and curated routes." },
     { n: "02", path: "/learn", title: "Cell atlas", desc: "The residents, their metaphors and their limits." },
-    { n: "03", path: "/mechanism", title: "Mechanism", desc: "Step-by-step cascades and perturbations." },
+    { n: "03", path: "/mechanism", title: "Mechanism", desc: "Cascades, perturbations, and the Academy foundation track." },
   ] },
   { label: "Explore", items: [
     { n: "04", path: "/graph", title: "Knowledge graph", desc: "Every concept and typed causal link." },

@@ -1,6 +1,6 @@
 # Curator evidence queue
 
-**Honest status (2026-10-11 curator pass):** **3** approved+supports relationship links on production (Barber CD8→PD-1; KEYNOTE-006 pembrolizumab↔PD-1; Keane granuloma↔TNF). Queue pack itself still only creates unreviewed candidates — approvals are human-only. Runtime links ≈ **549**.
+**Honest status (2026-10-11 curator pass 2):** **9** approved+supports relationship links on production (prior 3 + TNF→RA axis Chu/Feldmann/Lipsky; belimumab Shin + Navarra; IFN→BAFF López). Queue pack itself still only creates unreviewed candidates — approvals are human-only. Runtime links ≈ **549**. Wrong-PMID Stohl/Groom mappings remain rejected/unrelated.
 
 ## What shipped
 
@@ -17,7 +17,7 @@
 2. Click **Load relationship queue**.
 3. **Check** identifiers for slots that have PMIDs/DOIs.
 4. Open **Details** → confirm the mapped relationship → set **claim support** (`supports` / `partial` / …).
-5. **Approve** only when the source truly supports that directional claim (server rejects approve without `relationship_id` + assessed `claim_support`).
+5. **Approve** only when the source truly supports that directional claim (server rejects approve without `relationship_id` + `claim_support=supports`).
 6. Public pages only see `curation=approved` (`citations.functions.ts` SQL filter on Neon).
 
 ## Demo pathway priority (honest scaffolding)
@@ -43,4 +43,4 @@ Use `exemplarQueueFocus()` / curation UI callout for the graph `relId`s on those
 - Runtime links: **536**
 - Queue mapped (candidates): **37** (~6.9%)
 - Remaining without a KG bibliographic cite: **499** (need literature workflow / SME)
-- Approved claim links (prod, after first curator pass): **3** (not 549 — do not overclaim)
+- Approved claim links (prod, after curator pass 2): **9** (not 549 — do not overclaim)

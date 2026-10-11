@@ -12,9 +12,12 @@ const base = {
 };
 
 describe("evidence approval invariants", () => {
-  it("rejects approve without relationship or claim assessment", () => {
+  it("rejects approve without relationship or claim_support=supports", () => {
     expect(canApproveClaim(null, "supports")).toBe(false);
     expect(canApproveClaim("REL-x", "unassessed")).toBe(false);
+    expect(canApproveClaim("REL-x", "partial")).toBe(false);
+    expect(canApproveClaim("REL-x", "contradicts")).toBe(false);
+    expect(canApproveClaim("REL-x", "unrelated")).toBe(false);
     expect(canApproveClaim("REL-x", "supports")).toBe(true);
   });
 
@@ -53,7 +56,7 @@ describe("evidence approval invariants", () => {
     expect(r.error).toMatch(/verified or matched/i);
   });
 
-  it("allows approve when relationship mapped, claim assessed, and identifier verified", () => {
+  it("allows approve when relationship mapped, claim_support=supports, and identifier verified", () => {
     const r = computeEvidenceUpdate(
       { ...base, curation: "unreviewed", claimSupport: "supports", checkStatus: "matched" },
       { curation: "approved" },
@@ -62,6 +65,17 @@ describe("evidence approval invariants", () => {
     expect(r.error).toBeUndefined();
     expect(r.set.curation).toBe("approved");
     expect(r.set.reviewedBy).toBe("curator@example.com");
+  });
+
+  it("blocks approve when claim_support is partial or contradicts", () => {
+    for (const claimSupport of ["partial", "contradicts", "unrelated"] as const) {
+      const r = computeEvidenceUpdate(
+        { ...base, curation: "unreviewed", claimSupport, checkStatus: "verified" },
+        { curation: "approved" },
+        "curator@example.com",
+      );
+      expect(r.error).toMatch(/claim_support=supports/i);
+    }
   });
 
   it("resets claim assessment when relationship mapping is cleared", () => {

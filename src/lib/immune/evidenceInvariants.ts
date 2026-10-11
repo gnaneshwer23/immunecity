@@ -46,11 +46,14 @@ export interface EvidencePatchResult {
   };
 }
 
-/** True when a record may be marked curation=approved (claim assessed + ID mapped). */
+/**
+ * True when a record may be marked curation=approved.
+ * Only claim_support=supports counts as scientific claim approval for a mapped edge;
+ * partial / contradicts / unrelated must stay unapproved (they cannot inflate coverage).
+ */
 export function canApproveClaim(relationshipId: string | null | undefined, claimSupport: string | null | undefined): boolean {
   if (!relationshipId) return false;
-  if (!claimSupport || claimSupport === "unassessed") return false;
-  return true;
+  return claimSupport === "supports";
 }
 
 /** Identifier metadata must resolve before scientific approval can stick. */
@@ -109,7 +112,7 @@ export function computeEvidenceUpdate(
     if (!canApproveClaim(nextRel, nextClaim)) {
       return {
         error:
-          "Cannot approve without a mapped relationship_id and claim_support assessment. Identifier verification is not scientific claim approval.",
+          "Cannot approve without a mapped relationship_id and claim_support=supports. Identifier verification or partial/contradicting assessments are not scientific claim approval.",
         set: {},
       };
     }
