@@ -14,4 +14,14 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it("matches a distinct overview page at /overview", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const home = router.matchRoutes("/");
+    const overview = router.matchRoutes("/overview");
+
+    expect(overview.at(-1)?.routeId).not.toBe(rootRouteId);
+    expect(overview.at(-1)?.routeId).not.toBe(home.at(-1)?.routeId);
+  });
 });

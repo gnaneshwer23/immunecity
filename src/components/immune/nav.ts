@@ -1,6 +1,7 @@
 export const NAV_GROUPS = [
   { label: "Foundations", items: [
-    { n: "01", path: "/", title: "Overview", desc: "Educational beta: spine, layers, teaching with references." },
+    { n: "00", path: "/", title: "Home", desc: "Product landing — brand, purpose, and entry to the atlas." },
+    { n: "01", path: "/overview", title: "Overview", desc: "Causal spine, layers, and where you are in the atlas." },
     { n: "02", path: "/learn", title: "Cell atlas", desc: "The residents, their metaphors and their limits." },
     { n: "03", path: "/mechanism", title: "Mechanism", desc: "Cascades, perturbations, and the Academy foundation track." },
   ] },

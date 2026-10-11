@@ -70,9 +70,9 @@ if (!runAxe) {
   </header>
   <button type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Open Ask chatbot">Ask</button>
   <div class="shell">
-    <nav aria-label="Layers"><a href="/">Overview</a><a href="/evidence">Evidence</a></nav>
+    <nav aria-label="Layers"><a href="/">Home</a><a href="/overview">Overview</a><a href="/evidence">Evidence</a></nav>
     <main id="main" tabindex="-1">
-      <h1>Overview</h1>
+      <h1>Home</h1>
       <p>Educational atlas — not medical advice.</p>
       <a href="/methods">Methods &amp; trust</a>
     </main>

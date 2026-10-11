@@ -18,6 +18,7 @@ import { Route as EvidenceRouteImport } from './routes/evidence'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as MethodsRouteImport } from './routes/methods'
+import { Route as OverviewRouteImport } from './routes/overview'
 import { Route as PatientRouteImport } from './routes/patient'
 import { Route as ReasoningRouteImport } from './routes/reasoning'
 import { Route as ResearchRouteImport } from './routes/research'
@@ -70,6 +71,11 @@ const LearnRoute = LearnRouteImport.update({
 const MethodsRoute = MethodsRouteImport.update({
   id: '/methods',
   path: '/methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewRoute = OverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PatientRoute = PatientRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/graph': typeof GraphRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
+  '/overview': typeof OverviewRoute
   '/patient': typeof PatientRoute
   '/reasoning': typeof ReasoningRoute
   '/research': typeof ResearchRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/graph': typeof GraphRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
+  '/overview': typeof OverviewRoute
   '/patient': typeof PatientRoute
   '/reasoning': typeof ReasoningRoute
   '/research': typeof ResearchRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/graph': typeof GraphRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
+  '/overview': typeof OverviewRoute
   '/patient': typeof PatientRoute
   '/reasoning': typeof ReasoningRoute
   '/research': typeof ResearchRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/learn'
     | '/methods'
+    | '/overview'
     | '/patient'
     | '/reasoning'
     | '/research'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/learn'
     | '/methods'
+    | '/overview'
     | '/patient'
     | '/reasoning'
     | '/research'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/learn'
     | '/methods'
+    | '/overview'
     | '/patient'
     | '/reasoning'
     | '/research'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   GraphRoute: typeof GraphRoute
   LearnRoute: typeof LearnRoute
   MethodsRoute: typeof MethodsRoute
+  OverviewRoute: typeof OverviewRoute
   PatientRoute: typeof PatientRoute
   ReasoningRoute: typeof ReasoningRoute
   ResearchRoute: typeof ResearchRoute
@@ -321,6 +334,13 @@ declare module '@tanstack/react-router' {
       path: '/methods'
       fullPath: '/methods'
       preLoaderRoute: typeof MethodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview': {
+      id: '/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof OverviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/patient': {
@@ -410,6 +430,7 @@ const rootRouteChildren: RootRouteChildren = {
   GraphRoute: GraphRoute,
   LearnRoute: LearnRoute,
   MethodsRoute: MethodsRoute,
+  OverviewRoute: OverviewRoute,
   PatientRoute: PatientRoute,
   ReasoningRoute: ReasoningRoute,
   ResearchRoute: ResearchRoute,
@@ -422,13 +443,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
