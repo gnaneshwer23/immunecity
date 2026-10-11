@@ -469,6 +469,17 @@ html[data-theme='light'] .site-footer { margin-top:64px; padding:40px 0 24px; bo
 .ask-concept:hover, .ask-edge:hover { border-color:var(--accent); box-shadow:0 0 0 3px var(--glow-soft, transparent); }
 .ask-followups { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; align-items:center; }
 .ask-followups .chip { display:inline-flex; align-items:center; gap:5px; }
+.ask-local-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  white-space: pre-wrap;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  line-height: 1.45;
+}
 .ask-inspector { position:relative; margin:10px 0; padding:14px 16px; border:1px solid var(--accent); border-radius:14px; background:var(--panel); display:flex; flex-direction:column; gap:8px; max-height:340px; overflow:auto; animation:bio-rise .25s ease both; }
 .ask-insp-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding-right:24px; }
 .ask-insp-head .dot { width:9px; height:9px; border-radius:50%; }
@@ -560,3 +571,41 @@ html[data-theme][data-theme] {
 
 /* keep the Ask launcher clear of mobile controls */
 @media (max-width: 640px) { .ask-launcher span { display: none; } }
+
+/* Platform pillars + AI / evidence distinction */
+.platform-pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.platform-pillar { display: flex; flex-direction: column; gap: 8px; padding: 22px 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); text-decoration: none; color: inherit; transition: border-color .2s, transform .2s; }
+.platform-pillar:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.platform-pillar-kicker { font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--primary); }
+.platform-pillar h3 { font-size: 1.15rem; margin: 0; }
+.platform-pillar p { margin: 0; font-size: .92rem; color: var(--muted); line-height: 1.45; }
+@media (max-width: 800px) { .platform-pillars { grid-template-columns: 1fr; } }
+
+.ask-ai-badge { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; padding: 3px 9px; border-radius: 999px; border: 1px dashed var(--border-strong); font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: color-mix(in oklab, var(--primary) 6%, var(--surface)); }
+
+.grounding-panel { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 10px; background: var(--surface-2); display: flex; flex-direction: column; gap: 8px; }
+.grounding-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+.grounding-metrics { display: flex; flex-wrap: wrap; gap: 10px 16px; font-size: 12px; color: var(--muted); }
+.grounding-metrics b { color: var(--text); font-variant-numeric: tabular-nums; }
+.grounding-label { font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.grounding-concepts, .grounding-links, .grounding-chain, .mech-hop-list, .mech-effects, .mech-notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.grounding-concepts li, .grounding-links li, .mech-hop-list li, .mech-effects li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.grounding-chain li { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.grounding-link-btn { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
+.grounding-link-btn:hover { color: var(--primary); }
+.grounding-link-btn em { font-style: normal; color: var(--primary); margin: 0 4px; }
+
+.evidence-tier { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px; font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .04em; border: 1px solid var(--border); color: var(--muted); background: var(--surface); }
+.tier-established { border-color: color-mix(in oklab, oklch(0.55 0.12 150) 50%, var(--border)); color: oklch(0.38 0.09 150); }
+.tier-supported { border-color: color-mix(in oklab, var(--primary) 40%, var(--border)); color: var(--primary); }
+.tier-emerging, .tier-hypothesis { border-color: color-mix(in oklab, oklch(0.7 0.14 85) 45%, var(--border)); color: oklch(0.45 0.1 85); }
+.tier-draft, .tier-missing { border-style: dashed; }
+
+.mechanism-workspace { display: flex; flex-direction: column; gap: 14px; }
+.mech-controls .field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+.mech-controls select { min-height: 40px; }
+.mech-results { display: grid; gap: 14px; }
+.mech-results h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.fx-up { color: oklch(0.42 0.1 150); font-variant-numeric: tabular-nums; }
+.fx-down { color: oklch(0.48 0.14 25); font-variant-numeric: tabular-nums; }
+.mech-notes.gaps li::before { content: "Gap · "; font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }

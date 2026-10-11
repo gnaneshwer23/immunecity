@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Fragment, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Activity, Plus } from "lucide-react";
 import { KG, TYPES, SPINE_DESC, byId, nodesOf, type NodeType } from "@/lib/immune/engine";
+import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { CONTENT } from "@/data/content";
 import { LEGACY } from "@/data/legacy";
 import { NAV_GROUPS } from "@/components/immune/nav";
@@ -20,10 +21,10 @@ import cellImage from "@/assets/immune-cell.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Immune City — causal immunology, connected" },
-      { name: "description", content: "Explore the immune system through a causal knowledge graph, interactive infection simulations, mechanism lessons, and curated evidence." },
-      { property: "og:title", content: "Immune City — causal immunology, connected" },
-      { property: "og:description", content: "From immune cells to clinical evidence: explore the connections in Immune City." },
+      { title: "Immune City — Where Immunology Meets Advanced AI" },
+      { name: "description", content: "AI-native scientific platform for exploring immunology, tracing causal mechanisms, connecting scientific evidence and developing testable research hypotheses." },
+      { property: "og:title", content: "Immune City — Where Immunology Meets Advanced AI" },
+      { property: "og:description", content: "Explore immunology through a causal knowledge graph, evidence-grounded AI, mechanism reasoning and curated citations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -31,32 +32,32 @@ export const Route = createFileRoute("/")({
   component: Overview,
 });
 
-const STATS = [
-  { v: KG.stats.total_nodes, l: "CONNECTED CONCEPTS" },
-  { v: KG.stats.total_relationships, l: "CAUSAL RELATIONSHIPS" },
-  { v: LEGACY.cells.length, l: "CELL ATLAS ENTRIES" },
-  { v: CONTENT.lessons.length, l: "MECHANISM LESSONS" },
-];
-
 function Overview() {
   const [activeRoute, setActiveRoute] = useState(0);
   const [spineStep, setSpineStep] = useState<string | null>(null);
   const featured = CONTENT.routes.slice(0, 4);
   const selected = featured[activeRoute];
+  const snap = graphReleaseSnapshot();
+  const STATS = [
+    { v: snap.coreNodes, l: "CORE CONCEPTS" },
+    { v: snap.draftNodes, l: "DRAFT CONCEPTS" },
+    { v: snap.coreRelationships, l: "CORE RELATIONSHIPS" },
+    { v: LEGACY.cells.length, l: "CELL ATLAS ENTRIES" },
+  ];
   return (
     <div className="home-page">
       <section className="bio-hero" aria-label="Immune City">
         <img className="bio-hero-image" src={cellImage} alt="Scientific illustration of a cluster of translucent immune cells" width={1536} height={1024} fetchPriority="high" />
         <div className="bio-hero-inner">
-          <div className="bio-eyebrow"><span className="status-dot" /> Causal immunology / Connected knowledge</div>
+          <div className="bio-eyebrow"><span className="status-dot" /> Where Immunology Meets Advanced AI</div>
           <h1>Immune City</h1>
-          <p className="hero-subtitle">A living map of<br />the immune system.</p>
-          <p className="hero-description">Follow the connections. From the first molecular signal to the cells, therapies, and evidence that shape our understanding.</p>
+          <p className="hero-subtitle">An AI-native map of<br />the immune system.</p>
+          <p className="hero-description">Explore immunology, trace causal mechanisms, connect scientific evidence and develop testable research hypotheses — grounded in a curated knowledge graph.</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary"><Link to="/graph">Explore the graph <ArrowUpRight /></Link></Button>
-            <Button asChild variant="ghost" className="bio-secondary"><Link to="/learn">Meet the cells <ArrowRight /></Link></Button>
+            <Button asChild variant="ghost" className="bio-secondary"><Link to="/reasoning">Mechanism reasoning <ArrowRight /></Link></Button>
           </div>
-          <div className="bio-hero-note">MOLECULE → CELL → MECHANISM → DISCOVERY</div>
+          <div className="bio-hero-note">IMMUNOLOGY · EVIDENCE · ADVANCED AI</div>
         </div>
         <div className="cell-marker">
           <Button asChild variant="ghost" size="icon" className="marker-button" title="Explore cells in the knowledge graph"><Link to="/graph" search={{ focus: KG.nodes.find(n => n.node_type === "CELL")?.id ?? "" }} aria-label="Explore immune cells"><Plus /></Link></Button>
@@ -81,9 +82,72 @@ function Overview() {
       </section>
 
       <div className="bio-content">
+        <section className="bio-section" aria-label="Platform pillars">
+          <div className="bio-section-heading">
+            <div><span className="bio-section-number">00 / PLATFORM</span><h2>Immunology. Evidence. Advanced AI.</h2></div>
+            <p>One atlas with three explicit jobs — curated immunology, relationship-level evidence, and AI that stays grounded in the graph.</p>
+          </div>
+          <div className="platform-pillars">
+            <Link className="platform-pillar" to="/learn">
+              <span className="platform-pillar-kicker">Immunology</span>
+              <h3>Causal knowledge layer</h3>
+              <p>Cells, cytokines, pathways, tissues, disease and therapy — organised on a 15-step scientific spine.</p>
+            </Link>
+            <Link className="platform-pillar" to="/evidence">
+              <span className="platform-pillar-kicker">Evidence</span>
+              <h3>Reviewed scientific support</h3>
+              <p>Relationship-level citations, coverage honesty and human curation — not model-invented references.</p>
+            </Link>
+            <Link className="platform-pillar" to="/reasoning">
+              <span className="platform-pillar-kicker">Advanced AI</span>
+              <h3>Grounded mechanism reasoning</h3>
+              <p>Ask with retrieved graph context, then run start → perturbation → outcome walks labelled as illustrative.</p>
+            </Link>
+          </div>
+        </section>
+
+        <section className="bio-section">
+          <div className="bio-section-heading"><div><span className="bio-section-number">01 / THE CAUSAL SPINE</span><h2>From trigger to discovery.</h2></div><ArrowDown size={24} /></div>
+          <p className="lede" style={{ marginTop: -8 }}>The primary scientific journey — fifteen stages from the first signal to discovery feedback.</p>
+          <div className="spine-rail" role="tablist" aria-label="Causal spine stages">
+            {KG.core_spine.map((step, i) => (
+              <button type="button" role="tab" aria-selected={spineStep === step} className={`spine-step${spineStep === step ? " active" : ""}`} key={step} onClick={() => setSpineStep(spineStep === step ? null : step)}>
+                <span className="spine-node"><span className="spine-num">{String(i + 1).padStart(2, "0")}</span></span>
+                <span className="spine-text"><span className="spine-label">{step}</span><span className="spine-desc">{SPINE_DESC[step] ?? ""}</span></span>
+                {i < KG.core_spine.length - 1 && <span className="spine-link"><span className="spine-pulse" style={{ animationDelay: `${i * 0.4}s` }} /></span>}
+              </button>
+            ))}
+            <div className="spine-step spine-loop">
+              <span className="spine-node"><span className="spine-num">↺</span></span>
+              <span className="spine-text"><span className="spine-label">FEEDBACK</span><span className="spine-desc">Every loop closes</span></span>
+            </div>
+          </div>
+          {spineStep && (() => {
+            const type = SPINE_TYPE[spineStep];
+            const examples = type ? nodesOf(type).filter(n => !n.draft).slice(0, 6) : [];
+            const t = type ? TYPES[type] : null;
+            return (
+              <div className="spine-detail" role="tabpanel">
+                <div className="spine-detail-head">
+                  <span className="spine-detail-title"><span className="dot" style={{ background: t ? `var(${t.c})` : undefined }} />{spineStep}</span>
+                  <span className="spine-detail-desc">{SPINE_DESC[spineStep] ?? ""}{t ? ` — shown as “${t.label}” concepts in the graph` : ""}</span>
+                </div>
+                <div className="spine-detail-nodes">
+                  {examples.map(n => (
+                    <Link key={n.id} className="explore-node" to="/graph" search={{ focus: n.id }}>
+                      <span className="dot" style={{ background: t ? `var(${t.c})` : undefined }} />{n.name}
+                    </Link>
+                  ))}
+                  {examples.length === 0 && <span className="spine-detail-empty">No curated concepts at this stage yet.</span>}
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+
         <section className="bio-section">
           <div className="bio-section-heading">
-            <div><span className="bio-section-number">01 / CONNECT THE DOTS</span><h2>One signal. A chain of consequences.</h2></div>
+            <div><span className="bio-section-number">02 / CONNECT THE DOTS</span><h2>One signal. A chain of consequences.</h2></div>
             <p>Trace a mechanism from its trigger to a treatment and the trial behind it.</p>
           </div>
           <div className="explore-tabs" role="tablist" aria-label="Featured mechanisms">
@@ -122,7 +186,7 @@ function Overview() {
 
         <section className="bio-section">
           <div className="bio-section-heading">
-            <div><span className="bio-section-number">02 / EXPLORE THE SYSTEM</span><h2>Different lenses. One immune system.</h2></div>
+            <div><span className="bio-section-number">03 / EXPLORE THE SYSTEM</span><h2>Different lenses. One immune system.</h2></div>
             <p>Move between cellular biology, clinical mechanisms, and the evidence that connects them.</p>
           </div>
           <div className="bio-groups">
@@ -143,46 +207,9 @@ function Overview() {
           </div>
         </section>
 
-        <section className="bio-section">
-          <div className="bio-section-heading"><div><span className="bio-section-number">03 / THE CAUSAL SPINE</span><h2>From trigger to discovery.</h2></div><ArrowDown size={24} /></div>
-          <div className="spine-rail" role="tablist" aria-label="Causal spine stages">
-            {KG.core_spine.map((step, i) => (
-              <button type="button" role="tab" aria-selected={spineStep === step} className={`spine-step${spineStep === step ? " active" : ""}`} key={step} onClick={() => setSpineStep(spineStep === step ? null : step)}>
-                <span className="spine-node"><span className="spine-num">{String(i + 1).padStart(2, "0")}</span></span>
-                <span className="spine-text"><span className="spine-label">{step}</span><span className="spine-desc">{SPINE_DESC[step] ?? ""}</span></span>
-                {i < KG.core_spine.length - 1 && <span className="spine-link"><span className="spine-pulse" style={{ animationDelay: `${i * 0.4}s` }} /></span>}
-              </button>
-            ))}
-            <div className="spine-step spine-loop">
-              <span className="spine-node"><span className="spine-num">↺</span></span>
-              <span className="spine-text"><span className="spine-label">FEEDBACK</span><span className="spine-desc">Every loop closes</span></span>
-            </div>
-          </div>
-          {spineStep && (() => {
-            const type = SPINE_TYPE[spineStep];
-            const examples = type ? nodesOf(type).filter(n => !n.draft).slice(0, 6) : [];
-            const t = type ? TYPES[type] : null;
-            return (
-              <div className="spine-detail" role="tabpanel">
-                <div className="spine-detail-head">
-                  <span className="spine-detail-title"><span className="dot" style={{ background: t ? `var(${t.c})` : undefined }} />{spineStep}</span>
-                  <span className="spine-detail-desc">{SPINE_DESC[spineStep] ?? ""}{t ? ` — shown as “${t.label}” concepts in the graph` : ""}</span>
-                </div>
-                <div className="spine-detail-nodes">
-                  {examples.map(n => (
-                    <Link key={n.id} className="explore-node" to="/graph" search={{ focus: n.id }}>
-                      <span className="dot" style={{ background: t ? `var(${t.c})` : undefined }} />{n.name}
-                    </Link>
-                  ))}
-                  {examples.length === 0 && <span className="spine-detail-empty">No curated concepts at this stage yet.</span>}
-                </div>
-              </div>
-            );
-          })()}
-        </section>
         <section className="bio-banner">
           <div><div className="bio-eyebrow"><Activity size={16} /> INFECTION DYNAMICS</div><h2 style={{ marginTop: 14 }}>Change the conditions. Follow the response.</h2><p>Pathogen growth, immune strength, and treatment timing meet in an interactive model of infection.</p></div>
-          <Button asChild className="bio-primary"><Link to="/dynamics">Open the simulator <ArrowUpRight /></Link></Button>
+          <Button asChild className="bio-primary"><Link to="/simulator">Open the simulator <ArrowUpRight /></Link></Button>
         </section>
       </div>
     </div>

@@ -1,7 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { graphContext, isPersonalClinical, rateLimited, relevantNodes, SYSTEM } from "@/lib/askGrounding";
+import {
+  classifyAskQuery,
+  graphContext,
+  isPersonalClinical,
+  prepareAsk,
+  rateLimited,
+  relevantNodes,
+  validateAnswerCitations,
+  SYSTEM,
+  PROMPT_VERSION,
+} from "@/lib/askGrounding";
 import { KG, edgeByRel, relId } from "@/lib/immune/engine";
 import { relationshipStatus } from "@/lib/immune/evidenceStatus";
+import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 
 describe("relationship IDs", () => {
   it("are unique-addressable and round-trip", () => {
@@ -21,6 +32,16 @@ describe("evidence status", () => {
   });
 });
 
+describe("graph release", () => {
+  it("separates core and draft counts", () => {
+    const s = graphReleaseSnapshot();
+    expect(s.coreVersion).toBeTruthy();
+    expect(s.coreNodes + s.draftNodes).toBe(s.runtimeNodes);
+    expect(s.coreRelationships + s.draftRelationships).toBe(s.runtimeRelationships);
+    expect(s.runtimeNodes).toBe(KG.nodes.length);
+  });
+});
+
 describe("AI grounding", () => {
   it("retrieves the named concept", () => {
     const tnf = KG.nodes.find((n) => /^TNF/i.test(n.name))!;
@@ -31,10 +52,42 @@ describe("AI grounding", () => {
     expect(ctx.relIds.length).toBeGreaterThan(0);
     ctx.relIds.forEach((id) => expect(edgeByRel[id]).toBeTruthy());
     expect(ctx.text).toContain("LINK REL-");
+    expect(ctx.links.every((l) => edgeByRel[l.relId])).toBe(true);
+    expect(ctx.trace.promptVersion).toBe(PROMPT_VERSION);
+  });
+  it("exposes evidence tiers and optional causal chains", () => {
+    const ctx = graphContext("How does TNF drive rheumatoid arthritis?");
+    expect(ctx.coverage.matched).toBe(true);
+    expect(ctx.links.some((l) => l.tier)).toBe(true);
+    expect(ctx.text).toMatch(/COVERAGE_SUMMARY|CAUSAL_CHAINS|LINK REL-/);
+    expect(ctx.queryClass).toBe("graph_explanation");
   });
   it("flags an empty extract for unsupported questions", () => {
     expect(graphContext("zzqx").text).toMatch(/NO_MATCH/);
+    expect(graphContext("zzqx").coverage.matched).toBe(false);
     expect(SYSTEM).toMatch(/does not cover/);
+  });
+  it("classifies and abstains without calling the model when unsupported", () => {
+    const p = prepareAsk("zzqxzyxq nonontology foobarium");
+    expect(p.callModel).toBe(false);
+    expect(p.queryClass).toBe("unsupported");
+    expect(p.grounding.trace.abstained).toBe(true);
+  });
+  it("classifies clinical and omics requests", () => {
+    expect(classifyAskQuery("What dose of prednisone should I take?")).toBe("clinical_personal");
+    expect(classifyAskQuery("Run scRNA-seq on this AnnData file")).toBe("omics_request");
+    expect(prepareAsk("Run scRNA-seq on this AnnData file").callModel).toBe(false);
+  });
+  it("validates answer citations against retrieved IDs", () => {
+    const g = graphContext("How does TNF drive rheumatoid arthritis?");
+    const ok = validateAnswerCitations(
+      "TNF [TNF](concept:M001) to [RA](concept:D001) via [link](edge:REL-M001-contributes_to-D001).",
+      g,
+    );
+    expect(ok.ok).toBe(true);
+    const bad = validateAnswerCitations("See PMID 99999999 and [x](concept:FAKE99).", g);
+    expect(bad.ok).toBe(false);
+    expect(bad.inventedConceptIds).toContain("FAKE99");
   });
   it("refuses personal clinical questions", () => {
     expect(isPersonalClinical("What dose of prednisone should I take?")).toBe(true);
@@ -42,7 +95,7 @@ describe("AI grounding", () => {
   });
   it("rate limits bursts", () => {
     const now = 1_000_000;
-    for (let i = 0; i < 8; i++) expect(rateLimited("t", 8, 60_000, now)).toBe(false);
-    expect(rateLimited("t", 8, 60_000, now)).toBe(true);
+    for (let i = 0; i < 8; i++) expect(rateLimited("t2", 8, 60_000, now)).toBe(false);
+    expect(rateLimited("t2", 8, 60_000, now)).toBe(true);
   });
 });

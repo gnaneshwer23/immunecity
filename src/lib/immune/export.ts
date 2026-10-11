@@ -2,6 +2,7 @@
    downloadable files (Cytoscape JSON, GraphML, CSV). All browser-side. */
 import type { KGEdge, KGNode } from "./engine";
 import type { SimParams, Interventions, SimPoint } from "./sim";
+import { graphReleaseSnapshot } from "./graphRelease";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const csvCell = (v: unknown) => {
@@ -22,8 +23,17 @@ export function download(filename: string, content: string, mime = "text/plain")
 /* ---------- graph ---------- */
 
 export function graphToCytoscape(nodes: KGNode[], links: KGEdge[]) {
+  const release = graphReleaseSnapshot();
   return JSON.stringify(
     {
+      meta: {
+        product: "Immune City",
+        graphVersion: release.coreVersion,
+        extensionsVersion: release.extensionsVersion,
+        snapshot: release.snapshotAt,
+        exportedNodeCount: nodes.length,
+        exportedLinkCount: links.length,
+      },
       elements: {
         nodes: nodes.map((n) => ({ data: { id: n.id, name: n.name, type: n.node_type, description: n.desc, draft: !!n.draft } })),
         edges: links.map((r, i) => ({

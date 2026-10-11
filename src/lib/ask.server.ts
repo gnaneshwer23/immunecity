@@ -1,6 +1,6 @@
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, type UIMessage } from "ai";
 import { createResponsesCall } from "@/lib/ai/responses.server.ts";
-import { CLINICAL_REFUSAL, MAX_QUESTION_CHARS, SYSTEM, graphContext, isPersonalClinical, rateLimited } from "@/lib/askGrounding";
+import { MAX_QUESTION_CHARS, SYSTEM, prepareAsk, rateLimited } from "@/lib/askGrounding";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
 const MODEL = "openai/gpt-6-astra";
@@ -37,8 +37,16 @@ export async function handleAsk(request: Request): Promise<Response> {
   if (question.length > MAX_QUESTION_CHARS) {
     return Response.json({ error: `Please keep questions under ${MAX_QUESTION_CHARS} characters.` }, { status: 400 });
   }
-  if (isPersonalClinical(question)) return textReply(CLINICAL_REFUSAL);
-  const system = SYSTEM + graphContext(question).text;
+
+  const prepared = prepareAsk(question);
+  if (!prepared.callModel && prepared.replyText) {
+    return textReply(prepared.replyText);
+  }
+
+  const system =
+    SYSTEM +
+    prepared.grounding.text +
+    `\n\nRESPONSE_TRACE prompt=${prepared.grounding.trace.promptVersion} graph=${prepared.grounding.trace.graphVersion} class=${prepared.queryClass}`;
   const modelMessages = await convertToModelMessages(messages);
   const { response } = createResponsesCall(request, { baseURL: GATEWAY_URL, apiKey, model: MODEL }, modelMessages, system);
   return response();

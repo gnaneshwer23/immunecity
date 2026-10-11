@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, Menu, MessageSquare, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { KG } from "@/lib/immune/engine";
+import { graphReleaseLabel, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { NAV_GROUPS } from "./nav";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -61,13 +61,14 @@ function PillarMenu({ label, items, pathname, onNavigate }: {
 }
 
 function SiteFooter() {
+  const snap = graphReleaseSnapshot();
   return (
     <footer className="site-footer">
       <div className="sf-grid">
         <div className="sf-brand">
-          <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>Immune City</strong><small>causal immunology</small></span></Link>
-          <p>An interactive causal map of the immune system — {KG.nodes.length} concepts, {KG.relationships.length} connections, each link labelled with its review status.</p>
-          <span className="sf-status"><span className="sf-dot" /> Knowledge graph v0.3 · live trial &amp; protein data</span>
+          <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>Immune City</strong><small>Where Immunology Meets Advanced AI</small></span></Link>
+          <p>An AI-native scientific platform for exploring immunology — {graphReleaseLabel(snap)} · {snap.runtimeRelationships} runtime links, each labelled with review status.</p>
+          <span className="sf-status"><span className="sf-dot" /> {snap.snapshotAt} · evidence-grounded Ask · illustrative mechanism walks</span>
         </div>
         {NAV_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">
@@ -116,7 +117,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         <Button variant="ghost" size="icon" className="icon-btn nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open} title="Toggle navigation"><Menu size={20} /></Button>
         <Link className="brand" to="/">
           <Logo />
-          <span className="brand-text"><strong>Immune City</strong><small>causal immunology</small></span>
+          <span className="brand-text"><strong>Immune City</strong><small>Where Immunology Meets Advanced AI</small></span>
         </Link>
         <nav className="pillar-nav" aria-label="Primary">
           {NAV_GROUPS.map((g) => (

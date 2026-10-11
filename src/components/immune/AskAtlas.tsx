@@ -6,7 +6,9 @@ import { Link } from "@tanstack/react-router";
 import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight } from "lucide-react";
 import { byId, out, inn, human, TYPES, edgeByRel, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
+import { prepareAsk, runExplanationAction, type AskGrounding, type ExplanationAction } from "@/lib/askGrounding";
 import EdgeReference, { NodeCitations } from "./EdgeReference";
+import GroundingPanel from "./GroundingPanel";
 import { Button } from "@/components/ui/button";
 import { KG } from "@/lib/immune/engine";
 
@@ -14,6 +16,13 @@ const SUGGESTIONS = [
   "How does TNF drive rheumatoid arthritis?",
   "What connects the gut microbiome to inflammation?",
   "How do checkpoint inhibitors help T cells?",
+];
+
+const EXPLAIN_ACTIONS: { id: ExplanationAction; label: string }[] = [
+  { id: "explain_mechanism", label: "Explain mechanism" },
+  { id: "show_path", label: "Show path" },
+  { id: "what_evidence_missing", label: "What evidence is missing?" },
+  { id: "what_would_change", label: "What would change this?" },
 ];
 
 type Pick = { kind: "concept"; id: string } | { kind: "edge"; s: string; o: string };
@@ -111,6 +120,8 @@ export default function AskAtlas() {
   });
   const [input, setInput] = useState("");
   const [pick, setPick] = useState<Pick | null>(null);
+  const [grounding, setGrounding] = useState<AskGrounding | null>(null);
+  const [localNote, setLocalNote] = useState<string | null>(null);
   const busy = status === "submitted" || status === "streaming";
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -122,7 +133,7 @@ export default function AskAtlas() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, status]);
+  }, [messages, status, grounding, localNote]);
   useEffect(() => { inputRef.current?.focus(); }, []);
 
   const asked = useMemo(() => new Set(messages.filter((m) => m.role === "user").flatMap((m) => m.parts.map((p) => (p.type === "text" ? p.text : "")))), [messages]);
@@ -130,8 +141,16 @@ export default function AskAtlas() {
   const send = (text: string) => {
     const t = text.trim();
     if (!t || busy) return;
+    const prepared = prepareAsk(t);
+    setGrounding(prepared.grounding);
+    setLocalNote(null);
     setInput("");
     sendMessage({ text: t });
+  };
+
+  const runAction = (action: ExplanationAction) => {
+    if (!grounding) return;
+    setLocalNote(runExplanationAction(action, grounding));
   };
 
   const renderLink = ({ href, children }: { href?: string | undefined; children?: ReactNode }) => {
@@ -163,8 +182,8 @@ export default function AskAtlas() {
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
         <div>
           <h3>Ask Immune City</h3>
-          <p className="xs muted">Cells · pathways · connections</p>
-          <p className="xs muted">AI-generated, educational only. Not medical advice. Nothing is stored.</p>
+          <p className="xs muted">Evidence-grounded immunology copilot</p>
+          <p className="xs muted">AI answers are restricted to retrieved graph concepts and links. Not medical advice. Nothing is stored.</p>
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>
@@ -182,9 +201,28 @@ export default function AskAtlas() {
             <div key={m.id} className={`ask-msg ${m.role}`}>
               <span className="ask-role">{m.role === "user" ? "You" : "Atlas"}</span>
               <div className="ask-body">
-                {m.role === "assistant"
-                  ? <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
-                  : <p>{text}</p>}
+                {m.role === "assistant" ? (
+                  <>
+                    <div className="ask-ai-badge" role="note">AI-generated explanation · graph-grounded</div>
+                    <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
+                  </>
+                ) : <p>{text}</p>}
+                {m === lastAssistant && grounding ? (
+                  <>
+                    <GroundingPanel grounding={grounding} />
+                    {grounding.coverage.matched && !grounding.trace.abstained ? (
+                      <div className="ask-followups" aria-label="Explanation actions">
+                        <span className="ask-insp-label">Inspect without regenerating</span>
+                        {EXPLAIN_ACTIONS.map((a) => (
+                          <button key={a.id} type="button" className="chip" onClick={() => runAction(a.id)}>{a.label}</button>
+                        ))}
+                      </div>
+                    ) : null}
+                    {localNote && m === lastAssistant ? (
+                      <pre className="ask-local-note xs">{localNote}</pre>
+                    ) : null}
+                  </>
+                ) : null}
                 {fu.length > 0 && (
                   <div className="ask-followups">
                     <span className="ask-insp-label">Explore next</span>
@@ -197,7 +235,15 @@ export default function AskAtlas() {
             </div>
           );
         })}
-        {status === "submitted" ? <div className="ask-msg assistant"><span className="ask-role">Atlas</span><div className="ask-body"><p className="muted">Thinking…</p></div></div> : null}
+        {status === "submitted" ? (
+          <div className="ask-msg assistant">
+            <span className="ask-role">Atlas</span>
+            <div className="ask-body">
+              <p className="muted">Retrieving graph evidence…</p>
+              {grounding ? <GroundingPanel grounding={grounding} /> : null}
+            </div>
+          </div>
+        ) : null}
         {error ? <div className="ask-msg assistant"><span className="ask-role">Atlas</span><div className="ask-body"><p className="muted">{/429|Too many/.test(error.message) ? "You've asked a lot of questions quickly — please wait a minute." : "Sorry — the answer could not be generated. Please try again."}</p></div></div> : null}
       </div>
       {matches.length > 0 && (

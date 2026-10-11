@@ -7,15 +7,17 @@ import { KG, byId, SEM, human, shortestPath } from "@/lib/immune/engine";
 import EdgeReference from "@/components/immune/EdgeReference";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 import AskAtlas from "@/components/immune/AskAtlas";
+import MechanismWorkspace from "@/components/immune/MechanismWorkspace";
+import { EXEMPLAR_PATHWAYS, reportExemplar } from "@/lib/immune/exemplarPathways";
 
 export const Route = createFileRoute("/reasoning")({
   validateSearch: zodValidator(z.object({ from: fallback(z.string(), "").default("") })),
   head: () => ({
     meta: [
-      { title: "Reasoning: cases and path tracer — Immune City" },
-      { name: "description", content: "Clinical questions answered by walking the causal graph, and a tracer that links any two concepts." },
-      { property: "og:title", content: "Causal reasoning, out loud — Immune City" },
-      { property: "og:description", content: "Walk the immune graph between any two concepts." },
+      { title: "Reasoning: mechanism workspace — Immune City" },
+      { name: "description", content: "Evidence-grounded Ask, case walks, path tracer, and start–perturbation–outcome mechanism reasoning on the causal graph." },
+      { property: "og:title", content: "Mechanism reasoning — Immune City" },
+      { property: "og:description", content: "Trace immunology from concept to perturbation to outcome." },
     ],
   }),
   component: Reasoning,
@@ -37,16 +39,50 @@ function Reasoning() {
     <div className="page">
       <PageHead
         kicker="Layer 11 · Reasoning"
-        title="Causal reasoning, out loud"
-        lede="Questions the field actually asks, answered by walking the graph rather than reciting facts. Below, stitch any two concepts together and read the mechanism on each edge."
+        title="Mechanism reasoning"
+        lede="Ask with graph grounding, walk published cases, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated."
         stats={[
           { v: CONTENT.cases.length, l: "CASES" },
           { v: "A→B", l: "PATH TRACER" },
+          { v: "Δ", l: "PERTURBATION" },
         ]}
       />
       <section className="section">
-        <h2>Ask the atlas</h2>
+        <h2>Ask Immune City</h2>
+        <p className="lede">Evidence-grounded immunology copilot — answers are restricted to retrieved concepts, causal links and relationship-level review status.</p>
         <AskAtlas />
+      </section>
+      <section className="section">
+        <h2>Exemplar pathways</h2>
+        <p className="lede">PRD priority scaffolds — connected in the graph, but claim-level reviewed support is incomplete. Maturity is labelled honestly.</p>
+        <div className="grid auto">
+          {EXEMPLAR_PATHWAYS.map((p) => {
+            const report = reportExemplar(p);
+            return (
+              <article className="card" key={p.id}>
+                <div className="row" style={{ justifyContent: "space-between", gap: 8 }}>
+                  <h3 style={{ fontSize: "1.05rem" }}>{p.title}</h3>
+                  <span className="chip">{p.maturity}</span>
+                </div>
+                <p className="small muted" style={{ marginTop: 8 }}>{p.purpose}</p>
+                <div className="row" style={{ marginTop: 10, flexWrap: "wrap", gap: 6 }}>
+                  {p.waypointIds.filter((id) => byId[id]).map((id) => <NodeChip key={id} id={id} />)}
+                </div>
+                <p className="xs muted" style={{ marginTop: 10 }}>
+                  {report.connected ? "Waypoints are graph-connected." : `Gap: ${report.missingSegment ?? "incomplete path"}`}
+                </p>
+                {p.mechanism ? (
+                  <p className="xs muted">Mechanism defaults: {byId[p.mechanism.startId]?.name} → {byId[p.mechanism.perturbId]?.name} → {byId[p.mechanism.outcomeId]?.name}</p>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+      <section className="section">
+        <h2>Mechanism workspace</h2>
+        <p className="lede">Choose a starting concept, an intervention or perturbation, and an outcome. Inspect paths, polarity, evidence status, assumptions and gaps.</p>
+        <MechanismWorkspace initialStart={urlFrom && byId[urlFrom] ? urlFrom : "C003"} />
       </section>
       <section className="section">
         <h2>Case reasoning</h2>

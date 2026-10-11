@@ -28,3 +28,14 @@
 - [x] P4: restrained glow tokens, honest footer/coverage metrics
 - [x] P5: Methods & trust page, educational banners, accessible graph table, focus rings
 - [ ] Curators map approved sources to relationships (needs expert review)
+
+## AI-native platform phases
+
+- [x] Phase A: Positioning, evidence-grounded Copilot panel (concepts, tiers, causal chain), mechanism workspace (start → perturbation → outcome), scientific eval set skeleton
+- [x] Phase A2 (PRD Epic D P0 slice): query classification, prepareAsk abstention (unsupported/omics/clinical), citation ID validation, prompt/graph trace, exemplar pathway scaffolds, hypothesis draft template, expanded eval cases, consistent core/draft version labels
+- [ ] Phase B: Knowledge-layer gap fills (microbiome, vaccines, transplant, PID, immunogenetics) with stable IDs + provenance
+- [ ] Phase C: Literature intelligence workflow (search → claim candidates → map → human review) — not started
+- [ ] Phase D: Advanced model registry interfaces (omics, structure, pMHC, variants) as placeholders only until wired
+- [ ] Phase E: Full Research Workbench (versioned questions, literature claims, experiment proposals) — hypothesis draft template only
+- [ ] Curator work: claim-linked approved evidence on the three exemplar pathways (TNF→RA, PD-1, IFN→SLE)
+- [ ] Eval scale-up: grow scientific gold set toward PRD targets (≥100 questions, ≥30 path, ≥30 unsupported, safety suite)

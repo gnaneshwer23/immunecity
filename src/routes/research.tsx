@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { CONTENT } from "@/data/content";
 import { byId } from "@/lib/immune/engine";
+import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
+import { createHypothesisDraft, hypothesisCompleteness, type HypothesisDraft } from "@/lib/research/hypothesisDraft";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 
 export const Route = createFileRoute("/research")({
@@ -23,6 +26,10 @@ type Road = { text: string; related: string[] };
 function Research() {
   const frontier = (CONTENT["frontier"] ?? []) as Frontier[];
   const roadmap = (CONTENT["roadmap"] ?? []) as Road[];
+  const [draft, setDraft] = useState<HypothesisDraft>(() =>
+    createHypothesisDraft({ claim: "" }, GRAPH_CORE_VERSION),
+  );
+  const completeness = hypothesisCompleteness(draft);
   return (
     <div className="page">
       <PageHead
@@ -34,6 +41,41 @@ function Research() {
           { v: roadmap.length, l: "ROADMAP STEPS" },
         ]}
       />
+      <section className="section">
+        <h2>Hypothesis draft (candidate)</h2>
+        <p className="lede">Local research artefact template — status is always <b>candidate</b>. Nothing here is written to the curated graph.</p>
+        <div className="card" style={{ display: "grid", gap: 10 }}>
+          <label className="field">Claim<textarea rows={2} value={draft.claim} onChange={(e) => setDraft({ ...draft, claim: e.target.value })} /></label>
+          <label className="field">Mechanism<textarea rows={2} value={draft.mechanism} onChange={(e) => setDraft({ ...draft, mechanism: e.target.value })} /></label>
+          <label className="field">Predicted observation<textarea rows={2} value={draft.predictedObservation} onChange={(e) => setDraft({ ...draft, predictedObservation: e.target.value })} /></label>
+          <label className="field">Falsification test<textarea rows={2} value={draft.falsificationTest} onChange={(e) => setDraft({ ...draft, falsificationTest: e.target.value })} /></label>
+          <label className="field">Alternative / disconfirming path<textarea rows={2} value={draft.alternativePath} onChange={(e) => setDraft({ ...draft, alternativePath: e.target.value })} /></label>
+          <label className="field">Supporting concept/relationship IDs (comma-separated)
+            <input
+              value={draft.supportingIds.join(", ")}
+              onChange={(e) => setDraft({ ...draft, supportingIds: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })}
+            />
+          </label>
+          <p className="xs muted">
+            Graph v{draft.graphVersion} · status {draft.status} · template {completeness.ok ? "structurally complete" : `missing: ${completeness.missing.join(", ")}`}
+          </p>
+          <button
+            type="button"
+            className="btn sm"
+            onClick={() => {
+              const blob = new Blob([JSON.stringify(draft, null, 2)], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `${draft.hypothesis_id}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
+            Export candidate JSON
+          </button>
+        </div>
+      </section>
       <section className="section">
         <h2>Frontier</h2>
         <div className="grid auto">
