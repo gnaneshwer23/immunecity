@@ -43,7 +43,12 @@ function downloadJson(filename: string, text: string) {
   URL.revokeObjectURL(url);
 }
 
-export default function LiteratureQueue() {
+type Props = {
+  /** Hand project JSON to the Scientific Workbench on Research (candidates only). */
+  onSendToWorkbench?: (projectJson: string) => void;
+};
+
+export default function LiteratureQueue({ onSendToWorkbench }: Props) {
   const [project, setProject] = useState<LiteratureProject>(() =>
     createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION),
   );
@@ -499,6 +504,21 @@ export default function LiteratureQueue() {
         >
           Export project JSON
         </button>
+        {onSendToWorkbench && (
+          <button
+            type="button"
+            className="btn sm"
+            disabled={project.claims.filter((c) => c.text.trim()).length === 0}
+            title="Import claims into the Scientific Workbench as candidate evidence notes"
+            onClick={() => {
+              onSendToWorkbench(exportProjectJson(project));
+              const el = document.getElementById("workbench");
+              el?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          >
+            Send to workbench (candidates)
+          </button>
+        )}
       </div>
     </div>
   );

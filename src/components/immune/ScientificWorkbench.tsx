@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { byId } from "@/lib/immune/engine";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION } from "@/lib/immune/graphRelease";
@@ -13,17 +13,22 @@ import {
   createWorkbenchSession,
   experimentCompleteness,
   exportWorkbench,
-  importLiteratureJson,
+  importLiteraturePayload,
   importMechanismResult,
+  parseLocalDraft,
+  restoreWorkbenchFromExportJson,
   retreatWorkbench,
   seedQuestionFromAsk,
+  serializeLocalDraft,
   sessionCandidateFlags,
   setReviewDisposition,
   setWorkbenchStep,
   updateExperiment,
   updateHypothesis,
   updateQuestion,
+  WORKBENCH_LOCAL_DRAFT_KEY,
   WORKBENCH_SCHEMA_VERSION,
+  workbenchProgress,
   workbenchStepIndex,
   workbenchSteps,
   type WorkbenchSession,
@@ -40,11 +45,30 @@ const STEP_LABEL: Record<WorkbenchStep, string> = {
   review: "Review",
 };
 
-function CandidateBadge({ label = "candidate" }: { label?: string }) {
+function CandidateBadge({ label = "candidate · draft" }: { label?: string }) {
   return <span className="chip" title="Not an established finding — human review required">{label}</span>;
 }
 
-export default function ScientificWorkbench() {
+export type WorkbenchSeed = {
+  question?: string;
+  startId?: string;
+  perturbId?: string;
+  outcomeId?: string;
+};
+
+type Props = {
+  /** Literature / curation JSON handed off from the Literature panel on this page. */
+  pendingLitImport?: string | null;
+  onPendingLitImportConsumed?: () => void;
+  /** Optional URL / cross-page seeds (still candidate). */
+  seed?: WorkbenchSeed;
+};
+
+export default function ScientificWorkbench({
+  pendingLitImport = null,
+  onPendingLitImportConsumed,
+  seed,
+}: Props) {
   const [session, setSession] = useState<WorkbenchSession>(() =>
     createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION),
   );
@@ -52,18 +76,112 @@ export default function ScientificWorkbench() {
   const [evSource, setEvSource] = useState("");
   const [evIds, setEvIds] = useState("");
   const [pathText, setPathText] = useState("");
-  const [litJson, setLitJson] = useState("");
-  const [litMsg, setLitMsg] = useState<string | null>(null);
-  const [mechStart, setMechStart] = useState("C003");
-  const [mechPerturb, setMechPerturb] = useState("I001");
-  const [mechOutcome, setMechOutcome] = useState("D001");
+  const [importJson, setImportJson] = useState("");
+  const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [mechStart, setMechStart] = useState(seed?.startId || "C003");
+  const [mechPerturb, setMechPerturb] = useState(seed?.perturbId || "I001");
+  const [mechOutcome, setMechOutcome] = useState(seed?.outcomeId || "D001");
   const [mechMsg, setMechMsg] = useState<string | null>(null);
+  const [draftMsg, setDraftMsg] = useState<string | null>(null);
+  const [seedApplied, setSeedApplied] = useState(false);
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
+
+  useEffect(() => {
+    if (seedApplied) return;
+    if (!seed?.question?.trim() && !seed?.startId) return;
+    setSeedApplied(true);
+    setSession((prev) => {
+      let next = prev;
+      if (seed.question?.trim()) {
+        next = updateQuestion(next, { text: seed.question.trim() });
+        next = seedQuestionFromAsk(next);
+      }
+      return next;
+    });
+    if (seed.startId) setMechStart(seed.startId);
+    if (seed.perturbId) setMechPerturb(seed.perturbId);
+    if (seed.outcomeId) setMechOutcome(seed.outcomeId);
+  }, [seed, seedApplied]);
+
+  useEffect(() => {
+    if (!pendingLitImport?.trim()) return;
+    const r = importLiteraturePayload(sessionRef.current, pendingLitImport);
+    setSession(r.session);
+    setImportMsg(
+      r.error
+        ? r.error
+        : `Imported ${r.imported} candidate claim(s) from Literature (${r.source}). Still drafts — not curated.`,
+    );
+    onPendingLitImportConsumed?.();
+  }, [pendingLitImport, onPendingLitImportConsumed]);
 
   const gate = canAdvance(session);
   const hyp = hypothesisCompleteness(session.hypothesis);
   const exp = experimentCompleteness(session.experiment);
   const steps = workbenchSteps();
   const flags = sessionCandidateFlags(session);
+  const progress = workbenchProgress(session);
+
+  const applyImportJson = () => {
+    const text = importJson.trim();
+    if (!text) return;
+    const asWb = restoreWorkbenchFromExportJson(text);
+    if (asWb.session) {
+      setSession(asWb.session);
+      setImportMsg("Restored workbench export as local draft (candidates only; no KG write).");
+      setImportJson("");
+      return;
+    }
+    const r = importLiteraturePayload(session, text);
+    setSession(r.session);
+    setImportMsg(
+      r.error
+        ? `${r.error}${asWb.error ? ` · ${asWb.error}` : ""}`
+        : `Imported ${r.imported} candidate claim(s) (${r.source}).`,
+    );
+    if (!r.error) setImportJson("");
+  };
+
+  const saveLocalDraft = () => {
+    try {
+      localStorage.setItem(WORKBENCH_LOCAL_DRAFT_KEY, serializeLocalDraft(session));
+      setDraftMsg("Saved local draft in this browser — not curated, not shared.");
+    } catch {
+      setDraftMsg("Could not save local draft (storage blocked).");
+    }
+  };
+
+  const loadLocalDraft = () => {
+    try {
+      const raw = localStorage.getItem(WORKBENCH_LOCAL_DRAFT_KEY);
+      if (!raw) {
+        setDraftMsg("No local draft found in this browser.");
+        return;
+      }
+      const parsed = parseLocalDraft(raw);
+      if (parsed.error || !parsed.session) {
+        setDraftMsg(parsed.error ?? "Could not restore local draft.");
+        return;
+      }
+      setSession(parsed.session);
+      setDraftMsg("Restored local draft (candidate artefacts only).");
+    } catch {
+      setDraftMsg("Could not read local draft.");
+    }
+  };
+
+  const seedMechFromQuestion = () => {
+    const ids = session.question.relatedConceptIds.filter((id) => byId[id]);
+    if (ids[0]) setMechStart(ids[0]);
+    if (ids[1]) setMechPerturb(ids[1]);
+    if (ids[2]) setMechOutcome(ids[2]);
+    setMechMsg(
+      ids.length
+        ? `Prefilled ${Math.min(3, ids.length)} Ask-matched concept ID(s) — still illustrative.`
+        : "No Ask-matched concepts yet — seed the question from Ask first.",
+    );
+  };
 
   return (
     <div className="scientific-workbench">
@@ -80,8 +198,20 @@ export default function ScientificWorkbench() {
         <Link to="/mechanism">Mechanism workspace</Link>
         {" · "}
         <a href="#literature">Literature intelligence</a>
-        {" "}below. Imports stay candidates.
+        {" "}below. Imports stay candidates. Local drafts never write the KG.
       </p>
+
+      <div className="row" style={{ marginTop: 12, gap: 6, flexWrap: "wrap" }} aria-label="Workbench progress">
+        {progress.map((p) => (
+          <span
+            key={p.step}
+            className={`chip ${session.step === p.step ? "on" : ""} ${p.ready ? "" : "muted"}`}
+            title={p.detail}
+          >
+            {p.ready ? "●" : "○"} {p.label}
+          </span>
+        ))}
+      </div>
 
       <ol className="row" style={{ listStyle: "none", padding: 0, gap: 8, flexWrap: "wrap", marginTop: 12 }} aria-label="Workbench steps">
         {steps.map((s) => {
@@ -108,6 +238,34 @@ export default function ScientificWorkbench() {
         {session.extensionsVersion} · furthest {session.furthestStep}
         {flags.allCandidates ? " · all artefacts candidate" : " · candidate flag issue"}
       </p>
+
+      <details style={{ marginTop: 10 }}>
+        <summary className="small">Import candidates (Ask / lit / workbench export)</summary>
+        <p className="xs muted" style={{ marginTop: 6 }}>
+          Paste a literature project JSON, curation-candidate manifest, or a prior workbench export.
+          No PMIDs or model scores are invented; rows stay draft candidates.
+        </p>
+        <textarea
+          rows={4}
+          value={importJson}
+          onChange={(e) => setImportJson(e.target.value)}
+          placeholder='Literature project, curation manifest, or { "kind": "scientific_workbench_export", … }'
+          style={{ width: "100%", marginTop: 8 }}
+        />
+        <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+          <button type="button" className="btn sm" disabled={!importJson.trim()} onClick={applyImportJson}>
+            Import as candidates
+          </button>
+          <button type="button" className="btn sm" onClick={saveLocalDraft}>
+            Save local draft
+          </button>
+          <button type="button" className="btn sm" onClick={loadLocalDraft}>
+            Restore local draft
+          </button>
+        </div>
+        {importMsg ? <p className="xs muted" role="status">{importMsg}</p> : null}
+        {draftMsg ? <p className="xs muted" role="status">{draftMsg}</p> : null}
+      </details>
 
       {session.step === "question" && (
         <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
@@ -145,6 +303,12 @@ export default function ScientificWorkbench() {
               {session.question.relatedConceptIds.map((id) => byId[id]?.name ?? id).join(", ")}
             </p>
           )}
+          {session.question.relatedRelIds.length > 0 && (
+            <p className="xs muted">
+              Related relationships (candidate): {session.question.relatedRelIds.slice(0, 8).join(", ")}
+              {session.question.relatedRelIds.length > 8 ? "…" : ""}
+            </p>
+          )}
         </section>
       )}
 
@@ -179,41 +343,17 @@ export default function ScientificWorkbench() {
             Add evidence note
           </button>
 
-          <details style={{ marginTop: 4 }}>
-            <summary className="small">Import literature candidates (JSON)</summary>
-            <p className="xs muted" style={{ marginTop: 6 }}>
-              Paste a Literature project export from <a href="#literature">Literature intelligence</a>. Claims become
-              evidence notes — still candidates; no PMIDs invented.
-            </p>
-            <textarea
-              rows={4}
-              value={litJson}
-              onChange={(e) => setLitJson(e.target.value)}
-              placeholder='{ "project_id": "…", "claims": [ { "claim_id": "…", "text": "…" } ] }'
-              style={{ width: "100%", marginTop: 8 }}
-            />
-            <button
-              type="button"
-              className="btn sm"
-              style={{ marginTop: 8 }}
-              disabled={!litJson.trim()}
-              onClick={() => {
-                const r = importLiteratureJson(session, litJson);
-                setSession(r.session);
-                setLitMsg(r.error ? r.error : `Imported ${r.imported} candidate claim(s).`);
-                if (!r.error) setLitJson("");
-              }}
-            >
-              Import as evidence notes
-            </button>
-            {litMsg ? <p className="xs muted">{litMsg}</p> : null}
-          </details>
+          <p className="xs muted">
+            Prefer <a href="#literature">Send to workbench</a> from Literature intelligence, or paste JSON in Import
+            candidates above. Claims remain draft until a curator reviews them elsewhere.
+          </p>
 
           <ul className="small">
             {session.evidence.map((n) => (
               <li key={n.note_id}>
                 <CandidateBadge /> <b>{n.sourceLabel}:</b> {n.summary}
                 {n.relatedIds.length ? <span className="muted"> · {n.relatedIds.join(", ")}</span> : null}
+                {n.sourceClaimId ? <span className="muted"> · claim {n.sourceClaimId}</span> : null}
               </li>
             ))}
           </ul>
@@ -257,7 +397,7 @@ export default function ScientificWorkbench() {
             <Link className="btn sm" to="/mechanism">Open Mechanism workspace</Link>
           </div>
 
-          <details>
+          <details open>
             <summary className="small">Import from Mechanism workspace (graph walk)</summary>
             <p className="xs muted" style={{ marginTop: 6 }}>
               Runs the same rule-based walk as /mechanism. Result is illustrative and labelled candidate — not a validated finding.
@@ -273,22 +413,26 @@ export default function ScientificWorkbench() {
                 <input value={mechOutcome} onChange={(e) => setMechOutcome(e.target.value.trim())} />
               </label>
             </div>
-            <button
-              type="button"
-              className="btn sm"
-              style={{ marginTop: 8 }}
-              onClick={() => {
-                const r = reasonMechanism(mechStart, mechPerturb, mechOutcome, "inhibit");
-                if (!r) {
-                  setMechMsg("Unknown node IDs or invalid triple — check the graph.");
-                  return;
-                }
-                setSession(importMechanismResult(session, r));
-                setMechMsg(`Imported illustrative path/gaps (${r.gaps.length} gap note(s)).`);
-              }}
-            >
-              Import mechanism summary
-            </button>
+            <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+              <button type="button" className="btn sm" onClick={seedMechFromQuestion}>
+                Prefill from Ask-matched IDs
+              </button>
+              <button
+                type="button"
+                className="btn sm"
+                onClick={() => {
+                  const r = reasonMechanism(mechStart, mechPerturb, mechOutcome, "inhibit");
+                  if (!r) {
+                    setMechMsg("Unknown node IDs or invalid triple — check the graph.");
+                    return;
+                  }
+                  setSession(importMechanismResult(session, r));
+                  setMechMsg(`Imported illustrative path/gaps (${r.gaps.length} gap note(s)).`);
+                }}
+              >
+                Import mechanism summary
+              </button>
+            </div>
             {mechMsg ? <p className="xs muted">{mechMsg}</p> : null}
           </details>
 
@@ -438,7 +582,12 @@ export default function ScientificWorkbench() {
         <button
           type="button"
           className="btn sm"
-          onClick={() => setSession(createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION))}
+          onClick={() => {
+            setSession(createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION));
+            setImportMsg(null);
+            setDraftMsg(null);
+            setMechMsg(null);
+          }}
         >
           New session
         </button>

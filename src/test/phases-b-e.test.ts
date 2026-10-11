@@ -43,13 +43,17 @@ import {
   createWorkbenchSession,
   experimentCompleteness,
   exportWorkbench,
+  importCurationManifest,
   importLiteratureCandidates,
+  importLiteraturePayload,
   importMechanismResult,
+  restoreWorkbenchFromExportJson,
   retreatWorkbench,
   seedQuestionFromAsk,
   sessionCandidateFlags,
   setReviewDisposition,
   setWorkbenchStep,
+  workbenchProgress,
   WORKBENCH_SCHEMA_VERSION,
 } from "@/lib/research/workbench";
 
@@ -343,6 +347,41 @@ describe("Phase E workbench", () => {
     expect(s.mechanism.illustrative).toBe(true);
     expect(s.mechanism.paths.length + s.mechanism.gaps.length).toBeGreaterThan(0);
     expect(sessionCandidateFlags(s).allCandidates).toBe(true);
+  });
+
+  it("imports curation manifests, restores exports, and reports progress without KG promotion", () => {
+    let lit = createLiteratureProject("0.3", "draft-ext-4", { query: "NOD2", title: "User title" });
+    lit = addCandidateClaim(lit, { text: "NOD2 variants associate with Crohn disease" });
+    lit = mapClaim(lit, lit.claims[0]!.claim_id, ["EG07", "D004"], []);
+    lit = setClaimSupport(lit, lit.claims[0]!.claim_id, "supports");
+    lit = reviewClaim(lit, lit.claims[0]!.claim_id, "accepted_for_curation");
+    const manifest = exportCurationManifest(lit);
+    expect(manifest.meta.curation).toBe("unreviewed");
+
+    let s = createWorkbenchSession("0.3", "draft-ext-4");
+    s = { ...s, question: { ...s.question, text: "NOD2 and Crohn?" } };
+    const fromManifest = importCurationManifest(s, manifest);
+    expect(fromManifest.error).toBeUndefined();
+    expect(fromManifest.imported).toBeGreaterThan(0);
+    s = fromManifest.session;
+    expect(s.evidence.every((e) => e.kind === "candidate")).toBe(true);
+
+    const payload = importLiteraturePayload(createWorkbenchSession("0.3", "draft-ext-4"), JSON.stringify(manifest));
+    expect(payload.source).toBe("manifest");
+    expect(payload.imported).toBeGreaterThan(0);
+
+    s = setReviewDisposition(s, "approved_for_export_only", "export only");
+    const exported = exportWorkbench(s);
+    const restored = restoreWorkbenchFromExportJson(exported);
+    expect(restored.error).toBeUndefined();
+    expect(restored.session?.question.kind).toBe("candidate");
+    expect(restored.session?.experiment.status).toBe("draft_proposal");
+    expect(buildWorkbenchExport(restored.session!).kgWrite).toBe(false);
+
+    const progress = workbenchProgress(restored.session!);
+    expect(progress).toHaveLength(6);
+    expect(progress[0]!.ready).toBe(true);
+    expect(progress.some((p) => p.step === "evidence" && p.ready)).toBe(true);
   });
 });
 

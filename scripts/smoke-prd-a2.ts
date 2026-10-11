@@ -54,11 +54,15 @@ import {
   canVisitStep,
   createWorkbenchSession,
   exportWorkbench,
+  importCurationManifest,
   importLiteratureCandidates,
+  importLiteraturePayload,
   importMechanismResult,
+  restoreWorkbenchFromExportJson,
   seedQuestionFromAsk,
   sessionCandidateFlags,
   setWorkbenchStep,
+  workbenchProgress,
   WORKBENCH_SCHEMA_VERSION,
 } from "../src/lib/research/workbench.ts";
 import { phaseStatusSummary } from "../src/data/implementation-phases.ts";
@@ -198,6 +202,15 @@ check(
     /candidate/.test(exportWorkbench(wb)) &&
     exportWorkbench(wb).includes(GRAPH_EXTENSIONS_VERSION),
 );
+{
+  const fromManifest = importCurationManifest(createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION), litManifest);
+  check("workbench manifest import", !fromManifest.error && fromManifest.imported > 0 && fromManifest.session.evidence.every((e) => e.kind === "candidate"));
+  const payload = importLiteraturePayload(createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION), JSON.stringify(litManifest));
+  check("workbench payload detect", payload.source === "manifest" && payload.imported > 0);
+  const restored = restoreWorkbenchFromExportJson(exportWorkbench(wb));
+  check("workbench restore", !!restored.session && restored.session.question.kind === "candidate" && buildWorkbenchExport(restored.session).kgWrite === false);
+  check("workbench progress", workbenchProgress(wb).length === 6 && workbenchProgress(wb)[0]!.ready);
+}
 const phases = phaseStatusSummary();
 check("phases partial", phases.B === "partial" && phases.C === "partial" && phases.D === "partial" && phases.E === "partial");
 const h = createHypothesisDraft(

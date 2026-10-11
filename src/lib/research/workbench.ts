@@ -7,10 +7,13 @@ import { graphContext } from "@/lib/askGrounding";
 import { byId } from "@/lib/immune/engine";
 import { hopPhrase, type MechanismResult } from "@/lib/immune/mechanismReasoning";
 import { createHypothesisDraft, type HypothesisDraft } from "./hypothesisDraft";
-import type { CandidateClaim, LiteratureProject } from "./literatureWorkflow";
+import type { CandidateClaim, CurationManifestExport, LiteratureProject } from "./literatureWorkflow";
 
 /** Bump when export shape changes in a breaking way. */
 export const WORKBENCH_SCHEMA_VERSION = "wb-1";
+
+/** sessionStorage key for local draft sessions (browser only; never a KG write). */
+export const WORKBENCH_LOCAL_DRAFT_KEY = "immune-city.workbench.local-draft.v1";
 
 export type WorkbenchStep =
   | "question"
@@ -377,6 +380,238 @@ export function importLiteratureJson(
   const search = (obj.search && typeof obj.search === "object" ? obj.search : {}) as LiteratureProject["search"];
   const next = importLiteratureCandidates(session, { project_id, claims: usable, search });
   return { session: next, imported: usable.length };
+}
+
+/**
+ * Import an unreviewed curation-candidate manifest as evidence notes.
+ * Uses claim_text / source_ref only — never invents PMIDs or approves claims.
+ */
+export function importCurationManifest(
+  session: WorkbenchSession,
+  manifest: CurationManifestExport,
+): { session: WorkbenchSession; error?: string; imported: number } {
+  if (manifest.meta?.curation && manifest.meta.curation !== "unreviewed") {
+    return { session, error: "Only unreviewed candidate manifests can enter the workbench.", imported: 0 };
+  }
+  const projectId = manifest.meta?.project_id || "LIT-MANIFEST";
+  let next = session;
+  let imported = 0;
+  for (const group of manifest.evidence_records ?? []) {
+    for (const e of group.evidence ?? []) {
+      if (e.status && e.status !== "candidate") continue;
+      const text = (e.claim_text || "").trim();
+      if (!text) continue;
+      const related = uniqueIds([
+        group.node_id,
+        e.relationship_id ?? "",
+      ]);
+      const source =
+        e.source_ref?.trim() ||
+        (e.pmid ? `PMID ${e.pmid} (user-supplied in manifest)` : "") ||
+        (e.doi ? `DOI ${e.doi} (user-supplied in manifest)` : "") ||
+        `manifest ${e.evidence_id} (candidate)`;
+      next = addEvidenceNote(next, text, source, related, {
+        sourceClaimId: e.evidence_id,
+        sourceProjectId: projectId,
+      });
+      imported += 1;
+    }
+  }
+  if (!imported) {
+    return { session, error: "No candidate claim_text rows found in manifest.", imported: 0 };
+  }
+  return {
+    session: touch({
+      ...next,
+      importLog: [...next.importLog, `lit_manifest:${projectId}:${imported}`],
+    }),
+    imported,
+  };
+}
+
+export function importCurationManifestJson(
+  session: WorkbenchSession,
+  jsonText: string,
+): { session: WorkbenchSession; error?: string; imported: number } {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch {
+    return { session, error: "Invalid JSON — paste a curation candidate manifest.", imported: 0 };
+  }
+  if (!parsed || typeof parsed !== "object") {
+    return { session, error: "Expected a curation manifest object.", imported: 0 };
+  }
+  const obj = parsed as Record<string, unknown>;
+  // Project export nests the manifest under export.curationManifest.
+  const nested =
+    obj.export && typeof obj.export === "object"
+      ? (obj.export as Record<string, unknown>).curationManifest
+      : undefined;
+  const manifest = (nested && typeof nested === "object" ? nested : obj) as CurationManifestExport;
+  return importCurationManifest(session, manifest);
+}
+
+/**
+ * Auto-detect literature project JSON, nested project export, or curation manifest.
+ * Prefer claims when present; otherwise fall back to manifest rows.
+ */
+export function importLiteraturePayload(
+  session: WorkbenchSession,
+  jsonText: string,
+): { session: WorkbenchSession; error?: string; imported: number; source: "project" | "manifest" | "none" } {
+  const asProject = importLiteratureJson(session, jsonText);
+  if (!asProject.error && asProject.imported > 0) {
+    return { ...asProject, source: "project" };
+  }
+  const asManifest = importCurationManifestJson(session, jsonText);
+  if (!asManifest.error && asManifest.imported > 0) {
+    return { ...asManifest, source: "manifest" };
+  }
+  return {
+    session,
+    error: asProject.error || asManifest.error || "No importable candidate claims found.",
+    imported: 0,
+    source: "none",
+  };
+}
+
+/** Restore a previously exported workbench session (candidates only; kgWrite must stay false). */
+export function restoreWorkbenchFromExportJson(jsonText: string): {
+  session?: WorkbenchSession;
+  error?: string;
+} {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch {
+    return { error: "Invalid JSON — paste a scientific workbench export." };
+  }
+  if (!parsed || typeof parsed !== "object") return { error: "Expected a workbench export object." };
+  const obj = parsed as Partial<WorkbenchExport> & { session?: WorkbenchSession };
+  if (obj.kind !== "scientific_workbench_export") {
+    return { error: "Expected kind scientific_workbench_export." };
+  }
+  if (obj.kgWrite === true) return { error: "Refusing export marked kgWrite=true." };
+  if (obj.experimentallySupported === true) {
+    return { error: "Refusing export marked experimentallySupported." };
+  }
+  if (!obj.session || typeof obj.session !== "object") {
+    return { error: "Export missing session payload." };
+  }
+  const s = obj.session;
+  if (!s.question || !s.mechanism || !s.hypothesis || !s.experiment) {
+    return { error: "Export session is incomplete." };
+  }
+  const restored: WorkbenchSession = {
+    ...s,
+    schemaVersion: WORKBENCH_SCHEMA_VERSION,
+    question: { ...s.question, kind: "candidate" },
+    evidence: (s.evidence ?? []).map((e) => ({ ...e, kind: "candidate" as const })),
+    mechanism: { ...s.mechanism, kind: "candidate", illustrative: true },
+    hypothesis: {
+      ...s.hypothesis,
+      status: s.hypothesis.status === "under_review" ? "under_review" : "candidate",
+    },
+    experiment: { ...s.experiment, kind: "candidate", status: "draft_proposal" },
+    reviewDisposition:
+      s.reviewDisposition === "needs_revision" || s.reviewDisposition === "approved_for_export_only"
+        ? s.reviewDisposition
+        : "pending",
+    importLog: [...(s.importLog ?? []), "restore:workbench_export"],
+    updatedAt: new Date().toISOString(),
+  };
+  return { session: restored };
+}
+
+/** Per-step structural progress for UI — does not imply scientific validity. */
+export function workbenchProgress(session: WorkbenchSession): {
+  step: WorkbenchStep;
+  label: string;
+  ready: boolean;
+  detail: string;
+}[] {
+  const hyp = session.hypothesis.claim.trim().length > 0;
+  const exp =
+    session.experiment.question.trim().length > 0 && session.experiment.readouts.trim().length > 0;
+  return [
+    {
+      step: "question",
+      label: "Question",
+      ready: !!session.question.text.trim(),
+      detail: session.question.text.trim() ? "draft question set" : "needs question text",
+    },
+    {
+      step: "evidence",
+      label: "Evidence",
+      ready: session.evidence.length > 0,
+      detail: session.evidence.length
+        ? `${session.evidence.length} candidate note(s)`
+        : "needs ≥1 candidate note",
+    },
+    {
+      step: "mechanism",
+      label: "Mechanism",
+      ready: session.mechanism.paths.length + session.mechanism.gaps.length > 0,
+      detail:
+        session.mechanism.paths.length || session.mechanism.gaps.length
+          ? `${session.mechanism.paths.length} path(s) · ${session.mechanism.gaps.length} gap(s)`
+          : "needs path or gap",
+    },
+    {
+      step: "hypothesis",
+      label: "Hypothesis",
+      ready: hyp,
+      detail: hyp ? `status ${session.hypothesis.status}` : "needs candidate claim",
+    },
+    {
+      step: "experiment",
+      label: "Experiment",
+      ready: exp,
+      detail: exp ? "draft proposal fields set" : "needs question + readouts",
+    },
+    {
+      step: "review",
+      label: "Review",
+      ready: session.reviewDisposition !== "pending",
+      detail: `disposition ${session.reviewDisposition}`,
+    },
+  ];
+}
+
+export function serializeLocalDraft(session: WorkbenchSession): string {
+  return JSON.stringify({
+    kind: "scientific_workbench_local_draft",
+    schemaVersion: WORKBENCH_SCHEMA_VERSION,
+    kgWrite: false,
+    experimentallySupported: false,
+    savedAt: new Date().toISOString(),
+    session,
+  });
+}
+
+export function parseLocalDraft(jsonText: string): { session?: WorkbenchSession; error?: string } {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch {
+    return { error: "Invalid local draft JSON." };
+  }
+  if (!parsed || typeof parsed !== "object") return { error: "Expected a local draft object." };
+  const obj = parsed as { kind?: string; kgWrite?: boolean; session?: WorkbenchSession };
+  if (obj.kind !== "scientific_workbench_local_draft" && obj.kind !== "scientific_workbench_export") {
+    return { error: "Unrecognized draft kind." };
+  }
+  if (obj.kgWrite === true) return { error: "Refusing draft marked kgWrite=true." };
+  if (!obj.session) return { error: "Draft missing session." };
+  return restoreWorkbenchFromExportJson(
+    JSON.stringify({
+      kind: "scientific_workbench_export",
+      kgWrite: false,
+      experimentallySupported: false,
+      session: obj.session,
+    }),
+  );
 }
 
 /** Import mechanism workspace result summaries as candidate paths/gaps. */

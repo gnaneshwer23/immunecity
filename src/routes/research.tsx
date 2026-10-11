@@ -1,4 +1,7 @@
+import { useCallback, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { CONTENT } from "@/data/content";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { byId } from "@/lib/immune/engine";
@@ -8,6 +11,14 @@ import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 
 export const Route = createFileRoute("/research")({
+  validateSearch: zodValidator(
+    z.object({
+      q: fallback(z.string(), "").default(""),
+      start: fallback(z.string(), "").default(""),
+      perturb: fallback(z.string(), "").default(""),
+      outcome: fallback(z.string(), "").default(""),
+    }),
+  ),
   head: () => ({
     meta: [
       { title: "Research workbench — Immune City" },
@@ -28,6 +39,17 @@ function Research() {
   const frontier = (CONTENT["frontier"] ?? []) as Frontier[];
   const roadmap = (CONTENT["roadmap"] ?? []) as Road[];
   const phaseE = IMPLEMENTATION_PHASES.find((p) => p.id === "E");
+  const search = Route.useSearch();
+  const [litHandoff, setLitHandoff] = useState<string | null>(null);
+  const clearLitHandoff = useCallback(() => setLitHandoff(null), []);
+
+  const seed = {
+    question: search.q || undefined,
+    startId: search.start && byId[search.start] ? search.start : undefined,
+    perturbId: search.perturb && byId[search.perturb] ? search.perturb : undefined,
+    outcomeId: search.outcome && byId[search.outcome] ? search.outcome : undefined,
+  };
+
   return (
     <div className="page">
       <PageHead
@@ -43,15 +65,19 @@ function Research() {
 
       <section className="section" id="workbench">
         <h2>Workbench</h2>
-        <ScientificWorkbench />
+        <ScientificWorkbench
+          pendingLitImport={litHandoff}
+          onPendingLitImportConsumed={clearLitHandoff}
+          seed={seed}
+        />
       </section>
 
       <section className="section" id="literature">
         <h2>Literature intelligence</h2>
         <p className="lede">
-          Phase C workflow — export candidates and optionally import them into the workbench evidence step above.
+          Phase C workflow — export candidates or send them into the workbench evidence step above (still drafts).
         </p>
-        <LiteratureQueue />
+        <LiteratureQueue onSendToWorkbench={setLitHandoff} />
       </section>
 
       <section className="section" id="model-registry">

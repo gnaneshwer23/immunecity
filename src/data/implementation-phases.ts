@@ -86,7 +86,7 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
       "Smoke/tests cover step machine, candidate flags, and import helpers (no fake PMIDs/model results).",
     ],
     status: "partial",
-    notes: "Deepened six-step machine with visit gating, Ask/literature/mechanism candidate imports, versioned export (wb-1), and Research-first UX. Still a local research scaffold — no autonomous lab execution, no graph write-back, no live model experiment design.",
+    notes: "Six-step machine with visit gating, Ask/lit/mechanism imports, Literature→Workbench handoff, curation-manifest import, local draft save, URL seeds, versioned export (wb-1). Still no lab execution, KG write-back, or auto-promotion.",
   },
 ];
 
