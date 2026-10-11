@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791670478083,
+      "tag": "0000_curation_roles_and_evidence",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791688863264,
+      "tag": "0001_public_read_approved_evidence",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791697705395,
+      "tag": "0002_relationship_level_evidence",
+      "breakpoints": true
+    }
+  ]
+}

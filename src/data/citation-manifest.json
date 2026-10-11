@@ -1,0 +1,1973 @@
+{
+  "artifact": "Immune City — Commercial Priority Citation Reference Manifest",
+  "schema_version": "1.0-draft",
+  "based_on_kg": "immunology_os_kg_v0_3.json",
+  "generated_date": "2026-10-07",
+  "scope": {
+    "INTERVENTION": 22,
+    "TRIAL": 10,
+    "DISEASE": 17,
+    "BIOMARKER": 11,
+    "total": 60
+  },
+  "important_note": "The 60-node scope is the commercial-priority subset requested. The current v0.3 KG contains 32 interventions, 26 trials, 27 diseases and 16 biomarkers; this manifest intentionally does not expand scope. Existing references are preserved; missing slots are explicitly marked RESEARCH_REQUIRED and must be verified before production.",
+  "evidence_records": [
+    {
+      "node_id": "I001",
+      "node_type": "INTERVENTION",
+      "node_name": "Infliximab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I001-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Infliximab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I001-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Infliximab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I001-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Infliximab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I002",
+      "node_type": "INTERVENTION",
+      "node_name": "Adalimumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I002-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Adalimumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I002-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Adalimumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I002-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Adalimumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I003",
+      "node_type": "INTERVENTION",
+      "node_name": "Tocilizumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I003-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Tocilizumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I003-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Tocilizumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I003-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Tocilizumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I004",
+      "node_type": "INTERVENTION",
+      "node_name": "Secukinumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I004-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Secukinumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I004-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Secukinumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I004-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Secukinumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I005",
+      "node_type": "INTERVENTION",
+      "node_name": "Ustekinumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I005-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Ustekinumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I005-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Ustekinumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I005-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Ustekinumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I006",
+      "node_type": "INTERVENTION",
+      "node_name": "Dupilumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I006-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Dupilumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I006-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Dupilumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I006-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Dupilumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I007",
+      "node_type": "INTERVENTION",
+      "node_name": "Etanercept",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I007-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Etanercept\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I007-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Etanercept\" mechanism of action"
+        },
+        {
+          "evidence_id": "I007-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Etanercept\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I008",
+      "node_type": "INTERVENTION",
+      "node_name": "Pembrolizumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I008-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Pembrolizumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I008-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Pembrolizumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I008-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Pembrolizumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I009",
+      "node_type": "INTERVENTION",
+      "node_name": "Nivolumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I009-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Nivolumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I009-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Nivolumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I009-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Nivolumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I010",
+      "node_type": "INTERVENTION",
+      "node_name": "Corticosteroid",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I010-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Corticosteroid\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I010-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Corticosteroid\" mechanism of action"
+        },
+        {
+          "evidence_id": "I010-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Corticosteroid\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I011",
+      "node_type": "INTERVENTION",
+      "node_name": "Rituximab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Stone 2010 NEJM",
+        "Edwards 2004 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I011-EV01",
+          "source_ref": "Stone 2010 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I011-EV02",
+          "source_ref": "Edwards 2004 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "mechanism of action"
+        },
+        {
+          "evidence_id": "I011-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Rituximab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I012",
+      "node_type": "INTERVENTION",
+      "node_name": "Ocrelizumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Hauser 2017 NEJM",
+        "Montalban 2017 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I012-EV01",
+          "source_ref": "Hauser 2017 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I012-EV02",
+          "source_ref": "Montalban 2017 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "mechanism of action"
+        },
+        {
+          "evidence_id": "I012-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Ocrelizumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I013",
+      "node_type": "INTERVENTION",
+      "node_name": "Teplizumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Herold 2019 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I013-EV01",
+          "source_ref": "Herold 2019 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I013-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Teplizumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I013-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Teplizumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I014",
+      "node_type": "INTERVENTION",
+      "node_name": "Baricitinib",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Genovese 2016 NEJM",
+        "Kalil 2021 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I014-EV01",
+          "source_ref": "Genovese 2016 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I014-EV02",
+          "source_ref": "Kalil 2021 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "mechanism of action"
+        },
+        {
+          "evidence_id": "I014-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Baricitinib\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I015",
+      "node_type": "INTERVENTION",
+      "node_name": "Anifrolumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Morand 2020 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I015-EV01",
+          "source_ref": "Morand 2020 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I015-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Anifrolumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I015-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Anifrolumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I016",
+      "node_type": "INTERVENTION",
+      "node_name": "Cilta-cel",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "San-Miguel 2023 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I016-EV01",
+          "source_ref": "San-Miguel 2023 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I016-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Cilta-cel\" mechanism of action"
+        },
+        {
+          "evidence_id": "I016-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Cilta-cel\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I017",
+      "node_type": "INTERVENTION",
+      "node_name": "Blinatumomab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I017-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Blinatumomab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I017-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Blinatumomab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I017-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Blinatumomab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I018",
+      "node_type": "INTERVENTION",
+      "node_name": "Belimumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I018-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Belimumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I018-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Belimumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I018-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Belimumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I019",
+      "node_type": "INTERVENTION",
+      "node_name": "Inebilizumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Bhatt 2022 NEJM",
+        "Carruthers 2023 Lancet"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I019-EV01",
+          "source_ref": "Bhatt 2022 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I019-EV02",
+          "source_ref": "Carruthers 2023 Lancet",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "mechanism of action"
+        },
+        {
+          "evidence_id": "I019-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Inebilizumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I020",
+      "node_type": "INTERVENTION",
+      "node_name": "Deucravacitinib",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Armstrong 2023 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I020-EV01",
+          "source_ref": "Armstrong 2023 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I020-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Deucravacitinib\" mechanism of action"
+        },
+        {
+          "evidence_id": "I020-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Deucravacitinib\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I021",
+      "node_type": "INTERVENTION",
+      "node_name": "Omalizumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I021-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "pivotal clinical evidence",
+          "search_query": "\"Omalizumab\" pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I021-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Omalizumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I021-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Omalizumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "I022",
+      "node_type": "INTERVENTION",
+      "node_name": "Tezepelumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Menzies-Gow 2021 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "I022-EV01",
+          "source_ref": "Menzies-Gow 2021 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "pivotal clinical evidence"
+        },
+        {
+          "evidence_id": "I022-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanism of action",
+          "search_query": "\"Tezepelumab\" mechanism of action"
+        },
+        {
+          "evidence_id": "I022-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "regulatory/label source",
+          "search_query": "\"Tezepelumab\" regulatory/label source"
+        }
+      ]
+    },
+    {
+      "node_id": "TR001",
+      "node_type": "TRIAL",
+      "node_name": "ATTRACT",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Lipsky PE et al. N Engl J Med 2000"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR001-EV01",
+          "source_ref": "Lipsky PE et al. N Engl J Med 2000",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR001-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"ATTRACT\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR001-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"ATTRACT\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR002",
+      "node_type": "TRIAL",
+      "node_name": "CANTOS",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Ridker PM et al. N Engl J Med 2017"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR002-EV01",
+          "source_ref": "Ridker PM et al. N Engl J Med 2017",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR002-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"CANTOS\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR002-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"CANTOS\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR003",
+      "node_type": "TRIAL",
+      "node_name": "KEYNOTE-006",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Robert C et al. N Engl J Med 2015; Lancet Oncol 2019 (5-yr)"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR003-EV01",
+          "source_ref": "Robert C et al. N Engl J Med 2015; Lancet Oncol 2019 (5-yr)",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR003-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"KEYNOTE-006\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR003-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"KEYNOTE-006\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR004",
+      "node_type": "TRIAL",
+      "node_name": "ERASURE",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Langley RG et al. N Engl J Med 2014"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR004-EV01",
+          "source_ref": "Langley RG et al. N Engl J Med 2014",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR004-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"ERASURE\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR004-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"ERASURE\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR005",
+      "node_type": "TRIAL",
+      "node_name": "LIBERTY AD",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Simpson EL et al. N Engl J Med 2016"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR005-EV01",
+          "source_ref": "Simpson EL et al. N Engl J Med 2016",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR005-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"LIBERTY AD\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR005-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"LIBERTY AD\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR006",
+      "node_type": "TRIAL",
+      "node_name": "RAVE",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Stone JH et al. N Engl J Med 2010"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR006-EV01",
+          "source_ref": "Stone JH et al. N Engl J Med 2010",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR006-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"RAVE\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR006-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"RAVE\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR007",
+      "node_type": "TRIAL",
+      "node_name": "ORATORIO",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Montalban X et al. N Engl J Med 2017"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR007-EV01",
+          "source_ref": "Montalban X et al. N Engl J Med 2017",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR007-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"ORATORIO\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR007-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"ORATORIO\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR008",
+      "node_type": "TRIAL",
+      "node_name": "TN10 Teplizumab",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Herold KC et al. N Engl J Med 2019"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR008-EV01",
+          "source_ref": "Herold KC et al. N Engl J Med 2019",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR008-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"TN10 Teplizumab\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR008-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"TN10 Teplizumab\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR009",
+      "node_type": "TRIAL",
+      "node_name": "RECOVERY",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "RECOVERY Collaborative Group. N Engl J Med 2021"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR009-EV01",
+          "source_ref": "RECOVERY Collaborative Group. N Engl J Med 2021",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR009-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"RECOVERY\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR009-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"RECOVERY\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "TR010",
+      "node_type": "TRIAL",
+      "node_name": "CARTITUDE-4",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "San-Miguel J et al. N Engl J Med 2023"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "TR010-EV01",
+          "source_ref": "San-Miguel J et al. N Engl J Med 2023",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "primary trial publication"
+        },
+        {
+          "evidence_id": "TR010-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "trial registry / protocol",
+          "search_query": "\"CARTITUDE-4\" trial registry / protocol"
+        },
+        {
+          "evidence_id": "TR010-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "follow-up or key secondary analysis",
+          "search_query": "\"CARTITUDE-4\" follow-up or key secondary analysis"
+        }
+      ]
+    },
+    {
+      "node_id": "D001",
+      "node_type": "DISEASE",
+      "node_name": "Rheumatoid arthritis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D001-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Rheumatoid arthritis\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D001-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Rheumatoid arthritis\" mechanistic review"
+        },
+        {
+          "evidence_id": "D001-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Rheumatoid arthritis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D002",
+      "node_type": "DISEASE",
+      "node_name": "Multiple sclerosis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D002-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Multiple sclerosis\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D002-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Multiple sclerosis\" mechanistic review"
+        },
+        {
+          "evidence_id": "D002-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Multiple sclerosis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D003",
+      "node_type": "DISEASE",
+      "node_name": "Psoriasis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D003-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Psoriasis\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D003-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Psoriasis\" mechanistic review"
+        },
+        {
+          "evidence_id": "D003-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Psoriasis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D004",
+      "node_type": "DISEASE",
+      "node_name": "Inflammatory bowel disease",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D004-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Inflammatory bowel disease\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D004-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Inflammatory bowel disease\" mechanistic review"
+        },
+        {
+          "evidence_id": "D004-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Inflammatory bowel disease\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D005",
+      "node_type": "DISEASE",
+      "node_name": "Asthma",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D005-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Asthma\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D005-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Asthma\" mechanistic review"
+        },
+        {
+          "evidence_id": "D005-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Asthma\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D006",
+      "node_type": "DISEASE",
+      "node_name": "Atopic dermatitis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D006-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Atopic dermatitis\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D006-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Atopic dermatitis\" mechanistic review"
+        },
+        {
+          "evidence_id": "D006-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Atopic dermatitis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D007",
+      "node_type": "DISEASE",
+      "node_name": "Systemic lupus erythematosus",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D007-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Systemic lupus erythematosus\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D007-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Systemic lupus erythematosus\" mechanistic review"
+        },
+        {
+          "evidence_id": "D007-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Systemic lupus erythematosus\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D008",
+      "node_type": "DISEASE",
+      "node_name": "Severe combined immunodeficiency",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D008-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Severe combined immunodeficiency\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D008-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Severe combined immunodeficiency\" mechanistic review"
+        },
+        {
+          "evidence_id": "D008-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Severe combined immunodeficiency\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D009",
+      "node_type": "DISEASE",
+      "node_name": "Chronic granulomatous disease",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D009-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Chronic granulomatous disease\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D009-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Chronic granulomatous disease\" mechanistic review"
+        },
+        {
+          "evidence_id": "D009-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Chronic granulomatous disease\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D010",
+      "node_type": "DISEASE",
+      "node_name": "Tuberculosis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D010-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Tuberculosis\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D010-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Tuberculosis\" mechanistic review"
+        },
+        {
+          "evidence_id": "D010-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Tuberculosis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D011",
+      "node_type": "DISEASE",
+      "node_name": "Sepsis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D011-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Sepsis\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D011-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Sepsis\" mechanistic review"
+        },
+        {
+          "evidence_id": "D011-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Sepsis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D012",
+      "node_type": "DISEASE",
+      "node_name": "Melanoma",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D012-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Melanoma\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D012-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Melanoma\" mechanistic review"
+        },
+        {
+          "evidence_id": "D012-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Melanoma\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D013",
+      "node_type": "DISEASE",
+      "node_name": "Type 1 diabetes",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Herold 2019 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D013-EV01",
+          "source_ref": "Herold 2019 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D013-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Type 1 diabetes\" mechanistic review"
+        },
+        {
+          "evidence_id": "D013-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Type 1 diabetes\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D014",
+      "node_type": "DISEASE",
+      "node_name": "ANCA vasculitis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Stone 2010 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D014-EV01",
+          "source_ref": "Stone 2010 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D014-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"ANCA vasculitis\" mechanistic review"
+        },
+        {
+          "evidence_id": "D014-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"ANCA vasculitis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D015",
+      "node_type": "DISEASE",
+      "node_name": "Lupus nephritis",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Furie 2022 NEJM",
+        "Jayne 2023 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D015-EV01",
+          "source_ref": "Furie 2022 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D015-EV02",
+          "source_ref": "Jayne 2023 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "mechanistic review"
+        },
+        {
+          "evidence_id": "D015-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Lupus nephritis\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D016",
+      "node_type": "DISEASE",
+      "node_name": "Graft-versus-host disease",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "Zeiser 2021 NEJM"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D016-EV01",
+          "source_ref": "Zeiser 2021 NEJM",
+          "status": "EXISTING_REFERENCE",
+          "source_type": "disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D016-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Graft-versus-host disease\" mechanistic review"
+        },
+        {
+          "evidence_id": "D016-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Graft-versus-host disease\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "D017",
+      "node_type": "DISEASE",
+      "node_name": "Cancer immune escape",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "D017-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "disease guideline/consensus",
+          "search_query": "\"Cancer immune escape\" disease guideline/consensus"
+        },
+        {
+          "evidence_id": "D017-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "mechanistic review",
+          "search_query": "\"Cancer immune escape\" mechanistic review"
+        },
+        {
+          "evidence_id": "D017-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical/epidemiologic evidence",
+          "search_query": "\"Cancer immune escape\" clinical/epidemiologic evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B001",
+      "node_type": "BIOMARKER",
+      "node_name": "C-reactive protein (CRP)",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B001-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"C-reactive protein (CRP)\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B001-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"C-reactive protein (CRP)\" biological mechanism"
+        },
+        {
+          "evidence_id": "B001-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"C-reactive protein (CRP)\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B002",
+      "node_type": "BIOMARKER",
+      "node_name": "Erythrocyte sedimentation rate (ESR)",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B002-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"Erythrocyte sedimentation rate (ESR)\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B002-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"Erythrocyte sedimentation rate (ESR)\" biological mechanism"
+        },
+        {
+          "evidence_id": "B002-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"Erythrocyte sedimentation rate (ESR)\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B003",
+      "node_type": "BIOMARKER",
+      "node_name": "Faecal calprotectin",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B003-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"Faecal calprotectin\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B003-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"Faecal calprotectin\" biological mechanism"
+        },
+        {
+          "evidence_id": "B003-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"Faecal calprotectin\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B004",
+      "node_type": "BIOMARKER",
+      "node_name": "Serum IgE",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B004-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"Serum IgE\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B004-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"Serum IgE\" biological mechanism"
+        },
+        {
+          "evidence_id": "B004-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"Serum IgE\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B005",
+      "node_type": "BIOMARKER",
+      "node_name": "Interferon-stimulated gene signature",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B005-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"Interferon-stimulated gene signature\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B005-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"Interferon-stimulated gene signature\" biological mechanism"
+        },
+        {
+          "evidence_id": "B005-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"Interferon-stimulated gene signature\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B006",
+      "node_type": "BIOMARKER",
+      "node_name": "Anti-dsDNA antibody",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B006-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"Anti-dsDNA antibody\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B006-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"Anti-dsDNA antibody\" biological mechanism"
+        },
+        {
+          "evidence_id": "B006-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"Anti-dsDNA antibody\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B007",
+      "node_type": "BIOMARKER",
+      "node_name": "ACPA",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B007-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"ACPA\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B007-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"ACPA\" biological mechanism"
+        },
+        {
+          "evidence_id": "B007-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"ACPA\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B008",
+      "node_type": "BIOMARKER",
+      "node_name": "ANCA",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B008-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"ANCA\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B008-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"ANCA\" biological mechanism"
+        },
+        {
+          "evidence_id": "B008-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"ANCA\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B009",
+      "node_type": "BIOMARKER",
+      "node_name": "Tryptase",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B009-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"Tryptase\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B009-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"Tryptase\" biological mechanism"
+        },
+        {
+          "evidence_id": "B009-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"Tryptase\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B010",
+      "node_type": "BIOMARKER",
+      "node_name": "TMB",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B010-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"TMB\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B010-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"TMB\" biological mechanism"
+        },
+        {
+          "evidence_id": "B010-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"TMB\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    },
+    {
+      "node_id": "B011",
+      "node_type": "BIOMARKER",
+      "node_name": "PD-L1 expression",
+      "evidence_status": "ESTABLISHED",
+      "current_source_refs": [
+        "TO_BE_CURATED"
+      ],
+      "required_minimum": 3,
+      "evidence": [
+        {
+          "evidence_id": "B011-EV01",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "clinical validation / guideline",
+          "search_query": "\"PD-L1 expression\" clinical validation / guideline"
+        },
+        {
+          "evidence_id": "B011-EV02",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "biological mechanism",
+          "search_query": "\"PD-L1 expression\" biological mechanism"
+        },
+        {
+          "evidence_id": "B011-EV03",
+          "source_ref": null,
+          "status": "RESEARCH_REQUIRED",
+          "source_type": "diagnostic/prognostic or treatment-response evidence",
+          "search_query": "\"PD-L1 expression\" diagnostic/prognostic or treatment-response evidence"
+        }
+      ]
+    }
+  ]
+}
