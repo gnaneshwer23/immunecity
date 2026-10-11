@@ -12,6 +12,9 @@ export interface ApprovedCitation {
   relationship_id: string | null;
   claim_support: string;
   reviewed_at: string | null;
+  curation: "approved";
+  pmid?: string | null;
+  doi?: string | null;
 }
 
 /** Public read of curation decisions marked approved (server-side filter; no PostgREST/RLS). */
@@ -38,6 +41,9 @@ export const getApprovedCitations = createServerFn({ method: "GET" }).handler(as
         relationship_id: r.relationshipId ?? null,
         claim_support: r.claimSupport ?? "unassessed",
         reviewed_at: r.reviewedAt?.toISOString?.() ?? (r.reviewedAt as string | null) ?? null,
+        curation: "approved",
+        pmid: r.pmid,
+        doi: r.doi,
         label: r.pmid ? `PMID ${r.pmid}` : r.doi ? `DOI ${r.doi}` : (r.sourceRef ?? r.evidenceId),
         url: r.pmid
           ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`

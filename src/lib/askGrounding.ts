@@ -1,11 +1,11 @@
 /* Browser-safe retrieval and guardrails for Ask Immune City (tested in src/test/ai-grounding.test.ts). */
 import { KG, byId, human, out, inn, relId, edgeRef, edgeByRel, shortestPath, type KGNode, type KGEdge } from "@/lib/immune/engine";
-import { relationshipStatus, STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
+import { citationsFor, relationshipStatus, STATUS_INFO, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v2";
+export const PROMPT_VERSION = "ask-grounding-v3";
 
 export type EvidenceTier = "established" | "evidence-supported" | "emerging" | "hypothesis" | "draft" | "missing-support";
 
@@ -41,6 +41,10 @@ export interface GroundedLink {
   draft?: boolean;
   hasSourceLink: boolean;
   location?: string;
+  /** Approved Neon evidence rows mapped to this exact relationship. */
+  reviewedEvidenceCount: number;
+  reviewedPmids: string[];
+  hasClaimSupport: boolean;
 }
 
 export interface CausalChainHop {
@@ -159,8 +163,12 @@ function evidenceTier(edge: KGEdge, review: ReviewStatus): EvidenceTier {
   return review === "approved" ? "established" : "missing-support";
 }
 
-export function groundLink(edge: KGEdge): GroundedLink {
-  const review = relationshipStatus(edge, []);
+export function groundLink(edge: KGEdge, cites: CitationLike[] = []): GroundedLink {
+  const review = relationshipStatus(edge, cites);
+  const mine = citationsFor(edge, cites);
+  const reviewedPmids = [
+    ...new Set(mine.map((c) => c.pmid).filter((p): p is string => !!p && /^\d+$/.test(p))),
+  ];
   return {
     relId: relId(edge),
     subjectId: edge.subject_id,
@@ -175,10 +183,13 @@ export function groundLink(edge: KGEdge): GroundedLink {
     draft: edge.draft,
     hasSourceLink: !!edgeRef(edge),
     location: edge.location,
+    reviewedEvidenceCount: mine.length,
+    reviewedPmids,
+    hasClaimSupport: mine.some((c) => c.claim_support === "supports"),
   };
 }
 
-function buildChains(nodes: KGNode[], limit = 3): AskGrounding["chains"] {
+function buildChains(nodes: KGNode[], cites: CitationLike[], limit = 3): AskGrounding["chains"] {
   const chains: AskGrounding["chains"] = [];
   for (let i = 0; i < nodes.length && chains.length < limit; i++) {
     for (let j = i + 1; j < nodes.length && chains.length < limit; j++) {
@@ -188,7 +199,7 @@ function buildChains(nodes: KGNode[], limit = 3): AskGrounding["chains"] {
       const hops: CausalChainHop[] = [];
       let cur = a.id;
       for (const step of path) {
-        const g = groundLink(step.r);
+        const g = groundLink(step.r, cites);
         hops.push({
           fromId: cur,
           toId: step.to,
@@ -228,7 +239,7 @@ function withClassAndTrace(
   };
 }
 
-export function graphContext(question: string, queryClass?: AskQueryClass): AskGrounding {
+export function graphContext(question: string, queryClass?: AskQueryClass, cites: CitationLike[] = []): AskGrounding {
   const cls = queryClass ?? classifyAskQuery(question);
   const nodes = relevantNodes(question);
   if (!nodes.length) {
@@ -260,18 +271,22 @@ export function graphContext(question: string, queryClass?: AskQueryClass): AskG
       seen.add(id);
       const s = byId[e.subject_id], o = byId[e.object_id];
       if (!s || !o) continue;
-      const g = groundLink(e);
+      const g = groundLink(e, cites);
       links.push(g);
       const support = g.hasSourceLink ? "source-linked" : "no-source-link";
+      const reviewed =
+        g.reviewedEvidenceCount > 0
+          ? `reviewed-evidence=${g.reviewedEvidenceCount}${g.hasClaimSupport ? ", claim-supported" : ""}`
+          : "reviewed-evidence=0";
       lines.push(
         `LINK ${id} ${s.name} --${human(e.relation)}--> ${o.name}: ${e.mechanism}` +
-          ` (confidence: ${e.confidence}, evidence: ${e.evidence_status}, review: ${g.reviewLabel}, tier: ${g.tier}, support: ${support}` +
+          ` (confidence: ${e.confidence}, evidence: ${e.evidence_status}, review: ${g.reviewLabel}, tier: ${g.tier}, support: ${support}, ${reviewed}` +
           `${e.draft ? ", DRAFT" : ""}${e.location ? `, tissue: ${e.location}` : ""})`,
       );
     }
   }
 
-  const chains = buildChains(nodes);
+  const chains = buildChains(nodes, cites);
   if (chains.length) {
     lines.push("CAUSAL_CHAINS (use these when explaining how concepts connect; cite each LINK id):");
     for (const c of chains) {
@@ -280,6 +295,21 @@ export function graphContext(question: string, queryClass?: AskQueryClass): AskG
       const hopText = c.hops.map((h) => `${h.fwd ? "→" : "←"}[${h.relId}|${h.tier}]`).join(" ");
       lines.push(`CHAIN ${from} (${c.fromId}) ${hopText} ${to} (${c.toId})`);
     }
+  }
+
+  const reviewedForLinks = cites.filter((c) => c.relationship_id && seen.has(c.relationship_id));
+  if (reviewedForLinks.length) {
+    lines.push("REVIEWED_EVIDENCE (approved Neon records for retrieved links — cite only these PMIDs/DOIs):");
+    for (const c of reviewedForLinks.slice(0, 40)) {
+      lines.push(
+        `EVIDENCE ${c.evidence_id} edge:${c.relationship_id} claim:${c.claim_support} ${c.label}` +
+          `${c.reviewed_at ? ` reviewed:${c.reviewed_at}` : ""}`,
+      );
+    }
+  } else {
+    lines.push(
+      "REVIEWED_EVIDENCE none for retrieved links — do not imply claim-level verification or invent PMIDs; state missing-support / unreviewed honestly.",
+    );
   }
 
   const coverage = {
@@ -292,13 +322,14 @@ export function graphContext(question: string, queryClass?: AskQueryClass): AskG
 
   lines.push(
     `COVERAGE_SUMMARY matched=${coverage.matched} established=${coverage.establishedCount}` +
-      ` evidence-supported/emerging=${coverage.emergingCount} draft=${coverage.draftCount} missing-support=${coverage.missingSupportCount}`,
+      ` evidence-supported/emerging=${coverage.emergingCount} draft=${coverage.draftCount} missing-support=${coverage.missingSupportCount}` +
+      ` reviewed-evidence-rows=${reviewedForLinks.length}`,
   );
   lines.push(`TRACE prompt=${PROMPT_VERSION} graph=${GRAPH_CORE_VERSION} extensions=${GRAPH_EXTENSIONS_VERSION}`);
 
   return withClassAndTrace(
     {
-      text: lines.slice(0, 140).join("\n"),
+      text: lines.slice(0, 160).join("\n"),
       nodeIds: nodes.map((n) => n.id),
       relIds: [...seen],
       nodes,
@@ -313,7 +344,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass): AskG
 }
 
 /** Orchestrate classify → retrieve → abstain-or-call (FR-022/024/026/028). */
-export function prepareAsk(question: string): PrepareAskResult {
+export function prepareAsk(question: string, cites: CitationLike[] = []): PrepareAskResult {
   const queryClass = classifyAskQuery(question);
   if (queryClass === "clinical_personal") {
     const grounding = withClassAndTrace(
@@ -333,7 +364,7 @@ export function prepareAsk(question: string): PrepareAskResult {
     return { grounding, queryClass, callModel: false, replyText: CLINICAL_REFUSAL };
   }
   if (queryClass === "omics_request") {
-    const grounding = graphContext(question, queryClass);
+    const grounding = graphContext(question, queryClass, cites);
     // Omics adapters are not live — abstain even if some gene names match.
     const reply = grounding.coverage.matched
       ? `${OMICS_ABSTENTION}\n\nRelated concepts already in the graph: ${grounding.nodes.slice(0, 4).map((n) => n.name).join(", ")}.`
@@ -349,7 +380,7 @@ export function prepareAsk(question: string): PrepareAskResult {
     };
   }
 
-  const grounding = graphContext(question, queryClass);
+  const grounding = graphContext(question, queryClass, cites);
   if (!grounding.coverage.matched || queryClass === "unsupported") {
     return {
       grounding: {
@@ -397,8 +428,9 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   for (const m of text.matchAll(/\bPMID[:\s]*(\d{6,9})\b/gi)) {
     const pmid = m[1]!;
     const linked = grounding.links.some((l) => {
+      if (l.reviewedPmids.includes(pmid)) return true;
       const e = edgeByRel[l.relId];
-      return e && (e.pmid === pmid || e.reference === pmid || (e.source_refs || []).includes(pmid));
+      return !!e && (e.pmid === pmid || e.reference === pmid || (e.source_refs || []).includes(pmid));
     });
     if (!linked) inventedRelIds.push(`PMID:${pmid}`);
   }
@@ -470,6 +502,8 @@ Rules:
 - Ground every claim in the CONCEPT/LINK lines. If the extract says NO_MATCH or does not cover the question, say plainly "The Immune City graph does not cover this yet" and suggest a related covered concept if any. Never fill gaps from general knowledge. Never invent citations, PMIDs, DOIs or LINK IDs.
 - Prefer CAUSAL_CHAINS when explaining how two concepts connect. End with a short "Causal chain used:" section that lists the chain hops with [phrase](edge:REL_ID) links, or state that no chain was available.
 - Distinguish evidence tiers explicitly: established, evidence-supported, emerging, hypothesis, draft, missing-support. Say when a link is DRAFT or has no-source-link.
+- REVIEWED_EVIDENCE lists approved Neon claim assessments. If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
+- Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE or on the LINK line itself.
 - For QUERY_CLASS hypothesis_request: label every suggestion as a candidate hypothesis and include at least one alternative or disconfirming consideration.
 - Concise: a short explanation, then compact bullets of key connections, then the causal chain used.
 - Educational only. Never give diagnosis, dosing or treatment recommendations for a real person.

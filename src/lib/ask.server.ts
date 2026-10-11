@@ -1,4 +1,5 @@
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, type UIMessage } from "ai";
+import { and, eq, inArray } from "drizzle-orm";
 import { createOpenAIDirectCall, createResponsesCall } from "@/lib/ai/responses.server.ts";
 import {
   ASK_DISABLED_MESSAGE,
@@ -7,7 +8,11 @@ import {
   isAskEmergencyDisabled,
   prepareAsk,
   rateLimited,
+  validateAnswerCitations,
 } from "@/lib/askGrounding";
+import { getDb } from "@/lib/db.server";
+import { evidenceRecords } from "@/lib/db/schema.server";
+import type { CitationLike } from "@/lib/immune/evidenceStatus";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
 const LOVABLE_MODEL = "openai/gpt-6-astra";
@@ -41,6 +46,49 @@ function textReply(text: string) {
   return createUIMessageStreamResponse({ stream });
 }
 
+/** Approved Neon evidence for retrieved relationship IDs (claim-level context for Ask). */
+export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<CitationLike[]> {
+  if (!relIds.length) return [];
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({
+        evidenceId: evidenceRecords.evidenceId,
+        sourceRef: evidenceRecords.sourceRef,
+        pmid: evidenceRecords.pmid,
+        doi: evidenceRecords.doi,
+        relationshipId: evidenceRecords.relationshipId,
+        claimSupport: evidenceRecords.claimSupport,
+        reviewedAt: evidenceRecords.reviewedAt,
+        curation: evidenceRecords.curation,
+      })
+      .from(evidenceRecords)
+      .where(and(eq(evidenceRecords.curation, "approved"), inArray(evidenceRecords.relationshipId, relIds)));
+    return rows.map(
+      (r): CitationLike => ({
+        evidence_id: r.evidenceId,
+        relationship_id: r.relationshipId ?? null,
+        claim_support: r.claimSupport ?? "unassessed",
+        reviewed_at: r.reviewedAt?.toISOString?.() ?? (r.reviewedAt as string | null) ?? null,
+        curation: r.curation,
+        pmid: r.pmid,
+        doi: r.doi,
+        label: r.pmid ? `PMID ${r.pmid}` : r.doi ? `DOI ${r.doi}` : (r.sourceRef ?? r.evidenceId),
+        url: r.pmid
+          ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`
+          : r.doi
+            ? `https://doi.org/${r.doi}`
+            : `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(r.sourceRef ?? "")}`,
+      }),
+    );
+  } catch {
+    return [];
+  }
+}
+
+const CITATION_REJECT =
+  "I drafted an answer but it cited concepts, links or PMIDs outside the retrieved graph extract / reviewed evidence, so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods & trust.";
+
 export async function handleAsk(request: Request): Promise<Response> {
   if (isAskEmergencyDisabled()) {
     return Response.json({ error: ASK_DISABLED_MESSAGE }, { status: 503, headers: { "Retry-After": "300" } });
@@ -66,9 +114,9 @@ export async function handleAsk(request: Request): Promise<Response> {
   }
 
   // Abstentions (clinical, omics, unsupported) must work even when the model key is absent.
-  const prepared = prepareAsk(question);
-  if (!prepared.callModel && prepared.replyText) {
-    return textReply(prepared.replyText);
+  const preliminary = prepareAsk(question);
+  if (!preliminary.callModel && preliminary.replyText) {
+    return textReply(preliminary.replyText);
   }
 
   const provider = resolveAskProvider();
@@ -82,29 +130,45 @@ export async function handleAsk(request: Request): Promise<Response> {
     );
   }
 
+  const cites = await loadReviewedEvidenceForRels(preliminary.grounding.relIds);
+  const prepared = prepareAsk(question, cites);
+
   const system =
     SYSTEM +
     prepared.grounding.text +
     `\n\nRESPONSE_TRACE prompt=${prepared.grounding.trace.promptVersion} graph=${prepared.grounding.trace.graphVersion} class=${prepared.queryClass}`;
   const modelMessages = await convertToModelMessages(messages);
 
-  if (provider.kind === "lovable") {
-    const { response } = createResponsesCall(
-      request,
-      { baseURL: GATEWAY_URL, apiKey: provider.apiKey, model: provider.model },
-      modelMessages,
-      system,
-    );
-    return response();
+  // Buffer model text so we can enforce citation validation before returning to the client.
+  let draft: string;
+  try {
+    if (provider.kind === "lovable") {
+      const { result } = createResponsesCall(
+        request,
+        { baseURL: GATEWAY_URL, apiKey: provider.apiKey, model: provider.model },
+        modelMessages,
+        system,
+      );
+      draft = await result.text;
+    } else {
+      const { result } = createOpenAIDirectCall(
+        request,
+        { apiKey: provider.apiKey, model: provider.model },
+        modelMessages,
+        system,
+      );
+      draft = await result.text;
+    }
+  } catch {
+    return Response.json({ error: "The model could not complete this answer. Please try again." }, { status: 502 });
   }
 
-  const { response } = createOpenAIDirectCall(
-    request,
-    { apiKey: provider.apiKey, model: provider.model },
-    modelMessages,
-    system,
-  );
-  return response();
+  const validation = validateAnswerCitations(draft, prepared.grounding);
+  if (!validation.ok) {
+    return textReply(CITATION_REJECT);
+  }
+
+  return textReply(draft);
 }
 
 /** Exported for unit tests — do not use from client code. */

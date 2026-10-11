@@ -2,7 +2,7 @@
    Waypoints are canonical concept IDs. Evidence maturity is honest: most edges
    still lack approved claim-linked assessments — do not market as fully reviewed. */
 import { byId, shortestPath, relId, type PathStep } from "@/lib/immune/engine";
-import { relationshipStatus, type ReviewStatus } from "@/lib/immune/evidenceStatus";
+import { relationshipStatus, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 
 export type ExemplarMaturity = "scaffold" | "partially-reviewed" | "reviewed";
 
@@ -62,12 +62,15 @@ export interface ExemplarPathReport {
   segments: { fromId: string; toId: string; steps: PathStep[] | null; relIds: string[]; reviews: ReviewStatus[] }[];
   connected: boolean;
   missingSegment: string | null;
+  /** Honest maturity from approved claim cites when provided; else scaffold. */
+  maturity: ExemplarMaturity;
 }
 
 /** Stitch shortest undirected paths between successive waypoints. */
-export function reportExemplar(pathway: ExemplarPathway): ExemplarPathReport {
+export function reportExemplar(pathway: ExemplarPathway, cites: CitationLike[] = []): ExemplarPathReport {
   const segments: ExemplarPathReport["segments"] = [];
   let missing: string | null = null;
+  const allReviews: ReviewStatus[] = [];
   for (let i = 0; i < pathway.waypointIds.length - 1; i++) {
     const fromId = pathway.waypointIds[i]!;
     const toId = pathway.waypointIds[i + 1]!;
@@ -82,14 +85,37 @@ export function reportExemplar(pathway: ExemplarPathway): ExemplarPathReport {
       segments.push({ fromId, toId, steps: null, relIds: [], reviews: [] });
     } else {
       const relIds = steps.map((s) => relId(s.r));
-      const reviews = steps.map((s) => relationshipStatus(s.r, []));
+      const reviews = steps.map((s) => relationshipStatus(s.r, cites));
+      allReviews.push(...reviews);
       segments.push({ fromId, toId, steps, relIds, reviews });
     }
+  }
+  const connected = !missing && segments.every((s) => s.steps !== null);
+  let maturity: ExemplarMaturity = pathway.maturity;
+  if (connected && allReviews.length) {
+    const approved = allReviews.filter((r) => r === "approved").length;
+    if (approved === allReviews.length) maturity = "reviewed";
+    else if (approved > 0 || allReviews.some((r) => r === "claim-assessed")) maturity = "partially-reviewed";
+    else maturity = "scaffold";
   }
   return {
     pathway,
     segments,
-    connected: !missing && segments.every((s) => s.steps !== null),
+    connected,
     missingSegment: missing,
+    maturity,
   };
+}
+
+/** Unique relationship IDs on exemplar pathways — curator focus order, no auto-approve. */
+export function exemplarQueueFocus(): {
+  pathways: { pathwayId: string; title: string; relIds: string[] }[];
+  relIds: string[];
+} {
+  const pathways = EXEMPLAR_PATHWAYS.map((p) => {
+    const report = reportExemplar(p);
+    const relIds = [...new Set(report.segments.flatMap((s) => s.relIds))];
+    return { pathwayId: p.id, title: p.title, relIds };
+  });
+  return { pathways, relIds: [...new Set(pathways.flatMap((p) => p.relIds))] };
 }

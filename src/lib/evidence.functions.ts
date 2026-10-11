@@ -5,6 +5,7 @@ import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { getDb, getSqlClient } from "@/lib/db.server";
 import { evidenceRecords } from "@/lib/db/schema.server";
 import { edgeByRel } from "./immune/engine";
+import { computeEvidenceUpdate } from "./immune/evidenceInvariants";
 import { checkRecord, suggestFor, type CheckInput } from "./evidenceCheck";
 
 async function assertAdmin(userId: string) {
@@ -192,23 +193,26 @@ export const updateRecord = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
     const { id, ...patch } = data;
-    const touchesSource = "pmid" in patch || "doi" in patch || "source_ref" in patch;
-    const set: Partial<typeof evidenceRecords.$inferInsert> = {};
-    if ("curation" in patch) set.curation = patch.curation;
-    if ("pmid" in patch) set.pmid = patch.pmid;
-    if ("doi" in patch) set.doi = patch.doi;
-    if ("source_ref" in patch) set.sourceRef = patch.source_ref;
-    if ("notes" in patch) set.notes = patch.notes;
-    if ("relationship_id" in patch) set.relationshipId = patch.relationship_id;
-    if ("claim_support" in patch) set.claimSupport = patch.claim_support;
-    if (touchesSource) set.checkStatus = "pending";
-    if ("relationship_id" in patch && !patch.relationship_id) set.claimSupport = "unassessed";
-    if ("curation" in patch || "claim_support" in patch) {
-      set.reviewedBy = context.email ?? context.userId;
-      set.reviewedAt = new Date();
-    }
     const db = getDb();
-    await db.update(evidenceRecords).set(set).where(eq(evidenceRecords.id, id));
+    const [existing] = await db.select().from(evidenceRecords).where(eq(evidenceRecords.id, id)).limit(1);
+    if (!existing) throw new Error("Record not found.");
+
+    const result = computeEvidenceUpdate(
+      {
+        curation: existing.curation,
+        claimSupport: existing.claimSupport,
+        relationshipId: existing.relationshipId,
+        pmid: existing.pmid,
+        doi: existing.doi,
+        sourceRef: existing.sourceRef,
+      },
+      patch,
+      context.email ?? context.userId,
+    );
+    if (result.error) throw new Error(result.error);
+    if (!Object.keys(result.set).length) return { ok: true };
+
+    await db.update(evidenceRecords).set(result.set).where(eq(evidenceRecords.id, id));
     return { ok: true };
   });
 

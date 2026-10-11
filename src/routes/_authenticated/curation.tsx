@@ -16,6 +16,7 @@ import HealthReport from "@/components/immune/HealthReport";
 import manifest from "@/data/citation-manifest.json";
 import relationshipQueue from "@/data/relationship-evidence-queue.json";
 import { byId, human, inn, out, relId } from "@/lib/immune/engine";
+import { EXEMPLAR_PATHWAYS, exemplarQueueFocus } from "@/lib/immune/exemplarPathways";
 
 export const Route = createFileRoute("/_authenticated/curation")({
   head: () => ({
@@ -173,20 +174,39 @@ function Curation() {
   };
 
   const verifiedUnapproved = rows.filter((r) => (r.check_status === "verified" || r.check_status === "matched") && r.curation === "unreviewed");
+  /** Server rejects approval without relationship_id + assessed claim_support. */
+  const readyToApprove = verifiedUnapproved.filter(
+    (r) => r.relationship_id && r.claim_support && r.claim_support !== "unassessed",
+  );
   const claimMapped = rows.filter((r) => r.relationship_id && r.claim_support && r.claim_support !== "unassessed");
   const approvedClaimLinks = new Set(
     rows.filter((r) => r.curation === "approved" && r.relationship_id && r.claim_support === "supports").map((r) => r.relationship_id),
   ).size;
-  const approveVerified = async () => {
-    const ids = verifiedUnapproved.map((r) => r.id);
+  const exemplarFocus = useMemo(() => exemplarQueueFocus(), []);
+  const exemplarRelCount = exemplarFocus.relIds.length;
+  const approveClaimAssessed = async () => {
+    const ids = readyToApprove.map((r) => r.id);
+    if (!ids.length) {
+      setMsg(
+        "No records ready: identifier verified + relationship mapped + claim_support assessed are all required. Identifier match alone cannot approve a claim.",
+      );
+      return;
+    }
     setProgress({ done: 0, total: ids.length });
+    let ok = 0;
+    let failed = 0;
     for (let i = 0; i < ids.length; i++) {
-      try { await updateFn({ data: { id: ids[i]!, curation: "approved" } }); } catch { /* reported below */ }
+      try {
+        await updateFn({ data: { id: ids[i]!, curation: "approved" } });
+        ok++;
+      } catch {
+        failed++;
+      }
       setProgress({ done: i + 1, total: ids.length });
     }
     setProgress(null);
     setMsg(
-      `Approved ${ids.length} records whose identifiers matched PubMed or Crossref. Identifier match ≠ claim support — set relationship + claim_support before counting Gate C coverage.`,
+      `Approved ${ok} claim-assessed record(s)${failed ? `; ${failed} rejected by server invariants` : ""}. Only approved + supports counts toward Gate C.`,
     );
     await load();
   };
@@ -232,6 +252,10 @@ function Curation() {
           </div>
           <ol className="small muted" style={{ marginTop: 12, paddingLeft: 18 }}>
             <li>Import relationship queue → 2. Check identifiers → 3. Assess claim_support per link → 4. Approve. Only approved + supports counts toward claim-level coverage.</li>
+            <li>
+              Demo priority (do not invent PMIDs): {EXEMPLAR_PATHWAYS.map((p) => p.title).join(" · ")}.
+              Focus queue slots on these pathway edges first ({exemplarRelCount} exemplar relIds in graph).
+            </li>
           </ol>
         </div>
       ) : null}
@@ -250,7 +274,18 @@ function Curation() {
           <button className="btn primary" disabled={!!progress || !stats.pending} onClick={() => check("pending")}>Check {stats.pending} unchecked</button>
           <button className="btn" disabled={!!progress} onClick={() => check("retry")}>Retry unreachable</button>
           <button className="btn" disabled={!!progress || !stats.research} onClick={suggest}>Suggest sources</button>
-          <button className="btn" disabled={!!progress || !verifiedUnapproved.length} onClick={approveVerified}>Approve {verifiedUnapproved.length} verified</button>
+          <button
+            className="btn"
+            disabled={!!progress || !readyToApprove.length}
+            title={
+              verifiedUnapproved.length && !readyToApprove.length
+                ? `${verifiedUnapproved.length} identifier-verified but still need relationship + claim_support`
+                : undefined
+            }
+            onClick={approveClaimAssessed}
+          >
+            Approve {readyToApprove.length} claim-assessed
+          </button>
         </div>
       ) : null}
       {progress ? (

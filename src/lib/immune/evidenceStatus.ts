@@ -3,7 +3,18 @@
    Concept-level citations never count as support for a link. */
 import { edgeRef, relId, type KGEdge } from "./engine";
 
-export interface CitationLike { relationship_id: string | null; claim_support: string; label: string; url: string; evidence_id: string; reviewed_at: string | null }
+export interface CitationLike {
+  relationship_id: string | null;
+  claim_support: string;
+  label: string;
+  url: string;
+  evidence_id: string;
+  reviewed_at: string | null;
+  /** When present, only `approved` rows count toward claim support. */
+  curation?: string;
+  pmid?: string | null;
+  doi?: string | null;
+}
 
 export type ReviewStatus = "draft" | "unreviewed" | "source-verified" | "claim-assessed" | "approved" | "rejected" | "conflicting" | "superseded";
 
@@ -20,9 +31,15 @@ export const STATUS_INFO: Record<ReviewStatus, { label: string; desc: string }> 
 
 export function citationsFor(edge: KGEdge, cites: CitationLike[]) {
   const id = relId(edge);
-  return cites.filter((c) => c.relationship_id === id);
+  return cites.filter((c) => {
+    if (c.relationship_id !== id) return false;
+    // Callers that omit curation are treated as already-filtered (e.g. unit tests).
+    if (c.curation !== undefined && c.curation !== "approved") return false;
+    return true;
+  });
 }
 
+/** A relationship is Supported only when mapped, assessed as supporting, and approved. */
 export function relationshipStatus(edge: KGEdge, cites: CitationLike[]): ReviewStatus {
   const mine = citationsFor(edge, cites);
   const sup = mine.some((c) => c.claim_support === "supports");

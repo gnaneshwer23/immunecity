@@ -13,16 +13,26 @@
 
 ## Curator steps (admin)
 
-1. Sign in → `/curation`.
+1. Sign in → `/curation` (Neon Auth; default role is `user` until admin is granted via SQL).
 2. Click **Load relationship queue**.
 3. **Check** identifiers for slots that have PMIDs/DOIs.
 4. Open **Details** → confirm the mapped relationship → set **claim support** (`supports` / `partial` / …).
-5. **Approve** only when the source truly supports that directional claim.
-6. Public pages only see `curation=approved` (RLS + `citations.functions.ts`).
+5. **Approve** only when the source truly supports that directional claim (server rejects approve without `relationship_id` + assessed `claim_support`).
+6. Public pages only see `curation=approved` (`citations.functions.ts` SQL filter on Neon).
+
+## Demo pathway priority (honest scaffolding)
+
+Prioritise claim review for these three exemplar pathways (do **not** invent PMIDs or bulk-approve):
+
+1. **TNF → rheumatoid arthritis** (`ex-tnf-ra`)
+2. **PD-1 / PD-L1 → cancer immunotherapy** (`ex-pd1-io`)
+3. **Type-I interferon → SLE** (`ex-ifn-sle`)
+
+Use `exemplarQueueFocus()` / curation UI callout for the graph `relId`s on those chains. Maturity stays `scaffold` until approved + supports cites exist.
 
 ## What not to do
 
-- Do not bulk-approve the commercial priority manifest’s empty `RESEARCH_REQUIRED` slots.
+- Do not bulk-approve identifier-verified rows without claim assessment (UI + server block this).
 - Do not invent PMIDs or set `supports` without reading the source.
 - Do not expect Gate C to pass from the queue alone — approval is the scientific step.
 
