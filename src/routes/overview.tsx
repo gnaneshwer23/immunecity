@@ -74,8 +74,8 @@ function Overview() {
         <div className="platform-pillars">
           <Link className="platform-pillar" to="/learn">
             <span className="platform-pillar-kicker">Foundations</span>
-            <h3>Overview · Cell atlas · Mechanism</h3>
-            <p>Start with the big picture, meet the immune-system components, and follow mechanisms step by step. Academy foundation track is a navigable scaffold.</p>
+            <h3>Cell atlas · Mechanism</h3>
+            <p>Meet the immune-system components, then follow mechanisms step by step. Academy foundation track is a navigable scaffold on Mechanism.</p>
           </Link>
           <Link className="platform-pillar" to="/evidence">
             <span className="platform-pillar-kicker">Clinical knowledge</span>

@@ -214,7 +214,7 @@ function Home() {
                   <ul>
                     {items.map((f) => (
                       <li key={f.id}>
-                        <a href={f.relatedAppRoute}>{f.name}</a>
+                        <Link to={f.relatedAppRoute}>{f.name}</Link>
                         <span>{f.description}</span>
                       </li>
                     ))}

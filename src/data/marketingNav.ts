@@ -45,9 +45,11 @@ export const FOOTER_GROUPS = [
   },
 ] as const;
 
-/** Routes that use marketing chrome (nav + no layer sidebar). */
+/** Exact paths that use marketing chrome (nav + no layer sidebar). */
 export const MARKETING_PATHS = new Set([
   "/",
+  "/overview",
+  "/methods",
   "/about",
   "/collaborate",
   "/insights",
@@ -58,7 +60,12 @@ export const MARKETING_PATHS = new Set([
   "/accessibility",
 ]);
 
+/** Prefixes whose nested routes stay on marketing chrome (Academy / Learn). */
+const MARKETING_PREFIXES = ["/mechanism"] as const;
+
 export function isMarketingPath(pathname: string): boolean {
   if (MARKETING_PATHS.has(pathname)) return true;
-  return false;
+  return MARKETING_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 }

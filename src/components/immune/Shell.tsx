@@ -85,7 +85,7 @@ function SiteFooter() {
           <div key={g.label} className="sf-col">
             <div className="sf-label">{g.label}</div>
             {g.items.map((l) => (
-              <Link key={l.path} to={l.path as "/"}>
+              <Link key={l.path} to={l.path}>
                 {l.label}
               </Link>
             ))}
@@ -137,7 +137,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               {MARKETING_NAV.map((item) => (
                 <Link
                   key={item.path}
-                  to={item.path as "/"}
+                  to={item.path}
                   className="marketing-nav-link"
                   activeOptions={{ exact: item.path === "/" }}
                   activeProps={{ className: "marketing-nav-link current" }}
@@ -147,7 +147,9 @@ export default function Shell({ children }: { children: ReactNode }) {
               ))}
             </nav>
             <Button asChild className="bio-primary topbar-cta">
-              <Link to={EXPLORE_PATH}>Explore {FLAGSHIP_NAME}</Link>
+              <Link to={pathname === EXPLORE_PATH ? "/graph" : EXPLORE_PATH}>
+                {pathname === EXPLORE_PATH ? `Open ${FLAGSHIP_NAME} graph` : `Explore ${FLAGSHIP_NAME}`}
+              </Link>
             </Button>
           </>
         ) : (
@@ -204,11 +206,13 @@ export default function Shell({ children }: { children: ReactNode }) {
             <div className="nav-label">Explore</div>
             <div className="nav-group">
               {MARKETING_NAV.map((item) => (
-                <Link key={item.path} to={item.path as "/"} onClick={() => setOpen(false)}>
+                <Link key={item.path} to={item.path} onClick={() => setOpen(false)}>
                   {item.label}
                 </Link>
               ))}
-              <Link to={EXPLORE_PATH} onClick={() => setOpen(false)}>Explore {FLAGSHIP_NAME}</Link>
+              <Link to={pathname === EXPLORE_PATH ? "/graph" : EXPLORE_PATH} onClick={() => setOpen(false)}>
+                {pathname === EXPLORE_PATH ? `Open ${FLAGSHIP_NAME} graph` : `Explore ${FLAGSHIP_NAME}`}
+              </Link>
               <Link to="/collaborate" onClick={() => setOpen(false)}>Collaborate</Link>
             </div>
           </nav>
