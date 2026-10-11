@@ -18,12 +18,15 @@ import { reasonMechanism } from "../src/lib/immune/mechanismReasoning.ts";
 import { SCIENTIFIC_EVAL_SET } from "../src/test/eval/scientific-eval-set.ts";
 import {
   MODEL_REGISTRY,
+  adapterPromotionGate,
   dryRunAllStubs,
   implementedModels,
   invokeModelStub,
   isRunnable,
+  plannedMolecularStubs,
   registryHonestySummary,
   requestShapePreview,
+  validateModelRequest,
 } from "../src/lib/ai/modelRegistry.ts";
 import { createHypothesisDraft, hypothesisCompleteness } from "../src/lib/research/hypothesisDraft.ts";
 import {
@@ -98,6 +101,17 @@ check("registry request shapes", MODEL_REGISTRY.every((m) => m.requestFields.len
   check("registry no sci claims", stubs.every((r) => r.scientificClaimAllowed === false));
   check("registry unknown refuse", invokeModelStub("missing-adapter").kind === "not_available");
   check("registry honesty summary", registryHonestySummary().implemented === 0);
+  const mol = plannedMolecularStubs();
+  check("registry molecular stubs", mol.length >= 2 && mol.every((m) => m.status === "planned"));
+  check(
+    "registry shape ok",
+    MODEL_REGISTRY.every((m) => validateModelRequest(m.id, m.exampleRequest).ok),
+  );
+  check(
+    "registry shape bad",
+    validateModelRequest("peptide-mhc", { family: "epitope" }).ok === false,
+  );
+  check("registry promote blocked", adapterPromotionGate("peptide-mhc").canPromote === false);
 }
 check("ext version", GRAPH_EXTENSIONS_VERSION === "draft-ext-4" && EXT_PROVENANCE.version === "draft-ext-4");
 check("immuno B node", !!byId["EG01"]?.draft && !!byId["EG13"]?.draft && !!byId["EI01"]?.draft && !!byId["EP10"]?.draft && !!byId["EP15"]?.draft && !!byId["EG17"]?.draft);

@@ -6,13 +6,16 @@ import { IMPLEMENTATION_PHASES, phaseStatusSummary } from "@/data/implementation
 import { domainCoverageReport, knowledgeGapQueue } from "@/lib/immune/domainCoverage";
 import {
   MODEL_REGISTRY,
+  adapterPromotionGate,
   dryRunAllStubs,
   getModel,
   implementedModels,
   invokeModelStub,
   isRunnable,
+  plannedMolecularStubs,
   requestShapePreview,
   registryHonestySummary,
+  validateModelRequest,
 } from "@/lib/ai/modelRegistry";
 import {
   addCandidateClaim,
@@ -208,6 +211,16 @@ describe("Phase D model registry honesty", () => {
     }
     expect(getModel("peptide-mhc")?.category).toBe("epitope");
     expect(registryHonestySummary().implemented).toBe(0);
+  });
+
+  it("validates request shapes and blocks promotion without a real adapter", () => {
+    for (const m of MODEL_REGISTRY) {
+      expect(validateModelRequest(m.id, m.exampleRequest).ok).toBe(true);
+    }
+    expect(validateModelRequest("peptide-mhc", { family: "epitope" }).ok).toBe(false);
+    expect(adapterPromotionGate("tcr-pmhc-dock").canPromote).toBe(false);
+    expect(plannedMolecularStubs().length).toBeGreaterThanOrEqual(2);
+    expect(plannedMolecularStubs().every((m) => m.status === "planned")).toBe(true);
   });
 
   it("stub invoke refuses every adapter and never allows scientific claims", () => {

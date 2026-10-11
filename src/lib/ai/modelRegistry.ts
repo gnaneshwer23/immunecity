@@ -87,6 +87,13 @@ export interface ModelInterfaceSpec {
   exampleRequest: ModelRequest;
   intendedUse: string;
   limitations: string[];
+  /**
+   * Optional KG concept IDs for curator navigation only — not model outputs
+   * and not evidence that a predictor exists.
+   */
+  relatedConceptIds?: string[];
+  /** Short maturity label shown in UI (planned / interface / future runtime). */
+  maturityNote?: string;
 }
 
 const NOT_IMPLEMENTED = "Not implemented";
@@ -121,6 +128,8 @@ export const MODEL_REGISTRY: ModelInterfaceSpec[] = [
       "UI documents the contract only",
       "Never treat interface previews as omics results",
     ],
+    relatedConceptIds: ["C003", "M001"],
+    maturityNote: "Interface contract only — no omics runtime.",
   },
   {
     id: "protein-abag",
@@ -151,6 +160,8 @@ export const MODEL_REGISTRY: ModelInterfaceSpec[] = [
       "UI documents the contract only",
       "Never treat interface previews as fold/dock results",
     ],
+    relatedConceptIds: ["C014"],
+    maturityNote: "Interface contract only — no fold/dock runtime.",
   },
   {
     id: "peptide-mhc",
@@ -182,6 +193,8 @@ export const MODEL_REGISTRY: ModelInterfaceSpec[] = [
       "UI documents the contract only",
       "Never treat interface previews as binding ranks",
     ],
+    relatedConceptIds: ["EG01"],
+    maturityNote: "Interface contract only — no binding ranks.",
   },
   {
     id: "genomic-variants",
@@ -211,6 +224,8 @@ export const MODEL_REGISTRY: ModelInterfaceSpec[] = [
       "UI documents the contract only",
       "Never treat interface previews as clinical variant calls",
     ],
+    relatedConceptIds: ["EG07", "EG12"],
+    maturityNote: "Interface contract only — no clinical variant caller.",
   },
   {
     id: "scientific-agents",
@@ -242,6 +257,73 @@ export const MODEL_REGISTRY: ModelInterfaceSpec[] = [
       "UI documents the contract only",
       "Never treat interface previews as agent conclusions",
     ],
+    relatedConceptIds: ["C003", "M001"],
+    maturityNote: "Interface contract only — no agent runtime.",
+  },
+  {
+    id: "tcr-pmhc-dock",
+    name: "TCR–pMHC docking (molecular stub)",
+    category: "structure",
+    status: "planned",
+    version: null,
+    inputs: ["TCR sequence or structure handle", "Peptide–MHC complex identifier"],
+    outputs: ["Documented docking pose fields (not produced)", "Uncertainty / clash notes (not produced)"],
+    requestFields: [
+      { name: "sequenceOrStructureId", type: "string", required: true, description: "TCR or complex handle — caller-supplied only." },
+      { name: "partnerId", type: "string", required: true, description: "pMHC / peptide–MHC partner identifier." },
+      { name: "mode", type: "'dock'|'antibody_antigen'", required: false, description: "Intended docking mode when a licensed runtime exists." },
+    ],
+    outputFields: [
+      { name: "interfaces", type: "InterfaceHit[]", required: true, description: "Would list contact patches — not produced; never clinical affinity." },
+      { name: "epitopeSuggestions", type: "string[]", required: false, description: "Structural hints only if a future adapter ships — not validated epitopes." },
+    ],
+    exampleRequest: {
+      family: "structure",
+      sequenceOrStructureId: "example:TCR-DEMO",
+      partnerId: "example:PMHC-DEMO",
+      mode: "dock",
+    },
+    intendedUse: "Future structural context for TCR recognition hypotheses under human review.",
+    limitations: [
+      NOT_IMPLEMENTED,
+      "Planned molecular stub — no docking engine, no scores, no poses",
+      "Must not be labelled as immunogenicity or clinical binder prediction",
+      "Promotion to implemented requires rights + held-out eval + tests",
+    ],
+    relatedConceptIds: ["EG01", "C014"],
+    maturityNote: "Planned molecular stub — contract only.",
+  },
+  {
+    id: "cytokine-receptor-md",
+    name: "Cytokine–receptor MD refine (molecular stub)",
+    category: "structure",
+    status: "planned",
+    version: null,
+    inputs: ["Cytokine / receptor structure identifiers"],
+    outputs: ["Documented conformation fields (not produced)", "Stability notes (not produced)"],
+    requestFields: [
+      { name: "sequenceOrStructureId", type: "string", required: true, description: "Cytokine or complex structure handle." },
+      { name: "partnerId", type: "string", required: false, description: "Optional receptor partner identifier." },
+      { name: "mode", type: "'fold'|'dock'", required: false, description: "Refine vs dock intent for a future runtime." },
+    ],
+    outputFields: [
+      { name: "interfaces", type: "InterfaceHit[]", required: true, description: "Would list refined contacts — not produced in this build." },
+    ],
+    exampleRequest: {
+      family: "structure",
+      sequenceOrStructureId: "example:TNF-DEMO",
+      partnerId: "example:TNFR-DEMO",
+      mode: "fold",
+    },
+    intendedUse: "Educational structural context for cytokine signalling hypotheses — never a dynamics result.",
+    limitations: [
+      NOT_IMPLEMENTED,
+      "Planned molecular stub — no MD engine or energy scores",
+      "UI documents a future contract only",
+      "Never treat previews as simulation trajectories",
+    ],
+    relatedConceptIds: ["M001", "D001"],
+    maturityNote: "Planned molecular stub — contract only.",
   },
 ];
 
@@ -276,6 +358,87 @@ export function isRunnable(model: ModelInterfaceSpec): boolean {
 /** Pretty-printed request shape for UI — documentation only. */
 export function requestShapePreview(model: ModelInterfaceSpec): string {
   return JSON.stringify(model.exampleRequest, null, 2);
+}
+
+export type ModelRequestValidation = {
+  ok: boolean;
+  modelId: string;
+  issues: string[];
+};
+
+/**
+ * Client-side request-shape check against the documented contract.
+ * Does not call any predictor and never invents scientific fields.
+ */
+export function validateModelRequest(
+  modelId: string,
+  request: unknown,
+): ModelRequestValidation {
+  const model = getModel(modelId);
+  if (!model) {
+    return { ok: false, modelId, issues: [`Unknown model id "${modelId}".`] };
+  }
+  const issues: string[] = [];
+  if (!request || typeof request !== "object") {
+    return { ok: false, modelId, issues: ["Request must be a JSON object."] };
+  }
+  const req = request as Record<string, unknown>;
+  if (req.family !== model.category && req.family !== model.exampleRequest.family) {
+    issues.push(
+      `family must be "${model.exampleRequest.family}" for ${model.id} (got ${String(req.family)}).`,
+    );
+  }
+  for (const field of model.requestFields) {
+    if (!field.required) continue;
+    const v = req[field.name];
+    if (v === undefined || v === null || v === "") {
+      issues.push(`Missing required field "${field.name}".`);
+      continue;
+    }
+    if (field.type.endsWith("[]") && !Array.isArray(v)) {
+      issues.push(`Field "${field.name}" must be an array.`);
+    }
+    if (field.type === "string" && typeof v !== "string") {
+      issues.push(`Field "${field.name}" must be a string.`);
+    }
+  }
+  return { ok: issues.length === 0, modelId, issues };
+}
+
+export type AdapterPromotionGate = {
+  modelId: string;
+  status: ModelStatus | "unknown";
+  /** Always false until a real adapter clears rights + eval + tests. */
+  canPromote: false;
+  checklist: Array<{ id: string; label: string; met: boolean }>;
+};
+
+/** Honesty gate: nothing can be marked implemented without explicit future work. */
+export function adapterPromotionGate(modelId: string): AdapterPromotionGate {
+  const model = getModel(modelId);
+  const checklist = [
+    { id: "rights", label: "Licensed / redistributable runtime rights cleared", met: false },
+    { id: "eval", label: "Held-out scientific evaluation suite passing", met: false },
+    { id: "tests", label: "Adapter tests assert no fabricated scores or ranks", met: false },
+    { id: "version", label: "Non-null runtime version assigned", met: model?.version != null },
+    {
+      id: "status",
+      label: "Human review flipped status to implemented",
+      met: model?.status === "implemented",
+    },
+  ];
+  return {
+    modelId,
+    status: model?.status ?? "unknown",
+    canPromote: false,
+    checklist,
+  };
+}
+
+export function plannedMolecularStubs(): ModelInterfaceSpec[] {
+  return MODEL_REGISTRY.filter(
+    (m) => m.status === "planned" && /molecular stub/i.test(m.name),
+  );
 }
 
 /**

@@ -68,7 +68,7 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
       "Methods and Research both surface the registry with honest not-implemented copy.",
     ],
     status: "partial",
-    notes: "Deepened modular contracts + stub dry-run + UI honesty on Research/Methods. Still interface-only — no live omics/structure/pMHC/genomics predictors.",
+    notes: "Contracts + stub dry-run + request-shape validation + promotion gate + planned molecular stubs (TCR–pMHC dock, cytokine–receptor MD) on Research/Methods. Still no live predictors — implementedModels() empty.",
   },
   {
     id: "E",
