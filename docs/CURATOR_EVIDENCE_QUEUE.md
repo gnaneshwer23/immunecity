@@ -22,6 +22,8 @@
 
 ## Demo pathway priority (honest scaffolding)
 
+Approval requires: identifier **verified or matched**, mapped `relationship_id`, and assessed `claim_support`. Source edits clear approval. Each successful update appends an `evidence_audit_events` row.
+
 Prioritise claim review for these three exemplar pathways (do **not** invent PMIDs or bulk-approve):
 
 1. **TNF → rheumatoid arthritis** (`ex-tnf-ra`)

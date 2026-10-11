@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canApproveClaim, computeEvidenceUpdate } from "@/lib/immune/evidenceInvariants";
+import { canApproveClaim, canApproveIdentifier, computeEvidenceUpdate } from "@/lib/immune/evidenceInvariants";
 
 const base = {
   curation: "approved" as const,
@@ -8,6 +8,7 @@ const base = {
   pmid: "12345678",
   doi: null as string | null,
   sourceRef: "PMID:12345678",
+  checkStatus: "verified",
 };
 
 describe("evidence approval invariants", () => {
@@ -15,6 +16,13 @@ describe("evidence approval invariants", () => {
     expect(canApproveClaim(null, "supports")).toBe(false);
     expect(canApproveClaim("REL-x", "unassessed")).toBe(false);
     expect(canApproveClaim("REL-x", "supports")).toBe(true);
+  });
+
+  it("requires verified or matched identifier status", () => {
+    expect(canApproveIdentifier("verified")).toBe(true);
+    expect(canApproveIdentifier("matched")).toBe(true);
+    expect(canApproveIdentifier("pending")).toBe(false);
+    expect(canApproveIdentifier("ambiguous")).toBe(false);
   });
 
   it("invalidates approval when source identifiers change", () => {
@@ -36,9 +44,18 @@ describe("evidence approval invariants", () => {
     expect(r.error).toMatch(/claim_support|Identifier verification/i);
   });
 
-  it("allows approve when relationship mapped and claim assessed", () => {
+  it("blocks approve when identifier is not yet verified", () => {
     const r = computeEvidenceUpdate(
-      { ...base, curation: "unreviewed", claimSupport: "supports" },
+      { ...base, curation: "unreviewed", claimSupport: "supports", checkStatus: "pending" },
+      { curation: "approved" },
+      "curator@example.com",
+    );
+    expect(r.error).toMatch(/verified or matched/i);
+  });
+
+  it("allows approve when relationship mapped, claim assessed, and identifier verified", () => {
+    const r = computeEvidenceUpdate(
+      { ...base, curation: "unreviewed", claimSupport: "supports", checkStatus: "matched" },
       { curation: "approved" },
       "curator@example.com",
     );

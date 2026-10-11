@@ -6,6 +6,9 @@
 export type ClaimSupport = "unassessed" | "supports" | "partial" | "contradicts" | "unrelated";
 export type CurationState = "unreviewed" | "approved" | "rejected";
 
+/** Bibliographic check statuses that may proceed to claim approval. */
+export const APPROVAL_ELIGIBLE_CHECK = new Set(["verified", "matched"]);
+
 export interface EvidenceSnapshot {
   curation: string;
   claimSupport: string;
@@ -13,6 +16,7 @@ export interface EvidenceSnapshot {
   pmid: string | null;
   doi: string | null;
   sourceRef: string | null;
+  checkStatus: string;
 }
 
 export interface EvidencePatchInput {
@@ -42,17 +46,22 @@ export interface EvidencePatchResult {
   };
 }
 
-/** True when a record may be marked curation=approved. */
+/** True when a record may be marked curation=approved (claim assessed + ID mapped). */
 export function canApproveClaim(relationshipId: string | null | undefined, claimSupport: string | null | undefined): boolean {
   if (!relationshipId) return false;
   if (!claimSupport || claimSupport === "unassessed") return false;
   return true;
 }
 
+/** Identifier metadata must resolve before scientific approval can stick. */
+export function canApproveIdentifier(checkStatus: string | null | undefined): boolean {
+  return !!checkStatus && APPROVAL_ELIGIBLE_CHECK.has(checkStatus);
+}
+
 /**
  * Compute the DB patch for an evidence update.
  * Source edits invalidate prior approval and claim assessment.
- * Approval requires mapped relationship_id + assessed claim_support.
+ * Approval requires mapped relationship_id + assessed claim_support + verified/matched identifier.
  */
 export function computeEvidenceUpdate(
   existing: EvidenceSnapshot,
@@ -94,13 +103,23 @@ export function computeEvidenceUpdate(
   const nextClaim = set.claimSupport ?? existing.claimSupport;
   const nextRel =
     "relationshipId" in set ? (set.relationshipId ?? null) : existing.relationshipId;
+  const nextCheck = set.checkStatus ?? existing.checkStatus;
 
-  if (nextCuration === "approved" && !canApproveClaim(nextRel, nextClaim)) {
-    return {
-      error:
-        "Cannot approve without a mapped relationship_id and claim_support assessment. Identifier verification is not scientific claim approval.",
-      set: {},
-    };
+  if (nextCuration === "approved") {
+    if (!canApproveClaim(nextRel, nextClaim)) {
+      return {
+        error:
+          "Cannot approve without a mapped relationship_id and claim_support assessment. Identifier verification is not scientific claim approval.",
+        set: {},
+      };
+    }
+    if (!canApproveIdentifier(nextCheck)) {
+      return {
+        error:
+          "Cannot approve until the source identifier is verified or matched (PubMed/Crossref). Run identifier check first.",
+        set: {},
+      };
+    }
   }
 
   if (!touchesSource && ("curation" in patch || "claim_support" in patch)) {

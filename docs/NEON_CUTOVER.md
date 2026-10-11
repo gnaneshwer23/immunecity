@@ -7,6 +7,7 @@
 | Sign-in / sign-up / Google | Supabase Auth (+ Lovable OAuth) | Neon Managed Better Auth (`src/integrations/neon/auth-client.ts`) |
 | Server fn auth | `requireSupabaseAuth` | `requireNeonAuth` (JWKS via `jose`) |
 | Evidence CRUD / roles | PostgREST + RLS | drizzle + `public.has_role` on Neon |
+| Curation audit history | (none) | `evidence_audit_events` append-only (IC-02) |
 | Approved citations | anon Supabase select | `getApprovedCitations` SQL filter |
 
 ## Owner clicks

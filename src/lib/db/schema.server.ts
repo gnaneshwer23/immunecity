@@ -37,4 +37,17 @@ export const evidenceRecords = pgTable("evidence_records", {
   reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
 });
 
+/** Append-only curation decision history (IC-02). */
+export const evidenceAuditEvents = pgTable("evidence_audit_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  evidenceRecordId: uuid("evidence_record_id").notNull(),
+  evidenceId: text("evidence_id").notNull(),
+  actor: text("actor").notNull(),
+  reason: text("reason").notNull(),
+  previousState: jsonb("previous_state").notNull(),
+  newState: jsonb("new_state").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type EvidenceRecordRow = typeof evidenceRecords.$inferSelect;
+export type EvidenceAuditEventRow = typeof evidenceAuditEvents.$inferSelect;

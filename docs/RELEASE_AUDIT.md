@@ -1,20 +1,10 @@
 # Immune City — Full Production Readiness Audit
 
-**Audit refresh (UTC):** 2026-10-11 (post-Neon cutover, HEAD `76c96b2` + local P0 follow-ups)  
+**Audit refresh (UTC):** 2026-10-11 (post-roadmap gap review)  
 **Release scope:** Public educational scientific exploration beta — **not** clinical decision support  
-**PRD:** Immune City Immunology × Advanced AI PRD v1.0 (11 Oct 2026)  
+**Roadmap:** Immune City Enhancement Roadmap & Production Gaps v1.0 (11 Oct 2026)  
 **Canonical production:** https://immunecity.vercel.app  
-**Auditor method:** Code inspection; `bun scripts/smoke-neon-cutover.ts`; live HTTP + Ask curl on Vercel; browser Ask/auth UI; local unit/smoke scripts
-
----
-
-## Audit plan (this refresh)
-
-1. Confirm Neon cutover is on `main` (`76c96b2`) and runtime auth/curation no longer depend on Supabase PostgREST.
-2. Smoke Neon JWKS + schema + counts; smoke Vercel routes + Ask clinical/educational paths.
-3. Close engineering P0s: evidence approval invariants; Ask ← reviewed Neon evidence + citation validation.
-4. Align curator queue / UI toward three exemplar pathways without inventing approvals.
-5. Re-state Gates A–H with **CONDITIONAL GO** framing; list honest unverified items.
+**Auditor method:** Code inspection; Neon smoke; Vercel deployment API; GitHub `main` SHA; live Ask smoke (prior pass)
 
 ---
 
@@ -22,11 +12,14 @@
 
 ### **CONDITIONAL GO** for public educational beta on **https://immunecity.vercel.app**
 
-**Neon runtime (verified 2026-10-11):** Auth JWKS **200**; `evidence_records` + `user_roles` present; signup role trigger present. Live Neon counts at smoke time: **0** auth users, **0** role rows, **0** evidence rows — empty until owner signup + admin SQL + curator import.
+| Layer | State |
+|-------|--------|
+| GitHub `main` | `ef188d3` — approval invariants + Ask ← Neon reviewed evidence (**pushed**) |
+| Vercel production | Still **`76c96b2`** (Neon cutover only) — **P0 Ask/evidence fixes not yet deployed** |
+| Neon DB | JWKS OK; `user_roles`, `evidence_records`, `evidence_audit_events` present; **0** users / **0** evidence / **0** admins |
+| Gate C (approved claims) | **0 / 536** — science blocked until curator review |
 
-**Ask (verified on Vercel):** Clinical personal question → **200** educational refusal (no 500). TNF/RA educational Ask → **200** streaming via OpenAI Responses (`OPEN_API_KEY` / `OPENAI_API_KEY` path). Auth page shows Neon Auth (email + Google) and explicit-admin copy.
-
-**Still required for unqualified GO:** human Neon signup + admin grant; curator claim assess/approve (Gate C still **0** approved); SME gold-set signature + human a11y remainder (Gates E/F). Keep Lovable host as secondary; do not delete.
+**Still required for unqualified GO:** (1) Vercel deploy of `ef188d3`+; (2) owner Neon signup + admin SQL; (3) curator claim assess/approve on exemplar pathways; (4) SME gold-set + human a11y.
 
 ---
 
@@ -34,260 +27,136 @@
 
 | Item | Value |
 |------|--------|
-| Repo | `/Users/gnaneshwerjadav/Desktop/immune-city` · GitHub `gnaneshwer23/immunecity` |
-| Latest commit on `main` | `76c96b2` — *Cut over auth and curation to Neon Auth + Postgres* |
-| Canonical URL | https://immunecity.vercel.app — HTTP 200 |
-| Secondary URL | https://immune-city.lovable.app — treat as divergent deploy |
-| Vercel project | `immunecity` |
-| Auth / DB runtime | **Neon Managed Better Auth** + **drizzle/postgres** (`src/integrations/neon/*`, `src/lib/db.server.ts`) |
-| Graph runtime | KG **0.3** + extensions **draft-ext-3** · 260 core / 66 draft concepts · 536 runtime links · 15 spine steps |
-| Test environment | Local Bun; curl; cursor-ide-browser on Vercel |
-| Disk note | Prefer targeted vitest / smoke scripts; avoid heavy `bun add` |
-
-**Host divergence:** Vercel and Lovable remain two deployments. Prefer Vercel as RC.
+| Repo | GitHub `gnaneshwer23/immunecity` |
+| Latest commit on `main` | `ef188d3` — *Enforce approval invariants and ground Ask on Neon reviewed evidence* |
+| Local workspace (this refresh) | Uncommitted follow-ups: identifier-verified approval gate + `evidence_audit_events` + audit doc sync |
+| Canonical URL | https://immunecity.vercel.app |
+| Secondary URL | https://immune-city.lovable.app — divergent; keep until deliberately retired |
+| Vercel production SHA | `76c96b2` (READY) — **lags GitHub by ≥1 commit** |
+| Auth / DB | Neon Managed Better Auth + drizzle/postgres |
+| Graph | KG **0.3** + extensions **draft-ext-3** · 260 core / 66 draft concepts · 536 runtime links · 15 spine |
 
 ---
 
-## 3. Capability inventory
+## 3. Roadmap gap matrix (IC-01…IC-16)
 
-| Capability | Status | Notes |
-|------------|--------|-------|
-| 12-layer navigation + Shell | **Live** | Vercel HTTP 200 (some paths 307 then settle; `/auth` may 307→auth UI) |
-| KG browse / D3 graph / table | **Live** | Client-only D3 behind ClientOnly |
-| Causal spine (15 steps) | **Live** | Overview |
-| Teaching simulator | **Live** | Educational assumptions |
-| Patient explorer | **Live / partial** | Not clinical CDS |
-| Mechanism / path reasoning | **Live / partial** | Exemplars labelled scaffold until claim review |
-| Ask Immune City (Vercel) | **Live** | Clinical refuse + educational stream verified |
-| Emergency Ask disable | **In code** | `IMMUNE_ASK_DISABLED` / `ASK_EMERGENCY_DISABLE` (unset = normal) |
-| Relationship-level evidence DB | **Schema live / data empty** | Neon `evidence_records` count **0** at smoke |
-| Citation curation UI | **Live** (auth-gated) | Neon Auth + admin server fns |
-| Advanced models | **Interface-only** | Registry stubs refuse |
-| Clinical CDS | **Out of scope / refused** | Guardrails present |
+| ID | Roadmap item | Status | Notes |
+|----|--------------|--------|-------|
+| IC-01 | Neon production verification | **PARTIAL** | JWKS/schema/counts smoke **PASS**; full signup→admin→curation E2E **BLOCKED** (0 users) |
+| IC-02 | Approval state machine | **DONE in code** (needs deploy + schema) | Source-edit invalidation; reject approve without rel+claim; **identifier verified/matched required**; append-only `evidence_audit_events`; unknown `relationship_id` rejected by zod |
+| IC-03 | Ask ← approved Neon evidence | **DONE in code** (needs deploy) | `loadReviewedEvidenceForRels` + `prepareAsk(..., cites)` |
+| IC-04 | Final citation validation | **DONE in code** (needs deploy) | Buffer model text → `validateAnswerCitations` before return |
+| IC-05 | Canonical release audit | **IN PROGRESS** | Canonical URL declared; this doc refreshed; prod SHA lag documented |
+| IC-06 | Exemplar pathways | **SCAFFOLD** | TNF–RA / PD-1 / IFN–SLE graph chains + curator focus; maturity=`scaffold` until approved cites |
+| IC-07 | Universal detail panel | **PARTIAL** | Shared `ScientificInspector` used widely; not every layer identical |
+| IC-08 | Unified graph snapshot | **DONE** | `graphReleaseSnapshot()` on home/shell/Methods/Ask trace |
+| IC-09 | Spine navigation | **PARTIAL** | 15-step spine live on overview; keyboard/mobile polish open |
+| IC-10 | Evidence filters | **PARTIAL** | Curation + coverage filters; graph-wide evidence-tier filter incomplete |
+| IC-11 | Curation gap queue | **DONE (candidates)** | Relationship queue + exemplar focus; no auto-approve |
+| IC-12 | Capability labels | **PARTIAL** | Methods/research stubs labelled; not every surface |
+| IC-13 | Compare | **PARTIAL / planned** | Ask compare class exists; dedicated evidence-aware UI later |
+| IC-14 | Research workbench | **PARTIAL** | Phase E draft workspace; no auto core-graph promotion |
+| IC-15 | Distributed rate limits | **NOT SHIPPED** | In-memory 8/min/IP accepted for beta |
+| IC-16 | A11y/perf sign-off | **PARTIAL** | `bun run a11y` available; human keyboard/contrast + Lighthouse open |
 
 ---
 
-## 4. Test coverage (smoke)
+## 4. Smoke evidence (this / prior pass)
 
-### 4.1 Neon cutover (`bun scripts/smoke-neon-cutover.ts`)
+### 4.1 Neon (`bun run smoke:neon`) — 2026-10-11
 
 | Check | Result |
 |-------|--------|
 | JWKS | **200 ok** |
-| jose remote JWK set | **ok** |
-| Tables | `evidence_records`, `user_roles` |
+| jose | **ok** |
+| Tables | `evidence_records`, `user_roles` (+ `evidence_audit_events` after schema apply) |
 | Counts | roles **0**, evidence **0**, auth_users **0** |
-| Role trigger `on_neon_auth_user_created_role` | **present** |
-| Admin rows | **0** (owner must signup then SQL-grant) |
+| Role trigger | **present** |
+| Admin rows | **0** |
 
-### 4.2 Vercel HTTP
+### 4.2 Vercel production
 
-| Path | Status (no follow) |
-|------|---------------------|
-| `/` | 200 |
-| `/auth` | 307 → auth UI (browser OK) |
-| `/evidence`, `/methods`, `/simulator`, `/dynamics`, `/disease`, `/therapy`, `/patient`, `/research` | 200 |
-| `/learn`, `/mechanism`, `/graph`, `/reasoning` | 307 (client routing / search params — content reachable in browser) |
-| `/curation` | 200 shell; mutations require Neon session + admin |
-
-### 4.3 Ask API (Vercel POST `/api/ask`)
-
-| Case | Result |
+| Item | Result |
 |------|--------|
-| Personal clinical (“Should I take methotrexate…”) | **200** educational refusal text |
-| TNF → RA educational | **200** OpenAI stream (`[TNF](concept:M001)…`) |
-| Browser Ask dialog | Opens; educational disclaimer; send path exercised |
+| Deployed SHA | `76c96b2` (not `ef188d3`) |
+| HTTP layers / Ask clinical refuse / TNF stream | **PASS** on prior pass under `76c96b2` |
+| IC-02/03/04 behaviour on prod | **NOT LIVE** until redeploy |
 
-### 4.4 Not verified this pass (honest gaps)
+### 4.3 Not verified
 
 | Item | Status |
 |------|--------|
-| Full register → sign-in → sign-out round-trip against prod Neon | **Not run** — would create a real prod user; Neon currently has **0** users |
-| Role defaults to `user` on first signup | **Code + trigger present**; live signup not exercised |
-| Admin/curation write gate end-to-end | **Blocked** until owner creates account + admin SQL |
-| Evidence persistence after import/approve | **Blocked** — DB empty; no admin session in this audit |
-| Full vitest suite | Prefer targeted files (disk); hang risk on full suite remains |
-| Lighthouse / CWV / Ask load soak | **Not run** |
+| Register → sign-in → sign-out on prod Neon | **Not run** |
+| Admin curation write + persistence | **Blocked** — no admin |
+| Full vitest suite | Hang risk (D-11); prefer targeted / `bun -e` for pure modules |
 | SME gold-set signature | **Awaiting SME** |
-
-### 4.5 Local automation
-
-- Targeted: `evidence-invariants`, `ai-grounding`, `smoke-prd-a2`, `a11y` as disk allows.
-- `bun run sme:status` — human checklist status only.
-
----
-
-## 5. Scientific evidence audit
-
-| Metric | Result |
-|--------|--------|
-| Runtime relationships | 536 |
-| Dangling / duplicate `relId`s | **0** (prior graph integrity) |
-| Neon `evidence_records` | **0** |
-| Approved claim-linked records | **0** |
-| Relationship queue (repo) | 40 slots / 37 cited links; unreviewed candidates only |
-| Exemplar pathways | TNF–RA, PD-1/PD-L1, IFN–SLE — graph-connected scaffolds; maturity from approved cites (none yet → `scaffold`) |
-| Coverage honesty | Only `relationship_id` + approved + `supports` counts as claim support |
-
-**Conclusion:** Graph IDs are sound. Neon pipeline is ready. **Approved** claim-level coverage is still **0** — Gate C fails for any “supported” marketing claim. Do not mass-approve.
-
----
-
-## 6. Security report
-
-### 6.1 Authentication & authorisation (post-Neon)
-
-- Runtime: **Neon Managed Better Auth** + JWKS (`requireNeonAuth` / `jose`).
-- Curation mutations: admin check via `public.has_role(..., 'admin')` on Neon.
-- Signup trigger assigns **`user` only** (`assign_initial_role_neon`). Explicit admin:
-
-```sql
-INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'admin'::public.app_role FROM neon_auth."user"
-WHERE email = 'YOUR_EMAIL'
-ON CONFLICT (user_id, role) DO NOTHING;
-```
-
-- Supabase PostgREST is **not** the runtime path for auth/curation after `76c96b2`. Legacy Supabase files may remain for Lovable history.
-
-### 6.2 Evidence write invariants (engineering P0 — code)
-
-- Editing PMID/DOI/`source_ref` → `check_status=pending`, **clears** `curation` to `unreviewed`, resets `claim_support` to `unassessed`, clears reviewer metadata.
-- `curation=approved` **rejected** unless `relationship_id` mapped **and** `claim_support` ≠ `unassessed`.
-- UI no longer bulk-approves identifier-only rows; button is “Approve N claim-assessed”.
-
-### 6.3 AI endpoint & spend
-
-| Control | Status |
-|---------|--------|
-| Rate limit 8/min/IP (in-memory) | Soft / per-isolate — accepted beta risk |
-| Message history cap 10; max 500 chars | Yes |
-| Emergency disable | Env-gated |
-| Provider | Lovable gateway **or** OpenAI BYOK (`OPENAI_API_KEY` / compat `OPEN_API_KEY`) |
-| Citation validation before return | **Enforced in `ask.server.ts`** (buffers model text) |
-| Durable distributed limiter / cost dashboards | **Not shipped** — note only; prefer gateway/Redis later |
-
-### 6.4 Secrets
-
-- Production needs: `DATABASE_URL*`, Neon Auth URLs, Ask key (`OPENAI_API_KEY` preferred).
-- Prefer renaming `OPEN_API_KEY` → `OPENAI_API_KEY` in Vercel dashboard after smoke.
-- Leave `IMMUNE_ASK_DISABLED` unset for normal ops.
-
----
-
-## 7. Performance report
-
-| Condition | Result |
-|-----------|--------|
-| HTML TTFB (spot) | Homepage ~1.4 s cold; other layers ~250–400 ms this pass |
-| Ask educational | Completes; not latency-benchmarked under load |
 | Lighthouse / CWV | **Not run** |
 
 ---
 
-## 8. Accessibility report
+## 5. Scientific evidence
 
-| Check | Result |
-|-------|--------|
-| Skip link / nav / Ask labels | Present on Vercel |
-| Automated suite | `bun run a11y` |
-| Human keyboard/contrast | **Open** |
-| SME gold-set | **Awaiting SME** — `docs/SME_GOLD_SET_SIGNOFF.md` |
+| Metric | Result |
+|--------|--------|
+| Runtime relationships | 536 |
+| Neon evidence rows | **0** |
+| Approved claim-linked | **0** |
+| Queue | 40 candidate slots / 37 cited links — unreviewed only |
+| Exemplars | Scaffold until approved + `supports` |
+
+Do **not** mass-approve or invent PMIDs.
 
 ---
 
-## 9. Defect register
+## 6. Security & AI controls
+
+- Neon Auth + JWKS; curation mutations admin-gated via `has_role`.
+- Signup trigger assigns **`user` only**; admin via explicit SQL.
+- Approval invariants: source edit → unreviewed + claim reset; approve needs relId + assessed claim + **verified/matched** check; audit row written in same transaction.
+- Ask: clinical abstain before model; emergency disable env; citation validation before return (**on `main`, not yet on Vercel**).
+- Rate limit: in-memory soft limit — accepted beta residual (IC-15 open).
+
+---
+
+## 7. Defect register
 
 | ID | Sev | Description | Status |
 |----|-----|-------------|--------|
-| D-01 | P0 | Vercel Ask key / stream | **Closed** (prod smoke) |
-| D-02 | P0 | Abstention before key | **Closed** |
-| D-03 | P0 | Emergency Ask disable | **Closed** (env unset = on) |
-| D-04 | P0 | First-signup auto-admin | **Closed in Neon trigger** (user-only); live admin still needs owner SQL after first signup |
-| D-05 | P0 | Zero approved claim evidence | **Open (science)** — queue ready, Neon empty |
-| D-13 | P0 | Source edit left stale approved claim | **Fixed in code** (`evidenceInvariants` / `updateRecord`) — deploy required |
-| D-14 | P0 | Bulk “Approve verified” = claim approval | **Fixed in code** (server + UI) — deploy required |
-| D-15 | P0 | Ask used `relationshipStatus(edge, [])` | **Fixed in code** (Neon reviewed cites + validation) — deploy required |
-| D-06 | P1 | Dual public URLs diverge | **Open (product)** |
-| D-08 | P1 | In-memory rate limit | **Accepted for beta** |
-| D-09 | P1 | Lexical Ask false-positives | **Open** |
-| D-11 | P2 | Vitest hang risk | **Open** |
-| D-12 | P2 | Eval 50 << SME gold | **Open** |
+| D-01…D-04 | P0 | Ask key / abstention / disable / auto-admin | **Closed** (code + Neon trigger) |
+| D-05 | P0 | Zero approved claim evidence | **Open (science)** |
+| D-13 | P0 | Source edit left stale approved | **Fixed on `main`** — deploy pending |
+| D-14 | P0 | Bulk identifier approve | **Fixed on `main`** — deploy pending |
+| D-15 | P0 | Ask ignored Neon cites | **Fixed on `main`** — deploy pending |
+| D-16 | P0 | Vercel prod SHA lags GitHub `main` | **Open (ops)** — redeploy needed |
+| D-06 | P1 | Dual public URLs | Open |
+| D-08 | P1 | In-memory rate limit | Accepted for beta |
+| D-11 | P2 | Vitest hang risk | Open |
 
 ---
 
-## 10. Changes in this refresh (local; not committed unless owner asks)
+## 8. Owner actions (ordered)
 
-| File | Rationale |
-|------|-----------|
-| `src/lib/immune/evidenceInvariants.ts` | Pure approval / source-edit rules |
-| `src/lib/evidence.functions.ts` | `updateRecord` enforces invariants |
-| `src/lib/askGrounding.ts` | Ground with cites; REVIEWED_EVIDENCE lines; prompt v3 |
-| `src/lib/ask.server.ts` | Load approved Neon evidence; validate before return |
-| `src/lib/immune/evidenceStatus.ts` | Optional curation filter on cites |
-| `src/lib/immune/exemplarPathways.ts` | Maturity from cites; `exemplarQueueFocus` |
-| `src/routes/_authenticated/curation.tsx` | Claim-assessed approve only; exemplar callout |
-| `src/routes/reasoning.tsx` | Exemplars use approved cites for maturity |
-| `src/test/evidence-invariants.test.ts` | Unit coverage for P0 rules |
-| `docs/CURATOR_EVIDENCE_QUEUE.md` | Demo pathway priority |
-| `docs/RELEASE_AUDIT.md` | This refresh |
+1. **Ops:** Confirm why Vercel did not deploy `ef188d3`; redeploy production from `main`.
+2. **Owner:** Sign up on https://immunecity.vercel.app/auth; confirm role=`user`.
+3. **Owner:** Grant admin via SQL in `docs/NEON_CUTOVER.md`.
+4. **Engineering (when asked):** Commit/push local audit-events + identifier gate follow-ups; re-apply `bun run db:neon-schema` on each env.
+5. **Curator:** Import queue → check IDs → assess exemplar pathway claims → approve. No invented PMIDs.
+6. **SME / a11y:** Sign `docs/SME_GOLD_SET_SIGNOFF.md`; complete keyboard/contrast.
 
 ---
 
-## 11. Unresolved blockers / remaining owner actions
-
-1. **Owner: Neon Auth** — Sign up once on https://immunecity.vercel.app/auth; confirm role defaults to `user`.
-2. **Owner: Admin SQL** — Grant `user_roles.admin` for that email (see §6.1). Never rely on auto-admin.
-3. **Owner: Curator** — Import relationship queue → check IDs → assess `claim_support` on exemplar pathways first → approve. **Do not invent PMIDs.**
-4. **Owner: Vercel** — Prefer `OPENAI_API_KEY`; optional remove mis-named `OPEN_API_KEY` after smoke.
-5. **Owner: SME / a11y** — Sign `docs/SME_GOLD_SET_SIGNOFF.md`; complete human keyboard/contrast.
-6. **Engineering deploy** — Publish local P0 fixes (D-13/14/15) to Vercel when ready (owner asks for commit/push).
-
----
-
-## 12. Publication status
-
-- Neon cutover already on `origin/main` (`76c96b2`).
-- Canonical: **https://immunecity.vercel.app**.
-- Local P0 evidence/Ask fixes in workspace — **not pushed** unless requested.
-- Human claim approve + SME signature still required for Gate C / E.
-
----
-
-## 13. Rollback instructions
-
-1. Vercel: promote prior deployment / redeploy last known-good SHA.
-2. Ask emergency: `IMMUNE_ASK_DISABLED=1`.
-3. Neon: do not wipe `user_roles` or `evidence_records` for rollback; restore prior app SHA only.
-4. Auth: if Neon Auth misbehaves, keep Lovable secondary online until fixed.
-
----
-
-## 14. Sign-off checklist
-
-| Role | Status | Notes |
-|------|--------|-------|
-| Product owner | ☐ | Accept CONDITIONAL GO + §11 |
-| Engineering | ☐ | Neon cutover live; P0 invariant/Ask fixes need deploy |
-| Security | ☐ | Trigger present; live admin/RBAC after first signup **pending owner** |
-| Scientific review | ☐ | 0 approved; exemplar scaffolds; gold set **awaiting SME** |
-| Accessibility | ☐ | Automated suite runnable; human remainder open |
-| Release owner | ☐ | Canonical = Vercel |
-
----
-
-## Gates A–H
+## 9. Gates A–H
 
 | Gate | Result | Evidence |
 |------|--------|----------|
-| **A — Security** | **CONDITIONAL** | Neon Auth + user-only trigger; admin grant pending first signup; write invariants in code |
-| **B — Data integrity** | **PASS** (graph) | No dangling/duplicate IDs in prior integrity |
-| **C — Scientific honesty** | **FAIL** for “supported” claims | 0 approved claim links on Neon |
-| **D — Functional integrity** | **CONDITIONAL** | Layers + Ask smoke OK; auth/curation E2E pending owner |
-| **E — AI reliability** | **CONDITIONAL** | Prod clinical refuse + TNF stream; citation gate in code (needs deploy); SME open |
-| **F — Accessibility** | **CONDITIONAL** | `bun run a11y`; human items open |
-| **G — Operations** | **CONDITIONAL** | Canonical Vercel; soft rate limit; no durable cost monitor |
-| **H — Public deployment** | **CONDITIONAL** | Neon on `main`/Vercel; dual hosts remain |
+| **A — Security** | **CONDITIONAL** | Neon Auth + trigger; live RBAC after first signup; write invariants on `main` |
+| **B — Data integrity** | **PASS** (graph) | Prior integrity; re-run after data changes |
+| **C — Scientific honesty** | **FAIL** for “supported” claims | 0 approved |
+| **D — Functional** | **CONDITIONAL** | Layers + Ask OK on `76c96b2`; auth/curation E2E pending |
+| **E — AI reliability** | **CONDITIONAL** | Prod abstain/stream on old SHA; citation gate on `main` only; SME open |
+| **F — Accessibility** | **CONDITIONAL** | Automated runnable; human open |
+| **G — Operations** | **CONDITIONAL** | Soft rate limit; deploy lag D-16 |
+| **H — Deployment** | **CONDITIONAL** | Canonical Vercel; SHA mismatch vs GitHub |
 
 ---
 
@@ -295,10 +164,6 @@ ON CONFLICT (user_id, role) DO NOTHING;
 
 # **CONDITIONAL GO** (canonical: https://immunecity.vercel.app)
 
-Neon cutover is live. Ask educational + clinical abstention work on production. Engineering P0s for evidence approval and Ask←reviewed evidence are implemented locally and need deploy. Remaining blockers are **human-only**:
+Neon cutover is live in production. Engineering P0s for evidence approval and Ask grounding are on GitHub `main` (`ef188d3`) but **not yet on Vercel**. Remaining blockers: **redeploy**, **human Neon admin**, **curator claim review**, **SME/a11y**.
 
-- Neon signup + admin SQL
-- Curator claim assess/approve (Gate C; still 0/536)
-- SME sign-off + human a11y (Gates E/F)
-
-Do not claim full GO until those owner actions close.
+Do not claim full GO or “evidence-grounded scientific AI” until Gate C has real approved relationship claims and Gate E has SME sign-off.

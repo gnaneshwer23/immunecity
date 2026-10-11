@@ -3,10 +3,34 @@ import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { getDb, getSqlClient } from "@/lib/db.server";
-import { evidenceRecords } from "@/lib/db/schema.server";
+import { evidenceAuditEvents, evidenceRecords } from "@/lib/db/schema.server";
 import { edgeByRel } from "./immune/engine";
 import { computeEvidenceUpdate } from "./immune/evidenceInvariants";
 import { checkRecord, suggestFor, type CheckInput } from "./evidenceCheck";
+
+function auditSnapshot(r: typeof evidenceRecords.$inferSelect) {
+  return {
+    curation: r.curation,
+    claim_support: r.claimSupport,
+    relationship_id: r.relationshipId,
+    check_status: r.checkStatus,
+    pmid: r.pmid,
+    doi: r.doi,
+    source_ref: r.sourceRef,
+    reviewed_by: r.reviewedBy,
+    reviewed_at: r.reviewedAt?.toISOString?.() ?? r.reviewedAt ?? null,
+  };
+}
+
+function auditReason(patch: Record<string, unknown>, set: Record<string, unknown>): string {
+  if ("pmid" in patch || "doi" in patch || "source_ref" in patch) return "source_edit_invalidated_approval";
+  if (set.curation === "approved") return "claim_approved";
+  if (set.curation === "rejected") return "claim_rejected";
+  if (set.curation === "unreviewed" && "relationshipId" in set) return "relationship_remap_cleared_approval";
+  if ("claimSupport" in set) return "claim_support_updated";
+  if ("curation" in set) return "curation_updated";
+  return "evidence_updated";
+}
 
 async function assertAdmin(userId: string) {
   const rows = await getSqlClient()`SELECT public.has_role(${userId}::uuid, 'admin'::public.app_role) AS ok`;
@@ -197,6 +221,7 @@ export const updateRecord = createServerFn({ method: "POST" })
     const [existing] = await db.select().from(evidenceRecords).where(eq(evidenceRecords.id, id)).limit(1);
     if (!existing) throw new Error("Record not found.");
 
+    const actor = context.email ?? context.userId;
     const result = computeEvidenceUpdate(
       {
         curation: existing.curation,
@@ -205,14 +230,33 @@ export const updateRecord = createServerFn({ method: "POST" })
         pmid: existing.pmid,
         doi: existing.doi,
         sourceRef: existing.sourceRef,
+        checkStatus: existing.checkStatus,
       },
       patch,
-      context.email ?? context.userId,
+      actor,
     );
     if (result.error) throw new Error(result.error);
-    if (!Object.keys(result.set).length) return { ok: true };
+    if (!Object.keys(result.set).length) {
+      throw new Error("No evidence fields changed.");
+    }
 
-    await db.update(evidenceRecords).set(result.set).where(eq(evidenceRecords.id, id));
+    const previous = auditSnapshot(existing);
+    await db.transaction(async (tx) => {
+      const [updated] = await tx
+        .update(evidenceRecords)
+        .set(result.set)
+        .where(eq(evidenceRecords.id, id))
+        .returning();
+      if (!updated) throw new Error("Evidence update failed — no row written.");
+      await tx.insert(evidenceAuditEvents).values({
+        evidenceRecordId: existing.id,
+        evidenceId: existing.evidenceId,
+        actor,
+        reason: auditReason(patch as Record<string, unknown>, result.set as Record<string, unknown>),
+        previousState: previous,
+        newState: auditSnapshot(updated),
+      });
+    });
     return { ok: true };
   });
 

@@ -60,7 +60,7 @@ try {
     SELECT table_name
     FROM information_schema.tables
     WHERE table_schema = 'public'
-      AND table_name IN ('user_roles', 'evidence_records')
+      AND table_name IN ('user_roles', 'evidence_records', 'evidence_audit_events')
     ORDER BY table_name
   `;
   console.log(
