@@ -11,18 +11,30 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AcademyRouteImport } from './routes/academy'
+import { Route as AccessibilityRouteImport } from './routes/accessibility'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CollaborateRouteImport } from './routes/collaborate'
+import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as DiseaseRouteImport } from './routes/disease'
 import { Route as DynamicsRouteImport } from './routes/dynamics'
 import { Route as EvidenceRouteImport } from './routes/evidence'
+import { Route as EvidenceMethodsRouteImport } from './routes/evidence-methods'
 import { Route as GraphRouteImport } from './routes/graph'
+import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as MethodsRouteImport } from './routes/methods'
 import { Route as OverviewRouteImport } from './routes/overview'
 import { Route as PatientRouteImport } from './routes/patient'
+import { Route as PlatformRouteImport } from './routes/platform'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReasoningRouteImport } from './routes/reasoning'
 import { Route as ResearchRouteImport } from './routes/research'
+import { Route as ResearchWorkbenchRouteImport } from './routes/research-workbench'
+import { Route as ScientificAiRouteImport } from './routes/scientific-ai'
 import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TherapyRouteImport } from './routes/therapy'
 import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticated/curation'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
@@ -38,9 +50,34 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademyRoute = AcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessibilityRoute = AccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollaborateRoute = CollaborateRouteImport.update({
+  id: '/collaborate',
+  path: '/collaborate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DisclaimerRoute = DisclaimerRouteImport.update({
+  id: '/disclaimer',
+  path: '/disclaimer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiseaseRoute = DiseaseRouteImport.update({
@@ -58,9 +95,19 @@ const EvidenceRoute = EvidenceRouteImport.update({
   path: '/evidence',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EvidenceMethodsRoute = EvidenceMethodsRouteImport.update({
+  id: '/evidence-methods',
+  path: '/evidence-methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GraphRoute = GraphRouteImport.update({
   id: '/graph',
   path: '/graph',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -83,6 +130,16 @@ const PatientRoute = PatientRouteImport.update({
   path: '/patient',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlatformRoute = PlatformRouteImport.update({
+  id: '/platform',
+  path: '/platform',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReasoningRoute = ReasoningRouteImport.update({
   id: '/reasoning',
   path: '/reasoning',
@@ -93,9 +150,24 @@ const ResearchRoute = ResearchRouteImport.update({
   path: '/research',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResearchWorkbenchRoute = ResearchWorkbenchRouteImport.update({
+  id: '/research-workbench',
+  path: '/research-workbench',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScientificAiRoute = ScientificAiRouteImport.update({
+  id: '/scientific-ai',
+  path: '/scientific-ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SimulatorRoute = SimulatorRouteImport.update({
   id: '/simulator',
   path: '/simulator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TherapyRoute = TherapyRouteImport.update({
@@ -126,18 +198,30 @@ const MechanismIdRoute = MechanismIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
+  '/accessibility': typeof AccessibilityRoute
   '/auth': typeof AuthRoute
+  '/collaborate': typeof CollaborateRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/disease': typeof DiseaseRoute
   '/dynamics': typeof DynamicsRoute
   '/evidence': typeof EvidenceRoute
+  '/evidence-methods': typeof EvidenceMethodsRoute
   '/graph': typeof GraphRoute
+  '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
   '/overview': typeof OverviewRoute
   '/patient': typeof PatientRoute
+  '/platform': typeof PlatformRoute
+  '/privacy': typeof PrivacyRoute
   '/reasoning': typeof ReasoningRoute
   '/research': typeof ResearchRoute
+  '/research-workbench': typeof ResearchWorkbenchRoute
+  '/scientific-ai': typeof ScientificAiRoute
   '/simulator': typeof SimulatorRoute
+  '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
@@ -146,18 +230,30 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
+  '/accessibility': typeof AccessibilityRoute
   '/auth': typeof AuthRoute
+  '/collaborate': typeof CollaborateRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/disease': typeof DiseaseRoute
   '/dynamics': typeof DynamicsRoute
   '/evidence': typeof EvidenceRoute
+  '/evidence-methods': typeof EvidenceMethodsRoute
   '/graph': typeof GraphRoute
+  '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
   '/overview': typeof OverviewRoute
   '/patient': typeof PatientRoute
+  '/platform': typeof PlatformRoute
+  '/privacy': typeof PrivacyRoute
   '/reasoning': typeof ReasoningRoute
   '/research': typeof ResearchRoute
+  '/research-workbench': typeof ResearchWorkbenchRoute
+  '/scientific-ai': typeof ScientificAiRoute
   '/simulator': typeof SimulatorRoute
+  '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
@@ -168,18 +264,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
+  '/accessibility': typeof AccessibilityRoute
   '/auth': typeof AuthRoute
+  '/collaborate': typeof CollaborateRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/disease': typeof DiseaseRoute
   '/dynamics': typeof DynamicsRoute
   '/evidence': typeof EvidenceRoute
+  '/evidence-methods': typeof EvidenceMethodsRoute
   '/graph': typeof GraphRoute
+  '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
   '/overview': typeof OverviewRoute
   '/patient': typeof PatientRoute
+  '/platform': typeof PlatformRoute
+  '/privacy': typeof PrivacyRoute
   '/reasoning': typeof ReasoningRoute
   '/research': typeof ResearchRoute
+  '/research-workbench': typeof ResearchWorkbenchRoute
+  '/scientific-ai': typeof ScientificAiRoute
   '/simulator': typeof SimulatorRoute
+  '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/_authenticated/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
@@ -190,18 +298,30 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/academy'
+    | '/accessibility'
     | '/auth'
+    | '/collaborate'
+    | '/disclaimer'
     | '/disease'
     | '/dynamics'
     | '/evidence'
+    | '/evidence-methods'
     | '/graph'
+    | '/insights'
     | '/learn'
     | '/methods'
     | '/overview'
     | '/patient'
+    | '/platform'
+    | '/privacy'
     | '/reasoning'
     | '/research'
+    | '/research-workbench'
+    | '/scientific-ai'
     | '/simulator'
+    | '/terms'
     | '/therapy'
     | '/curation'
     | '/api/ask'
@@ -210,18 +330,30 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/academy'
+    | '/accessibility'
     | '/auth'
+    | '/collaborate'
+    | '/disclaimer'
     | '/disease'
     | '/dynamics'
     | '/evidence'
+    | '/evidence-methods'
     | '/graph'
+    | '/insights'
     | '/learn'
     | '/methods'
     | '/overview'
     | '/patient'
+    | '/platform'
+    | '/privacy'
     | '/reasoning'
     | '/research'
+    | '/research-workbench'
+    | '/scientific-ai'
     | '/simulator'
+    | '/terms'
     | '/therapy'
     | '/curation'
     | '/api/ask'
@@ -231,18 +363,30 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about'
+    | '/academy'
+    | '/accessibility'
     | '/auth'
+    | '/collaborate'
+    | '/disclaimer'
     | '/disease'
     | '/dynamics'
     | '/evidence'
+    | '/evidence-methods'
     | '/graph'
+    | '/insights'
     | '/learn'
     | '/methods'
     | '/overview'
     | '/patient'
+    | '/platform'
+    | '/privacy'
     | '/reasoning'
     | '/research'
+    | '/research-workbench'
+    | '/scientific-ai'
     | '/simulator'
+    | '/terms'
     | '/therapy'
     | '/_authenticated/curation'
     | '/api/ask'
@@ -253,18 +397,30 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  AcademyRoute: typeof AcademyRoute
+  AccessibilityRoute: typeof AccessibilityRoute
   AuthRoute: typeof AuthRoute
+  CollaborateRoute: typeof CollaborateRoute
+  DisclaimerRoute: typeof DisclaimerRoute
   DiseaseRoute: typeof DiseaseRoute
   DynamicsRoute: typeof DynamicsRoute
   EvidenceRoute: typeof EvidenceRoute
+  EvidenceMethodsRoute: typeof EvidenceMethodsRoute
   GraphRoute: typeof GraphRoute
+  InsightsRoute: typeof InsightsRoute
   LearnRoute: typeof LearnRoute
   MethodsRoute: typeof MethodsRoute
   OverviewRoute: typeof OverviewRoute
   PatientRoute: typeof PatientRoute
+  PlatformRoute: typeof PlatformRoute
+  PrivacyRoute: typeof PrivacyRoute
   ReasoningRoute: typeof ReasoningRoute
   ResearchRoute: typeof ResearchRoute
+  ResearchWorkbenchRoute: typeof ResearchWorkbenchRoute
+  ScientificAiRoute: typeof ScientificAiRoute
   SimulatorRoute: typeof SimulatorRoute
+  TermsRoute: typeof TermsRoute
   TherapyRoute: typeof TherapyRoute
   ApiAskRoute: typeof ApiAskRoute
   MechanismIdRoute: typeof MechanismIdRoute
@@ -287,11 +443,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academy': {
+      id: '/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AcademyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessibility': {
+      id: '/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof AccessibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collaborate': {
+      id: '/collaborate'
+      path: '/collaborate'
+      fullPath: '/collaborate'
+      preLoaderRoute: typeof CollaborateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/disclaimer': {
+      id: '/disclaimer'
+      path: '/disclaimer'
+      fullPath: '/disclaimer'
+      preLoaderRoute: typeof DisclaimerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/disease': {
@@ -315,11 +506,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EvidenceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/evidence-methods': {
+      id: '/evidence-methods'
+      path: '/evidence-methods'
+      fullPath: '/evidence-methods'
+      preLoaderRoute: typeof EvidenceMethodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/graph': {
       id: '/graph'
       path: '/graph'
       fullPath: '/graph'
       preLoaderRoute: typeof GraphRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -350,6 +555,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/platform': {
+      id: '/platform'
+      path: '/platform'
+      fullPath: '/platform'
+      preLoaderRoute: typeof PlatformRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reasoning': {
       id: '/reasoning'
       path: '/reasoning'
@@ -364,11 +583,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/research-workbench': {
+      id: '/research-workbench'
+      path: '/research-workbench'
+      fullPath: '/research-workbench'
+      preLoaderRoute: typeof ResearchWorkbenchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scientific-ai': {
+      id: '/scientific-ai'
+      path: '/scientific-ai'
+      fullPath: '/scientific-ai'
+      preLoaderRoute: typeof ScientificAiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/simulator': {
       id: '/simulator'
       path: '/simulator'
       fullPath: '/simulator'
       preLoaderRoute: typeof SimulatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/therapy': {
@@ -423,18 +663,30 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
+  AcademyRoute: AcademyRoute,
+  AccessibilityRoute: AccessibilityRoute,
   AuthRoute: AuthRoute,
+  CollaborateRoute: CollaborateRoute,
+  DisclaimerRoute: DisclaimerRoute,
   DiseaseRoute: DiseaseRoute,
   DynamicsRoute: DynamicsRoute,
   EvidenceRoute: EvidenceRoute,
+  EvidenceMethodsRoute: EvidenceMethodsRoute,
   GraphRoute: GraphRoute,
+  InsightsRoute: InsightsRoute,
   LearnRoute: LearnRoute,
   MethodsRoute: MethodsRoute,
   OverviewRoute: OverviewRoute,
   PatientRoute: PatientRoute,
+  PlatformRoute: PlatformRoute,
+  PrivacyRoute: PrivacyRoute,
   ReasoningRoute: ReasoningRoute,
   ResearchRoute: ResearchRoute,
+  ResearchWorkbenchRoute: ResearchWorkbenchRoute,
+  ScientificAiRoute: ScientificAiRoute,
   SimulatorRoute: SimulatorRoute,
+  TermsRoute: TermsRoute,
   TherapyRoute: TherapyRoute,
   ApiAskRoute: ApiAskRoute,
   MechanismIdRoute: MechanismIdRoute,

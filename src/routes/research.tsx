@@ -21,10 +21,18 @@ export const Route = createFileRoute("/research")({
   ),
   head: () => ({
     meta: [
-      { title: "Research workbench — Immune Super Intelligence" },
-      { name: "description", content: "Scientific workbench, literature candidates and model-registry interfaces — phases B–E partial; candidates only until curated. Educational beta — teaching tools, not live clinical predictors." },
-      { property: "og:title", content: "Research workbench — Immune Super Intelligence" },
-      { property: "og:description", content: "Candidate research workflows and interface-only model adapters — not live predictors or auto-published claims." },
+      { title: "Scientific Research Workbench | Immune City" },
+      {
+        name: "description",
+        content:
+          "Organise research questions, evidence, mechanisms, candidate hypotheses and experiment proposals.",
+      },
+      { property: "og:title", content: "Scientific Research Workbench | Immune City" },
+      {
+        property: "og:description",
+        content:
+          "Candidate research workflows and interface-only model adapters — not live predictors or auto-published claims.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -53,9 +61,9 @@ function Research() {
   return (
     <div className="page">
       <PageHead
-        kicker="Layer 12 · Research"
-        title="Scientific AI Workbench"
-        lede="Question → evidence → mechanism → hypothesis → experiment → human review. Generated artefacts are candidates — never established findings or curated graph writes. Literature ingest and advanced adapters remain partial / interface-only."
+        kicker="Layer 12 · Research Workbench"
+        title="Turn a research question into a reviewable investigation."
+        lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature ingest and advanced adapters remain partial / interface-only."
         stats={[
           { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },

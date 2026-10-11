@@ -10,10 +10,17 @@ import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 export const Route = createFileRoute("/methods")({
   head: () => ({
     meta: [
-      { title: "Methods & trust — Immune Super Intelligence" },
-      { name: "description", content: "How Immune Super Intelligence builds its causal immunology graph, reviews evidence, runs its models and where its limits are." },
-      { property: "og:title", content: "Methods & trust — Immune Super Intelligence" },
-      { property: "og:description", content: "Ontology, relationship signs, evidence review statuses, model assumptions and limitations." },
+      { title: "Evidence & Methods | Immune City" },
+      {
+        name: "description",
+        content:
+          "Understand the Immune City graph, source curation, evidence statuses, model assumptions and scientific limitations.",
+      },
+      { property: "og:title", content: "Evidence & Methods | Immune City" },
+      {
+        property: "og:description",
+        content: "Ontology, relationship signs, evidence review statuses, model assumptions and limitations.",
+      },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -26,9 +33,12 @@ function Methods() {
   const signs = Object.entries(SEM).reduce<Record<string, string[]>>((a, [rel, s]) => ((a[s] ||= []).push(rel), a), {});
   return (
     <div className="page methods">
-      <PageHead kicker="Methods & trust" title="How Immune Super Intelligence works — and where it stops"
-        lede="Immune Super Intelligence is an educational beta — a causal map for teaching with reviewed citations where present, not clinician decision support. This page documents what the graph contains, how evidence is reviewed, what the models assume, and what they cannot tell you."
-        stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]} />
+      <PageHead
+        kicker="Evidence & Methods"
+        title="See what supports a claim—and where the evidence stops."
+        lede="Immune City distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation is only counted as support when it is mapped to that directional claim and reviewed under the platform’s curation process. Educational beta — teaching with references, not clinical decision support."
+        stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]}
+      />
 
       <section className="section"><h2>1. The graph ontology</h2>
         <p>Every concept is a typed node (cell, molecule, receptor, pathway, tissue, pathogen, disease, therapy, biomarker, trial and more) with a stable ID. Every link is one directional claim — subject, predicate, object — with a stable relationship ID of the form <code>REL-subject-predicate-object</code>, a mechanism, a confidence and, where known, a tissue.</p>

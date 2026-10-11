@@ -7,7 +7,7 @@ import { CONTENT } from "@/data/content";
 import { NAV_GROUPS } from "@/components/immune/nav";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
-import { pageTitle } from "@/lib/brand";
+import { FLAGSHIP_NAME } from "@/lib/brand";
 
 const GROUP_COLORS = ["--t-cell", "--t-pathway", "--t-intervention", "--t-discovery"];
 
@@ -21,10 +21,18 @@ const SPINE_TYPE: Record<string, NodeType> = {
 export const Route = createFileRoute("/overview")({
   head: () => ({
     meta: [
-      { title: pageTitle("Overview") },
-      { name: "description", content: "Atlas orientation: the causal spine, twelve layers, and featured mechanisms — where you are in the immune system map." },
-      { property: "og:title", content: pageTitle("Overview") },
-      { property: "og:description", content: "Orient yourself in the immunology atlas: causal spine stages, layer navigation, and illustrative mechanism chains." },
+      { title: "Immune City Platform | Connected Immunology Knowledge" },
+      {
+        name: "description",
+        content:
+          "Explore immune cells, mechanisms, disease biology, therapies and evidence through a connected immunology platform.",
+      },
+      { property: "og:title", content: "Immune City Platform | Connected Immunology Knowledge" },
+      {
+        property: "og:description",
+        content:
+          "One connected view of immunology: causal spine, twelve layers, and featured mechanism chains. Educational beta.",
+      },
     ],
   }),
   component: Overview,
@@ -41,9 +49,9 @@ function Overview() {
   return (
     <div className="bio-content" style={{ paddingTop: 8 }}>
       <PageHead
-        kicker="01 · Foundations · Atlas orientation"
-        title="Where you are in the immune system."
-        lede="The scientific map of this atlas — fifteen spine stages, twelve exploration layers, and featured causal chains. Orient here, then dive into a layer."
+        kicker={`01 · ${FLAGSHIP_NAME} · Platform`}
+        title="One connected view of immunology."
+        lede={`${FLAGSHIP_NAME} brings immune-cell profiles, mechanisms, disease biology, therapies, clinical-trial evidence and research exploration into a shared causal knowledge environment. Orient here, then open a layer.`}
         stats={[
           { v: snap.coreNodes, l: "CORE CONCEPTS" },
           { v: snap.draftNodes, l: "DRAFT CONCEPTS" },
@@ -54,7 +62,8 @@ function Overview() {
 
       <p className="lede" style={{ marginTop: 8, marginBottom: 0, maxWidth: "42rem" }}>
         Release <code>{snap.snapshotAt}</code> · core vs draft counts from the shared graph snapshot · claim-level approved support is still sparse overall ·{" "}
-        <Link to="/methods">Methods &amp; trust</Link> · <Link to="/evidence">Evidence coverage</Link>
+        <Link to="/methods">Read the methods</Link> · <Link to="/graph">Explore the live platform</Link> ·{" "}
+        <Link to="/evidence">Evidence coverage</Link>
       </p>
 
       <section className="bio-section" aria-label="Platform pillars">
@@ -64,19 +73,19 @@ function Overview() {
         </div>
         <div className="platform-pillars">
           <Link className="platform-pillar" to="/learn">
-            <span className="platform-pillar-kicker">Immunology</span>
-            <h3>Causal knowledge layer</h3>
-            <p>Cells, cytokines, pathways, tissues, disease and therapy — organised on a 15-step scientific spine, with draft extensions labelled separately.</p>
+            <span className="platform-pillar-kicker">Foundations</span>
+            <h3>Overview · Cell atlas · Mechanism</h3>
+            <p>Start with the big picture, meet the immune-system components, and follow mechanisms step by step. Academy foundation track is a navigable scaffold.</p>
           </Link>
           <Link className="platform-pillar" to="/evidence">
-            <span className="platform-pillar-kicker">Evidence</span>
-            <h3>Reviewed scientific support</h3>
-            <p>Relationship-level citations and coverage honesty — most runtime links are not yet claim-approved; live counts live on Evidence.</p>
+            <span className="platform-pillar-kicker">Clinical knowledge</span>
+            <h3>Disease · Therapy · Evidence · Patient</h3>
+            <p>Connect disease mechanisms with interventions and trial evidence. Patient views are educational rule-based explorations, not personalised treatment recommendations.</p>
           </Link>
           <Link className="platform-pillar" to="/reasoning">
-            <span className="platform-pillar-kicker">Advanced AI</span>
-            <h3>Graph-retrieved Ask &amp; walks</h3>
-            <p>Ask retrieves graph context and reviewed relationship cites when they exist; mechanism walks stay labelled illustrative — not fully evidence-grounded AI.</p>
+            <span className="platform-pillar-kicker">Frontier</span>
+            <h3>Reasoning · Research</h3>
+            <p>Trace paths, inspect candidate hypotheses and organise research questions. Workflows do not auto-validate findings or write them into the approved graph.</p>
           </Link>
         </div>
       </section>
