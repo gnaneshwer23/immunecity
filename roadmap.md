@@ -41,14 +41,14 @@
 | **B** Knowledge-layer gap fills | Draft nodes/edges/lessons for microbiome, vaccines, transplant, PID, **immunogenetics** with stable IDs, context, evidence_status, provenance | Extensions merge as `draft`; immunogenetics lesson/routes; extensions version bump; smoke resolves new IDs | **partial** — `draft-ext-3` deepens thin domains + infection↔autoimmunity lesson; exemplar pathway claim-curation still open |
 | **C** Literature intelligence | Source ID → metadata validation → claims → map relIds → conflict flags → claim approval; claim_support vocab; curation-candidate export; no fake PMIDs | Workflow module + Research UI; conflict flags; unreviewed manifest export; never auto-approve | **partial** — deepened local workflow + curation handoff; no live PubMed bulk ingest |
 | **D** Model registry UI | Omics / structure / pMHC / genomics / agents as modular contracts on Research & Methods | Status badges, request-shape previews, stub dry-run → `not_available`; `implementedModels()` empty | **partial** — deepened contracts + honesty UI; no live predictors |
-| **E** Scientific Workbench | Question → evidence → mechanism → hypothesis → experiment proposal → review | Workbench on Research layer; candidates labelled; export includes graph/extensions versions | **partial** — multi-step UI + artefacts; no graph write-back |
+| **E** Scientific Workbench | Question → evidence → mechanism → hypothesis → experiment proposal → review | Workbench first-class on Research; step gating; candidate imports from Ask/lit/mechanism; versioned export; never auto-promote | **partial** — deepened step machine + imports + export; no lab execution / KG write-back |
 
 Machine-readable copy: `src/data/implementation-phases.ts`.
 
 - [x] Phase B (partial): immunogenetics + thin-domain draft gap fills (`draft-ext-3`), infection↔autoimmunity lesson/routes, provenance labels
 - [x] Phase C (partial): literature step machine, conflict flags, claim_support mapping, curation-candidate export + Research UI (no live PubMed bulk ingest)
 - [x] Phase D (partial): modular adapter contracts, request-shape previews, stub dry-run (`not_available`), registry on Research/Methods — still no live predictors
-- [x] Phase E (partial): Scientific Workbench steps UI + experiment proposal artefact
+- [x] Phase E (partial): Scientific Workbench step gating, Ask/lit/mechanism candidate imports, versioned export (`wb-1`), Research-first UX — still no lab execution or KG write-back
 - [ ] Curator work: claim-linked approved evidence on the three exemplar pathways (TNF→RA, PD-1, IFN→SLE)
 - [ ] Eval scale-up: grow scientific gold set toward PRD targets (≥100 questions, ≥30 path, ≥30 unsupported, safety suite)
 - [ ] Live literature connectors with caching/backoff beyond existing curation PubMed/Crossref checks

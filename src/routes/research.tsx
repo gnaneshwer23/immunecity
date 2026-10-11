@@ -1,10 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { CONTENT } from "@/data/content";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { byId } from "@/lib/immune/engine";
-import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
-import { createHypothesisDraft, hypothesisCompleteness, type HypothesisDraft } from "@/lib/research/hypothesisDraft";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
@@ -13,10 +10,10 @@ import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 export const Route = createFileRoute("/research")({
   head: () => ({
     meta: [
-      { title: "Research frontier — Immune City" },
-      { name: "description", content: "Open questions in immunology — CAR-T for autoimmunity, EBV and MS, AI-discovered targets — and the curation roadmap." },
-      { property: "og:title", content: "Research frontier — Immune City" },
-      { property: "og:description", content: "Where immunology is moving, and what the atlas still needs." },
+      { title: "Research workbench — Immune City" },
+      { name: "description", content: "Scientific AI Workbench: question → evidence → mechanism → hypothesis → experiment → review. Candidates only until curated." },
+      { property: "og:title", content: "Research workbench — Immune City" },
+      { property: "og:description", content: "Staged research workflows that stay candidate until human review." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -30,22 +27,41 @@ type Road = { text: string; related: string[] };
 function Research() {
   const frontier = (CONTENT["frontier"] ?? []) as Frontier[];
   const roadmap = (CONTENT["roadmap"] ?? []) as Road[];
-  const [draft, setDraft] = useState<HypothesisDraft>(() =>
-    createHypothesisDraft({ claim: "" }, GRAPH_CORE_VERSION),
-  );
-  const completeness = hypothesisCompleteness(draft);
+  const phaseE = IMPLEMENTATION_PHASES.find((p) => p.id === "E");
   return (
     <div className="page">
       <PageHead
         kicker="Layer 12 · Research"
-        title="The edge of the map"
-        lede="Findings that are reshaping the field, with an honest label for how settled each one is — plus staged research workflows that stay candidate until curated."
+        title="Scientific AI Workbench"
+        lede="Question → evidence → mechanism → hypothesis → experiment → human review. Generated artefacts are candidates — never established findings or curated graph writes."
         stats={[
+          { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },
-          { v: roadmap.length, l: "ROADMAP STEPS" },
-          { v: IMPLEMENTATION_PHASES.filter((p) => p.status !== "not_started").length, l: "PHASES IN FLIGHT" },
+          { v: phaseE?.status.replace("_", " ") ?? "partial", l: "PHASE E" },
         ]}
       />
+
+      <section className="section" id="workbench">
+        <h2>Workbench</h2>
+        <ScientificWorkbench />
+      </section>
+
+      <section className="section" id="literature">
+        <h2>Literature intelligence</h2>
+        <p className="lede">
+          Phase C workflow — export candidates and optionally import them into the workbench evidence step above.
+        </p>
+        <LiteratureQueue />
+      </section>
+
+      <section className="section" id="model-registry">
+        <h2>Advanced model registry</h2>
+        <p className="lede">
+          Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters.
+          Status remains <b>interface-only</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.
+        </p>
+        <ModelRegistryPanel />
+      </section>
 
       <section className="section" id="phases">
         <h2>Implementation phases B–E</h2>
@@ -62,67 +78,13 @@ function Research() {
               <h3 style={{ fontSize: "1.05rem", marginTop: 10 }}>{p.title}</h3>
               <p className="small muted" style={{ marginTop: 8 }}>{p.notes}</p>
               <ul className="small" style={{ marginTop: 8 }}>
-                {p.acceptance.slice(0, 2).map((a) => <li key={a}>{a}</li>)}
+                {p.acceptance.slice(0, 3).map((a) => <li key={a}>{a}</li>)}
               </ul>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="section" id="workbench">
-        <h2>Scientific Workbench</h2>
-        <ScientificWorkbench />
-      </section>
-
-      <section className="section" id="literature">
-        <h2>Literature intelligence</h2>
-        <LiteratureQueue />
-      </section>
-
-      <section className="section" id="model-registry">
-        <h2>Advanced model registry</h2>
-        <p className="lede">
-          Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters.
-          Status remains <b>interface-only</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.
-        </p>
-        <ModelRegistryPanel />
-      </section>
-
-      <section className="section">
-        <h2>Hypothesis draft (candidate)</h2>
-        <p className="lede">Local research artefact template — status is always <b>candidate</b>. Nothing here is written to the curated graph.</p>
-        <div className="card" style={{ display: "grid", gap: 10 }}>
-          <label className="field">Claim<textarea rows={2} value={draft.claim} onChange={(e) => setDraft({ ...draft, claim: e.target.value })} /></label>
-          <label className="field">Mechanism<textarea rows={2} value={draft.mechanism} onChange={(e) => setDraft({ ...draft, mechanism: e.target.value })} /></label>
-          <label className="field">Predicted observation<textarea rows={2} value={draft.predictedObservation} onChange={(e) => setDraft({ ...draft, predictedObservation: e.target.value })} /></label>
-          <label className="field">Falsification test<textarea rows={2} value={draft.falsificationTest} onChange={(e) => setDraft({ ...draft, falsificationTest: e.target.value })} /></label>
-          <label className="field">Alternative / disconfirming path<textarea rows={2} value={draft.alternativePath} onChange={(e) => setDraft({ ...draft, alternativePath: e.target.value })} /></label>
-          <label className="field">Supporting concept/relationship IDs (comma-separated)
-            <input
-              value={draft.supportingIds.join(", ")}
-              onChange={(e) => setDraft({ ...draft, supportingIds: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })}
-            />
-          </label>
-          <p className="xs muted">
-            Graph v{draft.graphVersion} · status {draft.status} · template {completeness.ok ? "structurally complete" : `missing: ${completeness.missing.join(", ")}`}
-          </p>
-          <button
-            type="button"
-            className="btn sm"
-            onClick={() => {
-              const blob = new Blob([JSON.stringify(draft, null, 2)], { type: "application/json" });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `${draft.hypothesis_id}.json`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-          >
-            Export candidate JSON
-          </button>
-        </div>
-      </section>
       <section className="section">
         <h2>Frontier</h2>
         <div className="grid auto">

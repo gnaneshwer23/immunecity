@@ -75,15 +75,17 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
     prdRefs: ["FR-038", "FR-039", "FR-040", "Epic F / Phase 4"],
     goals: [
       "Guided research flow: question → evidence → mechanism → hypothesis → experiment proposal → review.",
-      "All AI/user drafts labelled candidate; exportable with graph version.",
+      "Step gating with furthest-step unlock; optional import of Ask IDs, literature claims, mechanism summaries as candidates.",
+      "All AI/user drafts labelled candidate; versioned JSON export; never auto-promote to curated KG or experimentally_supported.",
     ],
     acceptance: [
-      "Workbench UI on Research layer (not a 13th nav item).",
-      "Hypothesis and experiment proposal artefacts stay candidate/draft.",
-      "Export includes graph/extensions version identifiers.",
+      "Workbench UI first-class on Research layer (not a 13th nav item).",
+      "Hypothesis and experiment proposal artefacts stay candidate/draft_proposal.",
+      "Export includes schema + graph/extensions version identifiers and candidateFlags.",
+      "Smoke/tests cover step machine, candidate flags, and import helpers (no fake PMIDs/model results).",
     ],
     status: "partial",
-    notes: "Hypothesis template existed; E adds the multi-step workbench shell and experiment-proposal artefact. No autonomous lab execution.",
+    notes: "Deepened six-step machine with visit gating, Ask/literature/mechanism candidate imports, versioned export (wb-1), and Research-first UX. Still a local research scaffold — no autonomous lab execution, no graph write-back, no live model experiment design.",
   },
 ];
 

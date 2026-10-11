@@ -16,7 +16,7 @@ import {
 import {
   addCandidateClaim,
   advanceStep,
-  canAdvance,
+  canAdvance as canAdvanceLit,
   createLiteratureProject,
   detectConflicts,
   exportCurationManifest,
@@ -29,13 +29,24 @@ import {
   updateSearch,
   validateMetadata,
 } from "@/lib/research/literatureWorkflow";
+import { reasonMechanism } from "@/lib/immune/mechanismReasoning";
 import {
   addEvidenceNote,
   advanceWorkbench,
-  canAdvance,
+  buildWorkbenchExport,
+  canAdvance as canAdvanceWb,
+  canVisitStep,
   createWorkbenchSession,
   experimentCompleteness,
   exportWorkbench,
+  importLiteratureCandidates,
+  importMechanismResult,
+  retreatWorkbench,
+  seedQuestionFromAsk,
+  sessionCandidateFlags,
+  setReviewDisposition,
+  setWorkbenchStep,
+  WORKBENCH_SCHEMA_VERSION,
 } from "@/lib/research/workbench";
 
 describe("Phase B knowledge extensions", () => {
@@ -112,7 +123,7 @@ describe("Phase C literature workflow", () => {
     p = advanceStep(p);
     expect(p.step).toBe("candidate_claims");
     p = addCandidateClaim(p, { text: "HLA-B27 associates with axial SpA", excerpt: "" });
-    expect(canAdvance(p).ok).toBe(true);
+    expect(canAdvanceLit(p).ok).toBe(true);
     p = advanceStep(p);
     expect(p.step).toBe("map_concepts");
     p = mapClaim(p, p.claims[0]!.claim_id, ["EG01", "EG10"], ["REL-EG01-associates_with-EG10"]);
@@ -201,12 +212,15 @@ describe("Phase D model registry honesty", () => {
 });
 
 describe("Phase E workbench", () => {
-  it("gates steps and exports candidates with versions", () => {
+  it("gates steps, tracks furthest, and blocks forward jumps", () => {
     let s = createWorkbenchSession("0.3", "draft-ext-3");
-    expect(canAdvance(s).ok).toBe(false);
+    expect(canAdvanceWb(s).ok).toBe(false);
+    expect(canVisitStep(s, "hypothesis").ok).toBe(false);
+    expect(setWorkbenchStep(s, "experiment").step).toBe("question");
     s = { ...s, question: { ...s.question, text: "Does NOD2 impair ileal sensing in Crohn?" } };
     s = advanceWorkbench(s);
     expect(s.step).toBe("evidence");
+    expect(s.furthestStep).toBe("evidence");
     s = addEvidenceNote(s, "Association replicated in GWAS catalogues", "user-verified source label");
     s = advanceWorkbench(s);
     expect(s.step).toBe("mechanism");
@@ -216,6 +230,11 @@ describe("Phase E workbench", () => {
     };
     s = advanceWorkbench(s);
     expect(s.step).toBe("hypothesis");
+    expect(s.hypothesis.mechanism).toContain("EG07");
+    s = retreatWorkbench(s);
+    expect(s.step).toBe("mechanism");
+    expect(canVisitStep(s, "hypothesis").ok).toBe(true);
+    s = setWorkbenchStep(s, "hypothesis");
     s = { ...s, hypothesis: { ...s.hypothesis, claim: "NOD2 risk alleles impair muramyl-dipeptide sensing" } };
     s = advanceWorkbench(s);
     expect(s.step).toBe("experiment");
@@ -230,11 +249,64 @@ describe("Phase E workbench", () => {
     expect(experimentCompleteness(s.experiment).ok).toBe(false);
     s = advanceWorkbench(s);
     expect(s.step).toBe("review");
+    expect(s.furthestStep).toBe("review");
+  });
+
+  it("keeps candidate flags and versioned export without KG promotion", () => {
+    let s = createWorkbenchSession("0.3", "draft-ext-3");
+    s = { ...s, question: { ...s.question, text: "Butyrate and Treg?" } };
+    s = advanceWorkbench(s);
+    s = addEvidenceNote(s, "Educational note only", "user-verified label");
+    s = advanceWorkbench(s);
+    s = { ...s, mechanism: { ...s.mechanism, gaps: ["No path recorded yet"] } };
+    s = advanceWorkbench(s);
+    s = { ...s, hypothesis: { ...s.hypothesis, claim: "Candidate claim" } };
+    s = advanceWorkbench(s);
+    s = {
+      ...s,
+      experiment: { ...s.experiment, question: "q", readouts: "r" },
+    };
+    s = advanceWorkbench(s);
+    s = setReviewDisposition(s, "approved_for_export_only", "Export OK — not curated");
+    const flags = sessionCandidateFlags(s);
+    expect(flags.allCandidates).toBe(true);
+    expect(s.hypothesis.status).toBe("candidate");
+    expect(s.experiment.status).toBe("draft_proposal");
+    expect(s.experiment.kind).toBe("candidate");
+    const exp = buildWorkbenchExport(s);
+    expect(exp.schemaVersion).toBe(WORKBENCH_SCHEMA_VERSION);
+    expect(exp.kgWrite).toBe(false);
+    expect(exp.experimentallySupported).toBe(false);
+    expect(exp.curation).toBe("unreviewed");
     const json = exportWorkbench(s);
     expect(json).toMatch(/candidate/);
     expect(json).toMatch(/draft-ext-3/);
-    expect(s.hypothesis.status).toBe("candidate");
-    expect(s.experiment.status).toBe("draft_proposal");
+    expect(json).toMatch(/wb-1/);
+    expect(json).not.toMatch(/experimentally_supported/);
+  });
+
+  it("imports lit claims and mechanism summaries as candidates", () => {
+    let s = createWorkbenchSession("0.3", "draft-ext-3");
+    s = { ...s, question: { ...s.question, text: "Shared epitope and RA" } };
+    s = seedQuestionFromAsk(s);
+    expect(s.question.kind).toBe("candidate");
+    expect(s.importLog.some((x) => x.startsWith("ask_seed:"))).toBe(true);
+
+    let lit = createLiteratureProject("0.3", "draft-ext-3", { query: "shared epitope", title: "User title" });
+    lit = addCandidateClaim(lit, { text: "Shared epitope associates with ACPA+ RA" });
+    lit = mapClaim(lit, lit.claims[0]!.claim_id, ["EG01", "EG10"], ["REL-EG01-associates_with-EG10"]);
+    s = importLiteratureCandidates(s, lit);
+    expect(s.evidence.length).toBe(1);
+    expect(s.evidence[0]!.kind).toBe("candidate");
+    expect(s.evidence[0]!.sourceClaimId).toBe(lit.claims[0]!.claim_id);
+
+    const mech = reasonMechanism("C003", "I001", "D001", "inhibit");
+    expect(mech).toBeTruthy();
+    s = importMechanismResult(s, mech!);
+    expect(s.mechanism.kind).toBe("candidate");
+    expect(s.mechanism.illustrative).toBe(true);
+    expect(s.mechanism.paths.length + s.mechanism.gaps.length).toBeGreaterThan(0);
+    expect(sessionCandidateFlags(s).allCandidates).toBe(true);
   });
 });
 

@@ -40,8 +40,16 @@ import {
 import {
   addEvidenceNote,
   advanceWorkbench,
+  buildWorkbenchExport,
+  canVisitStep,
   createWorkbenchSession,
   exportWorkbench,
+  importLiteratureCandidates,
+  importMechanismResult,
+  seedQuestionFromAsk,
+  sessionCandidateFlags,
+  setWorkbenchStep,
+  WORKBENCH_SCHEMA_VERSION,
 } from "../src/lib/research/workbench.ts";
 import { phaseStatusSummary } from "../src/data/implementation-phases.ts";
 import { EXT_PROVENANCE } from "../src/data/extensions.ts";
@@ -112,14 +120,40 @@ check("lit export candidate", litManifest.evidence_records.every((g) => g.eviden
   check("lit flags unknown ids", detectConflicts(cproj).some((f) => f.code === "unknown_concept"));
 }
 let wb = createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION);
+check("workbench gate jump", canVisitStep(wb, "experiment").ok === false && setWorkbenchStep(wb, "review").step === "question");
 wb = { ...wb, question: { ...wb.question, text: "Does butyrate expand colonic Tregs?" } };
+wb = seedQuestionFromAsk(wb);
+check("workbench ask seed", wb.question.kind === "candidate" && wb.importLog.some((x) => x.startsWith("ask_seed:")));
 wb = advanceWorkbench(wb);
+wb = importLiteratureCandidates(wb, lit);
+check("workbench lit import", wb.evidence.length >= 1 && wb.evidence.every((e) => e.kind === "candidate"));
 wb = addEvidenceNote(wb, "Draft educational note", "no PMID invented");
 wb = advanceWorkbench(wb);
-wb = { ...wb, mechanism: { ...wb.mechanism, paths: ["EM02 → EM03 → C014"] } };
+{
+  const mech = reasonMechanism("C003", "I001", "D001", "inhibit");
+  check("workbench mech available", !!mech?.illustrative);
+  if (mech) wb = importMechanismResult(wb, mech);
+}
+check("workbench mech import", wb.mechanism.kind === "candidate" && wb.mechanism.illustrative === true);
+wb = { ...wb, mechanism: { ...wb.mechanism, paths: wb.mechanism.paths.length ? wb.mechanism.paths : ["EM02 → EM03 → C014"] } };
 wb = advanceWorkbench(wb);
 check("workbench hyp step", wb.step === "hypothesis");
-check("workbench export", /candidate/.test(exportWorkbench(wb)) && exportWorkbench(wb).includes(GRAPH_EXTENSIONS_VERSION));
+wb = { ...wb, hypothesis: { ...wb.hypothesis, claim: "Candidate: butyrate expands colonic Tregs" } };
+wb = advanceWorkbench(wb);
+wb = { ...wb, experiment: { ...wb.experiment, question: "Compare Treg frequency", readouts: "Foxp3+ %" } };
+wb = advanceWorkbench(wb);
+check("workbench review step", wb.step === "review");
+const wbFlags = sessionCandidateFlags(wb);
+check("workbench candidates", wbFlags.allCandidates);
+const wbExp = buildWorkbenchExport(wb);
+check(
+  "workbench export",
+  wbExp.schemaVersion === WORKBENCH_SCHEMA_VERSION &&
+    wbExp.kgWrite === false &&
+    wbExp.experimentallySupported === false &&
+    /candidate/.test(exportWorkbench(wb)) &&
+    exportWorkbench(wb).includes(GRAPH_EXTENSIONS_VERSION),
+);
 const phases = phaseStatusSummary();
 check("phases partial", phases.B === "partial" && phases.C === "partial" && phases.D === "partial" && phases.E === "partial");
 const h = createHypothesisDraft(
