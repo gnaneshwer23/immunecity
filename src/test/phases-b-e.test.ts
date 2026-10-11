@@ -7,11 +7,18 @@ import { MODEL_REGISTRY, implementedModels } from "@/lib/ai/modelRegistry";
 import {
   addCandidateClaim,
   advanceStep,
+  canAdvance,
   createLiteratureProject,
+  detectConflicts,
+  exportCurationManifest,
   mapClaim,
   normaliseOptionalId,
   reviewClaim,
+  runMetadataValidation,
   searchMetadataComplete,
+  setClaimSupport,
+  updateSearch,
+  validateMetadata,
 } from "@/lib/research/literatureWorkflow";
 import {
   addEvidenceNote,
@@ -67,21 +74,72 @@ describe("Phase C literature workflow", () => {
     expect(searchMetadataComplete(p.search).ok).toBe(false);
   });
 
-  it("moves search → claim → map → review without inventing PMIDs", () => {
+  it("validates metadata locally without inventing PMIDs", () => {
+    let p = createLiteratureProject("0.3", "draft-ext-3", {
+      query: "HLA-B27 AS",
+      title: "User-supplied title only",
+      pmid: "not-a-pmid",
+    });
+    p = runMetadataValidation(p);
+    expect(p.search.pmid).toBe("not-a-pmid");
+    expect(validateMetadata(p.search).ok).toBe(false);
+    expect(p.search.metadataCheck).toBe("format_issue");
+    p = updateSearch(p, { pmid: undefined });
+    const v = validateMetadata(p.search);
+    expect(v.ok).toBe(true);
+    expect(p.search.pmid).toBeUndefined();
+  });
+
+  it("moves source → metadata → claim → map → conflicts → approval without inventing PMIDs", () => {
     let p = createLiteratureProject("0.3", "draft-ext-3", {
       query: "HLA-B27 AS",
       title: "User-supplied title only",
     });
     expect(p.search.pmid).toBeUndefined();
+    expect(p.step).toBe("source_identification");
     expect(searchMetadataComplete(p.search).ok).toBe(true);
+    p = advanceStep(p);
+    expect(p.step).toBe("metadata_validation");
     p = advanceStep(p);
     expect(p.step).toBe("candidate_claims");
     p = addCandidateClaim(p, { text: "HLA-B27 associates with axial SpA", excerpt: "" });
+    expect(canAdvance(p).ok).toBe(true);
+    p = advanceStep(p);
+    expect(p.step).toBe("map_concepts");
     p = mapClaim(p, p.claims[0]!.claim_id, ["EG01", "EG10"], ["REL-EG01-associates_with-EG10"]);
     expect(p.claims[0]!.mappedConceptIds).toEqual(["EG01", "EG10"]);
+    p = setClaimSupport(p, p.claims[0]!.claim_id, "supports");
+    p = advanceStep(p);
+    expect(p.step).toBe("conflict_flags");
+    p = advanceStep(p);
+    expect(p.step).toBe("claim_approval");
     p = reviewClaim(p, p.claims[0]!.claim_id, "accepted_for_curation", "Queue for human curator");
     expect(p.claims[0]!.reviewStatus).toBe("accepted_for_curation");
     expect(p.status).toBe("draft_scaffold");
+    const manifest = exportCurationManifest(p);
+    expect(manifest.meta.curation).toBe("unreviewed");
+    expect(manifest.evidence_records.length).toBeGreaterThan(0);
+    expect(manifest.evidence_records[0]!.evidence[0]!.status).toBe("candidate");
+    expect(manifest.evidence_records[0]!.evidence[0]!.relationship_id).toBe("REL-EG01-associates_with-EG10");
+  });
+
+  it("flags unknown relationship IDs and intra-project support disagreements", () => {
+    let p = createLiteratureProject("0.3", "draft-ext-3", {
+      query: "conflict test",
+      title: "Conflict fixture",
+    });
+    p = addCandidateClaim(p, { text: "Supports edge" });
+    p = addCandidateClaim(p, { text: "Contradicts edge" });
+    p = mapClaim(p, p.claims[0]!.claim_id, ["EG01"], ["REL-EG01-associates_with-EG10"]);
+    p = mapClaim(p, p.claims[1]!.claim_id, ["EG01"], ["REL-FAKE-not-real"]);
+    p = setClaimSupport(p, p.claims[0]!.claim_id, "supports");
+    p = setClaimSupport(p, p.claims[1]!.claim_id, "contradicts");
+    const flags = detectConflicts(p);
+    expect(flags.some((f) => f.code === "unknown_relationship")).toBe(true);
+    p = mapClaim(p, p.claims[1]!.claim_id, ["EG01"], ["REL-EG01-associates_with-EG10"]);
+    p = setClaimSupport(p, p.claims[1]!.claim_id, "contradicts");
+    const again = detectConflicts(p);
+    expect(again.some((f) => f.code === "intra_project_disagreement")).toBe(true);
   });
 });
 

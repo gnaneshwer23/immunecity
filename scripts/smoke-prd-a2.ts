@@ -18,10 +18,16 @@ import { MODEL_REGISTRY, implementedModels } from "../src/lib/ai/modelRegistry.t
 import { createHypothesisDraft, hypothesisCompleteness } from "../src/lib/research/hypothesisDraft.ts";
 import {
   addCandidateClaim,
+  advanceStep,
   createLiteratureProject,
+  detectConflicts,
+  exportCurationManifest,
+  mapClaim,
   normaliseOptionalId,
   reviewClaim,
   searchMetadataComplete,
+  setClaimSupport,
+  validateMetadata,
 } from "../src/lib/research/literatureWorkflow.ts";
 import {
   addEvidenceNote,
@@ -67,9 +73,26 @@ let lit = createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, 
   title: "Manual metadata entry",
 });
 check("lit search", searchMetadataComplete(lit.search).ok);
+check("lit step source", lit.step === "source_identification");
+check("lit metadata local", validateMetadata(lit.search).ok);
+lit = advanceStep(lit);
+check("lit step metadata", lit.step === "metadata_validation");
+lit = advanceStep(lit);
+check("lit step claims", lit.step === "candidate_claims");
 lit = addCandidateClaim(lit, { text: "Shared epitope associates with ACPA+ RA" });
+lit = mapClaim(lit, lit.claims[0]!.claim_id, ["EG01", "EG10"], ["REL-EG01-associates_with-EG10"]);
+lit = setClaimSupport(lit, lit.claims[0]!.claim_id, "supports");
 lit = reviewClaim(lit, lit.claims[0]!.claim_id, "accepted_for_curation");
 check("lit candidate", lit.claims[0]!.reviewStatus === "accepted_for_curation" && lit.status === "draft_scaffold");
+const litManifest = exportCurationManifest(lit);
+check("lit export unreviewed", litManifest.meta.curation === "unreviewed" && litManifest.evidence_records.length > 0);
+check("lit export candidate", litManifest.evidence_records.every((g) => g.evidence.every((e) => e.status === "candidate")));
+{
+  let cproj = createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, { query: "x", title: "y" });
+  cproj = addCandidateClaim(cproj, { text: "bad map" });
+  cproj = mapClaim(cproj, cproj.claims[0]!.claim_id, ["NOPE99"], ["REL-NOPE"]);
+  check("lit flags unknown ids", detectConflicts(cproj).some((f) => f.code === "unknown_concept"));
+}
 let wb = createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION);
 wb = { ...wb, question: { ...wb.question, text: "Does butyrate expand colonic Tregs?" } };
 wb = advanceWorkbench(wb);

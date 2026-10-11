@@ -19,7 +19,18 @@ export const getMyRole = createServerFn({ method: "GET" })
 const pmidRe = /PMID[:\s]*(\d+)/i;
 const doiRe = /(10\.\d{4,9}\/\S+)/;
 
+const claimSupportSchema = z.enum(["unassessed", "supports", "partial", "contradicts", "unrelated"]);
+
 const manifestSchema = z.object({
+  /** Optional literature-workflow envelope; ignored for persistence. */
+  meta: z
+    .object({
+      kind: z.string().optional(),
+      curation: z.literal("unreviewed").optional(),
+      project_id: z.string().optional(),
+      note: z.string().optional(),
+    })
+    .optional(),
   evidence_records: z.array(
     z.object({
       node_id: z.string(),
@@ -34,6 +45,10 @@ const manifestSchema = z.object({
           search_query: z.string().optional(),
           pmid: z.string().optional(),
           doi: z.string().optional(),
+          /** Proposed mapping from literature workflow — never treated as approved curation. */
+          relationship_id: z.string().max(200).nullable().optional(),
+          claim_support: claimSupportSchema.optional(),
+          claim_text: z.string().max(2000).optional(),
         }),
       ),
     }),
@@ -48,6 +63,10 @@ export const importManifest = createServerFn({ method: "POST" })
     const rows = data.evidence_records.flatMap((r) =>
       r.evidence.map((e) => {
         const ref = e.source_ref ?? null;
+        const rid = e.relationship_id && edgeByRel[e.relationship_id] ? e.relationship_id : null;
+        const notes = e.claim_text
+          ? `[literature candidate] ${e.claim_text}`.slice(0, 2000)
+          : null;
         return {
           evidence_id: e.evidence_id,
           node_id: r.node_id,
@@ -60,6 +79,11 @@ export const importManifest = createServerFn({ method: "POST" })
           search_query: e.search_query ?? null,
           manifest_status: e.status,
           check_status: ref || e.pmid || e.doi ? "pending" : "research_required",
+          // Always unreviewed on insert — scientific claim approval is a separate human step.
+          curation: "unreviewed",
+          relationship_id: rid,
+          claim_support: rid ? (e.claim_support ?? "unassessed") : "unassessed",
+          notes,
         };
       }),
     );

@@ -75,7 +75,7 @@ function Research() {
       </section>
 
       <section className="section" id="literature">
-        <h2>Literature intelligence scaffold</h2>
+        <h2>Literature intelligence</h2>
         <LiteratureQueue />
       </section>
 

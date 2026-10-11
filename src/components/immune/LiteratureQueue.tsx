@@ -1,26 +1,40 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { byId } from "@/lib/immune/engine";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION } from "@/lib/immune/graphRelease";
 import {
   addCandidateClaim,
   advanceStep,
+  canAdvance,
+  CLAIM_SUPPORT_LABEL,
   createLiteratureProject,
+  exportCurationManifest,
+  exportProjectJson,
   litSteps,
   mapClaim,
   reviewClaim,
+  runMetadataValidation,
   searchMetadataComplete,
+  setClaimSupport,
+  STEP_LABEL,
   stepIndex,
+  suggestConceptMatches,
+  suggestRelationshipMatches,
+  updateSearch,
   queueStats,
+  type ClaimSupport,
   type LiteratureProject,
-  type LitStep,
 } from "@/lib/research/literatureWorkflow";
 
-const STEP_LABEL: Record<LitStep, string> = {
-  search_metadata: "1. Search metadata",
-  candidate_claims: "2. Candidate claims",
-  map_concepts: "3. Map to graph",
-  human_review: "4. Human review",
-};
+function downloadJson(filename: string, text: string) {
+  const blob = new Blob([text], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function LiteratureQueue() {
   const [project, setProject] = useState<LiteratureProject>(() =>
@@ -28,89 +42,170 @@ export default function LiteratureQueue() {
   );
   const [claimText, setClaimText] = useState("");
   const [excerpt, setExcerpt] = useState("");
+  const [subjectHint, setSubjectHint] = useState("");
+  const [objectHint, setObjectHint] = useState("");
   const [mapConcept, setMapConcept] = useState("");
   const [mapRel, setMapRel] = useState("");
   const [activeClaim, setActiveClaim] = useState<string | null>(null);
   const stats = useMemo(() => queueStats(project), [project]);
   const searchOk = searchMetadataComplete(project.search).ok;
   const steps = litSteps();
+  const gate = canAdvance(project);
+  const active = project.claims.find((c) => c.claim_id === activeClaim) ?? null;
+  const conceptSuggestions = useMemo(
+    () => suggestConceptMatches(mapConcept.includes(",") ? mapConcept.split(",").pop() ?? "" : mapConcept),
+    [mapConcept],
+  );
+  const relSuggestions = useMemo(() => {
+    const ids = (active?.mappedConceptIds.length ? active.mappedConceptIds : mapConcept.split(",").map((s) => s.trim()).filter(Boolean));
+    return suggestRelationshipMatches(ids);
+  }, [active, mapConcept]);
+  const manifest = useMemo(() => exportCurationManifest(project), [project]);
+  const acceptedCount = stats.accepted;
 
   return (
     <div className="lit-queue">
       <p className="lede">
-        Scaffold for literature intelligence (PRD FR-036/037). Steps are separate; identifiers are optional and never invented.
-        Accepted items stay <b>candidates for curation</b> — they do not write to the curated graph.
+        Literature intelligence (PRD FR-036/037): identify a source, validate metadata locally, extract candidate claims,
+        map to canonical graph IDs, flag conflicts, then prepare records for human curation.
+        Identifiers are optional and never invented. Accepted items stay <b>candidates</b> — they do not approve graph claims.
       </p>
-      <ol className="row" style={{ listStyle: "none", padding: 0, gap: 8, flexWrap: "wrap" }}>
+
+      <ol className="row" style={{ listStyle: "none", padding: 0, gap: 8, flexWrap: "wrap" }} aria-label="Workflow steps">
         {steps.map((s) => (
           <li key={s}>
-            <span className={`chip ${project.step === s ? "" : "muted"}`} aria-current={project.step === s ? "step" : undefined}>
+            <button
+              type="button"
+              className={`chip ${project.step === s ? "on" : "muted"}`}
+              aria-current={project.step === s ? "step" : undefined}
+              onClick={() => setProject({ ...project, step: s, updatedAt: new Date().toISOString() })}
+            >
               {STEP_LABEL[s]}
-            </span>
+            </button>
           </li>
         ))}
       </ol>
+
       <p className="xs muted">
         Project {project.project_id} · graph v{project.graphVersion} · extensions {project.extensionsVersion} · status {project.status}
         {" · "}queue {stats.queued} / accepted {stats.accepted} / rejected {stats.rejected}
+        {" · "}conflicts {stats.conflicts.total}
+        {stats.conflicts.blocking ? ` (${stats.conflicts.blocking} blocking)` : ""}
       </p>
 
-      <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
-        <h3 style={{ fontSize: "1.05rem" }}>Search metadata</h3>
-        <label className="field">Search query
-          <input
-            value={project.search.query}
-            onChange={(e) => setProject({ ...project, search: { ...project.search, query: e.target.value }, updatedAt: new Date().toISOString() })}
-            placeholder="e.g. HLA-B27 ankylosing spondylitis mechanism"
-          />
-        </label>
-        <label className="field">Title (or provide PMID/DOI below)
-          <input
-            value={project.search.title ?? ""}
-            onChange={(e) => setProject({ ...project, search: { ...project.search, title: e.target.value }, updatedAt: new Date().toISOString() })}
-          />
-        </label>
-        <div className="row" style={{ gap: 12, flexWrap: "wrap" }}>
-          <label className="field" style={{ flex: 1, minWidth: 140 }}>PMID (optional, user-supplied)
+      {(project.step === "source_identification" || project.step === "metadata_validation") && (
+        <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
+          <h3 style={{ fontSize: "1.05rem" }}>
+            {project.step === "source_identification" ? "Source identification" : "Metadata validation"}
+          </h3>
+          <label className="field">Search query
             <input
-              value={project.search.pmid ?? ""}
-              onChange={(e) => setProject({ ...project, search: { ...project.search, pmid: e.target.value || undefined }, updatedAt: new Date().toISOString() })}
-              placeholder="Leave blank if unknown"
+              value={project.search.query}
+              onChange={(e) => setProject(updateSearch(project, { query: e.target.value }))}
+              placeholder="e.g. HLA-B27 ankylosing spondylitis mechanism"
             />
           </label>
-          <label className="field" style={{ flex: 1, minWidth: 140 }}>DOI (optional)
+          <label className="field">Title (or provide PMID/DOI below)
             <input
-              value={project.search.doi ?? ""}
-              onChange={(e) => setProject({ ...project, search: { ...project.search, doi: e.target.value || undefined }, updatedAt: new Date().toISOString() })}
+              value={project.search.title ?? ""}
+              onChange={(e) => setProject(updateSearch(project, { title: e.target.value }))}
             />
           </label>
-        </div>
-        {!searchOk && <p className="xs muted">Need a query plus title, PMID, or DOI before advancing.</p>}
-      </section>
+          <div className="row" style={{ gap: 12, flexWrap: "wrap" }}>
+            <label className="field" style={{ flex: 1, minWidth: 140 }}>PMID (optional, user-supplied)
+              <input
+                value={project.search.pmid ?? ""}
+                onChange={(e) => setProject(updateSearch(project, { pmid: e.target.value || undefined }))}
+                placeholder="Leave blank if unknown — never invent"
+              />
+            </label>
+            <label className="field" style={{ flex: 1, minWidth: 140 }}>DOI (optional)
+              <input
+                value={project.search.doi ?? ""}
+                onChange={(e) => setProject(updateSearch(project, { doi: e.target.value || undefined }))}
+              />
+            </label>
+            <label className="field" style={{ flex: 1, minWidth: 100 }}>Year
+              <input
+                value={project.search.year ?? ""}
+                onChange={(e) => setProject(updateSearch(project, { year: e.target.value || undefined }))}
+              />
+            </label>
+          </div>
+          <label className="field">Journal
+            <input
+              value={project.search.journal ?? ""}
+              onChange={(e) => setProject(updateSearch(project, { journal: e.target.value || undefined }))}
+            />
+          </label>
+          {!searchOk && <p className="xs muted">Need a query plus title, PMID, or DOI before advancing.</p>}
+          <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+            <button type="button" className="btn sm" onClick={() => setProject(runMetadataValidation(project))}>
+              Run local metadata validation
+            </button>
+            <span className="chip">check: {project.search.metadataCheck}</span>
+          </div>
+          {project.search.metadataNotes.length > 0 && (
+            <ul className="small" style={{ margin: 0 }}>
+              {project.search.metadataNotes.map((n) => <li key={n}>{n}</li>)}
+            </ul>
+          )}
+          <p className="xs muted">
+            Live PubMed/Crossref verification runs in{" "}
+            <Link to="/curation">Citation curation</Link> after import — not in this browser scaffold.
+          </p>
+        </section>
+      )}
 
-      <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
-        <h3 style={{ fontSize: "1.05rem" }}>Candidate claim</h3>
-        <label className="field">Claim text
-          <textarea rows={2} value={claimText} onChange={(e) => setClaimText(e.target.value)} placeholder="Candidate mechanistic claim — labelled draft until reviewed" />
-        </label>
-        <label className="field">Supporting excerpt (paste only what you are allowed to store)
-          <textarea rows={2} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
-        </label>
-        <button
-          type="button"
-          className="btn sm"
-          disabled={!claimText.trim()}
-          onClick={() => {
-            const next = addCandidateClaim(project, { text: claimText, excerpt });
-            setProject(next);
-            setActiveClaim(next.claims[next.claims.length - 1]?.claim_id ?? null);
-            setClaimText("");
-            setExcerpt("");
-          }}
-        >
-          Add candidate claim
-        </button>
-      </section>
+      {(project.step === "candidate_claims" ||
+        project.step === "map_concepts" ||
+        project.step === "conflict_flags" ||
+        project.step === "claim_approval" ||
+        project.claims.length > 0) && (
+        <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
+          <h3 style={{ fontSize: "1.05rem" }}>Candidate claim</h3>
+          <label className="field">Claim text
+            <textarea
+              rows={2}
+              value={claimText}
+              onChange={(e) => setClaimText(e.target.value)}
+              placeholder="Candidate mechanistic claim — labelled draft until reviewed"
+            />
+          </label>
+          <label className="field">Supporting excerpt (paste only what you are allowed to store)
+            <textarea rows={2} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
+          </label>
+          <div className="row" style={{ gap: 12, flexWrap: "wrap" }}>
+            <label className="field" style={{ flex: 1, minWidth: 140 }}>Subject hint
+              <input value={subjectHint} onChange={(e) => setSubjectHint(e.target.value)} placeholder="e.g. HLA-B27" />
+            </label>
+            <label className="field" style={{ flex: 1, minWidth: 140 }}>Object hint
+              <input value={objectHint} onChange={(e) => setObjectHint(e.target.value)} placeholder="e.g. axial spondyloarthritis" />
+            </label>
+          </div>
+          <button
+            type="button"
+            className="btn sm"
+            disabled={!claimText.trim()}
+            onClick={() => {
+              const next = addCandidateClaim(project, {
+                text: claimText,
+                excerpt,
+                subjectHint,
+                objectHint,
+              });
+              setProject(next);
+              setActiveClaim(next.claims[next.claims.length - 1]?.claim_id ?? null);
+              setClaimText("");
+              setExcerpt("");
+              setSubjectHint("");
+              setObjectHint("");
+            }}
+          >
+            Add candidate claim
+          </button>
+        </section>
+      )}
 
       {project.claims.length > 0 && (
         <section className="card" style={{ marginTop: 16, display: "grid", gap: 12 }}>
@@ -119,31 +214,108 @@ export default function LiteratureQueue() {
             <article key={c.claim_id} className="card" style={{ background: "transparent" }}>
               <div className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
                 <span className="chip">candidate</span>
-                <span className="xs muted">{c.reviewStatus}</span>
+                <span className="xs muted">{c.reviewStatus} · support {c.claimSupport}</span>
               </div>
               <p className="small" style={{ marginTop: 8 }}>{c.text}</p>
               {c.excerpt ? <p className="xs muted" style={{ marginTop: 6 }}>Excerpt: {c.excerpt}</p> : null}
               <p className="xs muted" style={{ marginTop: 6 }}>
-                Concepts: {c.mappedConceptIds.length ? c.mappedConceptIds.map((id) => (byId[id] ? `${id} (${byId[id].name})` : id)).join(", ") : "unmapped"}
+                Concepts:{" "}
+                {c.mappedConceptIds.length
+                  ? c.mappedConceptIds.map((id) => (byId[id] ? `${id} (${byId[id].name})` : `${id} ?`)).join(", ")
+                  : "unmapped"}
                 {" · "}Rels: {c.mappedRelationshipIds.join(", ") || "unmapped"}
               </p>
+              {c.conflictFlags.length > 0 && (
+                <ul className="xs" style={{ marginTop: 8 }}>
+                  {c.conflictFlags.map((f) => (
+                    <li key={f.flag_id} className={f.severity === "blocking" ? "" : "muted"}>
+                      [{f.severity}] {f.message}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <label className="field" style={{ marginTop: 8 }}>Proposed claim support
+                <select
+                  value={c.claimSupport}
+                  onChange={(e) => setProject(setClaimSupport(project, c.claim_id, e.target.value as ClaimSupport))}
+                >
+                  {(Object.keys(CLAIM_SUPPORT_LABEL) as ClaimSupport[]).map((k) => (
+                    <option key={k} value={k}>{CLAIM_SUPPORT_LABEL[k]}</option>
+                  ))}
+                </select>
+              </label>
               <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 8 }}>
                 <button type="button" className="btn sm" onClick={() => setActiveClaim(c.claim_id)}>Map</button>
-                <button type="button" className="btn sm" onClick={() => setProject(reviewClaim(project, c.claim_id, "accepted_for_curation"))}>Accept for curation</button>
-                <button type="button" className="btn sm" onClick={() => setProject(reviewClaim(project, c.claim_id, "needs_edit"))}>Needs edit</button>
-                <button type="button" className="btn sm" onClick={() => setProject(reviewClaim(project, c.claim_id, "rejected"))}>Reject</button>
+                <button
+                  type="button"
+                  className="btn sm"
+                  onClick={() => setProject(reviewClaim(project, c.claim_id, "accepted_for_curation"))}
+                >
+                  Accept for curation
+                </button>
+                <button type="button" className="btn sm" onClick={() => setProject(reviewClaim(project, c.claim_id, "needs_edit"))}>
+                  Needs edit
+                </button>
+                <button type="button" className="btn sm" onClick={() => setProject(reviewClaim(project, c.claim_id, "rejected"))}>
+                  Reject
+                </button>
               </div>
             </article>
           ))}
-          {activeClaim && (
+
+          {activeClaim && active && (
             <div className="card" style={{ display: "grid", gap: 8 }}>
               <h4 className="small">Map claim {activeClaim}</h4>
               <label className="field">Concept IDs (comma-separated)
-                <input value={mapConcept} onChange={(e) => setMapConcept(e.target.value)} placeholder="e.g. EG01, EG10" />
+                <input
+                  value={mapConcept}
+                  onChange={(e) => setMapConcept(e.target.value)}
+                  placeholder="e.g. EG01, EG10"
+                />
               </label>
-              <label className="field">Relationship IDs (comma-separated)
-                <input value={mapRel} onChange={(e) => setMapRel(e.target.value)} placeholder="e.g. REL-EG01-associates_with-EG10" />
+              {conceptSuggestions.length > 0 && (
+                <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+                  {conceptSuggestions.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      className="chip"
+                      onClick={() => {
+                        const parts = mapConcept.split(",").map((x) => x.trim()).filter(Boolean);
+                        const last = parts[parts.length - 1];
+                        const base = last && !byId[last] ? parts.slice(0, -1) : parts;
+                        if (!base.includes(s.id)) setMapConcept([...base, s.id].join(", "));
+                      }}
+                    >
+                      {s.id} · {s.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <label className="field">Relationship IDs (relId)
+                <input
+                  value={mapRel}
+                  onChange={(e) => setMapRel(e.target.value)}
+                  placeholder="e.g. REL-EG01-associates_with-EG10"
+                />
               </label>
+              {relSuggestions.length > 0 && (
+                <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+                  {relSuggestions.map((s) => (
+                    <button
+                      key={s.relId}
+                      type="button"
+                      className="chip"
+                      onClick={() => {
+                        const parts = mapRel.split(",").map((x) => x.trim()).filter(Boolean);
+                        if (!parts.includes(s.relId)) setMapRel([...parts, s.relId].join(", "));
+                      }}
+                    >
+                      {s.relId}
+                    </button>
+                  ))}
+                </div>
+              )}
               <button
                 type="button"
                 className="btn sm"
@@ -163,29 +335,77 @@ export default function LiteratureQueue() {
         </section>
       )}
 
-      <div className="row" style={{ marginTop: 16, gap: 8 }}>
+      {(project.step === "conflict_flags" || project.step === "claim_approval" || stats.conflicts.total > 0) && (
+        <section className="card" style={{ marginTop: 16, display: "grid", gap: 8 }}>
+          <h3 style={{ fontSize: "1.05rem" }}>Conflict flags</h3>
+          <p className="xs muted">
+            Blocking flags (unknown IDs, unmapped acceptances) must be cleared before advancing past conflict review.
+            Warnings (disagreements, contradicts-established) stay visible for the curator.
+          </p>
+          {stats.conflicts.total === 0 ? (
+            <p className="small muted">No conflicts detected in the current queue.</p>
+          ) : (
+            <ul className="small">
+              {project.claims.flatMap((c) =>
+                c.conflictFlags.map((f) => (
+                  <li key={f.flag_id}>
+                    <span className="chip">{f.severity}</span> {c.claim_id}: {f.message}
+                  </li>
+                )),
+              )}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {acceptedCount > 0 && (
+        <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
+          <h3 style={{ fontSize: "1.05rem" }}>Curation handoff</h3>
+          <p className="small muted">
+            {acceptedCount} claim(s) accepted for curation. Export a candidate manifest for{" "}
+            <Link to="/curation">Citation curation</Link>. Import adds unreviewed rows only — scientific claim approval
+            stays a separate human step. This UI never writes approved evidence.
+          </p>
+          <p className="xs muted">
+            Manifest groups: {manifest.evidence_records.length} · meta.curation = {manifest.meta.curation}
+          </p>
+          <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className="btn sm"
+              onClick={() =>
+                downloadJson(
+                  `${project.project_id}-curation-candidates.json`,
+                  JSON.stringify(manifest, null, 2),
+                )
+              }
+            >
+              Export curation candidate manifest
+            </button>
+            <Link className="btn sm" to="/curation">Open curation workspace</Link>
+          </div>
+        </section>
+      )}
+
+      <div className="row" style={{ marginTop: 16, gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <button
           type="button"
           className="btn sm"
-          disabled={stepIndex(project.step) >= steps.length - 1}
+          disabled={stepIndex(project.step) >= steps.length - 1 || !gate.ok}
           onClick={() => setProject(advanceStep(project))}
+          title={gate.ok ? "Advance" : gate.reason}
         >
           Advance workflow step
         </button>
+        {!gate.ok && project.step !== "claim_approval" && (
+          <span className="xs muted">{gate.reason}</span>
+        )}
         <button
           type="button"
           className="btn sm"
-          onClick={() => {
-            const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `${project.project_id}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-          }}
+          onClick={() => downloadJson(`${project.project_id}.json`, exportProjectJson(project))}
         >
-          Export scaffold JSON
+          Export project JSON
         </button>
       </div>
     </div>
