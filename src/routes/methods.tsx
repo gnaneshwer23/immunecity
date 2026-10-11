@@ -6,17 +6,17 @@ import { PageHead } from "@/components/immune/ui";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
+import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
 
 export const Route = createFileRoute("/methods")({
   head: () => ({
     meta: [
-      { title: "Evidence & Methods | Immune City" },
+      { title: pageTitle("Evidence & Methods") },
       {
         name: "description",
-        content:
-          "Understand the Immune City graph, source curation, evidence statuses, model assumptions and scientific limitations.",
+        content: `Understand the ${FLAGSHIP_NAME} graph, source curation, evidence statuses, model assumptions and scientific limitations.`,
       },
-      { property: "og:title", content: "Evidence & Methods | Immune City" },
+      { property: "og:title", content: pageTitle("Evidence & Methods") },
       {
         property: "og:description",
         content: "Ontology, relationship signs, evidence review statuses, model assumptions and limitations.",
@@ -32,11 +32,11 @@ function Methods() {
   const snap = graphReleaseSnapshot();
   const signs = Object.entries(SEM).reduce<Record<string, string[]>>((a, [rel, s]) => ((a[s] ||= []).push(rel), a), {});
   return (
-    <div className="page methods">
+    <div className="page methods marketing-page">
       <PageHead
         kicker="Evidence & Methods"
         title="See what supports a claim—and where the evidence stops."
-        lede="Immune City distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation is only counted as support when it is mapped to that directional claim and reviewed under the platform’s curation process. Educational beta — teaching with references, not clinical decision support."
+        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation is only counted as support when it is mapped to that directional claim and reviewed under the platform’s curation process. Educational beta — teaching with references, not clinical decision support.`}
         stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]}
       />
 

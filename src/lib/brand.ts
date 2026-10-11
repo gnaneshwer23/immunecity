@@ -27,6 +27,10 @@ export const PROPOSITION =
 export const HERO_HEADLINE =
   "Understand the immune system as a connected, evidence-aware system.";
 
+/** Short hero supporting line — keep the first viewport lean. */
+export const HERO_SUPPORT =
+  "Learn mechanisms, explore causal relationships, and investigate research questions—with references.";
+
 export function pageTitle(section?: string): string {
   return section ? `${section} — ${PRODUCT_NAME}` : PRODUCT_LINE;
 }

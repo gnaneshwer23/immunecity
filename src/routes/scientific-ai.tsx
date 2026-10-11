@@ -53,7 +53,7 @@ function ScientificAi() {
 
       <section className="section">
         <h2>Capability status</h2>
-        <div className="home-status-grid" style={{ gridTemplateColumns: "1fr" }}>
+        <div className="home-status-grid sci-ai-status">
           <div className="home-status-col">
             <ul>
               {features.map((f) => (
@@ -70,15 +70,15 @@ function ScientificAi() {
         </div>
       </section>
 
-      <section className="section bio-banner" style={{ marginTop: 28 }}>
+      <section className="section mkt-banner" aria-labelledby="sai-cta">
         <div>
-          <h2 style={{ margin: 0 }}>See the approach in the atlas</h2>
-          <p style={{ marginTop: 10 }}>
+          <h2 id="sai-cta">See the approach in the atlas</h2>
+          <p>
             Ask retrieves from the graph; the workbench organises candidates; the model registry documents planned
             adapters that return not_available until wired.
           </p>
         </div>
-        <div className="bio-actions" style={{ marginTop: 0 }}>
+        <div className="bio-actions">
           <Button asChild className="bio-primary">
             <Link to="/reasoning">
               Open Reasoning <ArrowUpRight />

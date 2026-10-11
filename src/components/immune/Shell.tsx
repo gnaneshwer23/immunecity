@@ -211,7 +211,13 @@ export default function Shell({ children }: { children: ReactNode }) {
             <div className="nav-label">Explore</div>
             <div className="nav-group">
               {MARKETING_NAV.map((item) => (
-                <Link key={item.path} to={item.path} onClick={() => setOpen(false)}>
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  activeOptions={{ exact: item.path === "/" }}
+                  activeProps={{ className: "active" }}
+                  onClick={() => setOpen(false)}
+                >
                   {item.label}
                 </Link>
               ))}

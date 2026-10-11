@@ -9,8 +9,8 @@ import {
   EXPLORE_PATH,
   FLAGSHIP_NAME,
   HERO_HEADLINE,
+  HERO_SUPPORT,
   PRODUCT_NAME,
-  PROPOSITION,
 } from "@/lib/brand";
 import {
   CAPABILITY_STATUS_LABEL,
@@ -84,7 +84,7 @@ function Home() {
           </div>
           <h1>{PRODUCT_NAME}</h1>
           <p className="hero-subtitle">{HERO_HEADLINE}</p>
-          <p className="hero-description">{PROPOSITION}</p>
+          <p className="hero-description">{HERO_SUPPORT}</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary">
               <Link to={EXPLORE_PATH}>
@@ -97,7 +97,7 @@ function Home() {
               </a>
             </Button>
           </div>
-          <div className="bio-hero-note">EDUCATIONAL BETA · CURATED GRAPH · REFERENCES WHEN REVIEWED</div>
+          <div className="bio-hero-note">Educational beta · curated graph · references when reviewed</div>
         </div>
       </section>
 
@@ -174,7 +174,6 @@ function Home() {
           </p>
           <p className="home-trust-link">
             <Link to="/methods">Read the methods</Link>
-            {" · "}
             <Link to="/disclaimer">Educational disclaimer</Link>
           </p>
         </section>
@@ -229,9 +228,7 @@ function Home() {
         <section className="bio-banner home-final-cta" aria-labelledby="cta-heading">
           <div>
             <div className="bio-eyebrow">Open the {FLAGSHIP_NAME} beta</div>
-            <h2 id="cta-heading" style={{ marginTop: 14 }}>
-              Explore immunology through connected mechanisms.
-            </h2>
+            <h2 id="cta-heading">Explore immunology through connected mechanisms.</h2>
             <p>
               Start with a cell, pathway or scientific question—and follow the relationships that connect it to the
               wider immune system.

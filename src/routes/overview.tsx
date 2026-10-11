@@ -7,7 +7,7 @@ import { CONTENT } from "@/data/content";
 import { NAV_GROUPS } from "@/components/immune/nav";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
-import { FLAGSHIP_NAME } from "@/lib/brand";
+import { FLAGSHIP_NAME, PRODUCT_NAME, pageTitle } from "@/lib/brand";
 
 const GROUP_COLORS = ["--t-cell", "--t-pathway", "--t-intervention", "--t-discovery"];
 
@@ -21,13 +21,12 @@ const SPINE_TYPE: Record<string, NodeType> = {
 export const Route = createFileRoute("/overview")({
   head: () => ({
     meta: [
-      { title: "Immune City Platform | Connected Immunology Knowledge" },
+      { title: pageTitle("Platform") },
       {
         name: "description",
-        content:
-          "Explore immune cells, mechanisms, disease biology, therapies and evidence through a connected immunology platform.",
+        content: `Explore immune cells, mechanisms, disease biology, therapies and evidence through ${FLAGSHIP_NAME} — the ${PRODUCT_NAME} flagship atlas.`,
       },
-      { property: "og:title", content: "Immune City Platform | Connected Immunology Knowledge" },
+      { property: "og:title", content: pageTitle("Platform") },
       {
         property: "og:description",
         content:
@@ -47,9 +46,9 @@ function Overview() {
   const atlasLayerCount = NAV_GROUPS.flatMap((g) => g.items.filter((l) => l.path !== "/")).length;
 
   return (
-    <div className="bio-content" style={{ paddingTop: 8 }}>
+    <div className="bio-content overview-page">
       <PageHead
-        kicker={`01 · ${FLAGSHIP_NAME} · Platform`}
+        kicker={`Platform · ${FLAGSHIP_NAME}`}
         title="One connected view of immunology."
         lede={`${FLAGSHIP_NAME} brings immune-cell profiles, mechanisms, disease biology, therapies, clinical-trial evidence and research exploration into a shared causal knowledge environment. Orient here, then open a layer.`}
         stats={[
@@ -60,7 +59,7 @@ function Overview() {
         ]}
       />
 
-      <p className="lede" style={{ marginTop: 8, marginBottom: 0, maxWidth: "42rem" }}>
+      <p className="lede">
         Release <code>{snap.snapshotAt}</code> · core vs draft counts from the shared graph snapshot · claim-level approved support is still sparse overall ·{" "}
         <Link to="/methods">Read the methods</Link> · <Link to="/graph">Explore the live platform</Link> ·{" "}
         <Link to="/evidence">Evidence coverage</Link>
@@ -92,7 +91,7 @@ function Overview() {
 
       <section className="bio-section">
         <div className="bio-section-heading"><div><span className="bio-section-number">01 / THE CAUSAL SPINE</span><h2>From trigger to discovery.</h2></div><ArrowDown size={24} /></div>
-        <p className="lede" style={{ marginTop: -8 }}>The primary scientific journey — fifteen stages from the first signal to discovery feedback.</p>
+        <p className="lede spine-lede">The primary scientific journey — fifteen stages from the first signal to discovery feedback.</p>
         <div className="spine-rail" role="tablist" aria-label="Causal spine stages">
           {KG.core_spine.map((step, i) => (
             <button type="button" role="tab" aria-selected={spineStep === step} className={`spine-step${spineStep === step ? " active" : ""}`} key={step} onClick={() => setSpineStep(spineStep === step ? null : step)}>
@@ -196,7 +195,11 @@ function Overview() {
       </section>
 
       <section className="bio-banner">
-        <div><div className="bio-eyebrow"><Activity size={16} /> INFECTION DYNAMICS</div><h2 style={{ marginTop: 14 }}>Change the conditions. Follow the response.</h2><p>Pathogen growth, immune strength, and treatment timing meet in an interactive model of infection.</p></div>
+        <div>
+          <div className="bio-eyebrow"><Activity size={16} /> Infection dynamics</div>
+          <h2>Change the conditions. Follow the response.</h2>
+          <p>Pathogen growth, immune strength, and treatment timing meet in an interactive model of infection.</p>
+        </div>
         <Button asChild className="bio-primary"><Link to="/simulator">Open the simulator <ArrowUpRight /></Link></Button>
       </section>
     </div>

@@ -62,7 +62,7 @@ function Insights() {
 
       <section className="section">
         <h2>Implementation track status</h2>
-        <p className="lede" style={{ marginTop: 0 }}>
+        <p>
           Phases B–E from the maintained implementation list — partial means shipped interfaces with honest gaps, not
           finished science.
         </p>

@@ -117,12 +117,12 @@ function Collaborate() {
             and I will not include patient-identifiable or confidential research data.
           </span>
         </label>
-        <div className="bio-actions" style={{ marginTop: 8 }}>
+        <div className="bio-actions">
           <Button type="submit" className="bio-primary" disabled={!privacy}>
             Start a conversation
           </Button>
         </div>
-        <p className="small muted" style={{ marginTop: 12 }}>
+        <p className="small muted collab-form-note">
           Opens your email client to {CONTACT_EMAIL}. If mail is not configured on your device, copy the address and
           send manually.
         </p>

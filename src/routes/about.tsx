@@ -82,15 +82,15 @@ function About() {
         </p>
       </section>
 
-      <section className="section bio-banner" style={{ marginTop: 28 }}>
+      <section className="section mkt-banner" aria-labelledby="about-cta">
         <div>
-          <h2 style={{ margin: 0 }}>Work with us</h2>
-          <p style={{ marginTop: 10 }}>
+          <h2 id="about-cta">Work with us</h2>
+          <p>
             Educators, immunology researchers, computational biologists and technology teams — we welcome focused
             collaboration conversations.
           </p>
         </div>
-        <div className="bio-actions" style={{ marginTop: 0 }}>
+        <div className="bio-actions">
           <Button asChild className="bio-primary">
             <Link to="/collaborate">
               Collaborate <ArrowUpRight />
