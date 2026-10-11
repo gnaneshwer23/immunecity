@@ -25,6 +25,8 @@
 
 **Publication update (2026-10-11, post-blocker pass):** Ask hardening + OpenAI BYOK fallback pushed to `main` / Vercel (`ecbbec7`, `a79750a`). Live smoke on https://immunecity.vercel.app: homepage **200**; clinical Ask **200** educational refusal (no 500); TNF/RA educational Ask **200** streaming via OpenAI Responses (`OPEN_API_KEY`). Migration `0003` **not** applied (no MCP/CLI access to Supabase project `dynvfnkqvostabfdglve`). Claim-level approved evidence remains **0/536**. Full WCAG + SME gold-set still unsigned.
 
+**Migration 0003 apply attempt (2026-10-11, authorised):** **BLOCKED.** Supabase MCP `list_projects` returned only `DeliverX` (`jibmyxaldetyycmtlxet`) and `fluent-institute` (`bzefudyjvgwwtlalmrxk`). Target Immune City project `dynvfnkqvostabfdglve` was **not** visible — no SQL executed (wrong-project guard). Owner must apply via Dashboard SQL Editor (see §11).
+
 **Still required for unqualified GO:** apply `0003` + explicit admin grant; curator evidence pack; WCAG/SME sign-off; prefer renaming `OPEN_API_KEY` → `OPENAI_API_KEY` (or set `LOVABLE_API_KEY` for Lovable gateway). Keep Lovable host as secondary; do not delete.
 
 ---
@@ -200,7 +202,7 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 | D-01 | **P0** | Vercel Ask: model key mis-named / Lovable key absent | Owner set `OPEN_API_KEY` only | Dual-path: Lovable or OpenAI BYOK (`OPENAI_API_KEY`/`OPEN_API_KEY`) | Manual Ask after deploy | **Closed (prod smoke 200 stream)** |
 | D-02 | **P0** | Ask requires API key before abstentions | Clinical on Vercel → 500 instead of refusal | `ask.server.ts` reorder | smoke + curl after deploy | **Closed (prod clinical 200 refusal)** |
 | D-03 | **P0** | No emergency Ask disable | N/A | `isAskEmergencyDisabled` + env | smoke checks | **Deployed (env unset = normal)** |
-| D-04 | **P0** | First-signup auto-admin | Open signup when no admin | Migration `0003` | Apply migration; role tests | **Code ready / DB not migrated (no Supabase access)** |
+| D-04 | **P0** | First-signup auto-admin | Open signup when no admin | Migration `0003` | Apply migration; role tests | **Code ready / DB apply BLOCKED (MCP cannot see `dynvfnkqvostabfdglve`)** |
 | D-05 | **P0** | Zero approved claim-level evidence | Anon select count = 0 | Curator workflow (human) | Coverage dashboard | **Open (science)** |
 | D-06 | **P1** | Dual public URLs diverge | Title/content mismatch | Designate single RC | Smoke both | **Open (product)** |
 | D-07 | **P1** | Lovable unsupported may still call model | Gibberish streamed via OpenAI path | Deploy latest `prepareAsk` | Eval unsupported cases | **Likely stale deploy** |
@@ -228,9 +230,12 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 ## 11. Unresolved blockers / remaining owner actions
 
-1. **Owner: DBA / Supabase** — Apply migration `0003` (MCP authenticated account cannot access project `dynvfnkqvostabfdglve`). In SQL Editor run the contents of `drizzle/migrations/0003_explicit_admin_provisioning.sql`, then grant admin **explicitly** to the intended curator only:
+1. **Owner: DBA / Supabase** — Apply migration `0003` (**BLOCKED** via MCP: account sees other projects only, not `dynvfnkqvostabfdglve`). In [Supabase Dashboard](https://supabase.com/dashboard/project/dynvfnkqvostabfdglve/sql/new) → SQL Editor, run the full contents of `drizzle/migrations/0003_explicit_admin_provisioning.sql`, then verify + grant admin **explicitly** to the intended curator only:
 
    ```sql
+   -- Verify function no longer auto-promotes first signup:
+   SELECT pg_get_functiondef('public.assign_initial_role()'::regprocedure);
+
    -- After the curator has signed up once (role = user):
    INSERT INTO public.user_roles (user_id, role)
    SELECT id, 'admin' FROM auth.users WHERE email = '<owner@example.com>'
@@ -250,7 +255,7 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 - Pushed to `origin/main` (Ask abstention-before-key, emergency disable, migration file `0003`, eval-50, OpenAI BYOK dual-path, this audit update).
 - Canonical production: **https://immunecity.vercel.app** (Vercel project `immunecity`).
-- Migration `0003` remains **not applied** to production Postgres until owner runs SQL above.
+- Migration `0003` remains **BLOCKED / not applied** to production Postgres (`dynvfnkqvostabfdglve`) until owner runs SQL in §11.
 - Curator evidence pack and full WCAG/SME sign-off: **remaining** (cannot complete in this pass).
 
 ---
