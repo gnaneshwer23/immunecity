@@ -4,6 +4,8 @@ import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { PROMPT_VERSION } from "@/lib/askGrounding";
 import { PageHead } from "@/components/immune/ui";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
+import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
+import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 
 export const Route = createFileRoute("/methods")({
   head: () => ({
@@ -57,8 +59,22 @@ function Methods() {
           <li><b>System simulator:</b> a small set of coupled equations for pathogen, innate and adaptive response, cytokines, damage, memory and exhaustion, in normalised units with hand-set parameters. It is not fitted to patient data.</li>
           <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. It is not a clinical decision tool.</li>
           <li><b>Ask Immune City:</b> queries are classified, graph context is retrieved, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
-          <li><b>Advanced model adapters</b> (omics, structure, epitope, genomics agents) are listed as planned interfaces only — none are implemented in production.</li>
+          <li><b>Advanced model adapters</b> (omics, structure, epitope, genomics agents) are interface contracts only — none are implemented in production. Full registry also on <Link to="/research">Research</Link>.</li>
         </ul>
+        <ModelRegistryPanel compact />
+      </section>
+
+      <section className="section" id="phases"><h2>4b. Platform phase status</h2>
+        <table className="rs-table"><tbody>
+          {IMPLEMENTATION_PHASES.map((p) => (
+            <tr key={p.id}>
+              <td><b>Phase {p.id}</b></td>
+              <td>{p.title}</td>
+              <td><span className="badge rs">{p.status.replace("_", " ")}</span></td>
+              <td className="small">{p.notes}</td>
+            </tr>
+          ))}
+        </tbody></table>
       </section>
 
       <section className="section"><h2>5. Limitations</h2>

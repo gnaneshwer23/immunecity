@@ -1,10 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CONTENT } from "@/data/content";
+import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { byId } from "@/lib/immune/engine";
 import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
 import { createHypothesisDraft, hypothesisCompleteness, type HypothesisDraft } from "@/lib/research/hypothesisDraft";
 import { PageHead, NodeChip } from "@/components/immune/ui";
+import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
+import LiteratureQueue from "@/components/immune/LiteratureQueue";
+import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 
 export const Route = createFileRoute("/research")({
   head: () => ({
@@ -35,12 +39,51 @@ function Research() {
       <PageHead
         kicker="Layer 12 · Research"
         title="The edge of the map"
-        lede="Findings that are reshaping the field, with an honest label for how settled each one is."
+        lede="Findings that are reshaping the field, with an honest label for how settled each one is — plus staged research workflows that stay candidate until curated."
         stats={[
           { v: frontier.length, l: "FRONTIER TOPICS" },
           { v: roadmap.length, l: "ROADMAP STEPS" },
+          { v: IMPLEMENTATION_PHASES.filter((p) => p.status !== "not_started").length, l: "PHASES IN FLIGHT" },
         ]}
       />
+
+      <section className="section" id="phases">
+        <h2>Implementation phases B–E</h2>
+        <p className="lede">
+          Status reflects shipped, testable code — not marketing claims. See also <Link to="/methods">Methods &amp; trust</Link>.
+        </p>
+        <div className="grid auto">
+          {IMPLEMENTATION_PHASES.map((p) => (
+            <article className="card" key={p.id}>
+              <div className="row" style={{ justifyContent: "space-between", gap: 8 }}>
+                <span className="chip">Phase {p.id}</span>
+                <span className="badge rs">{p.status.replace("_", " ")}</span>
+              </div>
+              <h3 style={{ fontSize: "1.05rem", marginTop: 10 }}>{p.title}</h3>
+              <p className="small muted" style={{ marginTop: 8 }}>{p.notes}</p>
+              <ul className="small" style={{ marginTop: 8 }}>
+                {p.acceptance.slice(0, 2).map((a) => <li key={a}>{a}</li>)}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section" id="workbench">
+        <h2>Scientific Workbench</h2>
+        <ScientificWorkbench />
+      </section>
+
+      <section className="section" id="literature">
+        <h2>Literature intelligence scaffold</h2>
+        <LiteratureQueue />
+      </section>
+
+      <section className="section" id="model-registry">
+        <h2>Advanced model registry</h2>
+        <ModelRegistryPanel />
+      </section>
+
       <section className="section">
         <h2>Hypothesis draft (candidate)</h2>
         <p className="lede">Local research artefact template — status is always <b>candidate</b>. Nothing here is written to the curated graph.</p>

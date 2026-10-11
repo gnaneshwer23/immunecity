@@ -1,0 +1,144 @@
+import { describe, expect, it } from "vitest";
+import { byId, KG, shortestPath } from "@/lib/immune/engine";
+import { GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
+import { EXT_LESSONS, EXT_NODES, EXT_PROVENANCE, EXT_ROUTES } from "@/data/extensions";
+import { IMPLEMENTATION_PHASES, phaseStatusSummary } from "@/data/implementation-phases";
+import { MODEL_REGISTRY, implementedModels } from "@/lib/ai/modelRegistry";
+import {
+  addCandidateClaim,
+  advanceStep,
+  createLiteratureProject,
+  mapClaim,
+  normaliseOptionalId,
+  reviewClaim,
+  searchMetadataComplete,
+} from "@/lib/research/literatureWorkflow";
+import {
+  addEvidenceNote,
+  advanceWorkbench,
+  canAdvance,
+  createWorkbenchSession,
+  experimentCompleteness,
+  exportWorkbench,
+} from "@/lib/research/workbench";
+
+describe("Phase B knowledge extensions", () => {
+  it("bumps extensions version and provenance", () => {
+    expect(GRAPH_EXTENSIONS_VERSION).toBe("draft-ext-3");
+    expect(EXT_PROVENANCE.version).toBe("draft-ext-3");
+  });
+
+  it("adds immunogenetics and thin-domain concepts as draft with stable IDs", () => {
+    for (const id of [
+      "EG01", "EG02", "EG03", "EG06", "EG07", "EG10", "EG11", "EG13", "EG14",
+      "EM07", "EM09", "EM11", "EV05", "EV07", "EV09", "ET06", "ET07", "ET09",
+      "EP10", "EP11", "EP13", "EP14", "EI01", "EI03",
+    ]) {
+      expect(byId[id], id).toBeTruthy();
+      expect(byId[id]!.draft).toBe(true);
+    }
+    expect(EXT_LESSONS.some((l) => l.id === "immunogenetics" && l.draft)).toBe(true);
+    expect(EXT_LESSONS.some((l) => l.id === "infection-autoimmunity" && l.draft)).toBe(true);
+    expect(EXT_ROUTES.some((r) => r.title.includes("Shared epitope") && r.draft)).toBe(true);
+    expect(EXT_ROUTES.some((r) => r.title.includes("EBV") && r.draft)).toBe(true);
+  });
+
+  it("keeps all extension nodes draft in the runtime graph", () => {
+    const extIds = new Set(EXT_NODES.map((n) => n.id));
+    const drafts = KG.nodes.filter((n) => extIds.has(n.id));
+    expect(drafts.length).toBe(EXT_NODES.length);
+    expect(drafts.every((n) => n.draft)).toBe(true);
+    const snap = graphReleaseSnapshot();
+    expect(snap.extensionsVersion).toBe("draft-ext-3");
+    expect(snap.coreNodes + snap.draftNodes).toBe(snap.runtimeNodes);
+  });
+
+  it("connects shared-epitope and EBV–mimicry paths illustratively", () => {
+    expect(shortestPath("EG02", "D001", true)?.length).toBeGreaterThan(0);
+    expect(shortestPath("X006", "D002", true)?.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Phase C literature workflow", () => {
+  it("rejects placeholder identifiers and requires real metadata", () => {
+    expect(normaliseOptionalId("fake")).toBeUndefined();
+    expect(normaliseOptionalId("12345678")).toBe("12345678");
+    const p = createLiteratureProject("0.3", "draft-ext-3", { query: "TNF RA" });
+    expect(searchMetadataComplete(p.search).ok).toBe(false);
+  });
+
+  it("moves search → claim → map → review without inventing PMIDs", () => {
+    let p = createLiteratureProject("0.3", "draft-ext-3", {
+      query: "HLA-B27 AS",
+      title: "User-supplied title only",
+    });
+    expect(p.search.pmid).toBeUndefined();
+    expect(searchMetadataComplete(p.search).ok).toBe(true);
+    p = advanceStep(p);
+    expect(p.step).toBe("candidate_claims");
+    p = addCandidateClaim(p, { text: "HLA-B27 associates with axial SpA", excerpt: "" });
+    p = mapClaim(p, p.claims[0]!.claim_id, ["EG01", "EG10"], ["REL-EG01-associates_with-EG10"]);
+    expect(p.claims[0]!.mappedConceptIds).toEqual(["EG01", "EG10"]);
+    p = reviewClaim(p, p.claims[0]!.claim_id, "accepted_for_curation", "Queue for human curator");
+    expect(p.claims[0]!.reviewStatus).toBe("accepted_for_curation");
+    expect(p.status).toBe("draft_scaffold");
+  });
+});
+
+describe("Phase D model registry honesty", () => {
+  it("exposes interface-only adapters and zero implemented models", () => {
+    expect(MODEL_REGISTRY.length).toBeGreaterThanOrEqual(5);
+    expect(implementedModels()).toEqual([]);
+    expect(MODEL_REGISTRY.every((m) => m.status === "interface-only" || m.status === "planned")).toBe(true);
+    expect(MODEL_REGISTRY.every((m) => m.limitations.some((l) => /not implemented/i.test(l)))).toBe(true);
+  });
+});
+
+describe("Phase E workbench", () => {
+  it("gates steps and exports candidates with versions", () => {
+    let s = createWorkbenchSession("0.3", "draft-ext-3");
+    expect(canAdvance(s).ok).toBe(false);
+    s = { ...s, question: { ...s.question, text: "Does NOD2 impair ileal sensing in Crohn?" } };
+    s = advanceWorkbench(s);
+    expect(s.step).toBe("evidence");
+    s = addEvidenceNote(s, "Association replicated in GWAS catalogues", "user-verified source label");
+    s = advanceWorkbench(s);
+    expect(s.step).toBe("mechanism");
+    s = {
+      ...s,
+      mechanism: { ...s.mechanism, paths: ["EG07 → D004"] },
+    };
+    s = advanceWorkbench(s);
+    expect(s.step).toBe("hypothesis");
+    s = { ...s, hypothesis: { ...s.hypothesis, claim: "NOD2 risk alleles impair muramyl-dipeptide sensing" } };
+    s = advanceWorkbench(s);
+    expect(s.step).toBe("experiment");
+    s = {
+      ...s,
+      experiment: {
+        ...s.experiment,
+        question: "Compare MDP responses in NOD2 variant vs WT myeloid cells",
+        readouts: "TNF, IL-1β, viability",
+      },
+    };
+    expect(experimentCompleteness(s.experiment).ok).toBe(false);
+    s = advanceWorkbench(s);
+    expect(s.step).toBe("review");
+    const json = exportWorkbench(s);
+    expect(json).toMatch(/candidate/);
+    expect(json).toMatch(/draft-ext-3/);
+    expect(s.hypothesis.status).toBe("candidate");
+    expect(s.experiment.status).toBe("draft_proposal");
+  });
+});
+
+describe("implementation phase registry", () => {
+  it("marks B–E as partial, never invents done without notes", () => {
+    const summary = phaseStatusSummary();
+    expect(summary.B).toBe("partial");
+    expect(summary.C).toBe("partial");
+    expect(summary.D).toBe("partial");
+    expect(summary.E).toBe("partial");
+    expect(IMPLEMENTATION_PHASES.every((p) => p.acceptance.length > 0 && p.goals.length > 0)).toBe(true);
+  });
+});

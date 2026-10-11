@@ -9,13 +9,28 @@ import {
   SYSTEM,
   PROMPT_VERSION,
 } from "../src/lib/askGrounding.ts";
-import { KG, edgeByRel, relId, shortestPath } from "../src/lib/immune/engine.ts";
-import { graphReleaseSnapshot, GRAPH_CORE_VERSION } from "../src/lib/immune/graphRelease.ts";
+import { KG, byId, edgeByRel, relId, shortestPath } from "../src/lib/immune/engine.ts";
+import { graphReleaseSnapshot, GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION } from "../src/lib/immune/graphRelease.ts";
 import { EXEMPLAR_PATHWAYS, reportExemplar } from "../src/lib/immune/exemplarPathways.ts";
 import { reasonMechanism } from "../src/lib/immune/mechanismReasoning.ts";
 import { SCIENTIFIC_EVAL_SET } from "../src/test/eval/scientific-eval-set.ts";
-import { implementedModels } from "../src/lib/ai/modelRegistry.ts";
+import { MODEL_REGISTRY, implementedModels } from "../src/lib/ai/modelRegistry.ts";
 import { createHypothesisDraft, hypothesisCompleteness } from "../src/lib/research/hypothesisDraft.ts";
+import {
+  addCandidateClaim,
+  createLiteratureProject,
+  normaliseOptionalId,
+  reviewClaim,
+  searchMetadataComplete,
+} from "../src/lib/research/literatureWorkflow.ts";
+import {
+  addEvidenceNote,
+  advanceWorkbench,
+  createWorkbenchSession,
+  exportWorkbench,
+} from "../src/lib/research/workbench.ts";
+import { phaseStatusSummary } from "../src/data/implementation-phases.ts";
+import { EXT_PROVENANCE } from "../src/data/extensions.ts";
 
 let failed = 0;
 function check(name: string, cond: boolean, detail = "") {
@@ -43,6 +58,29 @@ check("cite ok", validateAnswerCitations("[TNF](concept:M001) [e](edge:REL-M001-
 check("mech", !!reasonMechanism("C003", "I001", "D001", "inhibit")?.illustrative);
 check("system", /Never invent citations/.test(SYSTEM));
 check("registry empty", implementedModels().length === 0);
+check("registry interfaces", MODEL_REGISTRY.every((m) => m.status !== "implemented"));
+check("ext version", GRAPH_EXTENSIONS_VERSION === "draft-ext-3" && EXT_PROVENANCE.version === "draft-ext-3");
+check("immuno B node", !!byId["EG01"]?.draft && !!byId["EG13"]?.draft && !!byId["EI01"]?.draft && !!byId["EP10"]?.draft);
+check("no fake pmid", normaliseOptionalId("placeholder") === undefined);
+let lit = createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, {
+  query: "HLA shared epitope RA",
+  title: "Manual metadata entry",
+});
+check("lit search", searchMetadataComplete(lit.search).ok);
+lit = addCandidateClaim(lit, { text: "Shared epitope associates with ACPA+ RA" });
+lit = reviewClaim(lit, lit.claims[0]!.claim_id, "accepted_for_curation");
+check("lit candidate", lit.claims[0]!.reviewStatus === "accepted_for_curation" && lit.status === "draft_scaffold");
+let wb = createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION);
+wb = { ...wb, question: { ...wb.question, text: "Does butyrate expand colonic Tregs?" } };
+wb = advanceWorkbench(wb);
+wb = addEvidenceNote(wb, "Draft educational note", "no PMID invented");
+wb = advanceWorkbench(wb);
+wb = { ...wb, mechanism: { ...wb.mechanism, paths: ["EM02 → EM03 → C014"] } };
+wb = advanceWorkbench(wb);
+check("workbench hyp step", wb.step === "hypothesis");
+check("workbench export", /candidate/.test(exportWorkbench(wb)) && exportWorkbench(wb).includes(GRAPH_EXTENSIONS_VERSION));
+const phases = phaseStatusSummary();
+check("phases partial", phases.B === "partial" && phases.C === "partial" && phases.D === "partial" && phases.E === "partial");
 const h = createHypothesisDraft(
   {
     claim: "x",

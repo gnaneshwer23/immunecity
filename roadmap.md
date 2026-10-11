@@ -33,9 +33,23 @@
 
 - [x] Phase A: Positioning, evidence-grounded Copilot panel (concepts, tiers, causal chain), mechanism workspace (start → perturbation → outcome), scientific eval set skeleton
 - [x] Phase A2 (PRD Epic D P0 slice): query classification, prepareAsk abstention (unsupported/omics/clinical), citation ID validation, prompt/graph trace, exemplar pathway scaffolds, hypothesis draft template, expanded eval cases, consistent core/draft version labels
-- [ ] Phase B: Knowledge-layer gap fills (microbiome, vaccines, transplant, PID, immunogenetics) with stable IDs + provenance
-- [ ] Phase C: Literature intelligence workflow (search → claim candidates → map → human review) — not started
-- [ ] Phase D: Advanced model registry interfaces (omics, structure, pMHC, variants) as placeholders only until wired
-- [ ] Phase E: Full Research Workbench (versioned questions, literature claims, experiment proposals) — hypothesis draft template only
+
+### Phase plan B–E (PRD-aligned)
+
+| Phase | Goal | Acceptance (summary) | Status |
+| --- | --- | --- | --- |
+| **B** Knowledge-layer gap fills | Draft nodes/edges/lessons for microbiome, vaccines, transplant, PID, **immunogenetics** with stable IDs, context, evidence_status, provenance | Extensions merge as `draft`; immunogenetics lesson/routes; extensions version bump; smoke resolves new IDs | **partial** — `draft-ext-3` deepens thin domains + infection↔autoimmunity lesson; exemplar pathway claim-curation still open |
+| **C** Literature intelligence | Search metadata → candidate claims → map to concepts/rels → human-review queue; no fake PMIDs | Browser-safe workflow module + Research UI; export scaffold; candidates never auto-publish | **partial** — local scaffold + UI; no new live PubMed ingest pipeline |
+| **D** Model registry UI | Omics / structure / pMHC / variants / agents as interfaces on Research & Methods | Registry rendered with status/limitations; `implementedModels()` empty until wired | **partial** — UI + `interface-only` contracts; no runtimes |
+| **E** Scientific Workbench | Question → evidence → mechanism → hypothesis → experiment proposal → review | Workbench on Research layer; candidates labelled; export includes graph/extensions versions | **partial** — multi-step UI + artefacts; no graph write-back |
+
+Machine-readable copy: `src/data/implementation-phases.ts`.
+
+- [x] Phase B (partial): immunogenetics + thin-domain draft gap fills (`draft-ext-3`), infection↔autoimmunity lesson/routes, provenance labels
+- [x] Phase C (partial): literature workflow scaffold + Research review-queue UI
+- [x] Phase D (partial): model registry panel on Research/Methods (`interface-only`)
+- [x] Phase E (partial): Scientific Workbench steps UI + experiment proposal artefact
 - [ ] Curator work: claim-linked approved evidence on the three exemplar pathways (TNF→RA, PD-1, IFN→SLE)
 - [ ] Eval scale-up: grow scientific gold set toward PRD targets (≥100 questions, ≥30 path, ≥30 unsupported, safety suite)
+- [ ] Live literature connectors with caching/backoff beyond existing curation PubMed/Crossref checks
+- [ ] Wire any advanced model adapter only after rights + evaluation gates (keep registry honest)

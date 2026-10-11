@@ -11,7 +11,7 @@ const raw = kgJson as {
 };
 
 export const GRAPH_CORE_VERSION = String(raw.version ?? "0.3");
-export const GRAPH_EXTENSIONS_VERSION = "draft-ext-1";
+export const GRAPH_EXTENSIONS_VERSION = "draft-ext-3";
 export const GRAPH_SCHEMA_VERSION = "0.3";
 
 export interface GraphReleaseSnapshot {
