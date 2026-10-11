@@ -1,6 +1,6 @@
 export const NAV_GROUPS = [
   { label: "Foundations", items: [
-    { n: "01", path: "/", title: "Overview", desc: "Educational beta: spine, layers, honest evidence posture." },
+    { n: "01", path: "/", title: "Overview", desc: "Educational beta: spine, layers, teaching with references." },
     { n: "02", path: "/learn", title: "Cell atlas", desc: "The residents, their metaphors and their limits." },
     { n: "03", path: "/mechanism", title: "Mechanism", desc: "Cascades, perturbations, and the Academy foundation track." },
   ] },
@@ -13,7 +13,7 @@ export const NAV_GROUPS = [
     { n: "07", path: "/disease", title: "Disease", desc: "Hypersensitivity and the cancer immunity cycle." },
     { n: "08", path: "/therapy", title: "Therapy", desc: "Every intervention, its targets and its trials." },
     { n: "09", path: "/evidence", title: "Evidence", desc: "Trials as experiments and live claim coverage." },
-    { n: "10", path: "/patient", title: "Patient", desc: "Teaching scores — not a clinical decision tool." },
+    { n: "10", path: "/patient", title: "Patient", desc: "Teaching scores from graph rules — educational, not personal advice." },
   ] },
   { label: "Frontier", items: [
     { n: "11", path: "/reasoning", title: "Reasoning", desc: "Ask, exemplars, cases and path tracer." },

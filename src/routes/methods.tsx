@@ -27,7 +27,7 @@ function Methods() {
   return (
     <div className="page methods">
       <PageHead kicker="Methods & trust" title="How Immune City works — and where it stops"
-        lede="Immune City is an educational scientific exploration beta — a causal map, not clinical decision support. This page documents what the graph contains, how evidence is reviewed, what the models assume, and what they cannot tell you."
+        lede="Immune City is an educational beta — a causal map for teaching with reviewed citations where present, not clinician decision support. This page documents what the graph contains, how evidence is reviewed, what the models assume, and what they cannot tell you."
         stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]} />
 
       <section className="section"><h2>1. The graph ontology</h2>
@@ -58,7 +58,7 @@ function Methods() {
         <ul>
           <li><b>Perturbation (graph):</b> signed spread along + / − / r+ links, decaying 28% per hop, weighted by confidence (high 1.0, medium 0.8, low 0.6) or a measured weight, up to 4 hops. It shows direction, not magnitude in real units.</li>
           <li><b>System simulator:</b> a small set of coupled equations for pathogen, innate and adaptive response, cytokines, damage, memory and exhaustion, in normalised units with hand-set parameters. It is not fitted to patient data.</li>
-          <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. It is not a clinical decision tool.</li>
+          <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. Educational illustration — not patient-specific advice.</li>
           <li><b>Ask Immune City:</b> queries are classified, graph context is retrieved, reviewed relationship-level citations are attached when they exist for those links, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Sparse approved cites mean Ask is graph-retrieved, not fully evidence-grounded. Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
           <li><b>Research workbench / literature / model registry:</b> available on <Link to="/research">Research</Link> as candidate workflows and interface contracts (phases B–E partial) — never auto-promoted into the curated graph or live predictors.</li>
           <li><b>Advanced model adapters</b> (omics, structure, pMHC/epitope, genomics, agents) are modular interface contracts only — none are implemented in production. Dry-run stubs return typed <code>not_available</code> and never invent scores or ranks. Full registry with request-shape previews on <Link to="/research" hash="model-registry">Research</Link>.</li>
@@ -86,7 +86,7 @@ function Methods() {
           <li>The Immunology Academy foundation track on <Link to="/mechanism">Mechanism</Link> is a navigable teaching scaffold — not a finished curriculum, certification, or Gate C coverage claim.</li>
           <li>Links simplify dose, timing, species and individual variation.</li>
           <li>Tissue context is sparse; many effects are recorded without one.</li>
-          <li>Nothing here is medical advice or clinical decision support.</li>
+          <li>This product educates with references; it is not medical advice, clinician decision support, or patient-specific guidance.</li>
         </ul>
       </section>
 

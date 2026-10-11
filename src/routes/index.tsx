@@ -21,9 +21,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Immune City — Where Immunology Meets Advanced AI" },
-      { name: "description", content: "Educational scientific exploration beta: a curated causal map of immunology, illustrative mechanism walks, and Ask that retrieves graph context — not clinical decision support." },
+      { name: "description", content: "Educational beta: a curated causal map of immunology, illustrative mechanism walks, and Ask that teaches from graph context with reviewed citations when present." },
       { property: "og:title", content: "Immune City — Where Immunology Meets Advanced AI" },
-      { property: "og:description", content: "Explore a curated immunology knowledge graph, illustrative mechanisms, and Ask with retrieved context. Educational beta — not clinical CDS." },
+      { property: "og:description", content: "Explore a curated immunology knowledge graph, illustrative mechanisms, and Ask that educates with references. Educational beta — not patient-specific advice." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -51,7 +51,7 @@ function Overview() {
           <div className="bio-eyebrow"><span className="status-dot" /> Educational scientific exploration beta</div>
           <h1>Immune City</h1>
           <p className="hero-subtitle">An AI-native map of<br />the immune system.</p>
-          <p className="hero-description">Explore a curated causal graph, follow illustrative mechanisms, and ask questions that retrieve graph context — plus reviewed relationship cites when they exist. Not clinical advice or decision support.</p>
+          <p className="hero-description">Explore a curated causal graph, follow illustrative mechanisms, and ask questions answered from retrieved graph context — with reviewed relationship cites when they exist. Educating with references, not treatment advice.</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary"><Link to="/graph">Explore the graph <ArrowUpRight /></Link></Button>
             <Button asChild variant="ghost" className="bio-secondary"><Link to="/reasoning">Mechanism reasoning <ArrowRight /></Link></Button>

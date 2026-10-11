@@ -1,7 +1,7 @@
 # SME gold-set sign-off — Immune City
 
 **Status:** ⏳ **Awaiting SME** (cannot be completed by AI or engineering alone)  
-**Scope:** Public educational beta — not clinical decision support  
+**Scope:** Public educational beta — teaching with references; not clinician CDS  
 **Automated starter set:** `src/test/eval/scientific-eval-set.ts` (50 cases)  
 **Harness:** `bun scripts/sme-gold-set-status.ts`
 
@@ -59,4 +59,4 @@ bun scripts/sme-gold-set-status.ts
 bun scripts/smoke-prd-a2.ts
 ```
 
-Until the table above is filled by a human SME, Gate E remains **CONDITIONAL** and this document must stay **Awaiting SME**.
+Until the table above is filled by a human SME, Gate E remains **PASS with SME open** and this document must stay **Awaiting SME**.

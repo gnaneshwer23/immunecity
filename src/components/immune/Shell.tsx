@@ -67,7 +67,7 @@ function SiteFooter() {
       <div className="sf-grid">
         <div className="sf-brand">
           <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>Immune City</strong><small>Where Immunology Meets Advanced AI</small></span></Link>
-          <p>Educational scientific exploration beta — {graphReleaseLabel(snap)} · {snap.runtimeRelationships} runtime links, each labelled with review status. Not clinical decision support; Ask is graph-retrieved, not fully evidence-grounded AI.</p>
+          <p>Educational beta — {graphReleaseLabel(snap)} · {snap.runtimeRelationships} runtime links, each labelled with review status. Educating with references from the graph; Ask is graph-retrieved teaching, not fully evidence-grounded AI.</p>
           <span className="sf-status"><span className="sf-dot" /> {snap.snapshotAt} · reviewed cites when available · Academy foundation scaffold on Mechanism · illustrative walks</span>
         </div>
         {NAV_GROUPS.map((g) => (
@@ -88,7 +88,7 @@ function SiteFooter() {
       </div>
       <div className="sf-bottom">
         <span>© {new Date().getFullYear()} Immune City</span>
-        <span>Educational model. Not medical advice or a clinical recommendation.</span>
+        <span>Educational model with references. Not patient-specific medical advice.</span>
       </div>
     </footer>
   );
@@ -132,7 +132,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         <DialogPortal>
         <DialogPrimitive.Content className="global-ask-dialog corner-ask-dialog" onInteractOutside={(e) => e.preventDefault()}>
           <DialogTitle className="sr-only">Ask Immune City</DialogTitle>
-          <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational only, not medical advice.</DialogDescription>
+          <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references, not patient-specific advice.</DialogDescription>
           <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label="Minimize chatbot" title="Minimize chatbot"><X size={18} /></Button>
           <AskAtlas />
         </DialogPrimitive.Content>
@@ -162,7 +162,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               <span className="num">MT</span>Methods &amp; trust
             </Link>
           </div>
-          <p className="nav-foot">Educational atlas. Not a clinical recommendation.</p>
+          <p className="nav-foot">Educational atlas with references — not patient-specific advice.</p>
         </nav>
         <main id="main" tabIndex={-1}>
           {children}

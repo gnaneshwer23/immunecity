@@ -182,8 +182,8 @@ export default function AskAtlas() {
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
         <div>
           <h3>Ask Immune City</h3>
-          <p className="xs muted">Graph-retrieved immunology copilot · educational beta · not fully evidence-grounded AI</p>
-          <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Not medical advice or CDS. Nothing is stored.</p>
+          <p className="xs muted">Graph-retrieved teaching · educational beta · cites when reviewed · not fully evidence-grounded AI</p>
+          <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Educating with references — not patient-specific advice. Nothing is stored.</p>
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>
@@ -203,7 +203,7 @@ export default function AskAtlas() {
               <div className="ask-body">
                 {m.role === "assistant" ? (
                   <>
-                    <div className="ask-ai-badge" role="note">AI-generated · graph-retrieved · not clinical advice</div>
+                    <div className="ask-ai-badge" role="note">AI-generated · graph-retrieved teaching · not patient-specific advice</div>
                     <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
                   </>
                 ) : <p>{text}</p>}

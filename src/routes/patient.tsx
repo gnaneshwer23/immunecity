@@ -72,7 +72,7 @@ function Patient() {
           { v: EXT_BIOMARKERS.length, l: "BIOMARKER SLIDERS" },
         ]}
       />
-      <EduBanner>Rule-based teaching scores built from the graph; each rule shows its reason. Not a clinical decision tool.</EduBanner>
+      <EduBanner>Rule-based teaching scores built from the graph; each rule shows its reason. Educational illustration — not patient-specific advice.</EduBanner>
       <div className="g2 grid" style={{ alignItems: "start" }}>
         <div className="card">
           <div className="row" style={{ justifyContent: "space-between", marginBottom: 12 }}>

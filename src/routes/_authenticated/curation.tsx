@@ -225,7 +225,7 @@ function Curation() {
       <PageHead
         kicker="Curation · Citation layer"
         title="Evidence curation"
-        lede="Import a citation manifest, cross-check every identifier against PubMed and Crossref metadata, and decide what this atlas publishes as verified. A metadata match confirms an identifier points at the cited work; it is not a judgement on the science, and nothing here is a clinical recommendation."
+        lede="Import a citation manifest, cross-check every identifier against PubMed and Crossref metadata, and decide what this atlas publishes as verified. A metadata match confirms an identifier points at the cited work; it is not a judgement on the science, and published cites support education — not treatment recommendations."
       />
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
         <span className="xs muted">Signed in as {email ?? "…"} · {isAdmin ? "admin" : "read-only"}</span>

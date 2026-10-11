@@ -17,7 +17,7 @@ export const Route = createFileRoute("/reasoning")({
   head: () => ({
     meta: [
       { title: "Reasoning: mechanism workspace — Immune City" },
-      { name: "description", content: "Graph-retrieved Ask, case walks, path tracer, exemplar scaffolds, and illustrative start–perturbation–outcome reasoning. Educational beta — not clinical CDS." },
+      { name: "description", content: "Graph-retrieved Ask, case walks, path tracer, exemplar scaffolds, and illustrative start–perturbation–outcome reasoning. Educational beta — teaching with references." },
       { property: "og:title", content: "Mechanism reasoning — Immune City" },
       { property: "og:description", content: "Trace immunology from concept to perturbation to outcome. Illustrative walks; reviewed cites when available." },
     ],
@@ -52,7 +52,7 @@ function Reasoning() {
       />
       <section className="section">
         <h2>Ask Immune City</h2>
-        <p className="lede">Graph-retrieved immunology copilot — answers are restricted to retrieved concepts, causal links and relationship-level review status. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
+        <p className="lede">Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with reviewed cites when present. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
         <AskAtlas />
       </section>
       <section className="section">

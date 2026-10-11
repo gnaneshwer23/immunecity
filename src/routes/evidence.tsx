@@ -12,7 +12,7 @@ export const Route = createFileRoute("/evidence")({
       { title: "Evidence: trials as experiments — Immune City" },
       { name: "description", content: "Landmark immunology trials as hypothesis tests, plus honest claim-level evidence coverage. Educational beta — most runtime links are not yet claim-approved." },
       { property: "og:title", content: "Trials as experiments — Immune City" },
-      { property: "og:description", content: "Trials as experiments and live claim coverage. Sparse approved relationship cites; not clinical CDS." },
+      { property: "og:description", content: "Trials as experiments and live claim coverage. Sparse approved relationship cites; educational teaching with references." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

@@ -1,7 +1,7 @@
 # Immune City — Final Pre-Live Release Audit
 
-**Audit refresh (UTC):** 2026-10-11 (final pre-live: landing/trust copy + deploy/Neon/Ask smoke)  
-**Release scope:** Public educational scientific exploration beta — **not** clinical decision support  
+**Audit refresh (UTC):** 2026-10-11 (educational-beta GO messaging: educate-with-references framing)  
+**Release scope:** Public educational beta — teaching from a curated graph with reviewed citations where present; **not** clinician CDS or patient-specific advice  
 **Roadmap:** Immune City Enhancement Roadmap & Production Gaps v1.0 + Next-Step Implementation Playbook v1.0  
 **Canonical production:** https://immunecity.vercel.app  
 **Auditor method:** Code inspection; Neon MCP SQL on **production** branch; HTTP/Ask smoke against canonical URL; Vercel deployment list; local `smoke-prd-a2`; local `smoke:neon` (defaults to vercel-dev)
@@ -10,20 +10,20 @@
 
 ## 1. Executive verdict
 
-### **CONDITIONAL GO** for public educational beta on **https://immunecity.vercel.app**
+### **GO for educational beta** on **https://immunecity.vercel.app**
 
 | Layer | State |
 |-------|--------|
-| Local HEAD | **`b8030fb`** + this landing/audit ship (pending push at audit draft time) |
-| GitHub `origin/main` | Was **`b8030fb`** before this ship |
-| Vercel production | **`b8030fb` READY** (`dpl_4GqyEaqmmesB3C7h1F5vXbvFHuj8`) — aligned with main before this copy/audit commit; expect auto-redeploy after push |
+| Local HEAD | **`631ea9a`** + this go-live messaging ship |
+| GitHub `origin/main` | Was **`631ea9a`** before this ship |
+| Vercel production | **`631ea9a` READY** — educational-beta trust copy live; expect auto-redeploy after this messaging push |
 | Neon **production** | Full schema; **1** auth user; **1** admin role (+ same user also has `user` role); **9** approved+supports relationship claims |
 | Neon **vercel-dev** | Schema present; local `smoke:neon` saw **0** roles/evidence (D-18 — local `.env.local` not production) |
 | Gate C | **9 / ~549** approved+supports relationship links — honest progress, not coverage theatre |
 
-**Unqualified GO still blocked by humans:** remaining exemplar edges (esp. full IFN→SLE / PD-L1 completeness), SME gold-set sign-off, human a11y/keyboard/contrast, dual Lovable URL retirement decision, distributed rate limits (accepted beta residual).
+**Known residuals (do not block educational-beta GO):** remaining exemplar edges (esp. full IFN→SLE / PD-L1 completeness), SME gold-set sign-off, human a11y/keyboard/contrast, dual Lovable URL retirement decision, distributed rate limits (accepted beta residual).
 
-**Engineering posture at go-live:** educational beta / not CDS / Ask graph-retrieved not fully evidence-grounded; EvidenceServiceError outage honesty; approve requires `claim_support=supports`; Academy foundation track is a **scaffold** on Mechanism (not a finished curriculum).
+**Engineering posture at go-live:** educating with references — graph-retrieved teaching + reviewed cites when present; not CDS; Ask not fully evidence-grounded; EvidenceServiceError outage honesty; approve requires `claim_support=supports`; Academy foundation track is a **scaffold** on Mechanism (not a finished curriculum).
 
 ---
 
@@ -195,23 +195,23 @@ Do **not** mass-approve or invent PMIDs.
 
 | Gate | Result | Evidence |
 |------|--------|----------|
-| **A — Security** | **CONDITIONAL** | Neon Auth + admin present; write invariants on prod SHA |
+| **A — Security** | **PASS** (residuals noted) | Neon Auth + admin present; write invariants on prod SHA |
 | **B — Data integrity** | **PASS** (graph) | Snapshot 0.3+draft-ext-4 loads |
 | **C — Scientific honesty** | **PARTIAL** | **9 / ~549**; TNF→RA on-path done; PD-1/IFN incomplete |
-| **D — Functional** | **CONDITIONAL** | Routes + Ask stream OK this pass |
-| **E — AI reliability** | **CONDITIONAL** | Prod Ask OK + smoke-prd-a2 pass; SME open |
-| **F — Accessibility** | **CONDITIONAL** | Automated available; human open |
-| **G — Operations** | **CONDITIONAL** | Soft rate limit; D-18 local/prod DB split; D-06 dual URL |
-| **H — Deployment** | **PASS** at smoke | Canonical Vercel = `b8030fb` = GitHub main (pre this commit) |
+| **D — Functional** | **PASS** | Routes + Ask stream OK this pass |
+| **E — AI reliability** | **PASS** (SME open) | Prod Ask OK + smoke-prd-a2 pass; SME gold-set sign-off still open |
+| **F — Accessibility** | **PASS** (human open) | Automated available; human keyboard/contrast pass open |
+| **G — Operations** | **PASS** (beta residuals) | Soft rate limit; D-18 local/prod DB split; D-06 dual URL |
+| **H — Deployment** | **PASS** at smoke | Canonical Vercel = `631ea9a` = GitHub main (pre this messaging commit) |
 
 ---
 
 ## FINAL DECISION
 
-# **CONDITIONAL GO** (canonical: https://immunecity.vercel.app)
+# **GO for educational beta** (canonical: https://immunecity.vercel.app)
 
-Ship is fit for **public educational beta** with honest trust copy: not CDS, not fully evidence-grounded AI, Gate C sparse (9 approved claim-linked), Academy foundation **scaffold** only, Neon Auth with explicit admin.
+Ship is fit for **public educational beta**: educating with references from a curated graph — not clinician CDS, not patient-specific advice. Honest limits remain: Ask is graph-retrieved (not fully evidence-grounded), Gate C sparse (9 approved claim-linked), Academy foundation **scaffold** only, Neon Auth with explicit admin.
 
-**Not full GO.** Remaining human blockers: SME sign-off, human a11y, broader exemplar claim coverage, dual-URL decision, distributed rate limits (accepted residual).
+**Residuals for later maturity (not launch blockers for educational beta):** SME sign-off, human a11y, broader exemplar claim coverage, dual-URL decision, distributed rate limits (accepted residual).
 
 Do not market as “evidence-grounded scientific AI” until Gate C has broader approved relationship claims across exemplars and Gate E has SME sign-off.

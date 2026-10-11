@@ -32,7 +32,7 @@ export default function TherapyDetail({ id, hits }: { id: string; hits: { flagLa
           </>
         ) : null}
       </dl>
-      <p className="xs muted" style={{ marginTop: 10 }}>Educational reasoning only — not a clinical recommendation.</p>
+      <p className="xs muted" style={{ marginTop: 10 }}>Educational reasoning with graph context — not patient-specific treatment advice.</p>
     </div>
   );
 }
