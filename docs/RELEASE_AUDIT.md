@@ -288,7 +288,7 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 | **B — Data integrity** | **PASS** (graph) | No dangling/duplicate IDs; counts consistent in footer/snapshot |
 | **C — Scientific honesty** | **FAIL** for “supported” claims | 0 approved claim links; draft labelling OK; empty evidence honest but immature |
 | **D — Functional integrity** | **CONDITIONAL** | 12 layers load; Ask re-smoke after publication |
-| **E — AI reliability** | **CONDITIONAL** | Local 50/50; prod depends on `OPEN_API_KEY` validity + post-deploy smoke |
+| **E — AI reliability** | **CONDITIONAL** | Local 50/50; prod clinical refusal + TNF stream verified; SME gold-set still open |
 | **F — Accessibility** | **CONDITIONAL** | Skip/nav/Ask OK; full WCAG **BLOCKED** |
 | **G — Operations** | **CONDITIONAL** | Canonical = Vercel; Lovable secondary; monitoring still soft |
 | **H — Public deployment** | **CONDITIONAL** | Fixes on `main`/Vercel; dual hosts remain until product retires secondary |
