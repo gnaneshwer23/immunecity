@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
-import { EXPLORE_PATH, FLAGSHIP_NAME, pageTitle, PRODUCT_NAME, PROPOSITION } from "@/lib/brand";
+import { EXPLORE_CTA, EXPLORE_PATH, FLAGSHIP_NAME, pageTitle, PRODUCT_NAME, PROPOSITION } from "@/lib/brand";
 import { ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
@@ -97,7 +97,7 @@ function About() {
             </Link>
           </Button>
           <Button asChild variant="ghost" className="bio-secondary">
-            <Link to={EXPLORE_PATH}>Explore {FLAGSHIP_NAME}</Link>
+            <Link to={EXPLORE_PATH}>{EXPLORE_CTA}</Link>
           </Button>
         </div>
       </section>

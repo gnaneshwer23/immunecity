@@ -2,11 +2,12 @@
 
 export const MARKETING_NAV = [
   { label: "Platform", path: "/overview" },
-  { label: "Learn", path: "/mechanism" },
+  { label: "Academy", path: "/mechanism" },
   { label: "Scientific AI", path: "/scientific-ai" },
   { label: "Evidence & Methods", path: "/methods" },
   { label: "Insights", path: "/insights" },
   { label: "About", path: "/about" },
+  { label: "Collaborate", path: "/collaborate" },
 ] as const;
 
 export const FOOTER_GROUPS = [

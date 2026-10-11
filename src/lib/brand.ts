@@ -9,8 +9,12 @@ export const PRODUCT_LINE = `${PRODUCT_NAME} — ${TAGLINE}`;
 export const ASK_NAME = `Ask ${PRODUCT_NAME}`;
 export const CANONICAL_ORIGIN = "https://www.immune-super-intelligence.co.uk";
 export const CANONICAL_URL = `${CANONICAL_ORIGIN}/`;
-/** Primary in-app entry for “Explore Immune City” (this deploy is the live beta). */
+/** Primary marketing CTA → platform overview (umbrella brand, not flagship name). */
 export const EXPLORE_PATH = "/overview" as const;
+export const EXPLORE_CTA = "Explore the platform";
+/** Atlas graph entry from the platform overview CTA. */
+export const ATLAS_PATH = "/graph" as const;
+export const ATLAS_CTA = "Enter atlas";
 /**
  * Public collaboration inbox for mailto enquiries.
  * Update if DNS/mail routing changes; do not invent alternate contact channels in copy.

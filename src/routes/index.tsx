@@ -5,6 +5,7 @@ import cellImage from "@/assets/immune-cell.jpg";
 import {
   BRAND_EYEBROW,
   CANONICAL_URL,
+  EXPLORE_CTA,
   EXPLORE_PATH,
   FLAGSHIP_NAME,
   HERO_HEADLINE,
@@ -87,7 +88,7 @@ function Home() {
           <div className="bio-actions">
             <Button asChild className="bio-primary">
               <Link to={EXPLORE_PATH}>
-                Explore {FLAGSHIP_NAME} <ArrowUpRight />
+                {EXPLORE_CTA} <ArrowUpRight />
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary">

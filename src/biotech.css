@@ -584,11 +584,15 @@ html[data-theme][data-theme] {
 
 /* Marketing IA */
 .marketing-topbar { gap: 18px; }
-.marketing-nav { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; overflow-x: auto; }
-.marketing-nav-link { font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 10px; white-space: nowrap; border-radius: 4px; transition: color .15s, background .15s; }
+.marketing-topbar .brand { gap: 12px; padding: 4px 0; flex-shrink: 0; }
+.marketing-topbar .brand:focus-visible { outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent); outline-offset: 6px; border-radius: 6px; }
+.marketing-topbar .logo { width: 28px; height: 28px; }
+.marketing-topbar .brand-text strong { white-space: nowrap; }
+.marketing-nav { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; justify-content: center; }
+.marketing-nav-link { font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 9px; white-space: nowrap; border-radius: 4px; transition: color .15s, background .15s; }
 .marketing-nav-link:hover { color: var(--ink); background: var(--glass); }
 .marketing-nav-link.current { color: var(--ink); font-weight: 500; }
-.topbar-cta { margin-left: auto; min-height: 36px; padding: 0 14px; font-size: 12px; }
+.topbar-cta { margin-left: auto; min-height: 36px; padding: 0 14px; font-size: 12px; flex-shrink: 0; }
 .marketing-shell main { max-width: none; }
 .sf-grid-marketing { grid-template-columns: 1.5fr repeat(4, 1fr); }
 .sf-grid-marketing .sf-col a { display: block; }

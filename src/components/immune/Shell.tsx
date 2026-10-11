@@ -1,7 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, Menu, MessageSquare, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { graphReleaseLabel, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { NAV_GROUPS } from "./nav";
 import { FOOTER_GROUPS, isMarketingPath, MARKETING_NAV } from "@/data/marketingNav";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,15 @@ import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/componen
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import AskAtlas from "./AskAtlas";
 import ScientificInspector from "./ScientificInspector";
-import { ASK_NAME, EXPLORE_PATH, FLAGSHIP_NAME, PRODUCT_NAME, TAGLINE } from "@/lib/brand";
+import {
+  ASK_NAME,
+  ATLAS_CTA,
+  ATLAS_PATH,
+  EXPLORE_CTA,
+  EXPLORE_PATH,
+  PRODUCT_NAME,
+  TAGLINE,
+} from "@/lib/brand";
 
 function Logo() {
   return (
@@ -68,18 +75,16 @@ function PillarMenu({ label, items, pathname, onNavigate }: {
 }
 
 function SiteFooter() {
-  const snap = graphReleaseSnapshot();
   return (
     <footer className="site-footer">
       <div className="sf-grid sf-grid-marketing">
         <div className="sf-brand">
           <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span></Link>
           <p>
-            Educational beta — {graphReleaseLabel(snap)} · {snap.runtimeRelationships} runtime links, each labelled with
-            review status. {FLAGSHIP_NAME} is the flagship atlas. Educating with references; Ask is graph-retrieved
-            teaching, not fully evidence-grounded AI.
+            Educational immunology platform with curated references. Ask teaches from the graph—not patient-specific
+            advice or fully evidence-grounded AI.
           </p>
-          <span className="sf-status"><span className="sf-dot" /> {snap.snapshotAt} · reviewed cites when available · Academy foundation scaffold · illustrative walks</span>
+          <span className="sf-status"><span className="sf-dot" /> Educational beta · reviewed cites when available · Academy foundation scaffold</span>
         </div>
         {FOOTER_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">
@@ -147,8 +152,8 @@ export default function Shell({ children }: { children: ReactNode }) {
               ))}
             </nav>
             <Button asChild className="bio-primary topbar-cta">
-              <Link to={pathname === EXPLORE_PATH ? "/graph" : EXPLORE_PATH}>
-                {pathname === EXPLORE_PATH ? `Open ${FLAGSHIP_NAME} graph` : `Explore ${FLAGSHIP_NAME}`}
+              <Link to={pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH}>
+                {pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA}
               </Link>
             </Button>
           </>
@@ -210,10 +215,9 @@ export default function Shell({ children }: { children: ReactNode }) {
                   {item.label}
                 </Link>
               ))}
-              <Link to={pathname === EXPLORE_PATH ? "/graph" : EXPLORE_PATH} onClick={() => setOpen(false)}>
-                {pathname === EXPLORE_PATH ? `Open ${FLAGSHIP_NAME} graph` : `Explore ${FLAGSHIP_NAME}`}
+              <Link to={pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH} onClick={() => setOpen(false)}>
+                {pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA}
               </Link>
-              <Link to="/collaborate" onClick={() => setOpen(false)}>Collaborate</Link>
             </div>
           </nav>
         )}
