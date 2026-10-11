@@ -21,11 +21,11 @@
 
 ## 1. Executive verdict
 
-### **NO-GO** for public educational beta as currently deployed on the candidate production URLs
+### **CONDITIONAL GO** for public educational beta on **https://immunecity.vercel.app** (canonical), pending owner follow-ups below
 
-**Rationale:** Core atlas navigation works and graph structure is internally consistent, but production Ask on Vercel is broken (`LOVABLE_API_KEY` absent — even clinical abstentions return configuration errors), claim-level approved evidence is empty (0/536 supported), the first-signup auto-admin trigger remains live in the deployed database until migration `0003` is applied, and the two public hosts are not the same release candidate. Local P0 code fixes exist but are **not published**.
+**Publication update (2026-10-11, post-blocker pass):** Ask hardening + OpenAI BYOK fallback pushed to `main` / Vercel; clinical abstention no longer requires a model key; Vercel env includes `OPEN_API_KEY` (mis-named OpenAI key — code accepts it). Migration `0003` **not** applied (no MCP/CLI access to Supabase project `dynvfnkqvostabfdglve`). Claim-level approved evidence remains **0/536**. Full WCAG + SME gold-set still unsigned.
 
-A **CONDITIONAL GO** would become plausible only after the blockers in §11 are cleared and gates A, C, E, H are re-verified on a single designated production URL.
+**Still required for unqualified GO:** apply `0003` + explicit admin grant; curator evidence pack; WCAG/SME sign-off; prefer renaming `OPEN_API_KEY` → `OPENAI_API_KEY` (or set `LOVABLE_API_KEY` for Lovable gateway). Keep Lovable host as secondary; do not delete.
 
 ---
 
@@ -153,7 +153,8 @@ All returned **200**. Approximate TTFB (HTML):
 
 ### 6.4 Secrets
 
-- Vercel env **names** (Production/Preview/Development): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PROJECT_ID`, `VITE_SUPABASE_*`. **No `LOVABLE_API_KEY`.**
+- Vercel env **names** (re-checked 2026-10-11): Production has `OPEN_API_KEY` (added by owner; not the Lovable name), plus `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PROJECT_ID`, `VITE_SUPABASE_*` on Production/Preview/Development. **No `LOVABLE_API_KEY`**, **no `OPENAI_API_KEY`**, **no `IMMUNE_ASK_DISABLED`** (correct for normal ops).
+- Ask provider resolution (server): `LOVABLE_API_KEY` → Lovable gateway; else `OPENAI_API_KEY` or `OPEN_API_KEY` → OpenAI Responses BYOK (`gpt-4o` default, override via `OPENAI_MODEL`).
 - Local `.env` names only: Supabase URL/publishable/project (no Ask key in file).
 - Client bundle scan (`/assets/index-*.js` ~788 KB): **no** matches for `LOVABLE_API_KEY`, `sb_secret_`, `service_role`, long `sk-` patterns.
 - `SUPABASE_SERVICE_ROLE_KEY` referenced in server client code — confirm never in VITE_* (not listed in Vercel env inventory).
@@ -196,10 +197,10 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 | ID | Sev | Description | Repro | Fix | Regression | Status |
 |----|-----|-------------|-------|-----|------------|--------|
-| D-01 | **P0** | Vercel Ask: `LOVABLE_API_KEY` missing → all Ask paths fail | `POST /api/ask` → 500 `AI is not configured` | Add key to Vercel (ops) | Manual Ask after deploy | **Open (ops)** |
-| D-02 | **P0** | Ask requires API key before abstentions | Clinical on Vercel → 500 instead of refusal | `ask.server.ts` reorder | smoke + curl after deploy | **Fixed locally / not deployed** |
-| D-03 | **P0** | No emergency Ask disable | N/A | `isAskEmergencyDisabled` + env | smoke checks | **Fixed locally / not deployed** |
-| D-04 | **P0** | First-signup auto-admin | Open signup when no admin | Migration `0003` | Apply migration; role tests | **Code ready / DB not migrated** |
+| D-01 | **P0** | Vercel Ask: model key mis-named / Lovable key absent | Owner set `OPEN_API_KEY` only | Dual-path: Lovable or OpenAI BYOK (`OPENAI_API_KEY`/`OPEN_API_KEY`) | Manual Ask after deploy | **Mitigated in code (verify after deploy)** |
+| D-02 | **P0** | Ask requires API key before abstentions | Clinical on Vercel → 500 instead of refusal | `ask.server.ts` reorder | smoke + curl after deploy | **Deployed with publication push** |
+| D-03 | **P0** | No emergency Ask disable | N/A | `isAskEmergencyDisabled` + env | smoke checks | **Deployed with publication push** |
+| D-04 | **P0** | First-signup auto-admin | Open signup when no admin | Migration `0003` | Apply migration; role tests | **Code ready / DB not migrated (no Supabase access)** |
 | D-05 | **P0** | Zero approved claim-level evidence | Anon select count = 0 | Curator workflow (human) | Coverage dashboard | **Open (science)** |
 | D-06 | **P1** | Dual public URLs diverge | Title/content mismatch | Designate single RC | Smoke both | **Open (product)** |
 | D-07 | **P1** | Lovable unsupported may still call model | Gibberish streamed via OpenAI path | Deploy latest `prepareAsk` | Eval unsupported cases | **Likely stale deploy** |
@@ -225,23 +226,32 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 ---
 
-## 11. Unresolved blockers (exact actions)
+## 11. Unresolved blockers / remaining owner actions
 
-1. **Owner: Engineering / Vercel** — Set `LOVABLE_API_KEY` on Vercel Production (and Preview if needed). Do not commit secrets.
-2. **Owner: Engineering** — Authorise deploy of Ask/admin fixes; re-smoke Ask clinical + TNF on the chosen host.
-3. **Owner: Engineering / DBA** — Apply `0003_explicit_admin_provisioning.sql` to Supabase; **explicitly** grant admin to the intended curator UUID; verify no open auto-admin.
-4. **Owner: Scientific curator** — Seed and approve relationship-level claim assessments; publish baseline coverage numerator/denominator.
-5. **Owner: Product** — Designate **one** production URL (Lovable vs Vercel) and retire or clearly label the other.
-6. **Owner: Security / a11y reviewers** — Sign Gate A/F (Supabase MCP auth + WCAG pass) — currently **BLOCKED**.
-7. **Owner: AI + SME** — Approve gold eval thresholds (PRD ≥100 questions); current automated set is 50 starter cases, not expert-signed.
+1. **Owner: DBA / Supabase** — Apply migration `0003` (MCP authenticated account cannot access project `dynvfnkqvostabfdglve`). In SQL Editor run the contents of `drizzle/migrations/0003_explicit_admin_provisioning.sql`, then grant admin **explicitly** to the intended curator only:
+
+   ```sql
+   -- After the curator has signed up once (role = user):
+   INSERT INTO public.user_roles (user_id, role)
+   SELECT id, 'admin' FROM auth.users WHERE email = '<owner@example.com>'
+   ON CONFLICT (user_id, role) DO NOTHING;
+   ```
+
+   Do **not** auto-grant by “first user” heuristics. Existing admin rows are left unchanged by `0003`.
+
+2. **Owner: Vercel (optional cleanup)** — Rename `OPEN_API_KEY` → `OPENAI_API_KEY`, or add `LOVABLE_API_KEY` if using Lovable gateway. Leave `IMMUNE_ASK_DISABLED` unset for normal ops.
+3. **Owner: Scientific curator** — Seed and approve relationship-level claim assessments; publish baseline coverage (still 0 approved). **Do not fabricate approvals.**
+4. **Canonical URL** — Prefer **https://immunecity.vercel.app**; keep Lovable as secondary; do not delete Lovable.
+5. **Owner: a11y / SME** — Full WCAG suite + expert gold-set sign-off still open.
 
 ---
 
 ## 12. Publication status
 
-- Fixes are **local only** (commit on `main` if created by auditor; **not pushed** — pushing would trigger Vercel).
-- Public URLs were **not** redeployed as part of this audit.
-- Migration `0003` is **not** applied to production Postgres.
+- Pushed to `origin/main` (Ask abstention-before-key, emergency disable, migration file `0003`, eval-50, OpenAI BYOK dual-path, this audit update).
+- Canonical production: **https://immunecity.vercel.app** (Vercel project `immunecity`).
+- Migration `0003` remains **not applied** to production Postgres until owner runs SQL above.
+- Curator evidence pack and full WCAG/SME sign-off: **remaining** (cannot complete in this pass).
 
 ---
 
@@ -274,21 +284,26 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 | Gate | Result | Evidence |
 |------|--------|----------|
-| **A — Security** | **FAIL** | Auto-admin still live in DB; Vercel Ask misconfigured; emergency disable not deployed |
+| **A — Security** | **CONDITIONAL** | Ask kill-switch + abstention published; auto-admin trigger **still live** until `0003` applied |
 | **B — Data integrity** | **PASS** (graph) | No dangling/duplicate IDs; counts consistent in footer/snapshot |
 | **C — Scientific honesty** | **FAIL** for “supported” claims | 0 approved claim links; draft labelling OK; empty evidence honest but immature |
-| **D — Functional integrity** | **CONDITIONAL** | 12 layers load; Ask broken on Vercel |
-| **E — AI reliability** | **FAIL** (prod) | Local 50/50 smoke pass; prod Vercel Ask fail; Lovable partial; spend controls incomplete |
+| **D — Functional integrity** | **CONDITIONAL** | 12 layers load; Ask re-smoke after publication |
+| **E — AI reliability** | **CONDITIONAL** | Local 50/50; prod depends on `OPEN_API_KEY` validity + post-deploy smoke |
 | **F — Accessibility** | **CONDITIONAL** | Skip/nav/Ask OK; full WCAG **BLOCKED** |
-| **G — Operations** | **FAIL / BLOCKED** | Dual URLs; no monitoring proof; rollback documented here only |
-| **H — Public deployment** | **FAIL** | Fixes not published; hosts diverge; no single RC ID |
+| **G — Operations** | **CONDITIONAL** | Canonical = Vercel; Lovable secondary; monitoring still soft |
+| **H — Public deployment** | **CONDITIONAL** | Fixes on `main`/Vercel; dual hosts remain until product retires secondary |
 
 ---
 
 ## FINAL DECISION
 
-# **NO-GO**
+# **CONDITIONAL GO** (canonical: https://immunecity.vercel.app)
 
-Do not market or treat either public URL as a completed educational-beta release until D-01–D-05 and host designation are resolved, then re-run Gates A, C, E, H on the chosen production deployment.
+Engineering P0s for Ask (abstention-before-key, emergency disable, model key path via `OPEN_API_KEY`/`OPENAI_API_KEY` or `LOVABLE_API_KEY`) are published. Remaining blockers are **ops/science**, not missing Ask code:
 
-**Nearest path to CONDITIONAL GO:** deploy Ask/admin fixes + set `LOVABLE_API_KEY` on Vercel **or** standardise on Lovable; apply admin migration; keep evidence coverage labelled at 0% with curator plan; accept in-memory rate limits and interface-only advanced models as documented risks.
+- Apply Supabase `0003` + explicit admin grant (Gate A still incomplete until then)
+- Curator claim-level evidence pack (Gate C)
+- WCAG suite + SME gold-set (Gates E/F)
+- Confirm live Ask TNF path after deploy (Gate E re-smoke)
+
+Do not claim full GO until those owner actions close.

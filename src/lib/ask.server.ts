@@ -1,5 +1,5 @@
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, type UIMessage } from "ai";
-import { createResponsesCall } from "@/lib/ai/responses.server.ts";
+import { createOpenAIDirectCall, createResponsesCall } from "@/lib/ai/responses.server.ts";
 import {
   ASK_DISABLED_MESSAGE,
   MAX_QUESTION_CHARS,
@@ -10,7 +10,25 @@ import {
 } from "@/lib/askGrounding";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
-const MODEL = "openai/gpt-6-astra";
+const LOVABLE_MODEL = "openai/gpt-6-astra";
+const DEFAULT_OPENAI_MODEL = "gpt-4o";
+
+type AskProvider =
+  | { kind: "lovable"; apiKey: string; model: string }
+  | { kind: "openai"; apiKey: string; model: string };
+
+function resolveAskProvider(env: NodeJS.ProcessEnv = process.env): AskProvider | null {
+  const lovable = env["LOVABLE_API_KEY"]?.trim();
+  if (lovable) return { kind: "lovable", apiKey: lovable, model: LOVABLE_MODEL };
+
+  // Prefer the standard name; also accept OPEN_API_KEY (common mis-name set in Vercel).
+  const openai = env["OPENAI_API_KEY"]?.trim() || env["OPEN_API_KEY"]?.trim();
+  if (openai) {
+    const model = env["OPENAI_MODEL"]?.trim() || DEFAULT_OPENAI_MODEL;
+    return { kind: "openai", apiKey: openai, model };
+  }
+  return null;
+}
 
 function textReply(text: string) {
   const stream = createUIMessageStream({
@@ -53,10 +71,13 @@ export async function handleAsk(request: Request): Promise<Response> {
     return textReply(prepared.replyText);
   }
 
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) {
+  const provider = resolveAskProvider();
+  if (!provider) {
     return Response.json(
-      { error: "AI is not configured for this app yet. Safe abstentions still work; grounded model answers require LOVABLE_API_KEY." },
+      {
+        error:
+          "AI is not configured for this app yet. Safe abstentions still work; grounded model answers require LOVABLE_API_KEY (Lovable gateway) or OPENAI_API_KEY (OpenAI Responses API).",
+      },
       { status: 503 },
     );
   }
@@ -66,6 +87,25 @@ export async function handleAsk(request: Request): Promise<Response> {
     prepared.grounding.text +
     `\n\nRESPONSE_TRACE prompt=${prepared.grounding.trace.promptVersion} graph=${prepared.grounding.trace.graphVersion} class=${prepared.queryClass}`;
   const modelMessages = await convertToModelMessages(messages);
-  const { response } = createResponsesCall(request, { baseURL: GATEWAY_URL, apiKey, model: MODEL }, modelMessages, system);
+
+  if (provider.kind === "lovable") {
+    const { response } = createResponsesCall(
+      request,
+      { baseURL: GATEWAY_URL, apiKey: provider.apiKey, model: provider.model },
+      modelMessages,
+      system,
+    );
+    return response();
+  }
+
+  const { response } = createOpenAIDirectCall(
+    request,
+    { apiKey: provider.apiKey, model: provider.model },
+    modelMessages,
+    system,
+  );
   return response();
 }
+
+/** Exported for unit tests — do not use from client code. */
+export { resolveAskProvider };
