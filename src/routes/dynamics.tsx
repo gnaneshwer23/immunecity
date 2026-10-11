@@ -7,9 +7,9 @@ import { PageHead, NodeChip } from "@/components/immune/ui";
 export const Route = createFileRoute("/dynamics")({
   head: () => ({
     meta: [
-      { title: "Dynamics: tissues, metabolism, genetics — Immune City" },
+      { title: "Dynamics: tissues, metabolism, genetics — Immune Super Intelligence" },
       { name: "description", content: "Tissue immunology, immunometabolism and immunogenetics: where immunity happens and what it costs." },
-      { property: "og:title", content: "Dynamics — Immune City" },
+      { property: "og:title", content: "Dynamics — Immune Super Intelligence" },
       { property: "og:description", content: "Where immunity happens, what fuel it runs on, and which alleles shift the threshold." },
     ],
   }),

@@ -29,7 +29,7 @@ async function fetchTrial(name: string): Promise<LiveTrial> {
   return (
     (await cached(`trial:${name}`, async () => {
       const url = `${CTG}?query.term=${encodeURIComponent(name)}&pageSize=1&fields=NCTId,BriefTitle,Phase,OverallStatus`;
-      const res = await fetch(url, { headers: { "User-Agent": "ImmuneCity/1.0" } });
+      const res = await fetch(url, { headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" } });
       if (!res.ok) throw new Error(`ClinicalTrials.gov ${res.status}`);
       const j: any = await res.json();
       const s = j.studies?.[0];
@@ -53,7 +53,7 @@ async function fetchProtein(gene: string): Promise<LiveProtein> {
     (await cached(`prot:${gene}`, async () => {
       const q = encodeURIComponent(`gene_exact:${gene} AND organism_id:9606 AND reviewed:true`);
       const res = await fetch(`${UNIPROT}?query=${q}&size=1&fields=accession,protein_name,gene_names,length`, {
-        headers: { "User-Agent": "ImmuneCity/1.0" },
+        headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" },
       });
       if (!res.ok) throw new Error(`UniProt ${res.status}`);
       const j: any = await res.json();

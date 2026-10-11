@@ -1,4 +1,4 @@
-/* Fixed scientific evaluation set for Immune City.
+/* Fixed scientific evaluation set for Immune Super Intelligence.
    Used by automated tests; extend carefully — expected paths must stay graph-true.
    This is a starter gold set (not yet the PRD 100-question target). */
 

@@ -17,9 +17,9 @@ export const Route = createFileRoute("/graph")({
   ),
   head: () => ({
     meta: [
-      { title: "Knowledge graph: the causal map — Immune City" },
+      { title: "Knowledge graph: the causal map — Immune Super Intelligence" },
       { name: "description", content: "Explore every immune concept and typed causal link, and simulate blocking or activating any node." },
-      { property: "og:title", content: "The causal map — Immune City" },
+      { property: "og:title", content: "The causal map — Immune Super Intelligence" },
       { property: "og:description", content: "An interactive force graph of immune concepts and their causal links." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

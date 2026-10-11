@@ -21,9 +21,9 @@ import { EXEMPLAR_PATHWAYS, exemplarQueueFocus } from "@/lib/immune/exemplarPath
 export const Route = createFileRoute("/_authenticated/curation")({
   head: () => ({
     meta: [
-      { title: "Evidence curation — Immune City" },
+      { title: "Evidence curation — Immune Super Intelligence" },
       { name: "description", content: "Import citation manifests, cross-check identifiers against PubMed and Crossref, and approve citations." },
-      { property: "og:title", content: "Evidence curation — Immune City" },
+      { property: "og:title", content: "Evidence curation — Immune Super Intelligence" },
       { property: "og:description", content: "Curate the atlas citation layer." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

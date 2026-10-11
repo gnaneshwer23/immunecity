@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Lightweight WCAG-oriented accessibility suite for Immune City.
+ * Lightweight WCAG-oriented accessibility suite for Immune Super Intelligence.
  * Source invariants always run. Optional axe-core fixture runs when the package
  * is installed and --axe is passed (axe+jsdom can be slow on constrained disks).
  *
@@ -22,7 +22,7 @@ const fail = (name: string, detail: string) => {
   console.error(`  ✗ ${name}: ${detail}`);
 };
 
-console.log("Immune City a11y suite\n");
+console.log("Immune Super Intelligence a11y suite\n");
 
 console.log("1. Source invariants");
 const shell = readFileSync(resolve(root, "src/components/immune/Shell.tsx"), "utf8");
@@ -34,9 +34,9 @@ if (/aria-label=\"Layers\"/.test(shell)) pass("Layers nav label");
 else fail("Layers nav label", "sidebar missing aria-label=Layers");
 if (/<main id=\"main\"/.test(shell)) pass("Main landmark id");
 else fail("Main landmark id", "missing <main id=\"main\">");
-if (/sr-only/.test(shell) && /Ask Immune City/.test(shell)) pass("Ask dialog accessible name");
+if (/sr-only/.test(shell) && /ASK_NAME|Ask Immune Super Intelligence/.test(shell)) pass("Ask dialog accessible name");
 else fail("Ask dialog accessible name", "DialogTitle/sr-only Ask label missing");
-if (/Educational only, not medical advice/.test(shell)) pass("Ask educational disclaimer");
+if (/not patient-specific advice|Educational only, not medical advice/.test(shell)) pass("Ask educational disclaimer");
 else fail("Ask educational disclaimer", "missing sr-only disclaimer copy");
 
 const methods = readFileSync(resolve(root, "src/routes/methods.tsx"), "utf8");
@@ -61,11 +61,11 @@ if (!runAxe) {
   fail("axe-core", "not installed — bun add -d axe-core");
 } else {
   const { JSDOM } = await import("jsdom");
-  const fixture = `<!doctype html><html lang="en"><head><title>Immune City a11y fixture</title></head>
+  const fixture = `<!doctype html><html lang="en"><head><title>Immune Super Intelligence a11y fixture</title></head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <header>
-    <a href="/"><strong>Immune City</strong></a>
+    <a href="/"><strong>Immune Super Intelligence</strong></a>
     <nav aria-label="Primary"><a href="/learn">Learn</a><a href="/graph">Graph</a></nav>
   </header>
   <button type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Open Ask chatbot">Ask</button>
@@ -79,7 +79,7 @@ if (!runAxe) {
   </div>
   <footer><p>Educational only, not medical advice.</p></footer>
 </body></html>`;
-  const dom = new JSDOM(fixture, { runScripts: "outside-only", url: "https://immunecity.vercel.app/" });
+  const dom = new JSDOM(fixture, { runScripts: "outside-only", url: "https://www.immune-super-intelligence.co.uk/" });
   const { window } = dom;
   (globalThis as unknown as { window: Window }).window = window as unknown as Window;
   (globalThis as unknown as { document: Document }).document = window.document;

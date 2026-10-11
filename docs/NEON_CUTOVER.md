@@ -1,4 +1,4 @@
-# Neon cutover notes (Immune City)
+# Neon cutover notes (Immune Super Intelligence)
 
 ## What moved off Supabase
 
@@ -13,7 +13,7 @@
 ## Owner clicks
 
 1. **Rotate** any Neon password that was pasted into chat; keep using Vercel Neon integration `DATABASE_URL*`.
-2. Neon Console → Auth → add trusted domains for production + preview URLs (production `https://immunecity.vercel.app` already added).
+2. Neon Console → Auth → trusted domains (redirect whitelist). Already on production branch: `https://www.immune-super-intelligence.co.uk`, `https://immune-super-intelligence.co.uk`, and `https://immunecity.vercel.app` (plus localhost / Vercel preview hosts). Re-check after any new custom domain.
 3. Vercel Preview env for `DATABASE_URL*` + Neon Auth URLs was set via CLI (all preview branches). Prefer Neon’s Preview branch sync long-term so Preview DB matches `vercel-dev`.
 4. Redeploy Production after merge so Vite picks up `VITE_NEON_AUTH_URL`.
 5. Sign up once on `/auth`, then provision admin (0003 semantics — never auto-admin):

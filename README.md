@@ -1,29 +1,20 @@
-# Welcome to your Lovable project
+# Immune Super Intelligence
 
-This project was built with [Lovable](https://lovable.dev).
+Educational causal immunology atlas — curated knowledge graph, illustrative mechanisms, and Ask that teaches with references (not clinical decision support).
 
-## Build with Lovable
-
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+**Public site:** https://www.immune-super-intelligence.co.uk/
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
 
-## Built with
+Stack: TanStack Start, React, TypeScript, Tailwind CSS 3.4, Neon Auth + Postgres.
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+## Brand assets
+
+- `public/favicon.svg` / `public/favicon.ico` — teal cell+atlas mark (replaces Lovable heart)
+- `public/logo.svg` — header mark (also inlined in `Shell`)
+- `public/apple-touch-icon.png`, `public/site.webmanifest`

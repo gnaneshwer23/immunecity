@@ -10,9 +10,9 @@ import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 export const Route = createFileRoute("/methods")({
   head: () => ({
     meta: [
-      { title: "Methods & trust — Immune City" },
-      { name: "description", content: "How Immune City builds its causal immunology graph, reviews evidence, runs its models and where its limits are." },
-      { property: "og:title", content: "Methods & trust — Immune City" },
+      { title: "Methods & trust — Immune Super Intelligence" },
+      { name: "description", content: "How Immune Super Intelligence builds its causal immunology graph, reviews evidence, runs its models and where its limits are." },
+      { property: "og:title", content: "Methods & trust — Immune Super Intelligence" },
       { property: "og:description", content: "Ontology, relationship signs, evidence review statuses, model assumptions and limitations." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
@@ -26,8 +26,8 @@ function Methods() {
   const signs = Object.entries(SEM).reduce<Record<string, string[]>>((a, [rel, s]) => ((a[s] ||= []).push(rel), a), {});
   return (
     <div className="page methods">
-      <PageHead kicker="Methods & trust" title="How Immune City works — and where it stops"
-        lede="Immune City is an educational beta — a causal map for teaching with reviewed citations where present, not clinician decision support. This page documents what the graph contains, how evidence is reviewed, what the models assume, and what they cannot tell you."
+      <PageHead kicker="Methods & trust" title="How Immune Super Intelligence works — and where it stops"
+        lede="Immune Super Intelligence is an educational beta — a causal map for teaching with reviewed citations where present, not clinician decision support. This page documents what the graph contains, how evidence is reviewed, what the models assume, and what they cannot tell you."
         stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]} />
 
       <section className="section"><h2>1. The graph ontology</h2>
@@ -59,7 +59,7 @@ function Methods() {
           <li><b>Perturbation (graph):</b> signed spread along + / − / r+ links, decaying 28% per hop, weighted by confidence (high 1.0, medium 0.8, low 0.6) or a measured weight, up to 4 hops. It shows direction, not magnitude in real units.</li>
           <li><b>System simulator:</b> a small set of coupled equations for pathogen, innate and adaptive response, cytokines, damage, memory and exhaustion, in normalised units with hand-set parameters. It is not fitted to patient data.</li>
           <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. Educational illustration — not patient-specific advice.</li>
-          <li><b>Ask Immune City:</b> queries are classified, graph context is retrieved, reviewed relationship-level citations are attached when they exist for those links, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Sparse approved cites mean Ask is graph-retrieved, not fully evidence-grounded. Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
+          <li><b>Ask Immune Super Intelligence:</b> queries are classified, graph context is retrieved, reviewed relationship-level citations are attached when they exist for those links, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Sparse approved cites mean Ask is graph-retrieved, not fully evidence-grounded. Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
           <li><b>Research workbench / literature / model registry:</b> available on <Link to="/research">Research</Link> as candidate workflows and interface contracts (phases B–E partial) — never auto-promoted into the curated graph or live predictors.</li>
           <li><b>Advanced model adapters</b> (omics, structure, pMHC/epitope, genomics, agents) are modular interface contracts only — none are implemented in production. Dry-run stubs return typed <code>not_available</code> and never invent scores or ranks. Full registry with request-shape previews on <Link to="/research" hash="model-registry">Research</Link>.</li>
         </ul>

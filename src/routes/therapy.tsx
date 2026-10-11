@@ -8,9 +8,9 @@ import { getLiveTrials, type LiveTrial } from "@/lib/liveData.functions";
 export const Route = createFileRoute("/therapy")({
   head: () => ({
     meta: [
-      { title: "Therapy: interventions and their targets — Immune City" },
+      { title: "Therapy: interventions and their targets — Immune Super Intelligence" },
       { name: "description", content: "Every intervention in the causal graph, what it targets and which trials tested it." },
-      { property: "og:title", content: "Therapy — Immune City" },
+      { property: "og:title", content: "Therapy — Immune Super Intelligence" },
       { property: "og:description", content: "Immune therapies mapped to their mechanisms and pivotal trials." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

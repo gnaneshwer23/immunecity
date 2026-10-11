@@ -181,7 +181,7 @@ export default function AskAtlas() {
       <div className="ask-head">
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
         <div>
-          <h3>Ask Immune City</h3>
+          <h3>Ask Immune Super Intelligence</h3>
           <p className="xs muted">Graph-retrieved teaching · educational beta · cites when reviewed · not fully evidence-grounded AI</p>
           <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Educating with references — not patient-specific advice. Nothing is stored.</p>
         </div>

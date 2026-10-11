@@ -19,7 +19,7 @@ import {
 } from "../src/lib/immune/relationshipEvidenceQueue.ts";
 
 const EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
-const UA = { "User-Agent": "ImmuneCity-Curation/1.0 (mailto:curation@immune-city.app)" };
+const UA = { "User-Agent": "ImmuneSuperIntelligence-Curation/1.0 (mailto:curation@immune-city.app)" };
 const OUT = resolve(import.meta.dir, "../src/data/relationship-evidence-queue.json");
 const resolvePmids = process.argv.includes("--resolve-pmids");
 

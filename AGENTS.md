@@ -9,6 +9,9 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
+## Product identity
+- User-facing product name is **Immune Super Intelligence** (`src/lib/brand.ts`, canonical https://www.immune-super-intelligence.co.uk/). Internal paths may still say `immune-city`. Brand marks live in `public/favicon.svg`, `public/logo.svg`, and the Shell logo.
+
 ## Architecture rules
 - Original atlas styling lives in `src/atlas.css`, with the editorial visual layer in `src/biotech.css` and tokens scoped to `html[data-theme]`; why: preserve scientific visualization classes while sharing the refreshed theme across pages.
 - Graph data and reasoning (`src/lib/immune/engine.ts`) and page content (`src/data/*`) are plain browser-safe modules; why: every page reads them synchronously during SSR.

@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/simulator")({
   head: () => ({
     meta: [
-      { title: "System simulator — Immune City" },
+      { title: "System simulator — Immune Super Intelligence" },
       { name: "description", content: "Run an infection over 30 days: tune pathogen growth, innate and adaptive strength, and add steroids, antibiotics or checkpoint blockade." },
-      { property: "og:title", content: "System simulator — Immune City" },
+      { property: "og:title", content: "System simulator — Immune Super Intelligence" },
       { property: "og:description", content: "A teaching model of infection, immunity, damage and treatment over time." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

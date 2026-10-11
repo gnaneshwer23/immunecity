@@ -1,4 +1,4 @@
-/* Browser-safe retrieval and guardrails for Ask Immune City (tested in src/test/ai-grounding.test.ts). */
+/* Browser-safe retrieval and guardrails for Ask Immune Super Intelligence (tested in src/test/ai-grounding.test.ts). */
 import { KG, byId, human, out, inn, relId, edgeRef, edgeByRel, shortestPath, type KGNode, type KGEdge } from "@/lib/immune/engine";
 import { citationsFor, relationshipStatus, STATUS_INFO, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
@@ -124,13 +124,13 @@ const CLINICAL = /\b(should i|can i take|my (doctor|dose|medication|child|son|da
 export const isPersonalClinical = (q: string) => CLINICAL.test(q);
 
 export const CLINICAL_REFUSAL =
-  "I can't give personal medical advice, dosing or diagnosis. Immune City is an educational causal map — please talk to a clinician. I can explain how the immune mechanisms involved work in general if you rephrase the question.";
+  "I can't give personal medical advice, dosing or diagnosis. Immune Super Intelligence is an educational causal map — please talk to a clinician. I can explain how the immune mechanisms involved work in general if you rephrase the question.";
 
 export const OMICS_ABSTENTION =
-  "Omics and molecular-model analysis are not wired into Ask yet — they remain planned adapters in the model registry. I can still map named genes or cells that already exist in the Immune City graph if you ask about those concepts specifically.";
+  "Omics and molecular-model analysis are not wired into Ask yet — they remain planned adapters in the model registry. I can still map named genes or cells that already exist in the Immune Super Intelligence graph if you ask about those concepts specifically.";
 
 export const UNSUPPORTED_ABSTENTION =
-  "The Immune City graph does not cover this yet. I won't invent concepts, pathways or citations. Try a named cell, cytokine, receptor, disease or therapy from the atlas, or open Methods & trust for what is currently curated.";
+  "The Immune Super Intelligence graph does not cover this yet. I won't invent concepts, pathways or citations. Try a named cell, cytokine, receptor, disease or therapy from the atlas, or open Methods & trust for what is currently curated.";
 
 const OMICS = /\b(scrna|scRNA|single[- ]cell|spatial omics|rna[- ]seq|bulk rna|differential expression|gene set enrichment|gsea|anndata|seurat|scanpy|vcf|variant call|alphafold|alphagenome|peptide[- ]?mhc|hla binding predict)\b/i;
 const HYPOTHESIS = /\b(hypothes[ei]s|propose an experiment|falsif|what if we (block|inhibit|activate)|candidate mechanism|next experiment)\b/i;
@@ -496,10 +496,10 @@ export function runExplanationAction(action: ExplanationAction, grounding: AskGr
   }
 }
 
-export const SYSTEM = `You are the Immune City assistant — an AI-native educational causal immunology knowledge graph.
-Positioning: "Immune City — Where Immunology Meets Advanced AI." Answer using ONLY the graph extract below. Explain cells, molecules, pathways and causal connections clearly for a curious non-specialist.
+export const SYSTEM = `You are the Immune Super Intelligence assistant — an AI-native educational causal immunology knowledge graph.
+Positioning: "Immune Super Intelligence — Where Immunology Meets Advanced AI." Answer using ONLY the graph extract below. Explain cells, molecules, pathways and causal connections clearly for a curious non-specialist.
 Rules:
-- Ground every claim in the CONCEPT/LINK lines. If the extract says NO_MATCH or does not cover the question, say plainly "The Immune City graph does not cover this yet" and suggest a related covered concept if any. Never fill gaps from general knowledge. Never invent citations, PMIDs, DOIs or LINK IDs.
+- Ground every claim in the CONCEPT/LINK lines. If the extract says NO_MATCH or does not cover the question, say plainly "The Immune Super Intelligence graph does not cover this yet" and suggest a related covered concept if any. Never fill gaps from general knowledge. Never invent citations, PMIDs, DOIs or LINK IDs.
 - Prefer CAUSAL_CHAINS when explaining how two concepts connect. End with a short "Causal chain used:" section that lists the chain hops with [phrase](edge:REL_ID) links, or state that no chain was available.
 - Distinguish evidence tiers explicitly: established, evidence-supported, emerging, hypothesis, draft, missing-support. Say when a link is DRAFT or has no-source-link.
 - REVIEWED_EVIDENCE lists approved Neon claim assessments. If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
@@ -532,4 +532,4 @@ export function isAskEmergencyDisabled(
 }
 
 export const ASK_DISABLED_MESSAGE =
-  "Ask Immune City is temporarily disabled by the operator. Graph exploration and Methods & trust remain available.";
+  "Ask Immune Super Intelligence is temporarily disabled by the operator. Graph exploration and Methods & trust remain available.";

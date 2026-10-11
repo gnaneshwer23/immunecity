@@ -9,9 +9,9 @@ export const Route = createFileRoute("/auth")({
   validateSearch: zodValidator(z.object({ redirect: fallback(z.string(), "/curation").default("/curation") })),
   head: () => ({
     meta: [
-      { title: "Sign in — Immune City" },
-      { name: "description", content: "Sign in to curate the Immune City citation layer." },
-      { property: "og:title", content: "Sign in — Immune City" },
+      { title: "Sign in — Immune Super Intelligence" },
+      { name: "description", content: "Sign in to curate the Immune Super Intelligence citation layer." },
+      { property: "og:title", content: "Sign in — Immune Super Intelligence" },
       { property: "og:description", content: "Sign in to curate the atlas citation layer." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

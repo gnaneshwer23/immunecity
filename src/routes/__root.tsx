@@ -12,6 +12,7 @@ import { type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import Shell from "../components/immune/Shell";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CANONICAL_URL, PRODUCT_NAME } from "../lib/brand";
 
 function NotFoundComponent() {
   return (
@@ -78,9 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Immune City — educational immunology beta" },
-      { name: "description", content: "Educational beta: a curated causal map of immunology, illustrative mechanisms, and graph-retrieved Ask that educates with references — not patient-specific advice and not fully evidence-grounded AI." },
+      { title: `${PRODUCT_NAME} — educational immunology beta` },
+      { name: "description", content: `${PRODUCT_NAME}: educational beta — a curated causal map of immunology, illustrative mechanisms, and graph-retrieved Ask that educates with references — not patient-specific advice and not fully evidence-grounded AI.` },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: CANONICAL_URL },
+      { property: "og:site_name", content: PRODUCT_NAME },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -88,7 +91,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "canonical", href: CANONICAL_URL },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/site.webmanifest" },
       { rel: "preconnect", href: "https://api.fontshare.com" },
       { rel: "stylesheet", href: "https://api.fontshare.com/v2/css?f[]=chillax@500,600&f[]=general-sans@400,500,600&display=swap" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" },

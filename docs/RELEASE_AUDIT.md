@@ -1,16 +1,16 @@
-# Immune City — Final Pre-Live Release Audit
+# Immune Super Intelligence — Final Pre-Live Release Audit
 
 **Audit refresh (UTC):** 2026-10-11 (educational-beta GO messaging: educate-with-references framing)  
 **Release scope:** Public educational beta — teaching from a curated graph with reviewed citations where present; **not** clinician CDS or patient-specific advice  
-**Roadmap:** Immune City Enhancement Roadmap & Production Gaps v1.0 + Next-Step Implementation Playbook v1.0  
-**Canonical production:** https://immunecity.vercel.app  
+**Roadmap:** Immune Super Intelligence Enhancement Roadmap & Production Gaps v1.0 + Next-Step Implementation Playbook v1.0  
+**Canonical production:** https://www.immune-super-intelligence.co.uk  
 **Auditor method:** Code inspection; Neon MCP SQL on **production** branch; HTTP/Ask smoke against canonical URL; Vercel deployment list; local `smoke-prd-a2`; local `smoke:neon` (defaults to vercel-dev)
 
 ---
 
 ## 1. Executive verdict
 
-### **GO for educational beta** on **https://immunecity.vercel.app**
+### **GO for educational beta** on **https://www.immune-super-intelligence.co.uk**
 
 | Layer | State |
 |-------|--------|
@@ -35,7 +35,7 @@
 | Baseline SHA (pre this ship) | `b8030fbe41c4d3d52e37635e4fbdf246649c5498` |
 | Vercel production SHA (verified) | `b8030fb` READY, target=production |
 | Deploy identity at smoke | **WORKING / aligned** at `b8030fb` |
-| Canonical URL | https://immunecity.vercel.app |
+| Canonical URL | https://www.immune-super-intelligence.co.uk |
 | Secondary URL | https://immune-city.lovable.app — divergent; keep until deliberately retired (**D-06**) |
 | Auth / DB | Neon Managed Better Auth + drizzle/postgres |
 | Graph | KG **0.3** + extensions **draft-ext-4** · via `graphReleaseSnapshot()` · ~260 core / ~70 draft concepts · ~549 runtime relationships · 15 spine · 12 layers |
@@ -98,7 +98,7 @@
 
 ## 6. Smoke evidence (this pass)
 
-### 6.1 HTTP — https://immunecity.vercel.app
+### 6.1 HTTP — https://www.immune-super-intelligence.co.uk
 
 | Path | Result |
 |------|--------|
@@ -208,7 +208,7 @@ Do **not** mass-approve or invent PMIDs.
 
 ## FINAL DECISION
 
-# **GO for educational beta** (canonical: https://immunecity.vercel.app)
+# **GO for educational beta** (canonical: https://www.immune-super-intelligence.co.uk)
 
 Ship is fit for **public educational beta**: educating with references from a curated graph — not clinician CDS, not patient-specific advice. Honest limits remain: Ask is graph-retrieved (not fully evidence-grounded), Gate C sparse (9 approved claim-linked), Academy foundation **scaffold** only, Neon Auth with explicit admin.
 

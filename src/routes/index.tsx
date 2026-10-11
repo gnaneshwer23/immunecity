@@ -16,17 +16,20 @@ const SPINE_TYPE: Record<string, NodeType> = {
 };
 import { Button } from "@/components/ui/button";
 import cellImage from "@/assets/immune-cell.jpg";
+import { CANONICAL_URL, PRODUCT_LINE, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Immune City — Where Immunology Meets Advanced AI" },
+      { title: PRODUCT_LINE },
       { name: "description", content: "Educational beta: a curated causal map of immunology, illustrative mechanism walks, and Ask that teaches from graph context with reviewed citations when present." },
-      { property: "og:title", content: "Immune City — Where Immunology Meets Advanced AI" },
+      { property: "og:title", content: PRODUCT_LINE },
       { property: "og:description", content: "Explore a curated immunology knowledge graph, illustrative mechanisms, and Ask that educates with references. Educational beta — not patient-specific advice." },
+      { property: "og:url", content: CANONICAL_URL },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: CANONICAL_URL }],
   }),
   component: Overview,
 });
@@ -45,11 +48,11 @@ function Overview() {
   ];
   return (
     <div className="home-page">
-      <section className="bio-hero" aria-label="Immune City">
+      <section className="bio-hero" aria-label={PRODUCT_NAME}>
         <img className="bio-hero-image" src={cellImage} alt="Scientific illustration of a cluster of translucent immune cells" width={1536} height={1024} fetchPriority="high" />
         <div className="bio-hero-inner">
           <div className="bio-eyebrow"><span className="status-dot" /> Educational scientific exploration beta</div>
-          <h1>Immune City</h1>
+          <h1>{PRODUCT_NAME}</h1>
           <p className="hero-subtitle">An AI-native map of<br />the immune system.</p>
           <p className="hero-description">Explore a curated causal graph, follow illustrative mechanisms, and ask questions answered from retrieved graph context — with reviewed relationship cites when they exist. Educating with references, not treatment advice.</p>
           <div className="bio-actions">

@@ -8,12 +8,18 @@ import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/componen
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import AskAtlas from "./AskAtlas";
 import ScientificInspector from "./ScientificInspector";
+import { ASK_NAME, PRODUCT_NAME, TAGLINE } from "@/lib/brand";
 
 function Logo() {
   return (
-    <svg className="logo" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <circle cx="16" cy="16" r="5" />
-      <path d="M16 3v6M16 23v6M3 16h6M23 16h6M7 7l4 4M21 21l4 4M25 7l-4 4M11 21l-4 4" />
+    <svg className="logo" viewBox="0 0 32 32" fill="none" aria-hidden>
+      <circle cx="16" cy="16" r="10" stroke="currentColor" strokeWidth="1.75" />
+      <circle cx="16" cy="16" r="3.4" fill="currentColor" />
+      <circle cx="16" cy="5" r="1.5" fill="currentColor" />
+      <circle cx="27" cy="16" r="1.5" fill="currentColor" />
+      <circle cx="16" cy="27" r="1.5" fill="currentColor" />
+      <circle cx="5" cy="16" r="1.5" fill="currentColor" />
+      <path d="M16 12.6V6.6M19.4 16h6M16 19.4v6M12.6 16H6.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -66,7 +72,7 @@ function SiteFooter() {
     <footer className="site-footer">
       <div className="sf-grid">
         <div className="sf-brand">
-          <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>Immune City</strong><small>Where Immunology Meets Advanced AI</small></span></Link>
+          <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span></Link>
           <p>Educational beta — {graphReleaseLabel(snap)} · {snap.runtimeRelationships} runtime links, each labelled with review status. Educating with references from the graph; Ask is graph-retrieved teaching, not fully evidence-grounded AI.</p>
           <span className="sf-status"><span className="sf-dot" /> {snap.snapshotAt} · reviewed cites when available · Academy foundation scaffold on Mechanism · illustrative walks</span>
         </div>
@@ -87,7 +93,7 @@ function SiteFooter() {
         </div>
       </div>
       <div className="sf-bottom">
-        <span>© {new Date().getFullYear()} Immune City</span>
+        <span>© {new Date().getFullYear()} {PRODUCT_NAME}</span>
         <span>Educational model with references. Not patient-specific medical advice.</span>
       </div>
     </footer>
@@ -117,7 +123,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         <Button variant="ghost" size="icon" className="icon-btn nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open} title="Toggle navigation"><Menu size={20} /></Button>
         <Link className="brand" to="/">
           <Logo />
-          <span className="brand-text"><strong>Immune City</strong><small>Where Immunology Meets Advanced AI</small></span>
+          <span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span>
         </Link>
         <nav className="pillar-nav" aria-label="Primary">
           {NAV_GROUPS.map((g) => (
@@ -125,13 +131,13 @@ export default function Shell({ children }: { children: ReactNode }) {
           ))}
         </nav>
       </header>
-      <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? "Close Ask chatbot" : "Open Ask chatbot"} title="Ask Immune City">
+      <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? "Close Ask chatbot" : "Open Ask chatbot"} title={ASK_NAME}>
         {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask</span>
       </Button>
       <Dialog modal={false} open={askOpen} onOpenChange={setAskOpen}>
         <DialogPortal>
         <DialogPrimitive.Content className="global-ask-dialog corner-ask-dialog" onInteractOutside={(e) => e.preventDefault()}>
-          <DialogTitle className="sr-only">Ask Immune City</DialogTitle>
+          <DialogTitle className="sr-only">{ASK_NAME}</DialogTitle>
           <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references, not patient-specific advice.</DialogDescription>
           <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label="Minimize chatbot" title="Minimize chatbot"><X size={18} /></Button>
           <AskAtlas />

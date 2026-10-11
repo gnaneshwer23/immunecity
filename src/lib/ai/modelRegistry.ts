@@ -110,7 +110,7 @@ export const MODEL_REGISTRY: ModelInterfaceSpec[] = [
     requestFields: [
       { name: "expressionMatrixRef", type: "string", required: true, description: "Client-side handle or URI to a matrix payload (not uploaded by default)." },
       { name: "spatialCoordinates", type: "SpatialPoint[]", required: false, description: "Optional barcode → (x,y) table." },
-      { name: "targetConceptIds", type: "string[]", required: false, description: "Optional Immune City concept IDs to bias enrichment mapping." },
+      { name: "targetConceptIds", type: "string[]", required: false, description: "Optional Immune Super Intelligence concept IDs to bias enrichment mapping." },
     ],
     outputFields: [
       { name: "cellTypeScores", type: "ScoreRow[]", required: true, description: "Would list candidate cell-type scores — not produced in this build." },
@@ -121,7 +121,7 @@ export const MODEL_REGISTRY: ModelInterfaceSpec[] = [
       expressionMatrixRef: "local://example-anndata",
       targetConceptIds: ["C003", "M001"],
     },
-    intendedUse: "Map experimental profiles onto Immune City concepts for hypothesis generation.",
+    intendedUse: "Map experimental profiles onto Immune Super Intelligence concepts for hypothesis generation.",
     limitations: [
       NOT_IMPLEMENTED,
       "No batch correction or QC pipeline shipped",

@@ -6,7 +6,7 @@ export type CheckStatus = "verified" | "matched" | "ambiguous" | "not_found" | "
 export interface Candidate { pmid: string; title: string; journal: string; year: string; first_author: string; doi?: string }
 
 const EUTILS = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
-const UA = { "User-Agent": "ImmuneCity-Curation/1.0 (mailto:curation@immune-city.app)" };
+const UA = { "User-Agent": "ImmuneSuperIntelligence-Curation/1.0 (mailto:curation@immune-city.app)" };
 const STOPS = new Set(["that","this","with","from","into","than","then","their","they","which","were","have","been","also","more","most","other","such","some","these","those","when","study","trial"]);
 const norm = (v: unknown) => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 

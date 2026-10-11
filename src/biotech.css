@@ -1,4 +1,4 @@
-/* Immune City's editorial biotech layer. Scientific category tokens remain in atlas.css. */
+/* Immune Super Intelligence's editorial biotech layer. Scientific category tokens remain in atlas.css. */
 html[data-theme='light'] {
   --bg: oklch(0.98 0.006 220);
   --surface: oklch(1 0 0);
@@ -36,7 +36,7 @@ html[data-theme='light'] {
 @keyframes bio-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes bio-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 .topbar { padding: 0 32px; gap: 28px; background: var(--surface); }
-.brand-text strong { font-size: 1.3rem; font-weight: 600; }
+.brand-text strong { font-size: clamp(0.92rem, 0.85rem + 0.35vw, 1.12rem); font-weight: 600; letter-spacing: -0.02em; }
 .brand-text small { font-size: 10px; margin-top: 5px; }
 .top-links { display: flex; align-items: center; gap: 26px; margin-left: auto; }
 .top-links a { font-size: 13px; color: var(--muted); }
@@ -59,7 +59,7 @@ main:has(> .home-page) { padding: 0; }
 .bio-hero-inner { position: relative; max-width: 1440px; margin: auto; padding: 58px 64px 36px; min-height: 610px; display: flex; flex-direction: column; align-items: flex-start; }
 .bio-eyebrow { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; }
 .bio-eyebrow .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); animation: bio-pulse 2.4s ease-in-out infinite; }
-.bio-hero h1 { font-size: 76px; line-height: 1; font-weight: 500; margin: 26px 0 18px; animation: bio-rise .7s ease both; }
+.bio-hero h1 { font-size: clamp(2.75rem, 1.6rem + 4vw, 4.4rem); line-height: 1.05; font-weight: 500; margin: 26px 0 18px; max-width: 14ch; animation: bio-rise .7s ease both; }
 .bio-hero .hero-subtitle { font-size: 37px; line-height: 1.18; max-width: 530px; font-weight: 400; animation: bio-rise .7s .08s ease both; }
 .bio-hero .hero-description { font-size: 15px; line-height: 1.7; max-width: 340px; color: var(--muted); margin-top: 20px; animation: bio-rise .7s .16s ease both; }
 .bio-actions { display: flex; align-items: center; gap: 12px; margin-top: 26px; animation: bio-rise .7s .24s ease both; }

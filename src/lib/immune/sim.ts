@@ -1,4 +1,4 @@
-/* Immune City — infection dynamics model (teaching ODE, normalised units) */
+/* Immune Super Intelligence — infection dynamics model (teaching ODE, normalised units) */
 export interface SimParams { inoculum: number; growth: number; innate: number; adaptive: number; cytokineGain: number; regulation: number; memory: number; lag: number; exhaustion?: number; rechallenge?: number }
 export interface Intervention { strength: number; day?: number }
 export interface Interventions { anticytokine?: Intervention; steroid?: Intervention; checkpoint?: Intervention; antibiotic?: Intervention }

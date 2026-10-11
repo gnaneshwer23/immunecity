@@ -49,7 +49,7 @@ export default function GroundingPanel({ grounding }: { grounding: AskGrounding 
         <p className="xs muted">
           {grounding.trace.abstained
             ? `Query class: ${classLabel}. No model synthesis was run for this request.`
-            : "No Immune City concepts matched this question. The model must not invent graph evidence."}
+            : "No Immune Super Intelligence concepts matched this question. The model must not invent graph evidence."}
         </p>
         <p className="xs muted">Trace · prompt {grounding.trace.promptVersion} · graph {grounding.trace.graphVersion}</p>
       </aside>

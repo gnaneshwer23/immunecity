@@ -10,9 +10,9 @@ import TherapyDetail from "@/components/immune/TherapyDetail";
 export const Route = createFileRoute("/patient")({
   head: () => ({
     meta: [
-      { title: "Patient: precision immunology — Immune City" },
+      { title: "Patient: precision immunology — Immune Super Intelligence" },
       { name: "description", content: "Select patient features and see which therapies the mechanism supports or cautions against, rule by rule." },
-      { property: "og:title", content: "Precision immunology — Immune City" },
+      { property: "og:title", content: "Precision immunology — Immune Super Intelligence" },
       { property: "og:description", content: "Rank immunotherapies against comorbidities, biomarkers and clinical state." },
     ],
   }),

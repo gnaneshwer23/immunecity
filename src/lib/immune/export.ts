@@ -27,7 +27,7 @@ export function graphToCytoscape(nodes: KGNode[], links: KGEdge[]) {
   return JSON.stringify(
     {
       meta: {
-        product: "Immune City",
+        product: "Immune Super Intelligence",
         graphVersion: release.coreVersion,
         extensionsVersion: release.extensionsVersion,
         snapshot: release.snapshotAt,
@@ -85,5 +85,5 @@ export function simToCSV(series: SimPoint[]) {
 }
 
 export function simSummaryJSON(params: SimParams, iv: Interventions, summary: Record<string, unknown>) {
-  return JSON.stringify({ model: "Immune City infection teaching model (normalised units)", params, interventions: iv, summary }, null, 2);
+  return JSON.stringify({ model: "Immune Super Intelligence infection teaching model (normalised units)", params, interventions: iv, summary }, null, 2);
 }

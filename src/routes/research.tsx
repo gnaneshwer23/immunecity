@@ -21,9 +21,9 @@ export const Route = createFileRoute("/research")({
   ),
   head: () => ({
     meta: [
-      { title: "Research workbench — Immune City" },
+      { title: "Research workbench — Immune Super Intelligence" },
       { name: "description", content: "Scientific workbench, literature candidates and model-registry interfaces — phases B–E partial; candidates only until curated. Educational beta — teaching tools, not live clinical predictors." },
-      { property: "og:title", content: "Research workbench — Immune City" },
+      { property: "og:title", content: "Research workbench — Immune Super Intelligence" },
       { property: "og:description", content: "Candidate research workflows and interface-only model adapters — not live predictors or auto-published claims." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

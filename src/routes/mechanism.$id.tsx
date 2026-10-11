@@ -9,7 +9,7 @@ import AcademyTrack from "@/components/immune/AcademyTrack";
 export const Route = createFileRoute("/mechanism/$id")({
   head: ({ params }) => {
     const l = CONTENT.lessons.find((x) => x.id === params.id) || CONTENT.lessons[0]!;
-    const title = `${l.title.split(":")[0]} — Mechanism — Immune City`;
+    const title = `${l.title.split(":")[0]} — Mechanism — Immune Super Intelligence`;
     return {
       meta: [
         { title },

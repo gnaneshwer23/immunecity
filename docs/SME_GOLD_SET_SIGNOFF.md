@@ -1,4 +1,4 @@
-# SME gold-set sign-off — Immune City
+# SME gold-set sign-off — Immune Super Intelligence
 
 **Status:** ⏳ **Awaiting SME** (cannot be completed by AI or engineering alone)  
 **Scope:** Public educational beta — teaching with references; not clinician CDS  

@@ -18,9 +18,9 @@ export const Route = createFileRoute("/learn")({
   validateSearch: zodValidator(z.object({ cell: fallback(z.string(), "").default("") })),
   head: () => ({
     meta: [
-      { title: "Cell atlas — Immune City" },
+      { title: "Cell atlas — Immune Super Intelligence" },
       { name: "description", content: "The immune residents: metaphors, mechanistic detail, clinical relevance and where each metaphor breaks." },
-      { property: "og:title", content: "Cell atlas — Immune City" },
+      { property: "og:title", content: "Cell atlas — Immune Super Intelligence" },
       { property: "og:description", content: "Meet the immune residents and where their metaphors stop being true." },
     ],
   }),
