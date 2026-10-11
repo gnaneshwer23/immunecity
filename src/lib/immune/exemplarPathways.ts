@@ -25,10 +25,10 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     purpose: "Classic inflammatory cytokine → disease, with a therapy target on the same axis.",
     waypointIds: ["C003", "M001", "D001", "I001"],
     mechanism: { startId: "C003", perturbId: "I001", outcomeId: "D001", mode: "inhibit" },
-    maturity: "scaffold",
+    maturity: "partially-reviewed",
     notes: [
-      "Macrophage → TNF → RA is present as curated ESTABLISHED edges in the core graph.",
-      "Claim-linked approved evidence assessments are still required before calling the pathway evidence-complete.",
+      "Macrophage → TNF → RA on-path edges carry approved claim-linked cites (Chu / Feldmann / Lipsky).",
+      "Still a teaching axis — do not treat the whole disease biology as evidence-complete.",
     ],
   },
   {
@@ -37,10 +37,10 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     purpose: "Checkpoint receptor biology linked to a clinical antibody and biomarker context.",
     waypointIds: ["R011", "R012", "B011", "I008"],
     mechanism: { startId: "R012", perturbId: "I008", outcomeId: "R011", mode: "inhibit" },
-    maturity: "scaffold",
+    maturity: "partially-reviewed",
     notes: [
       "Separate cell biology, tumour context, therapeutic mechanism and trial endpoints — do not overgeneralise response rates.",
-      "Pathway is a teaching scaffold pending claim-level review of each edge.",
+      "Some edges have approved support (e.g. Barber / KEYNOTE axis); full pathway claim review remains partial.",
     ],
   },
   {
@@ -52,7 +52,7 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     maturity: "scaffold",
     notes: [
       "Show where the chain is direct, indirect or still under review.",
-      "Therapy and disease edges exist; full reviewed-support coverage is incomplete.",
+      "A few edges reviewed (e.g. IFN→BAFF / belimumab axis); overall pathway remains scaffold-ish.",
     ],
   },
 ];

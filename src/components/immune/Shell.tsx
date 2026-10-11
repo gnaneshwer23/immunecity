@@ -67,8 +67,8 @@ function SiteFooter() {
       <div className="sf-grid">
         <div className="sf-brand">
           <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>Immune City</strong><small>Where Immunology Meets Advanced AI</small></span></Link>
-          <p>Educational scientific exploration beta — {graphReleaseLabel(snap)} · {snap.runtimeRelationships} runtime links, each labelled with review status. Not clinical decision support.</p>
-          <span className="sf-status"><span className="sf-dot" /> {snap.snapshotAt} · Ask retrieves graph context · reviewed cites when available · illustrative walks</span>
+          <p>Educational scientific exploration beta — {graphReleaseLabel(snap)} · {snap.runtimeRelationships} runtime links, each labelled with review status. Not clinical decision support; Ask is graph-retrieved, not fully evidence-grounded AI.</p>
+          <span className="sf-status"><span className="sf-dot" /> {snap.snapshotAt} · reviewed cites when available · Academy foundation scaffold on Mechanism · illustrative walks</span>
         </div>
         {NAV_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">

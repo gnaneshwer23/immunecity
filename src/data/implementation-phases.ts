@@ -31,7 +31,7 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
       "Smoke/tests confirm new IDs resolve and remain draft.",
     ],
     status: "partial",
-    notes: "draft-ext-4 adds IVIG, pharmacogenetic HLA screen, herd-protection and post-infectious flare teaching drafts; domain coverage panel + gap queue on Evidence. Expert claim-review of exemplar pathways (TNF→RA, PD-1, IFN→SLE) remains open — curator work, not silent graph completion.",
+    notes: "draft-ext-4 adds IVIG, pharmacogenetic HLA screen, herd-protection and post-infectious flare teaching drafts; domain coverage panel + gap queue on Evidence. Exemplar claim-review: TNF→RA on-path done; PD-1 partial; IFN→SLE still scaffold-ish — curator work, not silent graph completion.",
   },
   {
     id: "C",

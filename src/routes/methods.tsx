@@ -50,7 +50,7 @@ function Methods() {
         <table className="rs-table"><tbody>
           {(Object.keys(STATUS_INFO) as ReviewStatus[]).map((s) => <tr key={s}><td><span className={`badge rs rs-${s}`}>{STATUS_INFO[s].label}</span></td><td className="small">{STATUS_INFO[s].desc}</td></tr>)}
         </tbody></table>
-        <p className="small">Inclusion criteria: peer-reviewed primary research, systematic reviews or regulatory documents with a PubMed ID or DOI; identifiers are checked against PubMed and Crossref metadata before approval. Approval records the reviewer and date. Live claim-support counts are on <Link to="/evidence">Evidence</Link> — only a small share of runtime links currently carry approved claim-supporting citations.</p>
+        <p className="small">Inclusion criteria: peer-reviewed primary research, systematic reviews or regulatory documents with a PubMed ID or DOI; identifiers are checked against PubMed and Crossref metadata before approval. Approval requires claim_support = supports (plus a verified/matched identifier) and records the reviewer and date. Live claim-support counts are on <Link to="/evidence">Evidence</Link> — Gate C progress is real but sparse overall versus runtime link count.</p>
         <p className="small">Sign-in and curation use <b>Neon Auth</b> with roles in <code>user_roles</code>. New accounts receive the reader role; admin is provisioned explicitly (not “first signup wins”). Approved citations are served by a server-side filter for public pages.</p>
       </section>
 
@@ -81,8 +81,9 @@ function Methods() {
 
       <section className="section"><h2>5. Limitations</h2>
         <ul>
-          <li>Most links have not yet been claim-checked against a source; evidence coverage is incomplete and does not imply clinical validation.</li>
-          <li>Exemplar pathways are teaching scaffolds until claim-level review covers their edges.</li>
+          <li>Most links have not yet been claim-checked against a source; claim-level approved support is still sparse overall (single-digit approved relationship claims vs hundreds of runtime links) and does not imply clinical validation.</li>
+          <li>Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.</li>
+          <li>The Immunology Academy foundation track on <Link to="/mechanism">Mechanism</Link> is a navigable teaching scaffold — not a finished curriculum, certification, or Gate C coverage claim.</li>
           <li>Links simplify dose, timing, species and individual variation.</li>
           <li>Tissue context is sparse; many effects are recorded without one.</li>
           <li>Nothing here is medical advice or clinical decision support.</li>

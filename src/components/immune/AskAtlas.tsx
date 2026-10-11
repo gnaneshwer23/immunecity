@@ -182,8 +182,8 @@ export default function AskAtlas() {
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
         <div>
           <h3>Ask Immune City</h3>
-          <p className="xs muted">Graph-retrieved immunology copilot · educational beta</p>
-          <p className="xs muted">AI answers are restricted to retrieved graph concepts, links, and reviewed relationship cites when they exist. Not medical advice. Nothing is stored.</p>
+          <p className="xs muted">Graph-retrieved immunology copilot · educational beta · not fully evidence-grounded AI</p>
+          <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Not medical advice or CDS. Nothing is stored.</p>
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>

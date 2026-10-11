@@ -82,7 +82,7 @@ function Overview() {
 
       <div className="bio-content">
         <p className="lede" style={{ marginTop: 28, marginBottom: 0, maxWidth: "42rem" }}>
-          Release <code>{snap.snapshotAt}</code> · core vs draft counts from the shared graph snapshot · claim-level approved support is still sparse ·{" "}
+          Release <code>{snap.snapshotAt}</code> · core vs draft counts from the shared graph snapshot · claim-level approved support is still sparse overall · Academy foundation track is a teaching scaffold on Mechanism ·{" "}
           <Link to="/methods">Methods &amp; trust</Link> · <Link to="/evidence">Evidence coverage</Link>
         </p>
         <section className="bio-section" aria-label="Platform pillars">

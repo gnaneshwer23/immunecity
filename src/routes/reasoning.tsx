@@ -60,7 +60,7 @@ function Reasoning() {
         {evidenceUnavailable ? (
           <p className="lede" role="alert">Evidence service unavailable — pathway maturity below cannot be recomputed from live approvals (not the same as zero reviewed support).</p>
         ) : (
-          <p className="lede">PRD priority scaffolds — connected in the graph, but claim-level reviewed support is incomplete. Maturity is labelled honestly.</p>
+          <p className="lede">PRD priority pathways — connected in the graph. TNF→RA on-path claim review is furthest along; PD-1 partial; IFN→SLE still largely scaffold-ish. Maturity badges recompute from live approvals.</p>
         )}
         <div className="grid auto">
           {EXEMPLAR_PATHWAYS.map((p) => {
