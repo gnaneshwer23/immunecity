@@ -27,10 +27,11 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
       "New records live in extensions with draft:true at merge time.",
       "Immunogenetics lesson + route appear in curriculum merges.",
       "Graph release snapshot separates core vs draft counts; extensions version bumps.",
+      "Domain coverage report + knowledge gap queue surface thin domains without inventing PMIDs.",
       "Smoke/tests confirm new IDs resolve and remain draft.",
     ],
     status: "partial",
-    notes: "draft-ext-3 deepens microbiome, vaccines, transplant, PID, immunogenetics, and infection↔autoimmunity drafts with lessons/routes. Expert claim-review of exemplar pathways (TNF→RA, PD-1, IFN→SLE) remains open — that is curator work, not silent graph completion.",
+    notes: "draft-ext-4 adds IVIG, pharmacogenetic HLA screen, herd-protection and post-infectious flare teaching drafts; domain coverage panel + gap queue on Evidence. Expert claim-review of exemplar pathways (TNF→RA, PD-1, IFN→SLE) remains open — curator work, not silent graph completion.",
   },
   {
     id: "C",

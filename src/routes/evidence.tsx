@@ -4,6 +4,7 @@ import { CONTENT } from "@/data/content";
 import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 import CoveragePanel from "@/components/immune/CoveragePanel";
+import DomainCoveragePanel from "@/components/immune/DomainCoveragePanel";
 
 export const Route = createFileRoute("/evidence")({
   head: () => ({
@@ -56,6 +57,7 @@ function Evidence() {
         <span className="xs muted">Import a citation manifest, cross-check its identifiers against PubMed and Crossref, and approve the records each concept may publish.</span>
       </div>
       <CoveragePanel />
+      <DomainCoveragePanel />
       <section className="section">
         <h2>When mechanisms were tested</h2>
         <p className="lede">Bar height is the number of landmark trials in that year. Click a bar to filter.</p>

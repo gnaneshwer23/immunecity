@@ -55,6 +55,7 @@ import {
 } from "../src/lib/research/workbench.ts";
 import { phaseStatusSummary } from "../src/data/implementation-phases.ts";
 import { EXT_PROVENANCE } from "../src/data/extensions.ts";
+import { domainCoverageReport, knowledgeGapQueue } from "../src/lib/immune/domainCoverage.ts";
 
 let failed = 0;
 function check(name: string, cond: boolean, detail = "") {
@@ -93,8 +94,15 @@ check("registry request shapes", MODEL_REGISTRY.every((m) => m.requestFields.len
   check("registry unknown refuse", invokeModelStub("missing-adapter").kind === "not_available");
   check("registry honesty summary", registryHonestySummary().implemented === 0);
 }
-check("ext version", GRAPH_EXTENSIONS_VERSION === "draft-ext-3" && EXT_PROVENANCE.version === "draft-ext-3");
-check("immuno B node", !!byId["EG01"]?.draft && !!byId["EG13"]?.draft && !!byId["EI01"]?.draft && !!byId["EP10"]?.draft);
+check("ext version", GRAPH_EXTENSIONS_VERSION === "draft-ext-4" && EXT_PROVENANCE.version === "draft-ext-4");
+check("immuno B node", !!byId["EG01"]?.draft && !!byId["EG13"]?.draft && !!byId["EI01"]?.draft && !!byId["EP10"]?.draft && !!byId["EP15"]?.draft && !!byId["EG17"]?.draft);
+{
+  const cov = domainCoverageReport();
+  check("domain coverage domains", cov.domains.length === 7 && cov.summary.lessonsPresent === 7);
+  check("domain coverage no isolated", cov.summary.isolatedConcepts === 0 && cov.summary.thinDomains === 0);
+  check("domain gap queue", knowledgeGapQueue(10).length > 0);
+  check("B paths", !!shortestPath("EP15", "EP01", true) && !!shortestPath("EG17", "EG12", true));
+}
 check("no fake pmid", normaliseOptionalId("placeholder") === undefined);
 let lit = createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, {
   query: "HLA shared epitope RA",

@@ -5,8 +5,8 @@
    Provenance: textbook / review-level consensus drafted for education; not claim-approved. */
 
 export const EXT_PROVENANCE = {
-  version: "draft-ext-3",
-  label: "Phase B draft gap fills (deepened)",
+  version: "draft-ext-4",
+  label: "Phase B draft gap fills (coverage + teaching)",
   note: "Draft educational extensions. evidence_status is a graph label, not curator approval. No PMIDs fabricated.",
 };
 
@@ -100,6 +100,7 @@ export const EXT_NODES: N[] = [
   n("EP12", "DISEASE", "Wiskott–Aldrich syndrome", "WASp cytoskeleton defect; microthrombocytopenia, eczema, combined immunodeficiency", "ESTABLISHED", "blood / skin"),
   n("EP13", "MOLECULE", "CD40 ligand (CD40L)", "T-cell help molecule required for class switching and germinal-centre formation", "ESTABLISHED", "lymph node"),
   n("EP14", "DISEASE", "Type-I IFN sensing defect / autoantibody", "IFNAR or neutralizing anti–IFN-α/ω autoantibodies; severe viral disease including live vaccines and COVID-19", "EVIDENCE-SUPPORTED", "blood / tissue"),
+  n("EP15", "INTERVENTION", "Immunoglobulin replacement (IVIG/SCIG)", "Pooled donor IgG given intravenously or subcutaneously to replace missing antibody function", "ESTABLISHED", "blood"),
   // immunogenetics (Phase B focus)
   n("EG01", "BIOMARKER", "HLA-B*27", "MHC class I allele strongly associated with axial spondyloarthritis / AS", "EVIDENCE-SUPPORTED", "antigen presentation"),
   n("EG02", "BIOMARKER", "HLA-DRB1 shared epitope", "DRB1 alleles (*04:01, *04:04, *01:01) that present citrullinated peptides in ACPA+ RA", "EVIDENCE-SUPPORTED", "synovium / lymph node"),
@@ -117,13 +118,16 @@ export const EXT_NODES: N[] = [
   n("EG14", "MOLECULE", "IL23R coding variants", "Receptor variants that modulate IL-23 signalling; protective and risk alleles in IBD/psoriasis genetics", "EVIDENCE-SUPPORTED", "gut / skin"),
   n("EG15", "MOLECULE", "CTLA4 / checkpoint gene variants", "Variants altering CTLA-4 expression or function; autoimmunity and immune dysregulation risk", "EVIDENCE-SUPPORTED", "lymphocyte"),
   n("EG16", "MOLECULE", "IRF5 risk variants", "Interferon-regulatory factor alleles repeatedly associated with SLE", "EVIDENCE-SUPPORTED", "innate sensing"),
+  n("EG17", "PATHWAY", "Pharmacogenetic HLA screen", "Pre-prescription HLA typing used to avoid severe drug hypersensitivity for selected agents", "ESTABLISHED", "clinical genetics"),
   // infection ↔ autoimmunity interface
   n("EI01", "PATHWAY", "Molecular mimicry", "Pathogen peptide resembles self peptide so primed T/B cells cross-react with tissue antigen", "EVIDENCE-SUPPORTED", "lymph node / tissue"),
   n("EI02", "PATHWAY", "Bystander activation", "Infection-driven cytokines and APCs activate nearby autoreactive clones without cognate mimicry", "EVIDENCE-SUPPORTED", "inflamed tissue"),
   n("EI03", "PATHWAY", "Epitope spreading", "Chronic inflammation reveals new self epitopes; response broadens beyond the initiating specificity", "EVIDENCE-SUPPORTED", "lymph node / tissue"),
   n("EI04", "PATHWAY", "Infection as innate adjuvant", "PAMPs/DAMPs from infection license APCs and lower the threshold for adaptive priming, including anti-self", "EVIDENCE-SUPPORTED", "tissue"),
+  n("EI05", "PATHWAY", "Post-infectious flare", "Transient worsening of autoimmune disease after infection without proving the infection caused the disease", "EVIDENCE-SUPPORTED", "tissue"),
   // frontier
   n("EF01", "INTERVENTION", "CD19 CAR-T (autoimmune)", "CD19-directed CAR-T used to reset B-cell autoimmunity", "EMERGING", "lymphoid tissue"),
+  n("EV10", "PATHWAY", "Herd / indirect protection", "High population immunity reduces transmission and protects unvaccinated contacts for some pathogens", "ESTABLISHED", "population"),
 ];
 
 export const EXT_EDGES: E[] = [
@@ -226,6 +230,10 @@ export const EXT_EDGES: E[] = [
   e("EP14", "impairs", "P004", "Missing type-I IFN sensing or neutralizing autoantibodies blunt antiviral ISGs.", "blood / tissue", "EVIDENCE-SUPPORTED", "medium"),
   e("EP14", "risks", "D018", "Anti–type-I IFN autoantibodies enrich in critical COVID-19 cohorts.", "lung", "EVIDENCE-SUPPORTED", "medium"),
   e("EP14", "risks", "EV03", "Live viral vaccines can be catastrophic when type-I IFN defence fails.", "tissue", "EVIDENCE-SUPPORTED", "medium"),
+  e("EP15", "treats", "EP01", "IVIG/SCIG replaces missing antibody in XLA.", "blood"),
+  e("EP15", "treats", "EP02", "Replacement IgG is first-line supportive care in many CVID phenotypes.", "blood"),
+  e("EP15", "supports", "M024", "Infused IgG restores circulating antibody effector functions without fixing the developmental block.", "blood"),
+  e("EP02", "impairs", "EV09", "Poor vaccine responses are part of the CVID definition and teaching phenotype.", "blood", "EVIDENCE-SUPPORTED", "medium"),
 
   // immunogenetics
   e("EG01", "associates_with", "EG10", "HLA-B*27 is present in most European-ancestry AS cohorts; mechanism still multi-hit.", "enthesis", "EVIDENCE-SUPPORTED", "medium"),
@@ -256,6 +264,9 @@ export const EXT_EDGES: E[] = [
   e("EG16", "associates_with", "D007", "IRF5 risk alleles repeatedly associate with SLE in GWAS.", "innate sensing", "EVIDENCE-SUPPORTED", "medium"),
   e("EG16", "promotes", "P004", "IRF5 programmes favour type-I IFN and inflammatory gene sets.", "innate sensing", "EVIDENCE-SUPPORTED", "medium"),
   e("DT004", "characterises", "EG13", "HLA class II mapping nominates DR15 haplotypes in MS genetics.", "", "EVIDENCE-SUPPORTED", "medium"),
+  e("EG17", "measures", "EG04", "Clinical programmes screen B*57:01 before abacavir.", "clinical genetics"),
+  e("EG17", "measures", "EG05", "B*15:02 screening is used where carbamazepine SJS/TEN risk is ancestry-enriched.", "clinical genetics"),
+  e("EG17", "prevents", "EG12", "Avoiding the culprit drug in risk-allele carriers prevents many severe cutaneous reactions.", "clinical", "EVIDENCE-SUPPORTED", "medium"),
 
   // infection ↔ autoimmunity
   e("X006", "triggers", "EI01", "EBV peptides can resemble CNS/self epitopes in proposed mimicry models.", "lymph node", "EVIDENCE-SUPPORTED", "medium"),
@@ -270,6 +281,13 @@ export const EXT_EDGES: E[] = [
   e("EI01", "promotes", "EI03", "An initiating cross-reactive hit can seed later epitope spreading.", "lymph node", "EVIDENCE-SUPPORTED", "medium"),
   e("X005", "triggers", "EI04", "Viral PAMPs provide strong innate licensing during SARS-CoV-2 infection.", "lung / lymph node", "EVIDENCE-SUPPORTED", "medium"),
   e("X002", "triggers", "EI04", "Influenza innate sensing is a classic adjuvant-like inflammatory context.", "lung", "EVIDENCE-SUPPORTED", "medium"),
+  e("EI04", "promotes", "EI05", "Adjuvant-like innate bursts can precipitate clinical flares in established autoimmunity.", "tissue", "EVIDENCE-SUPPORTED", "medium"),
+  e("EI05", "contributes_to", "D007", "Infection-associated SLE flares are common teaching observations; causality is individual.", "systemic", "EVIDENCE-SUPPORTED", "low"),
+  e("EI05", "contributes_to", "D001", "Intercurrent infection can worsen RA disease activity scores without proving molecular mimicry.", "joint", "EVIDENCE-SUPPORTED", "low"),
+
+  e("EV04", "supports", "EV10", "High neutralising titres in a population reduce onward transmission for some viruses.", "population", "EVIDENCE-SUPPORTED", "medium"),
+  e("EV01", "promotes", "EV10", "Mass mRNA campaigns illustrated indirect protection when coverage is high.", "population", "EVIDENCE-SUPPORTED", "medium"),
+  e("EV10", "prevents", "D018", "Indirect protection lowers community severe-disease burden when transmission falls.", "population", "EVIDENCE-SUPPORTED", "medium"),
 
   e("EF01", "depletes", "C017", "Deep B-cell depletion including tissue-resident B cells.", "lymphoid tissue", "EMERGING", "medium"),
   e("EF01", "treats", "D007", "Drug-free remission in small refractory SLE series.", "clinical trial", "EMERGING", "low"),
@@ -285,29 +303,29 @@ export const EXT_LESSONS = [
   {
     id: "microbiome", module: "F", draft: true, title: "Microbiome and barrier: how commensals train tolerance",
     question: "Why does losing gut bacteria make the immune system more inflammatory?",
-    cells: ["treg", "plasma", "macrophage"], nodes: ["EM01", "EM02", "EM03", "EM09", "EM10", "EM11", "C014", "EM04", "D004"],
+    cells: ["treg", "plasma", "macrophage"], nodes: ["EM01", "EM02", "EM03", "EM05", "EM06", "EM07", "EM08", "EM09", "EM10", "EM11", "EM12", "C014", "EM04", "D004"],
     steps: [
       step("Commensal microbiota", "tissue", "source", "Dense colonic community", "Ferments fibre, occupies niches, and educates mucosal immunity.", "Germ-free mice have few colonic Tregs and immature gut lymphoid tissue.", "Antibiotic exposure early in life is associated with later IBD and allergy."),
       step("Butyrate and PSA", "metabolite", "signal", "Microbial products", "SCFAs and zwitterionic polysaccharides favour Treg/IL-10 programmes.", "Low butyrate and lost symbionts weaken tolerance circuits.", "Butyrate producers are depleted in Crohn's disease."),
-      step("Mucus and colonisation resistance", "process", "defence", "Barrier + niche exclusion", "Mucus/AMPs keep microbes distant; commensals resist pathogens.", "Barrier breach lets PAMPs reach the lamina propria.", "AhR ligands from tryptophan metabolism reinforce epithelium."),
-      step("Colonic Treg vs breach", "cell", "failure", "Tolerance or inflammation", "Induced Tregs restrain responses to commensals; dysbiosis and leak tip toward IBD.", "IL-10 loss causes spontaneous colitis.", "Anti-integrin and IL-23 therapies act downstream of this failure."),
+      step("Mucus, sIgA and colonisation resistance", "process", "defence", "Barrier + niche exclusion", "Mucus/AMPs and secretory IgA keep microbes distant; commensals resist pathogens.", "Barrier breach lets PAMPs reach the lamina propria.", "AhR ligands from tryptophan metabolism reinforce epithelium."),
+      step("Oral tolerance vs dysbiosis", "cell", "failure", "Tolerance or inflammation", "Induced Tregs and oral tolerance restrain responses to commensals; dysbiosis and leak tip toward IBD.", "IL-10 loss causes spontaneous colitis.", "SFB-like Th17 induction is a teaching contrast, not a human diagnosis."),
     ],
   },
   {
     id: "vaccines", module: "B", draft: true, title: "Vaccines: building memory on purpose",
     question: "What does a vaccine need to produce long-lasting protection?",
-    cells: ["dendritic", "bcell", "plasma", "memory"], nodes: ["EV02", "EV07", "EV08", "C004", "P008", "C019", "C018", "EV04", "EV09"],
+    cells: ["dendritic", "bcell", "plasma", "memory"], nodes: ["EV01", "EV02", "EV03", "EV05", "EV06", "EV07", "EV08", "C004", "P008", "C019", "C018", "EV04", "EV09", "EV10"],
     steps: [
       step("Platform and adjuvant", "signal", "trigger", "Innate danger signal", "mRNA, inactivated, conjugate or mucosal platforms still need DC licensing.", "Antigen alone tends to induce tolerance.", "Live vaccines are contraindicated in SCID and some IFN defects."),
-      step("Dendritic cell priming", "cell", "recognition", "Antigen presentation in lymph node", "Primes CD4 T cells, including Tfh cells.", "Without Tfh help there is no germinal centre.", "Elderly people have weaker priming, so high-dose or adjuvanted vaccines are used."),
+      step("Dendritic cell and Tfh priming", "cell", "recognition", "Antigen presentation in lymph node", "Primes CD4 T cells, including Tfh cells that sustain germinal centres.", "Without Tfh help there is no germinal centre.", "Elderly people have weaker priming, so high-dose or adjuvanted vaccines are used."),
       step("Germinal centre", "process", "response", "Affinity maturation", "Selects B cells with higher-affinity antibody.", "CD40L loss (hyper-IgM) blocks class switching.", "Rituximab blunts responses to new vaccines for months."),
-      step("Correlates and memory", "cell", "consequence", "Durable output", "Plasma cells sustain titre; memory cells boost on re-exposure; correlates predict protection when validated.", "Without memory every infection is a first infection.", "Mucosal vaccines additionally aim for sIgA at portals of entry."),
+      step("Correlates, memory, herd effect", "cell", "consequence", "Durable output", "Plasma cells sustain titre; correlates predict protection when validated; population coverage can add indirect protection.", "Without memory every infection is a first infection.", "Mucosal vaccines additionally aim for sIgA at portals of entry."),
     ],
   },
   {
     id: "transplant", module: "K", draft: true, title: "Transplantation: why grafts are rejected",
     question: "Why do so many T cells react to a donor organ, and how is rejection prevented?",
-    cells: ["cd8", "cd4", "plasma"], nodes: ["R025", "ET01", "ET06", "ET09", "C015", "ET02", "ET04", "ET03", "ET07", "I031"],
+    cells: ["cd8", "cd4", "plasma"], nodes: ["R025", "ET01", "ET05", "ET06", "ET08", "ET09", "ET10", "C015", "ET02", "ET04", "ET03", "ET07", "I031"],
     steps: [
       step("Donor HLA and injury", "molecule", "trigger", "Allo-antigen + IRI", "Mismatched HLA is the main target; ischemia–reperfusion primes innate inflammation.", "HLA-identical siblings reject far less.", "Crossmatch/DSA screens catch preformed antibody."),
       step("Direct and indirect pathways", "process", "recognition", "Allorecognition", "Direct pathway is fast and large; indirect sustains chronic alloresponses.", "", "Explains early rejection without immunosuppression."),
@@ -318,12 +336,12 @@ export const EXT_LESSONS = [
   {
     id: "pid", module: "I", draft: true, title: "Primary immunodeficiencies: experiments of nature",
     question: "What does each missing gene reveal about the job of the part it encodes?",
-    cells: ["bcell", "neutrophil", "treg", "complement", "th17"], nodes: ["EP01", "EP03", "EP04", "EP05", "EP06", "EP08", "EP10", "EP12", "EP14", "D008", "D009"],
+    cells: ["bcell", "neutrophil", "treg", "complement", "th17"], nodes: ["EP01", "EP02", "EP03", "EP04", "EP05", "EP06", "EP07", "EP08", "EP10", "EP12", "EP13", "EP14", "EP15", "D008", "D009"],
     steps: [
       step("Antibody and synapse defects", "disease", "failure", "XLA, CVID, WAS, CD40L", "No or poor antibody / impaired lymphocyte synapse.", "Recurrent encapsulated bacterial infections; Hyper-IgM blocks class switching.", "Treated with immunoglobulin replacement; live vaccines unsafe in SCID."),
       step("Phagocyte and Th17 defects", "disease", "failure", "CGD, LAD-1, STAT3 LOF", "Kill, migrate, or IL-17 barrier programmes fail.", "Deep bacterial/fungal infections; candidiasis in Hyper-IgE.", "LAD-1: high blood neutrophils but no pus."),
       step("Complement and IFN defects", "disease", "failure", "MAC and type-I IFN", "No membrane attack complex, or missing IFN sensing/autoantibodies.", "Neisseria; severe viral disease including COVID-19.", "Eculizumab recreates Neisseria risk — vaccinate."),
-      step("Regulation defects", "disease", "failure", "IPEX, APECED", "Loss of Tregs or thymic tolerance.", "Early, multi-organ autoimmunity.", "Shows tolerance is active, not default."),
+      step("Regulation and replacement", "disease", "failure", "IPEX, APECED, DiGeorge, IVIG", "Loss of Tregs or thymic tolerance; antibody defects need Ig replacement.", "Early, multi-organ autoimmunity when tolerance fails.", "Shows tolerance is active, not default."),
     ],
   },
   {
@@ -340,22 +358,22 @@ export const EXT_LESSONS = [
   {
     id: "immunogenetics", module: "H", draft: true, title: "Immunogenetics: HLA and risk alleles",
     question: "How do HLA allotypes and coding variants shape disease risk without determining destiny?",
-    cells: ["cd4", "cd8", "dendritic"], nodes: ["EG01", "EG02", "EG03", "EG06", "EG07", "EG13", "EG14", "EG16", "R025", "R026", "DT004", "D001", "EG11"],
+    cells: ["cd4", "cd8", "dendritic"], nodes: ["EG01", "EG02", "EG03", "EG04", "EG05", "EG06", "EG07", "EG08", "EG09", "EG12", "EG13", "EG14", "EG15", "EG16", "EG17", "R025", "R026", "DT004", "D001", "EG11"],
     steps: [
       step("HLA class I/II", "molecule", "source", "Antigen-presenting alleles", "Which peptides are shown to T cells depends on the groove.", "Without HLA diversity pathogens escape more easily.", "Typing guides transplant matching and some drug screens."),
-      step("Disease association", "process", "recognition", "GWAS and HLA mapping", "Strong associations (B*27–AS, SE–RA, DQ2–coeliac, DR15–MS) are reproducible.", "Association is not mechanism by itself.", "Effect sizes vary by ancestry and environment."),
-      step("Drug hypersensitivity", "disease", "failure", "B*57:01 and B*15:02", "Some drugs alter the peptide repertoire presented by risk alleles.", "", "Pre-prescription screening prevents severe reactions."),
-      step("Therapeutic genetics", "therapy", "consequence", "TYK2, IL23R, IRF5, NOD2", "Human genetics validates cytokine and barrier targets while IFN programmes mark SLE risk.", "", "Draft atlas links — claim-level curation still required."),
+      step("Disease association", "process", "recognition", "GWAS and HLA mapping", "Strong associations (B*27–AS, SE–RA, DQ2–coeliac, DR15–MS, C*06–psoriasis) are reproducible.", "Association is not mechanism by itself.", "Effect sizes vary by ancestry and environment."),
+      step("Drug hypersensitivity screens", "disease", "failure", "B*57:01 and B*15:02", "Some drugs alter the peptide repertoire presented by risk alleles.", "", "Pharmacogenetic HLA screens prevent many severe cutaneous reactions."),
+      step("Therapeutic genetics", "therapy", "consequence", "TYK2, IL23R, IRF5, NOD2, CTLA4", "Human genetics validates cytokine and barrier targets while IFN programmes mark SLE risk.", "", "Draft atlas links — claim-level curation still required."),
     ],
   },
   {
     id: "infection-autoimmunity", module: "I", draft: true, title: "Infection and autoimmunity: bridges without inevitability",
     question: "How can infection raise autoimmune risk without every infection causing disease?",
-    cells: ["dendritic", "cd8", "cd4", "bcell"], nodes: ["X006", "EI01", "EI02", "EI03", "EI04", "DS001", "D002", "D001", "D007"],
+    cells: ["dendritic", "cd8", "cd4", "bcell"], nodes: ["X006", "EI01", "EI02", "EI03", "EI04", "EI05", "DS001", "D002", "D001", "D007"],
     steps: [
       step("Infection as adjuvant", "process", "trigger", "PAMP licensing", "Innate sensing matures APCs and lowers priming thresholds.", "Without co-stimulation, antigen encounter favours tolerance.", "Same virus can be silent in one host and a trigger in another."),
       step("Molecular mimicry", "process", "recognition", "Peptide resemblance", "Pathogen and self peptides can recruit overlapping clones.", "Mimicry alone rarely proves causality.", "EBV→MS is the best-taught human example still under mechanism debate."),
-      step("Bystander activation", "process", "response", "Neighbourhood inflammation", "Cytokines activate nearby autoreactive effectors without a mimic epitope.", "", "Helps explain post-infectious flares in susceptible people."),
+      step("Bystander activation and flares", "process", "response", "Neighbourhood inflammation", "Cytokines activate nearby autoreactive effectors; clinical flares may follow infection.", "", "Helps explain post-infectious flares without proving disease causation."),
       step("Epitope spreading", "process", "consequence", "Broadening response", "Chronic tissue damage reveals new self antigens.", "Early narrow responses can widen over years.", "Seen in evolving ACPA/SLE autoantibody profiles (draft teaching link)."),
     ],
   },
@@ -376,6 +394,15 @@ export const EXT_ROUTES = [
   { title: "DR15 → MS risk context", chain: ["EG13", "D002", "X006"], cells: ["cd4"], desc: "HLA class II risk allele in the EBV–MS teaching neighbourhood (draft).", draft: true },
   { title: "EBV → mimicry → MS", chain: ["X006", "EI01", "D002"], cells: ["cd4", "bcell"], desc: "Infection–autoimmunity bridge labelled draft; not claim-approved.", draft: true },
   { title: "NADPH oxidase → CGD", chain: ["EP11", "C001", "D009"], cells: ["neutrophil"], desc: "Phagocyte oxidase failure explains CGD infection patterns.", draft: true },
+  { title: "Oral tolerance → Treg", chain: ["EM01", "EM08", "C014"], cells: ["treg"], desc: "Fed antigen and commensals support systemic unresponsiveness via Tregs (draft).", draft: true },
+  { title: "sIgA coats commensals", chain: ["C018", "EM06", "EM01"], cells: ["plasma"], desc: "Dimeric IgA limits microbial contact with epithelium (draft).", draft: true },
+  { title: "Live vaccine risk in SCID", chain: ["D008", "EV03", "P004"], cells: ["cd4"], desc: "Severe T-cell deficiency makes live vaccines unsafe (draft teaching).", draft: true },
+  { title: "Crossmatch → DSA → AMR", chain: ["ET10", "ET04", "ET03"], cells: ["plasma"], desc: "Preformed antibody screening foreshadows antibody-mediated rejection risk (draft).", draft: true },
+  { title: "IVIG replaces antibody in XLA", chain: ["EP01", "EP15", "M024"], cells: ["bcell"], desc: "Replacement immunoglobulin restores circulating antibody effectors (draft).", draft: true },
+  { title: "HLA screen → avoid SJS/TEN", chain: ["EG17", "EG04", "EG12"], cells: ["cd8"], desc: "Pharmacogenetic typing prevents selected drug hypersensitivities (draft).", draft: true },
+  { title: "NOD2 → ileal Crohn risk", chain: ["EG07", "D004", "EM04"], cells: ["macrophage"], desc: "Innate sensor genetics intersect barrier failure teaching for Crohn (draft).", draft: true },
+  { title: "Infection adjuvant → flare", chain: ["EI04", "EI05", "D007"], cells: ["dendritic"], desc: "Innate licensing can precede clinical autoimmune flares without proving causation (draft).", draft: true },
+  { title: "Titre → herd protection", chain: ["EV01", "EV04", "EV10"], cells: ["plasma"], desc: "Individual neutralising titre and population coverage as layered protection (draft).", draft: true },
 ];
 
 /* Patient modifiers: life stage and immune status. Rules are draft reasoning. */

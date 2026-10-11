@@ -34,7 +34,7 @@
 | Secondary URL | https://immune-city.lovable.app — divergent; keep until deliberately retired |
 | Vercel production SHA | `76c96b2` (READY) — **lags GitHub by ≥1 commit** |
 | Auth / DB | Neon Managed Better Auth + drizzle/postgres |
-| Graph | KG **0.3** + extensions **draft-ext-3** · 260 core / 66 draft concepts · 536 runtime links · 15 spine |
+| Graph | KG **0.3** + extensions **draft-ext-4** · core + draft concepts via `graphReleaseSnapshot()` · 15 spine |
 
 ---
 

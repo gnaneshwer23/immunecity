@@ -3,6 +3,7 @@ import { byId, KG, shortestPath } from "@/lib/immune/engine";
 import { GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { EXT_LESSONS, EXT_NODES, EXT_PROVENANCE, EXT_ROUTES } from "@/data/extensions";
 import { IMPLEMENTATION_PHASES, phaseStatusSummary } from "@/data/implementation-phases";
+import { domainCoverageReport, knowledgeGapQueue } from "@/lib/immune/domainCoverage";
 import {
   MODEL_REGISTRY,
   dryRunAllStubs,
@@ -51,15 +52,15 @@ import {
 
 describe("Phase B knowledge extensions", () => {
   it("bumps extensions version and provenance", () => {
-    expect(GRAPH_EXTENSIONS_VERSION).toBe("draft-ext-3");
-    expect(EXT_PROVENANCE.version).toBe("draft-ext-3");
+    expect(GRAPH_EXTENSIONS_VERSION).toBe("draft-ext-4");
+    expect(EXT_PROVENANCE.version).toBe("draft-ext-4");
   });
 
   it("adds immunogenetics and thin-domain concepts as draft with stable IDs", () => {
     for (const id of [
-      "EG01", "EG02", "EG03", "EG06", "EG07", "EG10", "EG11", "EG13", "EG14",
-      "EM07", "EM09", "EM11", "EV05", "EV07", "EV09", "ET06", "ET07", "ET09",
-      "EP10", "EP11", "EP13", "EP14", "EI01", "EI03",
+      "EG01", "EG02", "EG03", "EG06", "EG07", "EG10", "EG11", "EG13", "EG14", "EG17",
+      "EM07", "EM09", "EM11", "EV05", "EV07", "EV09", "EV10", "ET06", "ET07", "ET09",
+      "EP10", "EP11", "EP13", "EP14", "EP15", "EI01", "EI03", "EI05",
     ]) {
       expect(byId[id], id).toBeTruthy();
       expect(byId[id]!.draft).toBe(true);
@@ -68,6 +69,8 @@ describe("Phase B knowledge extensions", () => {
     expect(EXT_LESSONS.some((l) => l.id === "infection-autoimmunity" && l.draft)).toBe(true);
     expect(EXT_ROUTES.some((r) => r.title.includes("Shared epitope") && r.draft)).toBe(true);
     expect(EXT_ROUTES.some((r) => r.title.includes("EBV") && r.draft)).toBe(true);
+    expect(EXT_ROUTES.some((r) => r.title.includes("IVIG") && r.draft)).toBe(true);
+    expect(EXT_ROUTES.some((r) => r.title.includes("HLA screen") && r.draft)).toBe(true);
   });
 
   it("keeps all extension nodes draft in the runtime graph", () => {
@@ -76,13 +79,33 @@ describe("Phase B knowledge extensions", () => {
     expect(drafts.length).toBe(EXT_NODES.length);
     expect(drafts.every((n) => n.draft)).toBe(true);
     const snap = graphReleaseSnapshot();
-    expect(snap.extensionsVersion).toBe("draft-ext-3");
+    expect(snap.extensionsVersion).toBe("draft-ext-4");
     expect(snap.coreNodes + snap.draftNodes).toBe(snap.runtimeNodes);
   });
 
   it("connects shared-epitope and EBV–mimicry paths illustratively", () => {
     expect(shortestPath("EG02", "D001", true)?.length).toBeGreaterThan(0);
     expect(shortestPath("X006", "D002", true)?.length).toBeGreaterThan(0);
+    expect(shortestPath("EP15", "EP01", true)?.length).toBeGreaterThan(0);
+    expect(shortestPath("EG17", "EG12", true)?.length).toBeGreaterThan(0);
+  });
+
+  it("reports domain coverage and a gap queue without inventing approvals", () => {
+    const report = domainCoverageReport();
+    expect(report.extensionsVersion).toBe("draft-ext-4");
+    expect(report.domains.length).toBe(7);
+    expect(report.summary.lessonsPresent).toBe(7);
+    expect(report.summary.isolatedConcepts).toBe(0);
+    expect(report.summary.thinDomains).toBe(0);
+    expect(report.summary.draftNodesInDomains).toBeGreaterThanOrEqual(EXT_NODES.length);
+    const immuno = report.domains.find((d) => d.domain.id === "immunogenetics");
+    expect(immuno?.lessonPresent).toBe(true);
+    expect(immuno?.routeCount).toBeGreaterThan(0);
+    expect(immuno?.teachingCoveragePct).toBeGreaterThan(80);
+    const queue = knowledgeGapQueue(20);
+    expect(queue.every((g) => g.conceptIds.length > 0 || (g.relIds?.length ?? 0) > 0)).toBe(true);
+    expect(queue.every((g) => !/pmid\s*\d{6,}/i.test(g.detail))).toBe(true);
+    expect(queue.some((g) => g.kind === "draft_link_uncited" || g.kind === "untaught_concept")).toBe(true);
   });
 });
 
@@ -90,12 +113,12 @@ describe("Phase C literature workflow", () => {
   it("rejects placeholder identifiers and requires real metadata", () => {
     expect(normaliseOptionalId("fake")).toBeUndefined();
     expect(normaliseOptionalId("12345678")).toBe("12345678");
-    const p = createLiteratureProject("0.3", "draft-ext-3", { query: "TNF RA" });
+    const p = createLiteratureProject("0.3", "draft-ext-4", { query: "TNF RA" });
     expect(searchMetadataComplete(p.search).ok).toBe(false);
   });
 
   it("validates metadata locally without inventing PMIDs", () => {
-    let p = createLiteratureProject("0.3", "draft-ext-3", {
+    let p = createLiteratureProject("0.3", "draft-ext-4", {
       query: "HLA-B27 AS",
       title: "User-supplied title only",
       pmid: "not-a-pmid",
@@ -111,7 +134,7 @@ describe("Phase C literature workflow", () => {
   });
 
   it("moves source → metadata → claim → map → conflicts → approval without inventing PMIDs", () => {
-    let p = createLiteratureProject("0.3", "draft-ext-3", {
+    let p = createLiteratureProject("0.3", "draft-ext-4", {
       query: "HLA-B27 AS",
       title: "User-supplied title only",
     });
@@ -144,7 +167,7 @@ describe("Phase C literature workflow", () => {
   });
 
   it("flags unknown relationship IDs and intra-project support disagreements", () => {
-    let p = createLiteratureProject("0.3", "draft-ext-3", {
+    let p = createLiteratureProject("0.3", "draft-ext-4", {
       query: "conflict test",
       title: "Conflict fixture",
     });
@@ -213,7 +236,7 @@ describe("Phase D model registry honesty", () => {
 
 describe("Phase E workbench", () => {
   it("gates steps, tracks furthest, and blocks forward jumps", () => {
-    let s = createWorkbenchSession("0.3", "draft-ext-3");
+    let s = createWorkbenchSession("0.3", "draft-ext-4");
     expect(canAdvanceWb(s).ok).toBe(false);
     expect(canVisitStep(s, "hypothesis").ok).toBe(false);
     expect(setWorkbenchStep(s, "experiment").step).toBe("question");
@@ -253,7 +276,7 @@ describe("Phase E workbench", () => {
   });
 
   it("keeps candidate flags and versioned export without KG promotion", () => {
-    let s = createWorkbenchSession("0.3", "draft-ext-3");
+    let s = createWorkbenchSession("0.3", "draft-ext-4");
     s = { ...s, question: { ...s.question, text: "Butyrate and Treg?" } };
     s = advanceWorkbench(s);
     s = addEvidenceNote(s, "Educational note only", "user-verified label");
@@ -280,19 +303,19 @@ describe("Phase E workbench", () => {
     expect(exp.curation).toBe("unreviewed");
     const json = exportWorkbench(s);
     expect(json).toMatch(/candidate/);
-    expect(json).toMatch(/draft-ext-3/);
+    expect(json).toMatch(/draft-ext-4/);
     expect(json).toMatch(/wb-1/);
     expect(json).not.toMatch(/experimentally_supported/);
   });
 
   it("imports lit claims and mechanism summaries as candidates", () => {
-    let s = createWorkbenchSession("0.3", "draft-ext-3");
+    let s = createWorkbenchSession("0.3", "draft-ext-4");
     s = { ...s, question: { ...s.question, text: "Shared epitope and RA" } };
     s = seedQuestionFromAsk(s);
     expect(s.question.kind).toBe("candidate");
     expect(s.importLog.some((x) => x.startsWith("ask_seed:"))).toBe(true);
 
-    let lit = createLiteratureProject("0.3", "draft-ext-3", { query: "shared epitope", title: "User title" });
+    let lit = createLiteratureProject("0.3", "draft-ext-4", { query: "shared epitope", title: "User title" });
     lit = addCandidateClaim(lit, { text: "Shared epitope associates with ACPA+ RA" });
     lit = mapClaim(lit, lit.claims[0]!.claim_id, ["EG01", "EG10"], ["REL-EG01-associates_with-EG10"]);
     s = importLiteratureCandidates(s, lit);
