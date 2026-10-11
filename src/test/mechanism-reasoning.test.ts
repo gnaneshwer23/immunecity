@@ -3,7 +3,7 @@ import { shortestPath } from "@/lib/immune/engine";
 import { reasonMechanism } from "@/lib/immune/mechanismReasoning";
 import { classifyAskQuery, graphContext, isPersonalClinical, prepareAsk, validateAnswerCitations, SYSTEM } from "@/lib/askGrounding";
 import { SCIENTIFIC_EVAL_SET } from "@/test/eval/scientific-eval-set";
-import { MODEL_REGISTRY, implementedModels } from "@/lib/ai/modelRegistry";
+import { MODEL_REGISTRY, dryRunAllStubs, implementedModels } from "@/lib/ai/modelRegistry";
 import { EXEMPLAR_PATHWAYS, reportExemplar } from "@/lib/immune/exemplarPathways";
 import { createHypothesisDraft, hypothesisCompleteness } from "@/lib/research/hypothesisDraft";
 import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
@@ -92,5 +92,6 @@ describe("advanced AI registry honesty", () => {
       expect(m.status).not.toBe("implemented");
       expect(m.limitations.some((l) => /not implemented/i.test(l))).toBe(true);
     });
+    expect(dryRunAllStubs().every((r) => r.kind === "not_available" && !r.scientificClaimAllowed)).toBe(true);
   });
 });

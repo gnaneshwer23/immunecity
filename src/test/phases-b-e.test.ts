@@ -3,7 +3,16 @@ import { byId, KG, shortestPath } from "@/lib/immune/engine";
 import { GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { EXT_LESSONS, EXT_NODES, EXT_PROVENANCE, EXT_ROUTES } from "@/data/extensions";
 import { IMPLEMENTATION_PHASES, phaseStatusSummary } from "@/data/implementation-phases";
-import { MODEL_REGISTRY, implementedModels } from "@/lib/ai/modelRegistry";
+import {
+  MODEL_REGISTRY,
+  dryRunAllStubs,
+  getModel,
+  implementedModels,
+  invokeModelStub,
+  isRunnable,
+  requestShapePreview,
+  registryHonestySummary,
+} from "@/lib/ai/modelRegistry";
 import {
   addCandidateClaim,
   advanceStep,
@@ -149,6 +158,45 @@ describe("Phase D model registry honesty", () => {
     expect(implementedModels()).toEqual([]);
     expect(MODEL_REGISTRY.every((m) => m.status === "interface-only" || m.status === "planned")).toBe(true);
     expect(MODEL_REGISTRY.every((m) => m.limitations.some((l) => /not implemented/i.test(l)))).toBe(true);
+    expect(MODEL_REGISTRY.every((m) => m.version === null && !isRunnable(m))).toBe(true);
+    const cats = new Set(MODEL_REGISTRY.map((m) => m.category));
+    expect(cats).toEqual(new Set(["omics", "structure", "epitope", "genomics", "agent"]));
+  });
+
+  it("documents typed request/output contracts and request-shape previews", () => {
+    for (const m of MODEL_REGISTRY) {
+      expect(m.requestFields.length).toBeGreaterThan(0);
+      expect(m.outputFields.length).toBeGreaterThan(0);
+      expect(m.exampleRequest.family).toBe(m.category);
+      const preview = requestShapePreview(m);
+      expect(preview).toMatch(/"family"/);
+      expect(JSON.parse(preview).family).toBe(m.category);
+    }
+    expect(getModel("peptide-mhc")?.category).toBe("epitope");
+    expect(registryHonestySummary().implemented).toBe(0);
+  });
+
+  it("stub invoke refuses every adapter and never allows scientific claims", () => {
+    const all = dryRunAllStubs();
+    expect(all.length).toBe(MODEL_REGISTRY.length);
+    expect(all.every((r) => r.ok === false && r.kind === "not_available")).toBe(true);
+    expect(all.every((r) => r.scientificClaimAllowed === false)).toBe(true);
+    const unknown = invokeModelStub("no-such-model");
+    expect(unknown.kind).toBe("not_available");
+    expect(unknown.scientificClaimAllowed).toBe(false);
+    // Ensure stub does not smuggle prediction-like payloads
+    for (const r of all) {
+      expect(Object.keys(r).sort()).toEqual([
+        "kind",
+        "modelId",
+        "ok",
+        "reason",
+        "scientificClaimAllowed",
+        "status",
+      ]);
+      expect(r).not.toHaveProperty("bindingRanks");
+      expect(r).not.toHaveProperty("cellTypeScores");
+    }
   });
 });
 

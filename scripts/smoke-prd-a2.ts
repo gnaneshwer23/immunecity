@@ -14,7 +14,15 @@ import { graphReleaseSnapshot, GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION } fr
 import { EXEMPLAR_PATHWAYS, reportExemplar } from "../src/lib/immune/exemplarPathways.ts";
 import { reasonMechanism } from "../src/lib/immune/mechanismReasoning.ts";
 import { SCIENTIFIC_EVAL_SET } from "../src/test/eval/scientific-eval-set.ts";
-import { MODEL_REGISTRY, implementedModels } from "../src/lib/ai/modelRegistry.ts";
+import {
+  MODEL_REGISTRY,
+  dryRunAllStubs,
+  implementedModels,
+  invokeModelStub,
+  isRunnable,
+  registryHonestySummary,
+  requestShapePreview,
+} from "../src/lib/ai/modelRegistry.ts";
 import { createHypothesisDraft, hypothesisCompleteness } from "../src/lib/research/hypothesisDraft.ts";
 import {
   addCandidateClaim,
@@ -65,6 +73,16 @@ check("mech", !!reasonMechanism("C003", "I001", "D001", "inhibit")?.illustrative
 check("system", /Never invent citations/.test(SYSTEM));
 check("registry empty", implementedModels().length === 0);
 check("registry interfaces", MODEL_REGISTRY.every((m) => m.status !== "implemented"));
+check("registry not runnable", MODEL_REGISTRY.every((m) => !isRunnable(m) && m.version === null));
+check("registry categories", new Set(MODEL_REGISTRY.map((m) => m.category)).size === 5);
+check("registry request shapes", MODEL_REGISTRY.every((m) => m.requestFields.length > 0 && !!requestShapePreview(m)));
+{
+  const stubs = dryRunAllStubs();
+  check("registry stub refuse", stubs.length === MODEL_REGISTRY.length && stubs.every((r) => r.kind === "not_available"));
+  check("registry no sci claims", stubs.every((r) => r.scientificClaimAllowed === false));
+  check("registry unknown refuse", invokeModelStub("missing-adapter").kind === "not_available");
+  check("registry honesty summary", registryHonestySummary().implemented === 0);
+}
 check("ext version", GRAPH_EXTENSIONS_VERSION === "draft-ext-3" && EXT_PROVENANCE.version === "draft-ext-3");
 check("immuno B node", !!byId["EG01"]?.draft && !!byId["EG13"]?.draft && !!byId["EI01"]?.draft && !!byId["EP10"]?.draft);
 check("no fake pmid", normaliseOptionalId("placeholder") === undefined);

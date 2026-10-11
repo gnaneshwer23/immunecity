@@ -81,6 +81,10 @@ function Research() {
 
       <section className="section" id="model-registry">
         <h2>Advanced model registry</h2>
+        <p className="lede">
+          Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters.
+          Status remains <b>interface-only</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.
+        </p>
         <ModelRegistryPanel />
       </section>
 

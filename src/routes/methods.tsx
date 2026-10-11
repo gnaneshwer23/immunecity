@@ -59,7 +59,7 @@ function Methods() {
           <li><b>System simulator:</b> a small set of coupled equations for pathogen, innate and adaptive response, cytokines, damage, memory and exhaustion, in normalised units with hand-set parameters. It is not fitted to patient data.</li>
           <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. It is not a clinical decision tool.</li>
           <li><b>Ask Immune City:</b> queries are classified, graph context is retrieved, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
-          <li><b>Advanced model adapters</b> (omics, structure, epitope, genomics agents) are interface contracts only — none are implemented in production. Full registry also on <Link to="/research">Research</Link>.</li>
+          <li><b>Advanced model adapters</b> (omics, structure, pMHC/epitope, genomics, agents) are modular interface contracts only — none are implemented in production. Dry-run stubs return typed <code>not_available</code> and never invent scores or ranks. Full registry with request-shape previews on <Link to="/research" hash="model-registry">Research</Link>.</li>
         </ul>
         <ModelRegistryPanel compact />
       </section>
