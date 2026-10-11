@@ -82,14 +82,29 @@ export interface CandidateClaim {
 export interface LiteratureProject {
   project_id: string;
   step: LitStep;
+  /** Furthest step unlocked by successful advances (visit gating). */
+  furthestStep: LitStep;
   search: SearchMetadata;
   claims: CandidateClaim[];
   graphVersion: string;
   extensionsVersion: string;
   createdAt: string;
   updatedAt: string;
+  /** Optional coverage-gap seed id (Phase B → C handoff); never invents PMIDs. */
+  seededFromGapId?: string;
   /** Always a draft scaffold — never an approved graph mutation. */
   status: "draft_scaffold";
+}
+
+/** Minimal gap shape for seeding — avoids circular import with domainCoverage. */
+export interface LitGapSeed {
+  id: string;
+  kind: string;
+  domainId: string;
+  title: string;
+  detail: string;
+  conceptIds: string[];
+  relIds?: string[];
 }
 
 /** Manifest shape compatible with importManifest (evidence.functions) — curation stays unreviewed. */
@@ -170,6 +185,7 @@ export function createLiteratureProject(
   return {
     project_id: `LIT-DRAFT-${Date.now().toString(36)}`,
     step: "source_identification",
+    furthestStep: "source_identification",
     search,
     claims: [],
     graphVersion,
@@ -178,6 +194,46 @@ export function createLiteratureProject(
     updatedAt: now,
     status: "draft_scaffold",
   };
+}
+
+/**
+ * Seed a literature project from a Phase B coverage-gap queue item.
+ * Pre-maps known concept/rel IDs when present; never invents PMID/DOI.
+ */
+export function seedFromCoverageGap(
+  gap: LitGapSeed,
+  graphVersion: string,
+  extensionsVersion: string,
+): LiteratureProject {
+  let p = createLiteratureProject(graphVersion, extensionsVersion, {
+    query: `Coverage gap ${gap.id}: ${gap.title}`,
+    title: `[Gap seed] ${gap.title}`,
+    notes: `${gap.detail} Seeded from domain coverage (${gap.domainId}/${gap.kind}). No PMID invented — curator supplies identifiers.`,
+    source: "manual_entry",
+  });
+  p = { ...p, seededFromGapId: gap.id };
+  p = advanceStep(p);
+  p = advanceStep(p);
+
+  const concepts = gap.conceptIds.filter((id) => byId[id]);
+  const rels = (gap.relIds ?? []).filter((id) => edgeByRel[id]);
+  const claimText =
+    gap.kind === "draft_link_uncited" && rels[0]
+      ? `Candidate evidence needed for draft link ${rels[0]} — paste a real source; do not invent identifiers.`
+      : `Candidate claim for coverage gap: ${gap.title}`;
+
+  p = addCandidateClaim(p, {
+    text: claimText,
+    excerpt: "",
+    subjectHint: concepts[0] ?? "",
+    objectHint: concepts[1] ?? "",
+    context: `${gap.domainId}:${gap.kind}`,
+    mappedConceptIds: concepts,
+    mappedRelationshipIds: rels,
+  });
+
+  const land: LitStep = rels.length || concepts.length ? "map_concepts" : "candidate_claims";
+  return withFurthest(touch({ ...p, step: land }), land);
 }
 
 /** Reject placeholder / fabricated-looking empty IDs; allow real user input only. */
@@ -323,16 +379,40 @@ export function setClaimSupport(
   return refreshConflicts(touch({ ...project, claims }));
 }
 
+/** Gate accept-for-curation: mapping required; unknown IDs blocked. Never auto-approves science. */
+export function canAcceptForCuration(
+  project: LiteratureProject,
+  claimId: string,
+): { ok: boolean; reason?: string } {
+  const claim = project.claims.find((c) => c.claim_id === claimId);
+  if (!claim) return { ok: false, reason: "Unknown claim" };
+  if (!claim.mappedConceptIds.length && !claim.mappedRelationshipIds.length) {
+    return { ok: false, reason: "Map to a concept or relationship before accept" };
+  }
+  const v = validateMappedIds(claim);
+  if (v.conceptBad.length || v.relBad.length) {
+    return { ok: false, reason: "Resolve unknown mapped IDs before accept" };
+  }
+  return { ok: true };
+}
+
 export function reviewClaim(
   project: LiteratureProject,
   claimId: string,
   reviewStatus: ClaimReviewStatus,
   reviewNotes = "",
 ): LiteratureProject {
+  if (reviewStatus === "accepted_for_curation") {
+    const gate = canAcceptForCuration(project, claimId);
+    if (!gate.ok) return project;
+  }
   const claims = project.claims.map((c) =>
     c.claim_id === claimId ? { ...c, reviewStatus, reviewNotes: reviewNotes.trim() } : c,
   );
-  return refreshConflicts(touch({ ...project, claims, step: "claim_approval" }));
+  return withFurthest(
+    refreshConflicts(touch({ ...project, claims, step: "claim_approval" })),
+    "claim_approval",
+  );
 }
 
 export function suggestConceptMatches(hint: string, limit = 6): Array<{ id: string; name: string; score: number }> {
@@ -550,22 +630,36 @@ export function canAdvance(project: LiteratureProject): { ok: boolean; reason?: 
 export function advanceStep(project: LiteratureProject): LiteratureProject {
   const i = STEPS.indexOf(project.step);
   if (i < 0 || i >= STEPS.length - 1) return project;
-  let p = project;
+  let p = ensureFurthest(project);
   if (p.step === "source_identification") p = runMetadataValidation(p);
   if (p.step === "map_concepts" || p.step === "conflict_flags" || p.step === "candidate_claims") {
     p = refreshConflicts(p);
   }
   const gate = canAdvance(p);
   if (!gate.ok) return p;
-  return touch({ ...p, step: STEPS[i + 1]! });
+  const next = STEPS[i + 1]!;
+  return withFurthest(touch({ ...p, step: next }), next);
+}
+
+/** Only visit unlocked steps (current, prior, or furthest reached). */
+export function canVisitLitStep(
+  project: LiteratureProject,
+  target: LitStep,
+): { ok: boolean; reason?: string } {
+  const p = ensureFurthest(project);
+  const ti = STEPS.indexOf(target);
+  const fi = STEPS.indexOf(p.furthestStep);
+  if (ti < 0) return { ok: false, reason: "Unknown step" };
+  if (ti <= fi) return { ok: true };
+  return { ok: false, reason: "Advance the workflow to unlock this step" };
 }
 
 export function goToStep(project: LiteratureProject, step: LitStep): LiteratureProject {
   const target = STEPS.indexOf(step);
-  const current = STEPS.indexOf(project.step);
   if (target < 0) return project;
-  if (target <= current) return touch({ ...project, step });
-  let p = project;
+  const p0 = ensureFurthest(project);
+  if (canVisitLitStep(p0, step).ok) return touch({ ...p0, step });
+  let p = p0;
   while (STEPS.indexOf(p.step) < target) {
     const next = advanceStep(p);
     if (next.step === p.step) break;
@@ -589,6 +683,147 @@ export function queueStats(project: LiteratureProject) {
   const needsEdit = project.claims.filter((c) => c.reviewStatus === "needs_edit").length;
   const conflicts = projectConflictSummary(project);
   return { total: project.claims.length, queued, accepted, rejected, needsEdit, conflicts };
+}
+
+/** Curator-facing checklist before downloading the unreviewed handoff manifest. */
+export function handoffReadiness(project: LiteratureProject): {
+  ready: boolean;
+  accepted: number;
+  exportable: number;
+  blockingConflicts: number;
+  issues: string[];
+  warnings: string[];
+} {
+  const refreshed = refreshConflicts(ensureFurthest(project));
+  const accepted = refreshed.claims.filter((c) => c.reviewStatus === "accepted_for_curation");
+  const summary = projectConflictSummary(refreshed);
+  const manifest = exportCurationManifest(refreshed);
+  const exportable = manifest.evidence_records.reduce((n, g) => n + g.evidence.length, 0);
+  const issues: string[] = [];
+  const warnings: string[] = [];
+  if (!accepted.length) issues.push("Accept at least one mapped claim for curation.");
+  if (summary.blocking) issues.push(`${summary.blocking} blocking conflict(s) — fix mappings before handoff.`);
+  if (accepted.length && exportable === 0) {
+    issues.push("Accepted claims did not resolve onto graph nodes — check concept/rel mappings.");
+  }
+  if (!refreshed.search.pmid && !refreshed.search.doi && accepted.length) {
+    warnings.push("No PMID/DOI yet — export stays unreviewed; curator must verify an identifier before approval.");
+  }
+  const unassessed = accepted.filter(
+    (c) => c.claimSupport === "unassessed" && c.mappedRelationshipIds.length > 0,
+  );
+  if (unassessed.length) {
+    warnings.push(`${unassessed.length} accepted claim(s) still have unassessed claim_support.`);
+  }
+  return {
+    ready: accepted.length > 0 && summary.blocking === 0 && exportable > 0,
+    accepted: accepted.length,
+    exportable,
+    blockingConflicts: summary.blocking,
+    issues,
+    warnings,
+  };
+}
+
+/** Light client-side shape check aligned with curation importManifest (unreviewed only). */
+export function validateManifestForImport(manifest: CurationManifestExport): {
+  ok: boolean;
+  issues: string[];
+} {
+  const issues: string[] = [];
+  if (manifest.meta?.curation !== "unreviewed") {
+    issues.push("meta.curation must be unreviewed — never auto-approve.");
+  }
+  if (manifest.meta?.kind !== "literature_candidate_export") {
+    issues.push("meta.kind should be literature_candidate_export.");
+  }
+  if (!Array.isArray(manifest.evidence_records) || !manifest.evidence_records.length) {
+    issues.push("evidence_records is empty.");
+  }
+  for (const g of manifest.evidence_records ?? []) {
+    if (!g.node_id || !byId[g.node_id]) issues.push(`Unknown or missing node_id ${g.node_id ?? "(empty)"}.`);
+    for (const e of g.evidence ?? []) {
+      if (e.status !== "candidate") issues.push(`${e.evidence_id}: status must be candidate.`);
+      if (e.relationship_id && !edgeByRel[e.relationship_id]) {
+        issues.push(`${e.evidence_id}: unknown relationship_id ${e.relationship_id}.`);
+      }
+    }
+  }
+  return { ok: issues.length === 0, issues };
+}
+
+/** Restore a previously exported literature project JSON (draft scaffold only). */
+export function parseLiteratureProjectJson(raw: string): {
+  project?: LiteratureProject;
+  error?: string;
+} {
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return { error: "Invalid JSON — paste a literature project export." };
+  }
+  if (!data || typeof data !== "object") return { error: "Expected a literature project object." };
+  const o = data as Partial<LiteratureProject> & { export?: unknown };
+  if (o.status !== "draft_scaffold") return { error: "Only draft_scaffold literature projects can be restored." };
+  if (!o.project_id || !o.search || !Array.isArray(o.claims)) {
+    return { error: "Missing project_id, search, or claims." };
+  }
+  const step = (STEPS.includes(o.step as LitStep) ? o.step : "source_identification") as LitStep;
+  const furthest = (
+    STEPS.includes(o.furthestStep as LitStep) ? o.furthestStep : step
+  ) as LitStep;
+  const project = refreshConflicts(
+    ensureFurthest({
+      project_id: String(o.project_id),
+      step,
+      furthestStep: furthest,
+      search: applyMetadataValidation({
+        query: String(o.search.query ?? ""),
+        retrievedAt: String(o.search.retrievedAt ?? new Date().toISOString()),
+        source: o.search.source === "paste_metadata" ? "paste_metadata" : "manual_entry",
+        pmid: normaliseOptionalId(o.search.pmid),
+        doi: normaliseOptionalId(o.search.doi),
+        title: o.search.title,
+        journal: o.search.journal,
+        year: o.search.year,
+        notes: o.search.notes,
+        metadataCheck: "unchecked",
+        metadataNotes: [],
+      }),
+      claims: o.claims.map((c, i) => ({
+        claim_id: String(c.claim_id ?? `CLAIM-CAND-restore-${i + 1}`),
+        text: String(c.text ?? "").trim(),
+        excerpt: String(c.excerpt ?? ""),
+        subjectHint: String(c.subjectHint ?? ""),
+        predicateHint: String(c.predicateHint ?? ""),
+        objectHint: String(c.objectHint ?? ""),
+        context: String(c.context ?? ""),
+        mappedConceptIds: Array.isArray(c.mappedConceptIds) ? c.mappedConceptIds.map(String) : [],
+        mappedRelationshipIds: Array.isArray(c.mappedRelationshipIds)
+          ? c.mappedRelationshipIds.map(String)
+          : [],
+        claimSupport: (["unassessed", "supports", "partial", "contradicts", "unrelated"] as ClaimSupport[])
+          .includes(c.claimSupport as ClaimSupport)
+          ? (c.claimSupport as ClaimSupport)
+          : "unassessed",
+        reviewStatus: (
+          ["queued", "accepted_for_curation", "rejected", "needs_edit"] as ClaimReviewStatus[]
+        ).includes(c.reviewStatus as ClaimReviewStatus)
+          ? (c.reviewStatus as ClaimReviewStatus)
+          : "queued",
+        reviewNotes: String(c.reviewNotes ?? ""),
+        conflictFlags: [],
+      })),
+      graphVersion: String(o.graphVersion ?? ""),
+      extensionsVersion: String(o.extensionsVersion ?? ""),
+      createdAt: String(o.createdAt ?? new Date().toISOString()),
+      updatedAt: new Date().toISOString(),
+      seededFromGapId: o.seededFromGapId,
+      status: "draft_scaffold",
+    }),
+  );
+  return { project };
 }
 
 /**
@@ -674,4 +909,16 @@ export function exportProjectJson(project: LiteratureProject): string {
 
 function touch(p: LiteratureProject): LiteratureProject {
   return { ...p, updatedAt: new Date().toISOString() };
+}
+
+function ensureFurthest(p: LiteratureProject): LiteratureProject {
+  if (p.furthestStep && STEPS.includes(p.furthestStep)) return p;
+  return { ...p, furthestStep: p.step };
+}
+
+function withFurthest(p: LiteratureProject, step: LitStep): LiteratureProject {
+  const base = ensureFurthest(p);
+  const next =
+    STEPS.indexOf(step) > STEPS.indexOf(base.furthestStep) ? step : base.furthestStep;
+  return { ...base, furthestStep: next };
 }

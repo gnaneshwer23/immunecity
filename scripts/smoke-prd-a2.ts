@@ -29,13 +29,18 @@ import { createHypothesisDraft, hypothesisCompleteness } from "../src/lib/resear
 import {
   addCandidateClaim,
   advanceStep,
+  canAcceptForCuration,
+  canVisitLitStep,
   createLiteratureProject,
   detectConflicts,
   exportCurationManifest,
+  goToStep,
+  handoffReadiness,
   mapClaim,
   normaliseOptionalId,
   reviewClaim,
   searchMetadataComplete,
+  seedFromCoverageGap,
   setClaimSupport,
   validateMetadata,
 } from "../src/lib/research/literatureWorkflow.ts";
@@ -104,25 +109,40 @@ check("immuno B node", !!byId["EG01"]?.draft && !!byId["EG13"]?.draft && !!byId[
   check("B paths", !!shortestPath("EP15", "EP01", true) && !!shortestPath("EG17", "EG12", true));
 }
 check("no fake pmid", normaliseOptionalId("placeholder") === undefined);
+{
+  const gap = knowledgeGapQueue(1)[0]!;
+  const seeded = seedFromCoverageGap(gap, GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION);
+  check("lit gap seed", seeded.seededFromGapId === gap.id && seeded.status === "draft_scaffold");
+  check("lit gap no pmid", !seeded.search.pmid && !seeded.search.doi);
+  check("lit furthest gate", canVisitLitStep(seeded, "claim_approval").ok === false);
+  check("lit visit unlocked", canVisitLitStep(seeded, seeded.step).ok === true);
+  // Empty project cannot advance past source — goToStep must not free-jump.
+  const blocked = createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION);
+  check("lit blocked jump", goToStep(blocked, "claim_approval").step === "source_identification");
+}
 let lit = createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, {
   query: "HLA shared epitope RA",
   title: "Manual metadata entry",
 });
 check("lit search", searchMetadataComplete(lit.search).ok);
 check("lit step source", lit.step === "source_identification");
+check("lit furthest init", lit.furthestStep === "source_identification");
 check("lit metadata local", validateMetadata(lit.search).ok);
 lit = advanceStep(lit);
 check("lit step metadata", lit.step === "metadata_validation");
 lit = advanceStep(lit);
 check("lit step claims", lit.step === "candidate_claims");
 lit = addCandidateClaim(lit, { text: "Shared epitope associates with ACPA+ RA" });
+check("lit accept gated", canAcceptForCuration(lit, lit.claims[0]!.claim_id).ok === false);
 lit = mapClaim(lit, lit.claims[0]!.claim_id, ["EG01", "EG10"], ["REL-EG01-associates_with-EG10"]);
 lit = setClaimSupport(lit, lit.claims[0]!.claim_id, "supports");
+check("lit accept ok", canAcceptForCuration(lit, lit.claims[0]!.claim_id).ok === true);
 lit = reviewClaim(lit, lit.claims[0]!.claim_id, "accepted_for_curation");
 check("lit candidate", lit.claims[0]!.reviewStatus === "accepted_for_curation" && lit.status === "draft_scaffold");
 const litManifest = exportCurationManifest(lit);
 check("lit export unreviewed", litManifest.meta.curation === "unreviewed" && litManifest.evidence_records.length > 0);
 check("lit export candidate", litManifest.evidence_records.every((g) => g.evidence.every((e) => e.status === "candidate")));
+check("lit handoff ready", handoffReadiness(lit).ready === true && handoffReadiness(lit).exportable > 0);
 {
   let cproj = createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, { query: "x", title: "y" });
   cproj = addCandidateClaim(cproj, { text: "bad map" });

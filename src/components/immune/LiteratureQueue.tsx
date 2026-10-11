@@ -1,20 +1,27 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { byId } from "@/lib/immune/engine";
+import { knowledgeGapQueue } from "@/lib/immune/domainCoverage";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION } from "@/lib/immune/graphRelease";
 import {
   addCandidateClaim,
   advanceStep,
+  canAcceptForCuration,
   canAdvance,
+  canVisitLitStep,
   CLAIM_SUPPORT_LABEL,
   createLiteratureProject,
   exportCurationManifest,
   exportProjectJson,
+  goToStep,
+  handoffReadiness,
   litSteps,
   mapClaim,
+  parseLiteratureProjectJson,
   reviewClaim,
   runMetadataValidation,
   searchMetadataComplete,
+  seedFromCoverageGap,
   setClaimSupport,
   STEP_LABEL,
   stepIndex,
@@ -47,10 +54,14 @@ export default function LiteratureQueue() {
   const [mapConcept, setMapConcept] = useState("");
   const [mapRel, setMapRel] = useState("");
   const [activeClaim, setActiveClaim] = useState<string | null>(null);
+  const [restoreRaw, setRestoreRaw] = useState("");
+  const [restoreError, setRestoreError] = useState<string | null>(null);
+  const gapSeeds = useMemo(() => knowledgeGapQueue(8), []);
   const stats = useMemo(() => queueStats(project), [project]);
   const searchOk = searchMetadataComplete(project.search).ok;
   const steps = litSteps();
   const gate = canAdvance(project);
+  const handoff = useMemo(() => handoffReadiness(project), [project]);
   const active = project.claims.find((c) => c.claim_id === activeClaim) ?? null;
   const conceptSuggestions = useMemo(
     () => suggestConceptMatches(mapConcept.includes(",") ? mapConcept.split(",").pop() ?? "" : mapConcept),
@@ -72,26 +83,87 @@ export default function LiteratureQueue() {
       </p>
 
       <ol className="row" style={{ listStyle: "none", padding: 0, gap: 8, flexWrap: "wrap" }} aria-label="Workflow steps">
-        {steps.map((s) => (
-          <li key={s}>
-            <button
-              type="button"
-              className={`chip ${project.step === s ? "on" : "muted"}`}
-              aria-current={project.step === s ? "step" : undefined}
-              onClick={() => setProject({ ...project, step: s, updatedAt: new Date().toISOString() })}
-            >
-              {STEP_LABEL[s]}
-            </button>
-          </li>
-        ))}
+        {steps.map((s) => {
+          const visit = canVisitLitStep(project, s);
+          return (
+            <li key={s}>
+              <button
+                type="button"
+                className={`chip ${project.step === s ? "on" : visit.ok ? "" : "muted"}`}
+                aria-current={project.step === s ? "step" : undefined}
+                disabled={!visit.ok}
+                title={visit.ok ? STEP_LABEL[s] : visit.reason}
+                onClick={() => setProject(goToStep(project, s))}
+              >
+                {STEP_LABEL[s]}
+              </button>
+            </li>
+          );
+        })}
       </ol>
 
       <p className="xs muted">
         Project {project.project_id} · graph v{project.graphVersion} · extensions {project.extensionsVersion} · status {project.status}
+        {" · "}furthest {STEP_LABEL[project.furthestStep ?? project.step]}
+        {project.seededFromGapId ? ` · seeded from ${project.seededFromGapId}` : ""}
         {" · "}queue {stats.queued} / accepted {stats.accepted} / rejected {stats.rejected}
         {" · "}conflicts {stats.conflicts.total}
         {stats.conflicts.blocking ? ` (${stats.conflicts.blocking} blocking)` : ""}
       </p>
+
+      <section className="card" style={{ marginTop: 12, display: "grid", gap: 8 }}>
+        <h3 style={{ fontSize: "1.05rem" }}>Seed from coverage gap (B → C)</h3>
+        <p className="xs muted" style={{ margin: 0 }}>
+          Starts a draft literature project from a Phase B gap. Maps known concept/rel IDs when present; never invents PMID/DOI.
+        </p>
+        <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+          {gapSeeds.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              className="chip"
+              title={g.detail}
+              onClick={() => {
+                const next = seedFromCoverageGap(g, GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION);
+                setProject(next);
+                setActiveClaim(next.claims[0]?.claim_id ?? null);
+                setRestoreError(null);
+              }}
+            >
+              {g.title}
+            </button>
+          ))}
+        </div>
+        <label className="field">Restore draft project JSON
+          <textarea
+            rows={2}
+            value={restoreRaw}
+            onChange={(e) => setRestoreRaw(e.target.value)}
+            placeholder="Paste a literature project export (draft_scaffold only)"
+          />
+        </label>
+        <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+          <button
+            type="button"
+            className="btn sm"
+            disabled={!restoreRaw.trim()}
+            onClick={() => {
+              const parsed = parseLiteratureProjectJson(restoreRaw);
+              if (parsed.error || !parsed.project) {
+                setRestoreError(parsed.error ?? "Could not restore project");
+                return;
+              }
+              setProject(parsed.project);
+              setActiveClaim(parsed.project.claims[0]?.claim_id ?? null);
+              setRestoreError(null);
+              setRestoreRaw("");
+            }}
+          >
+            Restore project
+          </button>
+          {restoreError && <span className="xs muted" role="status">{restoreError}</span>}
+        </div>
+      </section>
 
       {(project.step === "source_identification" || project.step === "metadata_validation") && (
         <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
@@ -246,13 +318,20 @@ export default function LiteratureQueue() {
               </label>
               <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 8 }}>
                 <button type="button" className="btn sm" onClick={() => setActiveClaim(c.claim_id)}>Map</button>
-                <button
-                  type="button"
-                  className="btn sm"
-                  onClick={() => setProject(reviewClaim(project, c.claim_id, "accepted_for_curation"))}
-                >
-                  Accept for curation
-                </button>
+                {(() => {
+                  const acceptGate = canAcceptForCuration(project, c.claim_id);
+                  return (
+                    <button
+                      type="button"
+                      className="btn sm"
+                      disabled={!acceptGate.ok}
+                      title={acceptGate.ok ? "Queue as unreviewed candidate" : acceptGate.reason}
+                      onClick={() => setProject(reviewClaim(project, c.claim_id, "accepted_for_curation"))}
+                    >
+                      Accept for curation
+                    </button>
+                  );
+                })()}
                 <button type="button" className="btn sm" onClick={() => setProject(reviewClaim(project, c.claim_id, "needs_edit"))}>
                   Needs edit
                 </button>
@@ -358,21 +437,34 @@ export default function LiteratureQueue() {
         </section>
       )}
 
-      {acceptedCount > 0 && (
+      {(acceptedCount > 0 || handoff.issues.length > 0) && (
         <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
           <h3 style={{ fontSize: "1.05rem" }}>Curation handoff</h3>
           <p className="small muted">
-            {acceptedCount} claim(s) accepted for curation. Export a candidate manifest for{" "}
+            {handoff.accepted} claim(s) accepted · {handoff.exportable} exportable row(s). Export a candidate manifest for{" "}
             <Link to="/curation">Citation curation</Link>. Import adds unreviewed rows only — scientific claim approval
             stays a separate human step. This UI never writes approved evidence.
           </p>
           <p className="xs muted">
             Manifest groups: {manifest.evidence_records.length} · meta.curation = {manifest.meta.curation}
+            {" · "}ready={String(handoff.ready)}
           </p>
+          {handoff.issues.length > 0 && (
+            <ul className="xs" style={{ margin: 0 }}>
+              {handoff.issues.map((n) => <li key={n}>{n}</li>)}
+            </ul>
+          )}
+          {handoff.warnings.length > 0 && (
+            <ul className="xs muted" style={{ margin: 0 }}>
+              {handoff.warnings.map((n) => <li key={n}>{n}</li>)}
+            </ul>
+          )}
           <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
             <button
               type="button"
               className="btn sm"
+              disabled={!handoff.ready}
+              title={handoff.ready ? "Download unreviewed candidate manifest" : handoff.issues[0]}
               onClick={() =>
                 downloadJson(
                   `${project.project_id}-curation-candidates.json`,
