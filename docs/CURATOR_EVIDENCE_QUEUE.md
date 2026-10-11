@@ -1,6 +1,6 @@
 # Curator evidence queue
 
-**Honest status:** Approved relationship-level claims remain **0 / 536** until a human assesses and approves them. This pack only creates an unreviewed draft queue.
+**Honest status (2026-10-11 curator pass):** **3** approved+supports relationship links on production (Barber CD8→PD-1; KEYNOTE-006 pembrolizumab↔PD-1; Keane granuloma↔TNF). Queue pack itself still only creates unreviewed candidates — approvals are human-only. Runtime links ≈ **549**.
 
 ## What shipped
 
@@ -43,4 +43,4 @@ Use `exemplarQueueFocus()` / curation UI callout for the graph `relId`s on those
 - Runtime links: **536**
 - Queue mapped (candidates): **37** (~6.9%)
 - Remaining without a KG bibliographic cite: **499** (need literature workflow / SME)
-- Approved claim links: **0** until step 5 above
+- Approved claim links (prod, after first curator pass): **3** (not 549 — do not overclaim)
