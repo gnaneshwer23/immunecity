@@ -23,7 +23,7 @@
 
 ### **CONDITIONAL GO** for public educational beta on **https://immunecity.vercel.app** (canonical), pending owner follow-ups below
 
-**Publication update (2026-10-11, post-blocker pass):** Ask hardening + OpenAI BYOK fallback pushed to `main` / Vercel; clinical abstention no longer requires a model key; Vercel env includes `OPEN_API_KEY` (mis-named OpenAI key — code accepts it). Migration `0003` **not** applied (no MCP/CLI access to Supabase project `dynvfnkqvostabfdglve`). Claim-level approved evidence remains **0/536**. Full WCAG + SME gold-set still unsigned.
+**Publication update (2026-10-11, post-blocker pass):** Ask hardening + OpenAI BYOK fallback pushed to `main` / Vercel (`ecbbec7`, `a79750a`). Live smoke on https://immunecity.vercel.app: homepage **200**; clinical Ask **200** educational refusal (no 500); TNF/RA educational Ask **200** streaming via OpenAI Responses (`OPEN_API_KEY`). Migration `0003` **not** applied (no MCP/CLI access to Supabase project `dynvfnkqvostabfdglve`). Claim-level approved evidence remains **0/536**. Full WCAG + SME gold-set still unsigned.
 
 **Still required for unqualified GO:** apply `0003` + explicit admin grant; curator evidence pack; WCAG/SME sign-off; prefer renaming `OPEN_API_KEY` → `OPENAI_API_KEY` (or set `LOVABLE_API_KEY` for Lovable gateway). Keep Lovable host as secondary; do not delete.
 
@@ -197,9 +197,9 @@ Material a11y: no critical blocker proven; Gate F remains **conditional** pendin
 
 | ID | Sev | Description | Repro | Fix | Regression | Status |
 |----|-----|-------------|-------|-----|------------|--------|
-| D-01 | **P0** | Vercel Ask: model key mis-named / Lovable key absent | Owner set `OPEN_API_KEY` only | Dual-path: Lovable or OpenAI BYOK (`OPENAI_API_KEY`/`OPEN_API_KEY`) | Manual Ask after deploy | **Mitigated in code (verify after deploy)** |
-| D-02 | **P0** | Ask requires API key before abstentions | Clinical on Vercel → 500 instead of refusal | `ask.server.ts` reorder | smoke + curl after deploy | **Deployed with publication push** |
-| D-03 | **P0** | No emergency Ask disable | N/A | `isAskEmergencyDisabled` + env | smoke checks | **Deployed with publication push** |
+| D-01 | **P0** | Vercel Ask: model key mis-named / Lovable key absent | Owner set `OPEN_API_KEY` only | Dual-path: Lovable or OpenAI BYOK (`OPENAI_API_KEY`/`OPEN_API_KEY`) | Manual Ask after deploy | **Closed (prod smoke 200 stream)** |
+| D-02 | **P0** | Ask requires API key before abstentions | Clinical on Vercel → 500 instead of refusal | `ask.server.ts` reorder | smoke + curl after deploy | **Closed (prod clinical 200 refusal)** |
+| D-03 | **P0** | No emergency Ask disable | N/A | `isAskEmergencyDisabled` + env | smoke checks | **Deployed (env unset = normal)** |
 | D-04 | **P0** | First-signup auto-admin | Open signup when no admin | Migration `0003` | Apply migration; role tests | **Code ready / DB not migrated (no Supabase access)** |
 | D-05 | **P0** | Zero approved claim-level evidence | Anon select count = 0 | Curator workflow (human) | Coverage dashboard | **Open (science)** |
 | D-06 | **P1** | Dual public URLs diverge | Title/content mismatch | Designate single RC | Smoke both | **Open (product)** |
