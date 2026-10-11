@@ -1,6 +1,13 @@
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, type UIMessage } from "ai";
 import { createResponsesCall } from "@/lib/ai/responses.server.ts";
-import { MAX_QUESTION_CHARS, SYSTEM, prepareAsk, rateLimited } from "@/lib/askGrounding";
+import {
+  ASK_DISABLED_MESSAGE,
+  MAX_QUESTION_CHARS,
+  SYSTEM,
+  isAskEmergencyDisabled,
+  prepareAsk,
+  rateLimited,
+} from "@/lib/askGrounding";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
 const MODEL = "openai/gpt-6-astra";
@@ -17,8 +24,10 @@ function textReply(text: string) {
 }
 
 export async function handleAsk(request: Request): Promise<Response> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) return Response.json({ error: "AI is not configured for this app yet." }, { status: 500 });
+  if (isAskEmergencyDisabled()) {
+    return Response.json({ error: ASK_DISABLED_MESSAGE }, { status: 503, headers: { "Retry-After": "300" } });
+  }
+
   const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
   if (rateLimited(ip)) {
     return Response.json({ error: "Too many questions in a short time. Please wait a minute." }, { status: 429, headers: { "Retry-After": "60" } });
@@ -38,9 +47,18 @@ export async function handleAsk(request: Request): Promise<Response> {
     return Response.json({ error: `Please keep questions under ${MAX_QUESTION_CHARS} characters.` }, { status: 400 });
   }
 
+  // Abstentions (clinical, omics, unsupported) must work even when the model key is absent.
   const prepared = prepareAsk(question);
   if (!prepared.callModel && prepared.replyText) {
     return textReply(prepared.replyText);
+  }
+
+  const apiKey = process.env["LOVABLE_API_KEY"];
+  if (!apiKey) {
+    return Response.json(
+      { error: "AI is not configured for this app yet. Safe abstentions still work; grounded model answers require LOVABLE_API_KEY." },
+      { status: 503 },
+    );
   }
 
   const system =

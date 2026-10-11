@@ -1,9 +1,11 @@
 /* Lightweight smoke runner when vitest hangs in this environment. */
 import {
+  ASK_DISABLED_MESSAGE,
   classifyAskQuery,
   prepareAsk,
   validateAnswerCitations,
   graphContext,
+  isAskEmergencyDisabled,
   isPersonalClinical,
   rateLimited,
   SYSTEM,
@@ -205,6 +207,9 @@ for (const c of SCIENTIFIC_EVAL_SET) {
 const now = 2_000_000;
 for (let i = 0; i < 8; i++) rateLimited("smoke", 8, 60_000, now);
 check("rate limit", rateLimited("smoke", 8, 60_000, now) === true);
+check("ask disable off", isAskEmergencyDisabled({} as any) === false);
+check("ask disable on", isAskEmergencyDisabled({ IMMUNE_ASK_DISABLED: "1" } as any) === true);
+check("ask disable msg", ASK_DISABLED_MESSAGE.includes("temporarily disabled"));
 
 console.log(failed === 0 ? `\nALL PASSED (${SCIENTIFIC_EVAL_SET.length} eval cases + unit checks)` : `\n${failed} FAILED`);
 process.exit(failed === 0 ? 0 : 1);

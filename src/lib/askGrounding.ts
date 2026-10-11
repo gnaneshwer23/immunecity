@@ -488,3 +488,14 @@ export function rateLimited(key: string, limit = 8, windowMs = 60_000, now = Dat
   if (hits.size > 5000) hits.clear();
   return false;
 }
+
+/** Server-side kill switch (FR-029 / PRD §14). Set IMMUNE_ASK_DISABLED=1 or ASK_EMERGENCY_DISABLE=1. */
+export function isAskEmergencyDisabled(
+  env: Record<string, string | undefined> = typeof process !== "undefined" ? (process.env as Record<string, string | undefined>) : {},
+): boolean {
+  const v = (env["IMMUNE_ASK_DISABLED"] ?? env["ASK_EMERGENCY_DISABLE"] ?? "").trim().toLowerCase();
+  return v === "1" || v === "true" || v === "yes" || v === "on";
+}
+
+export const ASK_DISABLED_MESSAGE =
+  "Ask Immune City is temporarily disabled by the operator. Graph exploration and Methods & trust remain available.";
