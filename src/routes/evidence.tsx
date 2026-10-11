@@ -46,7 +46,7 @@ function Evidence() {
       <PageHead
         kicker="Layer 09 · Evidence"
         title="Trials as experiments"
-        lede="Each trial is a test of a biological hypothesis in humans. The negative ones teach the most: a mechanism that is real in a dish can be irrelevant, redundant, or protective in a tissue."
+        lede="Each trial is a test of a biological hypothesis in humans. The negative ones teach the most: a mechanism that is real in a dish can be irrelevant, redundant, or protective in a tissue. Claim-level approved support for graph links is still sparse — coverage below is the honest source of truth."
         stats={[
           { v: Object.keys(CONTENT.trialLessons).length, l: "TRIAL LESSONS" },
           { v: "PMID", l: "VERIFIED IDENTIFIERS" },
@@ -54,7 +54,7 @@ function Evidence() {
       />
       <div className="row" style={{ marginBottom: 24 }}>
         <Link className="btn" to="/curation">Citation curation</Link>
-        <span className="xs muted">Import a citation manifest, cross-check its identifiers against PubMed and Crossref, and approve the records each concept may publish.</span>
+        <span className="xs muted">Neon Auth curation: import a citation manifest, cross-check identifiers against PubMed and Crossref, and approve claim-linked records. Admin is provisioned explicitly.</span>
       </div>
       <CoveragePanel />
       <DomainCoveragePanel />

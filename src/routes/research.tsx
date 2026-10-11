@@ -22,9 +22,9 @@ export const Route = createFileRoute("/research")({
   head: () => ({
     meta: [
       { title: "Research workbench — Immune City" },
-      { name: "description", content: "Scientific AI Workbench: question → evidence → mechanism → hypothesis → experiment → review. Candidates only until curated." },
+      { name: "description", content: "Scientific workbench, literature candidates and model-registry interfaces — phases B–E partial; candidates only until curated. Educational beta." },
       { property: "og:title", content: "Research workbench — Immune City" },
-      { property: "og:description", content: "Staged research workflows that stay candidate until human review." },
+      { property: "og:description", content: "Candidate research workflows and interface-only model adapters — not live predictors or auto-published claims." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -55,7 +55,7 @@ function Research() {
       <PageHead
         kicker="Layer 12 · Research"
         title="Scientific AI Workbench"
-        lede="Question → evidence → mechanism → hypothesis → experiment → human review. Generated artefacts are candidates — never established findings or curated graph writes."
+        lede="Question → evidence → mechanism → hypothesis → experiment → human review. Generated artefacts are candidates — never established findings or curated graph writes. Literature ingest and advanced adapters remain partial / interface-only."
         stats={[
           { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },

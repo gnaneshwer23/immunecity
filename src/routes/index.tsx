@@ -4,7 +4,6 @@ import { ArrowDown, ArrowRight, ArrowUpRight, Activity, Plus } from "lucide-reac
 import { KG, TYPES, SPINE_DESC, byId, nodesOf, type NodeType } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { CONTENT } from "@/data/content";
-import { LEGACY } from "@/data/legacy";
 import { NAV_GROUPS } from "@/components/immune/nav";
 
 const GROUP_COLORS = ["--t-cell", "--t-pathway", "--t-intervention", "--t-discovery"];
@@ -22,9 +21,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Immune City — Where Immunology Meets Advanced AI" },
-      { name: "description", content: "AI-native scientific platform for exploring immunology, tracing causal mechanisms, connecting scientific evidence and developing testable research hypotheses." },
+      { name: "description", content: "Educational scientific exploration beta: a curated causal map of immunology, illustrative mechanism walks, and Ask that retrieves graph context — not clinical decision support." },
       { property: "og:title", content: "Immune City — Where Immunology Meets Advanced AI" },
-      { property: "og:description", content: "Explore immunology through a causal knowledge graph, evidence-grounded AI, mechanism reasoning and curated citations." },
+      { property: "og:description", content: "Explore a curated immunology knowledge graph, illustrative mechanisms, and Ask with retrieved context. Educational beta — not clinical CDS." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -42,22 +41,22 @@ function Overview() {
     { v: snap.coreNodes, l: "CORE CONCEPTS" },
     { v: snap.draftNodes, l: "DRAFT CONCEPTS" },
     { v: snap.coreRelationships, l: "CORE RELATIONSHIPS" },
-    { v: LEGACY.cells.length, l: "CELL ATLAS ENTRIES" },
+    { v: snap.runtimeRelationships, l: "RUNTIME LINKS" },
   ];
   return (
     <div className="home-page">
       <section className="bio-hero" aria-label="Immune City">
         <img className="bio-hero-image" src={cellImage} alt="Scientific illustration of a cluster of translucent immune cells" width={1536} height={1024} fetchPriority="high" />
         <div className="bio-hero-inner">
-          <div className="bio-eyebrow"><span className="status-dot" /> Where Immunology Meets Advanced AI</div>
+          <div className="bio-eyebrow"><span className="status-dot" /> Educational scientific exploration beta</div>
           <h1>Immune City</h1>
           <p className="hero-subtitle">An AI-native map of<br />the immune system.</p>
-          <p className="hero-description">Explore immunology, trace causal mechanisms, connect scientific evidence and develop testable research hypotheses — grounded in a curated knowledge graph.</p>
+          <p className="hero-description">Explore a curated causal graph, follow illustrative mechanisms, and ask questions that retrieve graph context — plus reviewed relationship cites when they exist. Not clinical advice or decision support.</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary"><Link to="/graph">Explore the graph <ArrowUpRight /></Link></Button>
             <Button asChild variant="ghost" className="bio-secondary"><Link to="/reasoning">Mechanism reasoning <ArrowRight /></Link></Button>
           </div>
-          <div className="bio-hero-note">IMMUNOLOGY · EVIDENCE · ADVANCED AI</div>
+          <div className="bio-hero-note">IMMUNOLOGY · CURATED GRAPH · EDUCATIONAL BETA</div>
         </div>
         <div className="cell-marker">
           <Button asChild variant="ghost" size="icon" className="marker-button" title="Explore cells in the knowledge graph"><Link to="/graph" search={{ focus: KG.nodes.find(n => n.node_type === "CELL")?.id ?? "" }} aria-label="Explore immune cells"><Plus /></Link></Button>
@@ -82,26 +81,30 @@ function Overview() {
       </section>
 
       <div className="bio-content">
+        <p className="lede" style={{ marginTop: 28, marginBottom: 0, maxWidth: "42rem" }}>
+          Release <code>{snap.snapshotAt}</code> · core vs draft counts from the shared graph snapshot · claim-level approved support is still sparse ·{" "}
+          <Link to="/methods">Methods &amp; trust</Link> · <Link to="/evidence">Evidence coverage</Link>
+        </p>
         <section className="bio-section" aria-label="Platform pillars">
           <div className="bio-section-heading">
             <div><span className="bio-section-number">00 / PLATFORM</span><h2>Immunology. Evidence. Advanced AI.</h2></div>
-            <p>One atlas with three explicit jobs — curated immunology, relationship-level evidence, and AI that stays grounded in the graph.</p>
+            <p>One atlas with three explicit jobs — curated immunology, relationship-level evidence under human review, and Ask that retrieves from the graph rather than inventing the atlas.</p>
           </div>
           <div className="platform-pillars">
             <Link className="platform-pillar" to="/learn">
               <span className="platform-pillar-kicker">Immunology</span>
               <h3>Causal knowledge layer</h3>
-              <p>Cells, cytokines, pathways, tissues, disease and therapy — organised on a 15-step scientific spine.</p>
+              <p>Cells, cytokines, pathways, tissues, disease and therapy — organised on a 15-step scientific spine, with draft extensions labelled separately.</p>
             </Link>
             <Link className="platform-pillar" to="/evidence">
               <span className="platform-pillar-kicker">Evidence</span>
               <h3>Reviewed scientific support</h3>
-              <p>Relationship-level citations, coverage honesty and human curation — not model-invented references.</p>
+              <p>Relationship-level citations and coverage honesty — most runtime links are not yet claim-approved; live counts live on Evidence.</p>
             </Link>
             <Link className="platform-pillar" to="/reasoning">
               <span className="platform-pillar-kicker">Advanced AI</span>
-              <h3>Grounded mechanism reasoning</h3>
-              <p>Ask with retrieved graph context, then run start → perturbation → outcome walks labelled as illustrative.</p>
+              <h3>Graph-retrieved Ask &amp; walks</h3>
+              <p>Ask retrieves graph context and reviewed relationship cites when they exist; mechanism walks stay labelled illustrative — not fully evidence-grounded AI.</p>
             </Link>
           </div>
         </section>

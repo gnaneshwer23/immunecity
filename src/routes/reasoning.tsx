@@ -17,9 +17,9 @@ export const Route = createFileRoute("/reasoning")({
   head: () => ({
     meta: [
       { title: "Reasoning: mechanism workspace — Immune City" },
-      { name: "description", content: "Evidence-grounded Ask, case walks, path tracer, and start–perturbation–outcome mechanism reasoning on the causal graph." },
+      { name: "description", content: "Graph-retrieved Ask, case walks, path tracer, exemplar scaffolds, and illustrative start–perturbation–outcome reasoning. Educational beta — not clinical CDS." },
       { property: "og:title", content: "Mechanism reasoning — Immune City" },
-      { property: "og:description", content: "Trace immunology from concept to perturbation to outcome." },
+      { property: "og:description", content: "Trace immunology from concept to perturbation to outcome. Illustrative walks; reviewed cites when available." },
     ],
   }),
   component: Reasoning,
@@ -43,7 +43,7 @@ function Reasoning() {
       <PageHead
         kicker="Layer 11 · Reasoning"
         title="Mechanism reasoning"
-        lede="Ask with graph grounding, walk published cases, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated."
+        lede="Ask with retrieved graph context (and reviewed relationship cites when they exist), walk published cases, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated."
         stats={[
           { v: CONTENT.cases.length, l: "CASES" },
           { v: "A→B", l: "PATH TRACER" },
@@ -52,7 +52,7 @@ function Reasoning() {
       />
       <section className="section">
         <h2>Ask Immune City</h2>
-        <p className="lede">Evidence-grounded immunology copilot — answers are restricted to retrieved concepts, causal links and relationship-level review status.</p>
+        <p className="lede">Graph-retrieved immunology copilot — answers are restricted to retrieved concepts, causal links and relationship-level review status. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
         <AskAtlas />
       </section>
       <section className="section">

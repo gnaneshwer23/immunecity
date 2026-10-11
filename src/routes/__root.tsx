@@ -79,7 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Immune City — causal immunology" },
-      { name: "description", content: "A causal map of immunology from molecular trigger to clinical discovery." },
+      { name: "description", content: "Educational scientific exploration beta: a causal map of immunology from molecular trigger to discovery. Not clinical decision support." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

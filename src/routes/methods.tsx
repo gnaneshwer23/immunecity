@@ -27,12 +27,12 @@ function Methods() {
   return (
     <div className="page methods">
       <PageHead kicker="Methods & trust" title="How Immune City works — and where it stops"
-        lede="Immune City is an educational causal map. This page documents what the graph contains, how evidence is reviewed, what the models assume, and what they cannot tell you."
-        stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.draftRelationships, l: "DRAFT LINKS" }]} />
+        lede="Immune City is an educational scientific exploration beta — a causal map, not clinical decision support. This page documents what the graph contains, how evidence is reviewed, what the models assume, and what they cannot tell you."
+        stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]} />
 
       <section className="section"><h2>1. The graph ontology</h2>
         <p>Every concept is a typed node (cell, molecule, receptor, pathway, tissue, pathogen, disease, therapy, biomarker, trial and more) with a stable ID. Every link is one directional claim — subject, predicate, object — with a stable relationship ID of the form <code>REL-subject-predicate-object</code>, a mechanism, a confidence and, where known, a tissue.</p>
-        <p>Release <code>{snap.snapshotAt}</code>: core graph v{snap.coreVersion} has {snap.coreNodes} concepts and {snap.coreRelationships} links. Extensions {snap.extensionsVersion} add {snap.draftNodes} draft concepts and {snap.draftRelationships} draft links; drafts are always labelled <b>Draft</b> and never counted as approved evidence. Runtime total is {snap.runtimeNodes} concepts / {snap.runtimeRelationships} links.</p>
+        <p>Release <code>{snap.snapshotAt}</code>: core graph v{snap.coreVersion} has {snap.coreNodes} concepts and {snap.coreRelationships} links. Extensions {snap.extensionsVersion} add {snap.draftNodes} draft concepts and {snap.draftRelationships} draft links; drafts are always labelled <b>Draft</b> and never counted as approved evidence. Runtime total is {snap.runtimeNodes} concepts / {snap.runtimeRelationships} links (same snapshot used on the homepage and footer).</p>
         {snap.versionNotes ? <p className="small muted">{snap.versionNotes}</p> : null}
       </section>
 
@@ -50,7 +50,8 @@ function Methods() {
         <table className="rs-table"><tbody>
           {(Object.keys(STATUS_INFO) as ReviewStatus[]).map((s) => <tr key={s}><td><span className={`badge rs rs-${s}`}>{STATUS_INFO[s].label}</span></td><td className="small">{STATUS_INFO[s].desc}</td></tr>)}
         </tbody></table>
-        <p className="small">Inclusion criteria: peer-reviewed primary research, systematic reviews or regulatory documents with a PubMed ID or DOI; identifiers are checked against PubMed and Crossref metadata before approval. Approval records the reviewer and date.</p>
+        <p className="small">Inclusion criteria: peer-reviewed primary research, systematic reviews or regulatory documents with a PubMed ID or DOI; identifiers are checked against PubMed and Crossref metadata before approval. Approval records the reviewer and date. Live claim-support counts are on <Link to="/evidence">Evidence</Link> — only a small share of runtime links currently carry approved claim-supporting citations.</p>
+        <p className="small">Sign-in and curation use <b>Neon Auth</b> with roles in <code>user_roles</code>. New accounts receive the reader role; admin is provisioned explicitly (not “first signup wins”). Approved citations are served by a server-side filter for public pages.</p>
       </section>
 
       <section className="section" id="models"><h2>4. Model assumptions</h2>
@@ -58,7 +59,8 @@ function Methods() {
           <li><b>Perturbation (graph):</b> signed spread along + / − / r+ links, decaying 28% per hop, weighted by confidence (high 1.0, medium 0.8, low 0.6) or a measured weight, up to 4 hops. It shows direction, not magnitude in real units.</li>
           <li><b>System simulator:</b> a small set of coupled equations for pathogen, innate and adaptive response, cytokines, damage, memory and exhaustion, in normalised units with hand-set parameters. It is not fitted to patient data.</li>
           <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. It is not a clinical decision tool.</li>
-          <li><b>Ask Immune City:</b> queries are classified, graph context is retrieved, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
+          <li><b>Ask Immune City:</b> queries are classified, graph context is retrieved, reviewed relationship-level citations are attached when they exist for those links, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Sparse approved cites mean Ask is graph-retrieved, not fully evidence-grounded. Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
+          <li><b>Research workbench / literature / model registry:</b> available on <Link to="/research">Research</Link> as candidate workflows and interface contracts (phases B–E partial) — never auto-promoted into the curated graph or live predictors.</li>
           <li><b>Advanced model adapters</b> (omics, structure, pMHC/epitope, genomics, agents) are modular interface contracts only — none are implemented in production. Dry-run stubs return typed <code>not_available</code> and never invent scores or ranks. Full registry with request-shape previews on <Link to="/research" hash="model-registry">Research</Link>.</li>
         </ul>
         <ModelRegistryPanel compact />
@@ -80,9 +82,10 @@ function Methods() {
       <section className="section"><h2>5. Limitations</h2>
         <ul>
           <li>Most links have not yet been claim-checked against a source; evidence coverage is incomplete and does not imply clinical validation.</li>
+          <li>Exemplar pathways are teaching scaffolds until claim-level review covers their edges.</li>
           <li>Links simplify dose, timing, species and individual variation.</li>
           <li>Tissue context is sparse; many effects are recorded without one.</li>
-          <li>Nothing here is medical advice.</li>
+          <li>Nothing here is medical advice or clinical decision support.</li>
         </ul>
       </section>
 
