@@ -16,10 +16,21 @@ Canonical site: **https://www.immune-super-intelligence.co.uk/**
 
 A new `.co.uk` domain is **not** instantly searchable. Google needs:
 
-1. A crawl (sitemap discovery or Search Console request)
-2. Days to weeks before branded / topic queries surface
+1. **Search Console verification** (owner Google account — cannot be done by the repo alone)
+2. Sitemap submit + “Request indexing” for `/`
+3. Days to weeks before `site:immune-super-intelligence.co.uk` or brand queries surface
 
-Technical SEO alone does not guarantee page-1 ranking.
+Technical SEO + IndexNow help discovery; they do **not** force Google page‑1 ranking overnight.
+
+### Bing / IndexNow (no Google login)
+
+After deploy:
+
+```bash
+bun scripts/ping-indexnow.ts
+```
+
+Key file: `public/{key}.txt` (and `public/indexnow-key.txt`).
 
 ## What you should do (owner)
 
