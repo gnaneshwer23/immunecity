@@ -1,11 +1,13 @@
 {
   "name": "Immune Super Intelligence",
   "short_name": "ISI",
-  "description": "Educational causal immunology atlas — curated graph, illustrative mechanisms, and Ask that teaches with references.",
+  "description": "Immune Super Intelligence — learn immunology as a connected system. Curated graph, mechanisms, and Ask that teaches with references.",
   "start_url": "/",
   "display": "standalone",
+  "lang": "en-GB",
   "background_color": "#f4f6f8",
   "theme_color": "#0d6e6e",
+  "categories": ["education", "medical", "science"],
   "icons": [
     {
       "src": "/favicon.svg",

@@ -3,18 +3,15 @@ import { useState, type FormEvent } from "react";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 import { CONTACT_EMAIL, pageTitle, PRODUCT_NAME } from "@/lib/brand";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/collaborate")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Collaborate") },
-      {
-        name: "description",
-        content: `Partner with ${PRODUCT_NAME} on education, immunology research, knowledge graphs and responsible scientific AI.`,
-      },
-      { property: "og:title", content: pageTitle("Collaborate") },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Collaborate"),
+      description: `Partner with ${PRODUCT_NAME} on education, immunology research, knowledge graphs and responsible scientific AI.`,
+      path: "/collaborate",
+    }),
   component: Collaborate,
 });
 

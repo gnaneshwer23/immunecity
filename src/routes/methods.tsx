@@ -7,24 +7,16 @@ import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/methods")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Evidence & Methods") },
-      {
-        name: "description",
-        content: `Understand the ${FLAGSHIP_NAME} graph, source curation, evidence statuses, model assumptions and scientific limitations.`,
-      },
-      { property: "og:title", content: pageTitle("Evidence & Methods") },
-      {
-        property: "og:description",
-        content: "Ontology, relationship signs, evidence review statuses, model assumptions and limitations.",
-      },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Evidence & Methods"),
+      description: `Understand the ${FLAGSHIP_NAME} graph, source curation, evidence statuses, model assumptions and scientific limitations.`,
+      path: "/methods",
+      type: "article",
+    }),
   component: Methods,
 });
 

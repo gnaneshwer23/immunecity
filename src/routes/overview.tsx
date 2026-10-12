@@ -8,6 +8,7 @@ import { NAV_GROUPS } from "@/components/immune/nav";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 import { FLAGSHIP_NAME, PRODUCT_NAME, pageTitle } from "@/lib/brand";
+import { seoHead } from "@/lib/seo";
 
 const GROUP_COLORS = ["--t-cell", "--t-pathway", "--t-intervention", "--t-discovery"];
 
@@ -19,21 +20,12 @@ const SPINE_TYPE: Record<string, NodeType> = {
 };
 
 export const Route = createFileRoute("/overview")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Platform") },
-      {
-        name: "description",
-        content: `Explore immune cells, mechanisms, disease biology, therapies and evidence through ${FLAGSHIP_NAME} — the ${PRODUCT_NAME} flagship atlas.`,
-      },
-      { property: "og:title", content: pageTitle("Platform") },
-      {
-        property: "og:description",
-        content:
-          "One connected view of immunology: causal spine, twelve layers, and featured mechanism chains. Educational beta.",
-      },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Platform"),
+      description: `Explore immune cells, mechanisms, disease biology, therapies and evidence through ${FLAGSHIP_NAME} — the ${PRODUCT_NAME} flagship atlas. Causal spine, twelve layers, educational beta.`,
+      path: "/overview",
+    }),
   component: Overview,
 });
 

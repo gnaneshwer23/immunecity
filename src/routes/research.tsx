@@ -9,6 +9,8 @@ import { PageHead, NodeChip } from "@/components/immune/ui";
 import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
+import { PRODUCT_NAME } from "@/lib/brand";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/research")({
   validateSearch: zodValidator(
@@ -19,24 +21,13 @@ export const Route = createFileRoute("/research")({
       outcome: fallback(z.string(), "").default(""),
     }),
   ),
-  head: () => ({
-    meta: [
-      { title: "Scientific Research Workbench | Immune City" },
-      {
-        name: "description",
-        content:
-          "Organise research questions, evidence, mechanisms, candidate hypotheses and experiment proposals.",
-      },
-      { property: "og:title", content: "Scientific Research Workbench | Immune City" },
-      {
-        property: "og:description",
-        content:
-          "Candidate research workflows and interface-only model adapters — not live predictors or auto-published claims.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: `Scientific Research Workbench | ${PRODUCT_NAME}`,
+      description:
+        "Organise research questions, evidence, mechanisms and candidate hypotheses. Interface-only model adapters — not live predictors or auto-published claims.",
+      path: "/research",
+    }),
   component: Research,
 });
 

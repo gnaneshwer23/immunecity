@@ -3,20 +3,17 @@ import { ArrowUpRight } from "lucide-react";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 import { CAPABILITY_STATUS_LABEL, featuresForPage } from "@/data/capabilityStatus";
-import { pageTitle, PRODUCT_NAME } from "@/lib/brand";
+import { PRODUCT_NAME } from "@/lib/brand";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/scientific-ai")({
-  head: () => ({
-    meta: [
-      { title: `Scientific AI for Immunology | ${PRODUCT_NAME}` },
-      {
-        name: "description",
-        content:
-          "Explore how evidence-aware AI, graph reasoning and research workflows can support immunology exploration.",
-      },
-      { property: "og:title", content: `Scientific AI for Immunology | ${PRODUCT_NAME}` },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: `Scientific AI for Immunology | ${PRODUCT_NAME}`,
+      description:
+        "Explore how evidence-aware AI, graph reasoning and research workflows can support immunology exploration — educating with references, not clinical advice.",
+      path: "/scientific-ai",
+    }),
   component: ScientificAi,
 });
 

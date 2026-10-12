@@ -2,23 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 import { EXPLORE_CTA, EXPLORE_PATH, FLAGSHIP_NAME, pageTitle, PRODUCT_NAME, PROPOSITION } from "@/lib/brand";
+import { seoHead } from "@/lib/seo";
 import { ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("About") },
-      {
-        name: "description",
-        content: `Mission and principles of ${PRODUCT_NAME}: visible knowledge structure, explicit uncertainty, and transparent AI evaluation.`,
-      },
-      { property: "og:title", content: pageTitle("About") },
-      {
-        property: "og:description",
-        content: "How immunology and advanced AI can work together without unsupported claims.",
-      },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("About"),
+      description: `Mission and principles of ${PRODUCT_NAME}: visible knowledge structure, explicit uncertainty, and transparent AI evaluation.`,
+      path: "/about",
+    }),
   component: About,
 });
 

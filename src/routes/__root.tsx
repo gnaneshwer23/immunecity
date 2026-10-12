@@ -5,14 +5,16 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Scripts,
+  useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import Shell from "../components/immune/Shell";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { CANONICAL_URL, PRODUCT_NAME } from "../lib/brand";
+import { CANONICAL_URL, PRODUCT_NAME, TAGLINE } from "../lib/brand";
+import { OG_IMAGE_URL, siteJsonLd } from "../lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -79,12 +81,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: `${PRODUCT_NAME} — educational immunology beta` },
-      { name: "description", content: `${PRODUCT_NAME}: educational beta — a curated causal map of immunology, illustrative mechanisms, and graph-retrieved Ask that educates with references — not patient-specific advice and not fully evidence-grounded AI.` },
+      { title: `${PRODUCT_NAME} — ${TAGLINE}` },
+      {
+        name: "description",
+        content: `${PRODUCT_NAME}: learn immunology as a connected system — curated causal map, mechanisms and Ask that educates with references. Educational beta; not patient-specific advice.`,
+      },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+      { name: "googlebot", content: "index, follow" },
+      { name: "author", content: PRODUCT_NAME },
+      { name: "theme-color", content: "#0d6e6e" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: CANONICAL_URL },
       { property: "og:site_name", content: PRODUCT_NAME },
+      { property: "og:title", content: `${PRODUCT_NAME} — ${TAGLINE}` },
+      {
+        property: "og:description",
+        content:
+          "Educational immunology platform: mechanisms, curated evidence and scientific AI that teaches with references.",
+      },
+      { property: "og:image", content: OG_IMAGE_URL },
+      { property: "og:image:alt", content: `${PRODUCT_NAME} — ${TAGLINE}` },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: `${PRODUCT_NAME} — ${TAGLINE}` },
+      {
+        name: "twitter:description",
+        content:
+          "Educational immunology platform: mechanisms, curated evidence and scientific AI that teaches with references.",
+      },
+      { name: "twitter:image", content: OG_IMAGE_URL },
     ],
     links: [
       {
@@ -96,9 +120,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "manifest", href: "/site.webmanifest" },
+      { rel: "sitemap", href: "/sitemap.xml", type: "application/xml" },
       { rel: "preconnect", href: "https://api.fontshare.com" },
       { rel: "stylesheet", href: "https://api.fontshare.com/v2/css?f[]=chillax@500,600&f[]=general-sans@400,500,600&display=swap" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(siteJsonLd()),
+      },
     ],
   }),
   shellComponent: RootShell,

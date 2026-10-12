@@ -12,3 +12,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Private / app surfaces — no need to rank
+Disallow: /auth
+Disallow: /curation
+Disallow: /api/
+
+Sitemap: https://www.immune-super-intelligence.co.uk/sitemap.xml

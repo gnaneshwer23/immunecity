@@ -4,41 +4,29 @@ import { Button } from "@/components/ui/button";
 import cellImage from "@/assets/immune-cell.jpg";
 import {
   BRAND_EYEBROW,
-  CANONICAL_URL,
   EXPLORE_CTA,
   EXPLORE_PATH,
   FLAGSHIP_NAME,
   HERO_HEADLINE,
   HERO_SUPPORT,
   PRODUCT_NAME,
+  TAGLINE,
 } from "@/lib/brand";
 import {
   CAPABILITY_STATUS_LABEL,
   featuresByStatus,
   type CapabilityStatus,
 } from "@/data/capabilityStatus";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: `${PRODUCT_NAME} | Immunology × Scientific AI` },
-      {
-        name: "description",
-        content:
-          "Explore an AI-native approach to immunology, connecting biological mechanisms, scientific evidence and research workflows.",
-      },
-      { property: "og:title", content: `${PRODUCT_NAME} | Immunology × Scientific AI` },
-      {
-        property: "og:description",
-        content:
-          "Educational beta: learn mechanisms, explore a curated causal graph, and investigate research questions with transparent AI limits.",
-      },
-      { property: "og:url", content: CANONICAL_URL },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: CANONICAL_URL }],
-  }),
+  head: () =>
+    seoHead({
+      title: `${PRODUCT_NAME} | ${TAGLINE}`,
+      description:
+        "Immune Super Intelligence — learn immunology as a connected system. Explore mechanisms, a curated causal knowledge graph and Ask that educates with references. Educational beta; not clinical advice.",
+      path: "/",
+    }),
   component: Home,
 });
 

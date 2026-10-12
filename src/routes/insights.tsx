@@ -2,19 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { graphReleaseLabel, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
-import { pageTitle, FLAGSHIP_NAME } from "@/lib/brand";
+import { pageTitle, FLAGSHIP_NAME, PRODUCT_NAME } from "@/lib/brand";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/insights")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Insights") },
-      {
-        name: "description",
-        content: "Build notes, methods context and honest capability status for Immune City — not generic AI news.",
-      },
-      { property: "og:title", content: pageTitle("Insights") },
-    ],
-  }),
+  head: () =>
+    seoHead({
+      title: pageTitle("Insights"),
+      description: `Build notes, methods context and honest capability status for ${PRODUCT_NAME} and ${FLAGSHIP_NAME} — not generic AI news.`,
+      path: "/insights",
+    }),
   component: Insights,
 });
 
