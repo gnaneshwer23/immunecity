@@ -1,10 +1,10 @@
 # Immune Super Intelligence — Final Pre-Live Release Audit
 
-**Audit refresh (UTC):** 2026-10-11 (educational-beta GO messaging: educate-with-references framing)  
+**Audit refresh (UTC):** 2026-10-12 (full end-to-end pre-handoff check)  
 **Release scope:** Public educational beta — teaching from a curated graph with reviewed citations where present; **not** clinician CDS or patient-specific advice  
 **Roadmap:** Immune Super Intelligence Enhancement Roadmap & Production Gaps v1.0 + Next-Step Implementation Playbook v1.0  
 **Canonical production:** https://www.immune-super-intelligence.co.uk  
-**Auditor method:** Code inspection; Neon MCP SQL on **production** branch; HTTP/Ask smoke against canonical URL; Vercel deployment list; local `smoke-prd-a2`; local `smoke:neon` (defaults to vercel-dev)
+**Auditor method:** Code inspection; Neon SQL on **production** `DATABASE_URL`; HTTP/Ask smoke against canonical URL; Vercel production READY; local `smoke-prd-a2`; local `smoke:neon` (defaults to vercel-dev — D-18)
 
 ---
 
@@ -14,12 +14,13 @@
 
 | Layer | State |
 |-------|--------|
-| Local HEAD | **`631ea9a`** + this go-live messaging ship |
-| GitHub `origin/main` | Was **`631ea9a`** before this ship |
-| Vercel production | **`631ea9a` READY** — educational-beta trust copy live; expect auto-redeploy after this messaging push |
-| Neon **production** | Full schema; **1** auth user; **1** admin role (+ same user also has `user` role); **9** approved+supports relationship claims |
-| Neon **vercel-dev** | Schema present; local `smoke:neon` saw **0** roles/evidence (D-18 — local `.env.local` not production) |
-| Gate C | **9 / ~549** approved+supports relationship links — honest progress, not coverage theatre |
+| Local / `origin/main` | **`58faa60`** + follow-up Ask empty-question guard / `seo:indexnow` script |
+| Vercel production | **READY** on canonical + `immunecity.vercel.app` aliases |
+| Neon **production** | Schema + role trigger; **1** auth user; **admin+user** roles; **46** evidence rows; **9** approved+supports |
+| Neon **vercel-dev** | Local `smoke:neon` still **0** counts (D-18) |
+| Gate C | **9 / ~549** approved+supports — honest progress |
+| SEO | Sitemap/robots/OG/JSON-LD **live**; Google Search Console verification still **owner action**; IndexNow **202** to Bing |
+| Ask | Clinical abstain OK; TNF→RA grounded answer OK (AI SDK `parts` body); empty/legacy `content`-only body now **400** |
 
 **Known residuals (do not block educational-beta GO):** remaining exemplar edges (esp. full IFN→SLE / PD-L1 completeness), SME gold-set sign-off, human a11y/keyboard/contrast, dual Lovable URL retirement decision, distributed rate limits (accepted beta residual).
 

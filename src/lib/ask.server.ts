@@ -123,7 +123,22 @@ export async function handleAsk(request: Request): Promise<Response> {
   }
   messages = messages.slice(-10);
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
-  const question = lastUser?.parts?.filter((p) => p.type === "text").map((p) => p.text).join(" ") ?? "";
+  // Prefer AI SDK UIMessage `parts`; fall back to legacy `content` so curl/tests still work.
+  const fromParts =
+    lastUser?.parts?.filter((p) => p.type === "text").map((p) => ("text" in p ? String(p.text) : "")).join(" ") ?? "";
+  const fromContent =
+    typeof (lastUser as { content?: unknown } | undefined)?.content === "string"
+      ? String((lastUser as { content: string }).content)
+      : Array.isArray((lastUser as { content?: unknown } | undefined)?.content)
+        ? ((lastUser as { content: Array<{ type?: string; text?: string }> }).content)
+            .filter((p) => p?.type === "text" || typeof p?.text === "string")
+            .map((p) => p.text ?? "")
+            .join(" ")
+        : "";
+  const question = (fromParts || fromContent).trim();
+  if (!question) {
+    return Response.json({ error: "Missing question text." }, { status: 400 });
+  }
   if (question.length > MAX_QUESTION_CHARS) {
     return Response.json({ error: `Please keep questions under ${MAX_QUESTION_CHARS} characters.` }, { status: 400 });
   }

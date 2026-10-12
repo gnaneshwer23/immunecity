@@ -17,7 +17,8 @@
     "evidence:queue": "bun scripts/build-relationship-evidence-queue.ts",
     "evidence:queue:resolve": "bun scripts/build-relationship-evidence-queue.ts --resolve-pmids",
     "db:neon-schema": "bun scripts/apply-neon-schema.ts",
-    "smoke:neon": "bun scripts/smoke-neon-cutover.ts"
+    "smoke:neon": "bun scripts/smoke-neon-cutover.ts",
+    "seo:indexnow": "bun scripts/ping-indexnow.ts"
   },
   "overrides": {
     "rolldown": "1.2.1",
