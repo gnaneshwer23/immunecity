@@ -1,13 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Fragment, useState } from "react";
 import { ArrowDown, ArrowUpRight, Activity } from "lucide-react";
-import { KG, TYPES, SPINE_DESC, byId, nodesOf, type NodeType } from "@/lib/immune/engine";
+import { KG, TYPES, SPINE_DESC, byId, human, nodesOf, type NodeType } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { CONTENT } from "@/data/content";
 import { NAV_GROUPS } from "@/components/immune/nav";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
-import { FLAGSHIP_NAME, PRODUCT_NAME, pageTitle } from "@/lib/brand";
+import { FLAGSHIP_NAME, LEARN_PATH, PRODUCT_NAME, pageTitle } from "@/lib/brand";
+import {
+  EXEMPLAR_MATURITY_LABEL,
+  EXEMPLAR_PATHWAYS,
+  reportExemplar,
+} from "@/lib/immune/exemplarPathways";
 import { seoHead } from "@/lib/seo";
 
 const GROUP_COLORS = ["--t-cell", "--t-pathway", "--t-intervention", "--t-discovery"];
@@ -19,6 +24,24 @@ const SPINE_TYPE: Record<string, NodeType> = {
   DATA: "DATA", MODEL: "AI_METHOD", DISCOVERY: "DISCOVERY",
 };
 
+const GOAL_ENTRIES = [
+  {
+    title: "Learn a mechanism",
+    copy: "Start in the Academy or Mechanism lessons, then inspect linked graph concepts.",
+    path: LEARN_PATH as string,
+  },
+  {
+    title: "Explore the causal map",
+    copy: "Open the knowledge graph, filter by type, and follow typed relationships.",
+    path: "/graph",
+  },
+  {
+    title: "Investigate with Ask",
+    copy: "Ask retrieves graph context and reviewed relationship cites when present — partial, not fully evidence-grounded.",
+    path: "/reasoning",
+  },
+] as const;
+
 export const Route = createFileRoute("/overview")({
   head: () =>
     seoHead({
@@ -28,6 +51,66 @@ export const Route = createFileRoute("/overview")({
     }),
   component: Overview,
 });
+
+function ExemplarBlock() {
+  return (
+    <section className="bio-section" aria-labelledby="exemplar-heading">
+      <div className="bio-section-heading">
+        <div>
+          <span className="bio-section-number">02 / EXEMPLAR PATHWAYS</span>
+          <h2 id="exemplar-heading">Few fully connected teaching axes.</h2>
+        </div>
+        <p>
+          Maturity from the maintained exemplar registry — not invented coverage. Unreviewed or partially reviewed edges
+          stay visible.
+        </p>
+      </div>
+      <div className="overview-exemplars">
+        {EXEMPLAR_PATHWAYS.map((pathway) => {
+          const report = reportExemplar(pathway);
+          return (
+            <article key={pathway.id} className="overview-exemplar">
+              <h3>{pathway.title}</h3>
+              <p className="small muted">{pathway.purpose}</p>
+              <p className="xs">
+                <span className={`badge rs rs-${report.maturity === "reviewed" ? "approved" : report.maturity === "partially-reviewed" ? "claim-assessed" : "draft"}`}>
+                  {EXEMPLAR_MATURITY_LABEL[report.maturity]}
+                </span>
+                {" · "}
+                {report.connected ? "Connected on graph" : `Gap: ${report.missingSegment}`}
+                {" · "}
+                {report.edgeReviews.length} on-path relationship{report.edgeReviews.length === 1 ? "" : "s"}
+              </p>
+              <ul className="overview-exemplar-edges">
+                {report.segments.flatMap((seg) =>
+                  (seg.steps ?? []).map((step, i) => {
+                    const rid = seg.relIds[i]!;
+                    const review = seg.reviews[i]!;
+                    const label = report.edgeReviews.find((x) => x.relId === rid)?.label ?? review;
+                    const subj = byId[step.r.subject_id];
+                    const obj = byId[step.r.object_id];
+                    if (!subj || !obj) return null;
+                    return (
+                      <li key={`${pathway.id}-${rid}-${i}`}>
+                        <Link to="/graph" search={{ focus: step.r.subject_id }}>
+                          <span>
+                            {subj.name} <span className="mono muted">{human(step.r.relation)}</span> {obj.name}
+                          </span>
+                          <span className={`badge rs rs-${review}`}>{label}</span>
+                        </Link>
+                      </li>
+                    );
+                  }),
+                )}
+              </ul>
+              {pathway.notes[0] ? <p className="xs muted" style={{ marginTop: 10 }}>{pathway.notes[0]}</p> : null}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
 
 function Overview() {
   const [activeRoute, setActiveRoute] = useState(0);
@@ -52,14 +135,32 @@ function Overview() {
       />
 
       <p className="lede">
-        Release <code>{snap.snapshotAt}</code> · core vs draft counts from the shared graph snapshot · claim-level approved support is still sparse overall ·{" "}
+        Release <code>{snap.snapshotAt}</code> · core vs draft from <code>graphReleaseSnapshot()</code> · claim-level
+        approved support is still sparse overall ·{" "}
         <Link to="/methods">Read the methods</Link> · <Link to="/graph">Explore the live platform</Link> ·{" "}
         <Link to="/evidence">Evidence coverage</Link>
       </p>
 
+      <section className="bio-section" aria-labelledby="goals-heading">
+        <div className="bio-section-heading">
+          <div>
+            <span className="bio-section-number">00 / START BY GOAL</span>
+            <h2 id="goals-heading">Enter where you need to go.</h2>
+          </div>
+        </div>
+        <div className="overview-goals">
+          {GOAL_ENTRIES.map((g) => (
+            <Link key={g.title} className="overview-goal" to={g.path}>
+              <h3>{g.title}</h3>
+              <p className="small muted">{g.copy}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section className="bio-section" aria-label="Platform pillars">
         <div className="bio-section-heading">
-          <div><span className="bio-section-number">00 / PLATFORM</span><h2>Immunology. Evidence. Advanced AI.</h2></div>
+          <div><span className="bio-section-number">01 / PLATFORM</span><h2>Immunology. Evidence. Advanced AI.</h2></div>
           <p>One atlas with three explicit jobs — curated immunology, relationship-level evidence under human review, and Ask that retrieves from the graph rather than inventing the atlas.</p>
         </div>
         <div className="platform-pillars">
@@ -81,9 +182,11 @@ function Overview() {
         </div>
       </section>
 
+      <ExemplarBlock />
+
       <section className="bio-section">
-        <div className="bio-section-heading"><div><span className="bio-section-number">01 / THE CAUSAL SPINE</span><h2>From trigger to discovery.</h2></div><ArrowDown size={24} /></div>
-        <p className="lede spine-lede">The primary scientific journey — fifteen stages from the first signal to discovery feedback.</p>
+        <div className="bio-section-heading"><div><span className="bio-section-number">03 / THE CAUSAL SPINE</span><h2>From trigger to discovery.</h2></div><ArrowDown size={24} /></div>
+        <p className="lede spine-lede">Fifteen interactive stages — select a step to see curated example concepts (drafts excluded).</p>
         <div className="spine-rail" role="tablist" aria-label="Causal spine stages">
           {KG.core_spine.map((step, i) => (
             <button type="button" role="tab" aria-selected={spineStep === step} className={`spine-step${spineStep === step ? " active" : ""}`} key={step} onClick={() => setSpineStep(spineStep === step ? null : step)}>
@@ -122,7 +225,7 @@ function Overview() {
 
       <section className="bio-section">
         <div className="bio-section-heading">
-          <div><span className="bio-section-number">02 / CONNECT THE DOTS</span><h2>One signal. A chain of consequences.</h2></div>
+          <div><span className="bio-section-number">04 / CONNECT THE DOTS</span><h2>One signal. A chain of consequences.</h2></div>
           <p>Trace a mechanism from its trigger to a treatment and the trial behind it.</p>
         </div>
         <div className="explore-tabs" role="tablist" aria-label="Featured mechanisms">
@@ -161,8 +264,8 @@ function Overview() {
 
       <section className="bio-section">
         <div className="bio-section-heading">
-          <div><span className="bio-section-number">03 / EXPLORE THE SYSTEM</span><h2>Different lenses. One immune system.</h2></div>
-          <p>Move between cellular biology, clinical mechanisms, and the evidence that connects them.</p>
+          <div><span className="bio-section-number">05 / TWELVE LAYERS</span><h2>Different lenses. One immune system.</h2></div>
+          <p>Move between cellular biology, clinical mechanisms, and the evidence that connects them. Academy is a learning overlay — not a thirteenth top-level layer.</p>
         </div>
         <div className="bio-groups">
           {NAV_GROUPS.map((g, gi) => {
