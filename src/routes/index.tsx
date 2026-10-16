@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TrustBlock } from "@/components/immune/marketing";
@@ -27,6 +28,10 @@ import {
 } from "@/lib/immune/exemplarPathways";
 import { seoHead } from "@/lib/seo";
 
+const HelixHeroVisual = lazy(() =>
+  import("@/components/immune/HelixHeroVisual").then((m) => ({ default: m.HelixHeroVisual })),
+);
+
 export const Route = createFileRoute("/")({
   head: () =>
     seoHead({
@@ -37,6 +42,15 @@ export const Route = createFileRoute("/")({
     }),
   component: Home,
 });
+
+const NARRATIVE_ARC = [
+  { label: "Molecular", path: "/graph" as const },
+  { label: "Immune cells", path: "/learn" as const },
+  { label: "Mechanisms", path: "/mechanism" as const },
+  { label: "Disease", path: "/disease" as const },
+  { label: "Therapy", path: "/therapy" as const },
+  { label: "Evidence", path: "/evidence" as const },
+] as const;
 
 const HOW_IT_WORKS = [
   { n: "01", title: "Start with a question", copy: "Choose an immune concept, pathway, disease or research problem." },
@@ -66,31 +80,21 @@ const TRUST_STATUSES: CapabilityStatus[] = ["beta", "partial"];
 /** Home causal preview: TNF→RA exemplar (documented reviewed maturity; live cites still load in the graph). */
 const HOME_EXEMPLAR = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-tnf-ra")!;
 
-function HomeCausalPathway({ embedded = false }: { embedded?: boolean }) {
+function HomeCausalPathway() {
   const report = reportExemplar(HOME_EXEMPLAR);
 
   return (
-    <div className={`home-pathway${embedded ? " home-pathway-hero" : ""}`}>
-      {embedded ? (
-        <div className="home-pathway-hero-meta">
-          <span className="bio-section-number">Live graph pathway</span>
+    <div className="home-pathway">
+      <div className="bio-section-heading">
+        <div>
+          <span className="bio-section-number">01 / LIVE GRAPH PATHWAY</span>
           <h2 id="demo-heading">{HOME_EXEMPLAR.title}</h2>
-          <p>
-            Real relationships from the curated graph. Maturity: {EXEMPLAR_MATURITY_LABEL[report.maturity]}.
-          </p>
         </div>
-      ) : (
-        <div className="bio-section-heading">
-          <div>
-            <span className="bio-section-number">01 / INTERACTIVE DEMO</span>
-            <h2 id="demo-heading">{HOME_EXEMPLAR.title}</h2>
-          </div>
-          <p>
-            A real pathway from the curated graph — each hop links to a graph record with its current evidence status.
-            Maturity: {EXEMPLAR_MATURITY_LABEL[report.maturity]}.
-          </p>
-        </div>
-      )}
+        <p>
+          Real relationships from the curated graph — each hop links to a graph record with its current evidence
+          status. Maturity: {EXEMPLAR_MATURITY_LABEL[report.maturity]}.
+        </p>
+      </div>
       <ol className="home-causal-path" aria-label={`${HOME_EXEMPLAR.title} relationships`}>
         {report.segments.flatMap((seg) =>
           (seg.steps ?? []).map((step, i) => {
@@ -132,38 +136,54 @@ function HomeCausalPathway({ embedded = false }: { embedded?: boolean }) {
 
 function Home() {
   return (
-    <div className="home-page">
-      <section className="bio-hero home-hero-split" aria-label={PRODUCT_NAME}>
-        <div className="bio-hero-inner home-hero-copy">
-          <div className="bio-eyebrow">
+    <div className="home-page home-page-helix">
+      <section className="home-helix-hero" aria-label={PRODUCT_NAME}>
+        <div className="home-helix-visual" aria-hidden="true">
+          <Suspense fallback={<div className="helix-stage helix-fallback" />}>
+            <HelixHeroVisual />
+          </Suspense>
+        </div>
+        <div className="home-helix-copy">
+          <div className="bio-eyebrow home-helix-eyebrow">
             <span className="status-dot" /> {BRAND_EYEBROW}
           </div>
           <p className="home-brand-signal">{PRODUCT_NAME}</p>
           <h1>{HERO_HEADLINE}</h1>
           <p className="hero-description">{HERO_SUPPORT}</p>
-          <p className="hero-brand-note">
-            <b>{PRODUCT_NAME}</b> is the umbrella. <b>{FLAGSHIP_NAME}</b> is the interactive atlas; Immunology Academy
-            and Ask sit under the same brand.
-          </p>
           <div className="bio-actions">
-            <Button asChild className="bio-primary">
+            <Button asChild className="bio-primary home-helix-primary">
               <Link to={EXPLORE_PATH}>
                 {EXPLORE_CTA} <ArrowUpRight />
               </Link>
             </Button>
-            <Button asChild variant="ghost" className="bio-secondary">
+            <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
               <Link to={LEARN_PATH}>
                 {LEARN_CTA} <ArrowRight />
               </Link>
             </Button>
           </div>
-        </div>
-        <div className="home-hero-demo" aria-labelledby="demo-heading">
-          <HomeCausalPathway embedded />
+          <p className="home-helix-foot">
+            Educational model · curated graph · not clinical decision support
+          </p>
         </div>
       </section>
 
+      <nav className="home-narrative" aria-label="Scientific narrative arc">
+        <ol>
+          {NARRATIVE_ARC.map((step, i) => (
+            <li key={step.label}>
+              {i > 0 ? <span className="home-narrative-sep" aria-hidden="true" /> : null}
+              <Link to={step.path}>{step.label}</Link>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
       <div className="bio-content home-sections">
+        <section className="bio-section" aria-labelledby="demo-heading">
+          <HomeCausalPathway />
+        </section>
+
         <section className="bio-section" aria-labelledby="pillars-heading">
           <div className="bio-section-heading">
             <div>

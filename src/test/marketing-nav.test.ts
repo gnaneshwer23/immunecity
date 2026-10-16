@@ -52,9 +52,9 @@ describe("marketing IA wiring", () => {
 
   it("wires Explore / Learn CTAs and footer destinations to known nav or marketing paths", () => {
     expect(EXPLORE_PATH).toBe("/overview");
-    expect(EXPLORE_CTA).toBe("Explore Immune City");
+    expect(EXPLORE_CTA).toBe("Explore Immune City.");
     expect(LEARN_PATH).toBe("/academy");
-    expect(LEARN_CTA).toBe("Start learning");
+    expect(LEARN_CTA).toBe("Discover the Academy.");
     expect(ATLAS_PATH).toBe("/graph");
     expect(ATLAS_CTA).toBe("Enter atlas");
     const atlasPaths = new Set(ALL_NAV.map((l) => l.path));
