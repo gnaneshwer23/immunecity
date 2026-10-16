@@ -85,6 +85,7 @@ export default function LiteratureQueue({ onSendToWorkbench }: Props) {
         Literature intelligence (PRD FR-036/037): identify a source, validate metadata locally, extract candidate claims,
         map to canonical graph IDs, flag conflicts, then prepare records for human curation.
         Identifiers are optional and never invented. Accepted items stay <b>candidates</b> — they do not approve graph claims.
+        This is <b>not</b> live PubMed bulk ingest; server-side PubMed/Crossref checks run only after you import a manifest in Curation.
       </p>
 
       <ol className="row" style={{ listStyle: "none", padding: 0, gap: 8, flexWrap: "wrap" }} aria-label="Workflow steps">

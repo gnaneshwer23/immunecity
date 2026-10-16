@@ -37,6 +37,7 @@ import { reasonMechanism } from "@/lib/immune/mechanismReasoning";
 import {
   addEvidenceNote,
   advanceWorkbench,
+  buildWorkbenchCurationHandoff,
   buildWorkbenchExport,
   canAdvance as canAdvanceWb,
   canVisitStep,
@@ -323,6 +324,17 @@ describe("Phase E workbench", () => {
     expect(json).toMatch(/draft-ext-4/);
     expect(json).toMatch(/wb-1/);
     expect(json).not.toMatch(/experimentally_supported/);
+
+    // Human-gated curation queue stub — never silent KG write-back
+    s = addEvidenceNote(s, "Mapped candidate note", "user label", ["EM02", "REL-EM02-promotes-EM03"]);
+    const handoff = buildWorkbenchCurationHandoff(s);
+    expect(handoff.kind).toBe("workbench_curation_queue_handoff");
+    expect(handoff.wired).toBe(false);
+    expect(handoff.kgWrite).toBe(false);
+    expect(handoff.autoPromote).toBe(false);
+    expect(handoff.openRoute).toBe("/curation");
+    expect(handoff.candidateManifest?.meta.curation).toBe("unreviewed");
+    expect(handoff.candidateManifest?.evidence_records.length).toBeGreaterThan(0);
   });
 
   it("imports lit claims and mechanism summaries as candidates", () => {

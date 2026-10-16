@@ -815,6 +815,110 @@ export function exportWorkbench(session: WorkbenchSession): string {
   return JSON.stringify(buildWorkbenchExport(session), null, 2);
 }
 
+/**
+ * Human-gated curation-queue handoff (Phase E honesty).
+ * Builds an unreviewed candidate package for download / paste into /curation.
+ * NEVER writes the curated KG, NEVER auto-promotes, NEVER invents PMIDs.
+ */
+export interface WorkbenchCurationHandoff {
+  kind: "workbench_curation_queue_handoff";
+  schemaVersion: typeof WORKBENCH_SCHEMA_VERSION;
+  wired: false;
+  kgWrite: false;
+  autoPromote: false;
+  experimentallySupported: false;
+  session_id: string;
+  exportedAt: string;
+  openRoute: "/curation";
+  note: string;
+  draftNotes: Array<{
+    note_id: string;
+    summary: string;
+    sourceLabel: string;
+    relatedIds: string[];
+    kind: "candidate";
+  }>;
+  hypothesisClaim: string;
+  reviewDisposition: WorkbenchSession["reviewDisposition"];
+  /** Compatible with literature curation import when at least one graph node maps. */
+  candidateManifest: CurationManifestExport | null;
+}
+
+export function buildWorkbenchCurationHandoff(session: WorkbenchSession): WorkbenchCurationHandoff {
+  const draftNotes = session.evidence.map((e) => ({
+    note_id: e.note_id,
+    summary: e.summary,
+    sourceLabel: e.sourceLabel,
+    relatedIds: [...e.relatedIds],
+    kind: "candidate" as const,
+  }));
+
+  const groups = new Map<string, CurationManifestExport["evidence_records"][number]>();
+  for (const note of session.evidence) {
+    const conceptId = note.relatedIds.find((id) => byId[id]);
+    const relId = note.relatedIds.find((id) => id.startsWith("REL-"));
+    if (!conceptId) continue;
+    const node = byId[conceptId];
+    if (!node) continue;
+    if (!groups.has(conceptId)) {
+      groups.set(conceptId, {
+        node_id: conceptId,
+        node_type: node.node_type,
+        node_name: node.name,
+        evidence: [],
+      });
+    }
+    groups.get(conceptId)!.evidence.push({
+      evidence_id: `WB-${session.session_id}-${note.note_id}`.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 120),
+      source_ref: note.sourceLabel || null,
+      status: "candidate",
+      source_type: "literature_workflow",
+      claim_text: note.summary,
+      claim_support: "unassessed",
+      relationship_id: relId && relId.startsWith("REL-") ? relId : null,
+    });
+  }
+
+  const candidateManifest: CurationManifestExport | null =
+    groups.size > 0
+      ? {
+          meta: {
+            kind: "literature_candidate_export",
+            project_id: `WB-HANDOFF-${session.session_id}`,
+            graphVersion: session.graphVersion,
+            extensionsVersion: session.extensionsVersion,
+            exportedAt: new Date().toISOString(),
+            curation: "unreviewed",
+            note:
+              "Workbench curation-queue handoff — candidates only. Not auto-approved. Not a KG write. Import in /curation for human review; live PubMed/Crossref checks run server-side after import.",
+          },
+          evidence_records: [...groups.values()],
+        }
+      : null;
+
+  return {
+    kind: "workbench_curation_queue_handoff",
+    schemaVersion: WORKBENCH_SCHEMA_VERSION,
+    wired: false,
+    kgWrite: false,
+    autoPromote: false,
+    experimentallySupported: false,
+    session_id: session.session_id,
+    exportedAt: new Date().toISOString(),
+    openRoute: "/curation",
+    note:
+      "Human-gated stub: download this package and import manually in Curation. Nothing is written to the curated knowledge graph from the workbench.",
+    draftNotes,
+    hypothesisClaim: session.hypothesis.claim.trim(),
+    reviewDisposition: session.reviewDisposition,
+    candidateManifest,
+  };
+}
+
+export function exportWorkbenchCurationHandoff(session: WorkbenchSession): string {
+  return JSON.stringify(buildWorkbenchCurationHandoff(session), null, 2);
+}
+
 function touch(s: WorkbenchSession): WorkbenchSession {
   return { ...s, updatedAt: new Date().toISOString(), schemaVersion: WORKBENCH_SCHEMA_VERSION };
 }

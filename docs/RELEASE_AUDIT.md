@@ -22,7 +22,7 @@
 | SEO | Sitemap/robots/OG/JSON-LD **live**; Google Search Console verification still **owner action**; IndexNow **202** to Bing |
 | Ask | Clinical abstain OK; TNF→RA grounded answer OK (AI SDK `parts` body); empty/legacy `content`-only body now **400** |
 
-**Known residuals (do not block educational-beta GO):** remaining exemplar edges (esp. full IFN→SLE / PD-L1 completeness), SME gold-set sign-off, human a11y/keyboard/contrast, dual Lovable URL retirement decision, distributed rate limits (accepted beta residual).
+**Known residuals (do not block educational-beta GO):** remaining exemplar edges (esp. full IFN→SLE / PD-L1 completeness), SME gold-set sign-off, human a11y/keyboard/contrast, dual Lovable URL retirement decision, distributed Ask rate limits (IC-15 — in-memory only; no KV/Redis env provisioned).
 
 **Engineering posture at go-live:** educating with references — graph-retrieved teaching + reviewed cites when present; not CDS; Ask not fully evidence-grounded; EvidenceServiceError outage honesty; approve requires `claim_support=supports`; Academy foundation track is a **scaffold** on Mechanism (not a finished curriculum).
 
@@ -74,9 +74,9 @@
 |-------|--------|-------|
 | **A / A2** | **DONE** | `bun scripts/smoke-prd-a2.ts` **ALL PASSED** this audit |
 | **B** | **PARTIAL** | draft-ext-4 + coverage; TNF→RA on-path approved; PD-1 partial; IFN scaffold-ish |
-| **C** | **PARTIAL** | Lit workflow UI; no live PubMed bulk ingest |
-| **D** | **PARTIAL** | Registry interface-only; `implementedModels() === []` |
-| **E** | **PARTIAL** | Workbench candidates only; no KG write-back |
+| **C** | **PARTIAL** | Lit workflow UI; honesty: not live PubMed bulk ingest |
+| **D** | **PARTIAL** | Registry planned/interface-only · not live; `implementedModels() === []` |
+| **E** | **PARTIAL** | Workbench candidates + human-gated curation handoff stub; no KG write-back |
 
 ---
 
@@ -92,7 +92,7 @@
 | IC-06 Exemplars | **PARTIAL** | TNF→RA on-path **done**; PD-1 partial; IFN→SLE scaffold-ish |
 | IC-08 Graph snapshot | **DONE** | Shared snapshot on trust surfaces |
 | IC-11 Gap queue | **DONE (candidates)** | No auto-approve |
-| IC-15 Rate limits | **NOT SHIPPED** | In-memory 8/min/IP accepted for beta |
+| IC-15 Rate limits | **RESIDUAL** | In-memory 8/min/IP (`ASK_RATE_LIMIT_BACKEND`); no KV/Upstash/Redis env — shared limiter deferred |
 | IC-16 A11y/perf | **PARTIAL** | Automated available; **human sign-off open** |
 
 ---
@@ -135,7 +135,7 @@
 
 | Item | Status |
 |------|--------|
-| Full vitest suite | **NOT RUN** (hang risk D-11) |
+| Full vitest suite | D-11 mitigated in vitest config; prefer targeted file runs in CI-local until confirmed green |
 | Lighthouse / CWV | **Not run** |
 | Human keyboard/contrast a11y | **Open** |
 | SME gold-set sign-off | **Open** |
@@ -163,7 +163,7 @@ Do **not** mass-approve or invent PMIDs.
 - Neon Auth + JWKS; curation admin-gated; signup gets `user` only; admin explicit.
 - Approve invariants + identifier gate; audit events table on production.
 - Ask clinical abstain; emergency disable env; citation validation before return.
-- Rate limit: in-memory soft limit — accepted beta residual (IC-15).
+- Rate limit: in-memory soft limit per isolate (`ASK_RATE_LIMIT_BACKEND=in-memory`) — accepted beta residual (IC-15). No Vercel KV / Upstash / Redis env present; do not invent infra. Map prune hardened (drop idle keys before wipe).
 - Dual public URL (Lovable) remains an ops honesty issue (D-06).
 
 ---
@@ -174,8 +174,8 @@ Do **not** mass-approve or invent PMIDs.
 |----|-----|-------------|--------|
 | D-05 | P0 science | Sparse Gate C (9/549) | **Open** — TNF on-path reviewed; PD-1 1/4 + Chemnitz partial; IFN scaffold (BAFF detour approved); see `docs/CURATOR_EVIDENCE_QUEUE.md` P0 matrix |
 | D-06 | P1 | Dual public URLs (Vercel + Lovable) | **Open** |
-| D-08 | P1 | In-memory rate limit | Accepted for beta |
-| D-11 | P2 | Vitest hang risk | Open |
+| D-08 | P1 | In-memory rate limit | Accepted for beta (IC-15 residual; no shared store env) |
+| D-11 | P2 | Vitest hang risk | **Mitigated** — removed `@vitejs/plugin-react` from `vitest.config.ts` (was hanging at collection); node env + forks; jsdom only for `.tsx` |
 | D-16 | P0 | Prod SHA lag | **Closed at b8030fb**; watch after this push |
 | D-18 | P1 | Local smoke defaults to vercel-dev | **Open** (ops hygiene) |
 | D-19 | P1 | Outage vs empty citations | **Closed** in `b8030fb` |

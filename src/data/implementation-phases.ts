@@ -49,7 +49,8 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
       "Smoke checks cover step gates, identifier hygiene, conflict detection, and export meta.curation=unreviewed.",
     ],
     status: "partial",
-    notes: "Deepened local workflow + Research UI + curation-candidate export. Live PubMed/Crossref bulk ingest is still not shipped — identifier verification remains the existing server-side curation path after human import.",
+    notes:
+      "NOT LIVE bulk ingest. Local workflow + Research UI + curation-candidate export only. PubMed/Crossref identifier verification remains the existing server-side curation path after human import — this scaffold never invents PMIDs or pretends bulk retrieval is wired.",
   },
   {
     id: "D",
@@ -65,10 +66,11 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
       "MODEL_REGISTRY rendered with status badges, request-shape previews, inputs/outputs, limitations.",
       "invokeModelStub / dryRunAllStubs refuse all current adapters with scientificClaimAllowed=false.",
       "implementedModels() remains empty until a real adapter ships.",
-      "Methods and Research both surface the registry with honest not-implemented copy.",
+      "Methods and Research both surface the registry with honest not-implemented / planned copy.",
     ],
     status: "partial",
-    notes: "Contracts + stub dry-run + request-shape validation + promotion gate + planned molecular stubs (TCR–pMHC dock, cytokine–receptor MD) on Research/Methods. Still no live predictors — implementedModels() empty.",
+    notes:
+      "NOT LIVE predictors. Contracts + stub dry-run + request-shape validation + promotion gate + planned molecular stubs on Research/Methods. UI labels planned/interface-only; implementedModels() stays [].",
   },
   {
     id: "E",
@@ -78,15 +80,18 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
       "Guided research flow: question → evidence → mechanism → hypothesis → experiment proposal → review.",
       "Step gating with furthest-step unlock; optional import of Ask IDs, literature claims, mechanism summaries as candidates.",
       "All AI/user drafts labelled candidate; versioned JSON export; never auto-promote to curated KG or experimentally_supported.",
+      "Human-gated curation-queue handoff stub (download + /curation link) — not silent KG mutation.",
     ],
     acceptance: [
       "Workbench UI first-class on Research layer (not a 13th nav item).",
       "Hypothesis and experiment proposal artefacts stay candidate/draft_proposal.",
       "Export includes schema + graph/extensions version identifiers and candidateFlags.",
       "Smoke/tests cover step machine, candidate flags, and import helpers (no fake PMIDs/model results).",
+      "Curation handoff packages declare wired=false / kgWrite=false / autoPromote=false.",
     ],
     status: "partial",
-    notes: "Six-step machine with visit gating, Ask/lit/mechanism imports, Literature→Workbench handoff, curation-manifest import, local draft save, URL seeds, versioned export (wb-1). Still no lab execution, KG write-back, or auto-promotion.",
+    notes:
+      "NOT WIRED to KG write-back. Six-step machine with Ask/lit/mechanism imports, local draft save, versioned export (wb-1), plus human-gated curation-queue handoff download. No lab execution or auto-promotion.",
   },
 ];
 

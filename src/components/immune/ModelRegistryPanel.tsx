@@ -193,21 +193,22 @@ export default function ModelRegistryPanel({ compact = false }: { compact?: bool
           Advanced analysis adapters are modular <b>contracts</b> for omics, structure, pMHC/epitope, genomics, and agents.
           {" "}
           {summary.implemented === 0
-            ? "None are wired into production inference in this build — dry-run always returns typed not_available."
+            ? "None are live predictors in this build (implementedModels() is empty) — dry-run always returns typed not_available and never invents scores."
             : `${summary.implemented} adapter(s) marked implemented.`}
           {" "}Also documented on <Link to="/methods">Methods &amp; trust</Link>.
         </p>
       )}
       {compact && (
         <p className="small muted" style={{ marginBottom: 10 }}>
-          {summary.total} interface contracts · {summary.implemented} implemented ·{" "}
+          {summary.total} interface contracts · {summary.implemented} live/implemented ·{" "}
           <Link to="/research" hash="model-registry">Full registry on Research</Link>
         </p>
       )}
 
       <p className="xs muted" style={{ marginBottom: 10 }}>
         Honesty: {summary.interfaceOnly} interface-only · {summary.planned} planned · {summary.implemented} implemented
-        {molecular.length ? ` · ${molecular.length} molecular stubs (planned)` : ""}
+        {molecular.length ? ` · ${molecular.length} molecular stubs (planned · not live)` : ""}
+        {" · badges say “not live” until a real adapter ships"}
       </p>
 
       {!compact && (

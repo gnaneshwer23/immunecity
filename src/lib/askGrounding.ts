@@ -512,14 +512,48 @@ Rules:
 GRAPH EXTRACT:
 `;
 
-/* Simple per-isolate sliding-window limiter keyed by client IP. */
+/**
+ * Ask soft rate limit (IC-15).
+ * Backend is per-isolate in-memory only — no Vercel KV / Upstash / Redis env is
+ * provisioned in this project, so limits reset on cold start and do not span
+ * serverless instances. Residual documented in docs/RELEASE_AUDIT.md.
+ */
+export const ASK_RATE_LIMIT_BACKEND = "in-memory" as const;
+export const ASK_RATE_LIMIT_DEFAULT = { limit: 8, windowMs: 60_000 } as const;
+
 const hits = new Map<string, number[]>();
-export function rateLimited(key: string, limit = 8, windowMs = 60_000, now = Date.now()): boolean {
+
+/** Drop expired timestamps; prune idle keys instead of wiping the whole map. */
+function pruneRateLimitMap(now: number, windowMs: number) {
+  for (const [k, times] of hits) {
+    const kept = times.filter((t) => now - t < windowMs);
+    if (kept.length === 0) hits.delete(k);
+    else if (kept.length !== times.length) hits.set(k, kept);
+  }
+  if (hits.size > 5000) {
+    const overflow = hits.size - 4000;
+    let dropped = 0;
+    for (const k of hits.keys()) {
+      hits.delete(k);
+      if (++dropped >= overflow) break;
+    }
+  }
+}
+
+export function rateLimited(
+  key: string,
+  limit = ASK_RATE_LIMIT_DEFAULT.limit,
+  windowMs = ASK_RATE_LIMIT_DEFAULT.windowMs,
+  now = Date.now(),
+): boolean {
   const arr = (hits.get(key) || []).filter((t) => now - t < windowMs);
-  if (arr.length >= limit) { hits.set(key, arr); return true; }
+  if (arr.length >= limit) {
+    hits.set(key, arr);
+    return true;
+  }
   arr.push(now);
   hits.set(key, arr);
-  if (hits.size > 5000) hits.clear();
+  if (hits.size > 1000) pruneRateLimitMap(now, windowMs);
   return false;
 }
 

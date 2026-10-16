@@ -54,7 +54,7 @@ function Research() {
       <PageHead
         kicker="Layer 12 · Research Workbench"
         title="Turn a research question into a reviewable investigation."
-        lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature ingest and advanced adapters remain partial / interface-only."
+        lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature is a local candidate workflow (not live PubMed bulk ingest); model adapters are planned / interface-only stubs."
         stats={[
           { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },
@@ -64,6 +64,9 @@ function Research() {
 
       <section className="section" id="workbench">
         <h2>Workbench</h2>
+        <p className="lede">
+          Phase E — candidates only. Curation queue handoff is a human-gated export stub (wired=false); no silent KG write-back.
+        </p>
         <ScientificWorkbench
           pendingLitImport={litHandoff}
           onPendingLitImportConsumed={clearLitHandoff}
@@ -74,7 +77,7 @@ function Research() {
       <section className="section" id="literature">
         <h2>Literature intelligence</h2>
         <p className="lede">
-          Phase C workflow — export candidates or send them into the workbench evidence step above (still drafts).
+          Phase C workflow — local metadata + candidate claims. Not live bulk PubMed ingest; export candidates or send them into the workbench evidence step (still drafts).
         </p>
         <LiteratureQueue onSendToWorkbench={setLitHandoff} />
       </section>
@@ -83,7 +86,7 @@ function Research() {
         <h2>Advanced model registry</h2>
         <p className="lede">
           Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters.
-          Status remains <b>interface-only</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.
+          Badges read <b>planned / interface-only · not live</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.
         </p>
         <ModelRegistryPanel />
       </section>

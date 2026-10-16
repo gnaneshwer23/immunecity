@@ -336,8 +336,8 @@ export const CATEGORY_LABEL: Record<ModelCategory, string> = {
 };
 
 export const STATUS_LABEL: Record<ModelStatus, string> = {
-  planned: "Planned",
-  "interface-only": "Not implemented",
+  planned: "Planned · not live",
+  "interface-only": "Interface only · not live",
   implemented: "Implemented",
 };
 

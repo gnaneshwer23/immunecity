@@ -13,6 +13,7 @@ import {
   createWorkbenchSession,
   experimentCompleteness,
   exportWorkbench,
+  exportWorkbenchCurationHandoff,
   importLiteraturePayload,
   importMechanismResult,
   parseLocalDraft,
@@ -83,6 +84,7 @@ export default function ScientificWorkbench({
   const [mechOutcome, setMechOutcome] = useState(seed?.outcomeId || "D001");
   const [mechMsg, setMechMsg] = useState<string | null>(null);
   const [draftMsg, setDraftMsg] = useState<string | null>(null);
+  const [handoffMsg, setHandoffMsg] = useState<string | null>(null);
   const [seedApplied, setSeedApplied] = useState(false);
   const sessionRef = useRef(session);
   sessionRef.current = session;
@@ -539,6 +541,40 @@ export default function ScientificWorkbench({
             Disposition: {session.reviewDisposition}. “Approve for export only” does not write the curated KG and does not
             mean experimentally supported. Expert sign-off in curation is a separate step.
           </p>
+          <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+            <button
+              type="button"
+              className="btn sm"
+              disabled={session.evidence.length === 0}
+              title={
+                session.evidence.length === 0
+                  ? "Add at least one candidate evidence note first"
+                  : "Download a candidate package for manual /curation import — does not write the KG"
+              }
+              onClick={() => {
+                const text = exportWorkbenchCurationHandoff(session);
+                const blob = new Blob([text], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${session.session_id}.curation-handoff.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                setHandoffMsg(
+                  "Downloaded curation-queue handoff (wired=false). Open Curation to import manually — nothing was written to the curated graph.",
+                );
+              }}
+            >
+              Promote to curation queue (export stub)
+            </button>
+            <Link to="/curation" className="btn sm">
+              Open Curation
+            </Link>
+          </div>
+          <p className="xs muted">
+            Handoff is human-gated: download → paste/import in Curation → admin review. Not wired for silent KG mutation.
+          </p>
+          {handoffMsg ? <p className="xs muted" role="status">{handoffMsg}</p> : null}
           {session.importLog.length > 0 && (
             <p className="xs muted">Import log: {session.importLog.join(" · ")}</p>
           )}
@@ -586,6 +622,7 @@ export default function ScientificWorkbench({
             setSession(createWorkbenchSession(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION));
             setImportMsg(null);
             setDraftMsg(null);
+            setHandoffMsg(null);
             setMechMsg(null);
           }}
         >
