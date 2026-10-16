@@ -1,6 +1,6 @@
 /** Public marketing IA — separate from the twelve atlas layer groups in nav.ts. */
 
-/** Primary header links (Insights lives under More). */
+/** Primary header links. Insights stays footer-only until the series is ready. */
 export const MARKETING_NAV_PRIMARY = [
   { label: "Platform", path: "/overview" },
   { label: "Academy", path: "/academy" },
@@ -9,15 +9,16 @@ export const MARKETING_NAV_PRIMARY = [
   { label: "About", path: "/about" },
 ] as const;
 
-/** Secondary items under More — keep Insights here until the series is reviewed and useful. */
-export const MARKETING_NAV_MORE = [
-  { label: "Insights", path: "/insights" },
-] as const;
+/**
+ * Secondary header items. Empty by design: a single Insights destination does not
+ * justify a More menu (and overflow clipping). Keep Insights in the footer.
+ */
+export const MARKETING_NAV_MORE = [] as const;
 
-/** Distinct collaborate action (not buried in More). */
+/** Distinct collaborate action (not buried in a submenu). */
 export const MARKETING_NAV_ACTION = { label: "Collaborate", path: "/collaborate" } as const;
 
-/** Flat list for tests and footer alignment checks. */
+/** Flat list for tests, mobile panel, and footer alignment checks. */
 export const MARKETING_NAV = [
   ...MARKETING_NAV_PRIMARY,
   ...MARKETING_NAV_MORE,

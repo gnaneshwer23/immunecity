@@ -1,25 +1,26 @@
 /* Immune Super Intelligence's editorial biotech layer. Scientific category tokens remain in atlas.css. */
 html[data-theme='light'] {
-  --bg: oklch(0.98 0.006 220);
-  --surface: oklch(1 0 0);
-  --surface-2: oklch(0.96 0.012 220);
-  --surface-3: oklch(0.93 0.023 220);
-  --text: oklch(0.28 0.063 242);
-  --muted: oklch(0.47 0.04 235);
-  --faint: oklch(0.51 0.025 235);
-  --primary: oklch(0.36 0.075 238);
-  --primary-hover: oklch(0.29 0.065 238);
-  --primary-soft: oklch(0.92 0.028 227);
-  --primary-foreground: oklch(1 0 0);
-  --accent: oklch(0.93 0.025 225);
+  /* Warm off-white / deep navy / restrained teal — scientific product, not corporate purple */
+  --bg: oklch(0.975 0.008 85);
+  --surface: oklch(0.995 0.004 90);
+  --surface-2: oklch(0.96 0.01 85);
+  --surface-3: oklch(0.93 0.014 90);
+  --text: oklch(0.26 0.045 250);
+  --muted: oklch(0.46 0.03 250);
+  --faint: oklch(0.55 0.02 250);
+  --primary: oklch(0.42 0.08 185);
+  --primary-hover: oklch(0.35 0.075 185);
+  --primary-soft: oklch(0.93 0.03 180);
+  --primary-foreground: oklch(0.99 0.005 90);
+  --accent: oklch(0.94 0.02 175);
   --accent-foreground: var(--text);
-  --border: oklch(0.3 0.04 235 / 0.13);
-  --border-strong: oklch(0.3 0.04 235 / 0.25);
-  --divider: oklch(0.91 0.016 225);
-  --hero-bg: oklch(0.88 0.046 240);
-  --hero-ink: oklch(0.27 0.075 243);
-  --mint: oklch(0.9 0.06 168);
-  --mint-ink: oklch(0.32 0.06 169);
+  --border: oklch(0.35 0.03 250 / 0.14);
+  --border-strong: oklch(0.35 0.03 250 / 0.26);
+  --divider: oklch(0.9 0.012 85);
+  --hero-bg: oklch(0.955 0.012 90);
+  --hero-ink: oklch(0.26 0.045 250);
+  --mint: oklch(0.92 0.045 170);
+  --mint-ink: oklch(0.32 0.055 175);
   /* Legacy aliases used across atlas/biotech layers */
   --ink: var(--text);
   --line: var(--border);
@@ -602,7 +603,7 @@ html[data-theme][data-theme] {
 }
 
 /* Marketing IA — shared chrome + section rhythm */
-.marketing-topbar { gap: 18px; border-bottom: 1px solid var(--border); }
+.marketing-topbar { gap: 18px; border-bottom: 1px solid var(--border); position: relative; }
 .marketing-topbar.home-topbar { border-bottom-color: transparent; }
 .marketing-topbar .brand { gap: 12px; padding: 4px 0; flex-shrink: 0; min-width: max-content; }
 .marketing-topbar .brand:focus-visible { outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent); outline-offset: 6px; border-radius: 6px; }
@@ -610,17 +611,127 @@ html[data-theme][data-theme] {
 .marketing-topbar .brand-text { min-width: max-content; }
 .marketing-topbar .brand-text strong { white-space: nowrap; }
 .marketing-topbar .brand-text small { white-space: nowrap; letter-spacing: -0.01em; max-width: none; }
-.marketing-nav { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; justify-content: center; scrollbar-width: none; }
-.marketing-nav::-webkit-scrollbar { display: none; }
+/* overflow:visible — never clip dropdowns; horizontal scroll removed (dead-end UX) */
+.marketing-nav { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0; overflow: visible; justify-content: center; }
 .marketing-nav-link { position: relative; font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 10px; white-space: nowrap; border-radius: 4px; transition: color .15s, background .15s; }
 .marketing-nav-link:hover { color: var(--text); background: color-mix(in oklab, var(--primary) 5%, transparent); }
+.marketing-nav-link:focus-visible { outline: 2px solid color-mix(in oklab, var(--primary) 55%, transparent); outline-offset: 2px; }
 .marketing-nav-link.current { color: var(--text); font-weight: 500; }
 .marketing-nav-link.current::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 2px; height: 1.5px; background: var(--primary); border-radius: 1px; }
+.marketing-nav-link.collab-action { color: var(--primary); font-weight: 500; }
 .topbar-cta { margin-left: auto; min-height: 36px; padding: 0 14px; font-size: 12px; flex-shrink: 0; }
 .marketing-shell main { max-width: none; }
-.marketing-shell .marketing-mobile-nav a.active { background: var(--primary-soft); color: var(--primary); }
 .sf-grid-marketing { grid-template-columns: 1.5fr repeat(4, 1fr); }
 .sf-grid-marketing .sf-col a { display: block; }
+
+/* Compact marketing panel — tablet + mobile (never leave a dead zone) */
+.marketing-nav-scrim {
+  position: fixed; inset: var(--top) 0 0; z-index: 55;
+  background: color-mix(in oklab, var(--text) 28%, transparent); border: 0; cursor: pointer;
+}
+.marketing-compact-nav {
+  position: fixed; top: var(--top); right: 0; bottom: 0; z-index: 60;
+  width: min(320px, 92vw); background: var(--surface); border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg); display: flex; flex-direction: column; padding: 12px 16px 24px;
+  animation: bio-rise .2s ease both;
+}
+.marketing-compact-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.marketing-compact-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.marketing-compact-links { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+.marketing-compact-links a {
+  display: block; padding: 12px 10px; border-radius: 6px; color: var(--text); text-decoration: none; font-size: 15px;
+}
+.marketing-compact-links a:hover, .marketing-compact-links a:focus-visible { background: var(--primary-soft); color: var(--primary); outline: none; }
+.marketing-compact-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 500; }
+.marketing-compact-links a.collab-action { color: var(--primary); font-weight: 500; }
+.marketing-compact-cta { padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px; }
+.marketing-compact-cta .bio-primary { width: 100%; justify-content: center; }
+
+/* Wide: desktop links; hide compact toggle. Narrow: hide links+CTA, show toggle. */
+@media (min-width: 1101px) {
+  .marketing-topbar .marketing-nav-toggle { display: none !important; }
+}
+@media (max-width: 1100px) {
+  .marketing-nav { display: none; }
+  .marketing-topbar .topbar-cta { display: none; }
+  /* Override atlas/biotech rule that hides .nav-toggle above 800px — kills the 801–1100 dead zone */
+  .marketing-topbar .marketing-nav-toggle { display: inline-grid !important; order: 4; margin-left: auto; }
+}
+
+/* Home hero — brand + headline + live pathway (not cell-image only) */
+.home-hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0;
+  min-height: 0;
+  align-items: stretch;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--hero-bg) 88%, var(--surface)) 0%, var(--surface) 100%);
+}
+.home-hero-split .bio-hero-image { display: none; }
+.home-hero-copy {
+  position: relative; z-index: 1;
+  padding: 56px 40px 48px;
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: 560px;
+}
+.home-brand-signal {
+  margin: 0 0 8px;
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+}
+.home-hero-split h1 {
+  font-size: clamp(2rem, 1.55rem + 1.8vw, 3.15rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  max-width: 14ch;
+  margin: 0 0 16px;
+}
+.home-hero-split .hero-description {
+  font-size: 15.5px;
+  line-height: 1.6;
+  max-width: 38rem;
+  margin: 0 0 12px;
+  color: var(--text);
+}
+.home-hero-demo {
+  padding: 40px 36px 40px 12px;
+  display: flex;
+  align-items: center;
+}
+.home-pathway-hero {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 20px 16px;
+  box-shadow: 0 18px 40px -28px color-mix(in oklab, var(--text) 35%, transparent);
+}
+.home-pathway-hero-meta { margin-bottom: 14px; }
+.home-pathway-hero-meta h2 { font-size: 1.2rem; margin: 6px 0 8px; font-weight: 500; letter-spacing: -0.02em; }
+.home-pathway-hero-meta p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); max-width: 36rem; }
+.home-status-compact { margin-top: 22px; }
+.mkt-lede { font-size: 15.5px; line-height: 1.65; max-width: 42rem; color: var(--muted); }
+.mkt-section-head { margin-bottom: 8px; }
+.mkt-section-lede { font-size: 14.5px; color: var(--muted); max-width: 40rem; margin: 0 0 8px; }
+.mkt-trust { font-size: 15px; line-height: 1.65; max-width: 46rem; color: var(--text); }
+.mkt-trust a { color: var(--primary); font-weight: 500; }
+.mkt-status-chip {
+  display: inline-block; font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border); color: var(--muted);
+}
+.mkt-status-primary { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 40%, var(--border)); }
+.mkt-status-warn { color: var(--text); }
+
+@media (max-width: 980px) {
+  .home-hero-split { grid-template-columns: 1fr; }
+  .home-hero-copy { max-width: none; padding: 40px 28px 20px; }
+  .home-hero-split h1 { max-width: none; }
+  .home-hero-demo { padding: 8px 28px 36px; }
+}
 
 /* Home sections */
 .home-sections .bio-section:last-of-type { border-bottom: 0; }
@@ -704,15 +815,6 @@ html[data-theme][data-theme] {
 .collab-address code { font-size: 13px; padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
 .collab-error { color: var(--destructive, #b42318); font-size: 12.5px; margin-top: 4px; }
 
-/* Marketing more menu */
-.marketing-more { position: relative; }
-.marketing-more-btn { font: inherit; font-size: 13px; color: var(--muted); background: transparent; border: 0; padding: 8px 10px; cursor: pointer; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; }
-.marketing-more-btn:hover, .marketing-more-btn.open { color: var(--text); background: color-mix(in oklab, var(--primary) 5%, transparent); }
-.marketing-more-menu { position: absolute; top: calc(100% + 4px); right: 0; min-width: 160px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-lg); padding: 6px; z-index: 40; }
-.marketing-more-menu a { display: block; padding: 8px 10px; font-size: 13px; color: var(--text); text-decoration: none; border-radius: 4px; }
-.marketing-more-menu a:hover { background: color-mix(in oklab, var(--primary) 6%, transparent); }
-.marketing-nav-link.collab-action { color: var(--primary); font-weight: 500; }
-
 @media (max-width: 900px) {
   .academy-landing .academy-track-cards,
   .overview-goals,
@@ -748,6 +850,16 @@ html[data-theme][data-theme] {
 .methods.marketing-page { max-width: 1040px; }
 .methods.marketing-page .section { max-width: 52rem; }
 .methods.marketing-page .rs-table { width: 100%; margin-top: 14px; }
+.methods-toc {
+  display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: baseline;
+  padding: 16px 0 8px; margin: 0 0 8px; border-bottom: 1px solid var(--border);
+}
+.methods-toc-label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+}
+.methods-toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.methods-toc a { font-size: 13px; color: var(--primary); font-weight: 500; text-decoration: none; }
+.methods-toc a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .overview-page { padding-top: 12px; }
 .overview-page .bio-page-head { padding-top: 12px; }
 .overview-page > .lede { margin: 4px 0 8px; font-size: 13.5px; line-height: 1.55; color: var(--muted); max-width: 46rem; }
@@ -762,8 +874,6 @@ html[data-theme][data-theme] {
 .collab-form .bio-actions { margin-top: 4px; }
 .collab-form-note { margin-top: 12px; }
 @media (max-width: 1100px) {
-  .marketing-nav { display: none; }
-  .topbar-cta { display: none; }
   .home-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .home-step { border-right: 0; border-bottom: 1px solid var(--border); padding: 20px 0; }
   .home-step:nth-child(odd) { padding-right: 16px; }

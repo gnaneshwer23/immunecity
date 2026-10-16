@@ -19,11 +19,13 @@ describe("marketing IA wiring", () => {
     }
   });
 
-  it("puts Academy on /academy and Insights under More; Collaborate is a distinct action", () => {
+  it("puts Academy on /academy; Insights footer-only (no More menu); Collaborate distinct", () => {
     expect(MARKETING_NAV_PRIMARY.find((i) => i.label === "Academy")?.path).toBe("/academy");
     expect(FOOTER_GROUPS[0].items.find((i) => i.path === "/academy")?.label).toBe("Academy");
-    expect(MARKETING_NAV_MORE.some((i) => i.path === "/insights")).toBe(true);
+    expect(MARKETING_NAV_MORE).toHaveLength(0);
     expect(MARKETING_NAV_PRIMARY.some((i) => i.path === "/insights")).toBe(false);
+    expect(MARKETING_NAV.some((i) => i.path === "/insights")).toBe(false);
+    expect(FOOTER_GROUPS.some((g) => g.items.some((i) => i.path === "/insights"))).toBe(true);
     expect(MARKETING_NAV_ACTION.path).toBe("/collaborate");
     expect(isMarketingPath("/collaborate")).toBe(true);
     expect(isMarketingPath("/academy")).toBe(true);

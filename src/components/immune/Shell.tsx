@@ -1,13 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, Menu, MessageSquare, X } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { NAV_GROUPS } from "./nav";
 import {
   FOOTER_GROUPS,
   isMarketingPath,
   MARKETING_NAV,
   MARKETING_NAV_ACTION,
-  MARKETING_NAV_MORE,
   MARKETING_NAV_PRIMARY,
 } from "@/data/marketingNav";
 import { Button } from "@/components/ui/button";
@@ -24,49 +23,6 @@ import {
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
-
-function MarketingMoreMenu() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const esc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", esc);
-    return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("keydown", esc);
-    };
-  }, [open]);
-  return (
-    <div className="marketing-more" ref={ref}>
-      <button
-        type="button"
-        className={`marketing-more-btn${open ? " open" : ""}`}
-        aria-expanded={open}
-        aria-haspopup="true"
-        onClick={() => setOpen(!open)}
-      >
-        More
-        <ChevronDown size={14} />
-      </button>
-      {open ? (
-        <div className="marketing-more-menu" role="menu" aria-label="More">
-          {MARKETING_NAV_MORE.map((item) => (
-            <Link key={item.path} to={item.path} role="menuitem" onClick={() => setOpen(false)}>
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
 
 function Logo() {
   return (
@@ -134,7 +90,7 @@ function SiteFooter() {
             Educational immunology platform with curated references. Ask teaches from the graph—not patient-specific
             advice or fully evidence-grounded AI.
           </p>
-          <span className="sf-status"><span className="sf-dot" /> Educational beta · reviewed cites when available · Academy scaffolds in development</span>
+          <span className="sf-status"><span className="sf-dot" /> Educational model · reviewed cites when available · Academy scaffolds in development</span>
         </div>
         {FOOTER_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">
@@ -155,13 +111,103 @@ function SiteFooter() {
   );
 }
 
+function MarketingCompactNav({
+  open,
+  onClose,
+  pathname,
+  panelId,
+}: {
+  open: boolean;
+  onClose: () => void;
+  pathname: string;
+  panelId: string;
+}) {
+  const panelRef = useRef<HTMLElement>(null);
+  const ctaPath = pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH;
+  const ctaLabel = pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA;
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    const onPointer = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (panelRef.current?.contains(t)) return;
+      const toggle = document.querySelector(".marketing-nav-toggle");
+      if (toggle?.contains(t)) return;
+      onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    const first = panelRef.current?.querySelector<HTMLElement>("a, button");
+    first?.focus();
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <>
+      <button type="button" className="marketing-nav-scrim" aria-label="Close navigation" onClick={onClose} />
+      <nav
+        ref={panelRef}
+        id={panelId}
+        className="marketing-compact-nav"
+        aria-label="Site"
+      >
+        <div className="marketing-compact-head">
+          <span className="marketing-compact-label">Navigate</span>
+          <Button variant="ghost" size="icon" className="icon-btn" onClick={onClose} aria-label="Close navigation">
+            <X size={20} />
+          </Button>
+        </div>
+        <div className="marketing-compact-links">
+          {MARKETING_NAV.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={item.path === MARKETING_NAV_ACTION.path ? "collab-action" : undefined}
+              activeOptions={{ exact: item.path === "/" }}
+              activeProps={{ className: "active" }}
+              onClick={onClose}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+        <div className="marketing-compact-cta">
+          <Button asChild className="bio-primary">
+            <Link to={ctaPath} onClick={onClose}>
+              {ctaLabel}
+            </Link>
+          </Button>
+        </div>
+      </nav>
+    </>
+  );
+}
+
 export default function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const marketing = isMarketingPath(pathname);
   const isHome = pathname === "/";
-  useEffect(() => { setAskOpen(false); }, [pathname]);
+  const compactNavId = useId();
+  const closeCompact = () => setOpen(false);
+
+  useEffect(() => { setAskOpen(false); setOpen(false); }, [pathname]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -172,6 +218,7 @@ export default function Shell({ children }: { children: ReactNode }) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
+
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
@@ -180,7 +227,18 @@ export default function Shell({ children }: { children: ReactNode }) {
           <Button variant="ghost" size="icon" className="icon-btn nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open} title="Toggle navigation"><Menu size={20} /></Button>
         )}
         {marketing && (
-          <Button variant="ghost" size="icon" className="icon-btn nav-toggle marketing-nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open} title="Toggle navigation"><Menu size={20} /></Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="icon-btn nav-toggle marketing-nav-toggle"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-expanded={open}
+            aria-controls={compactNavId}
+            title="Toggle navigation"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </Button>
         )}
         <Link className="brand" to="/">
           <Logo />
@@ -200,7 +258,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                   {item.label}
                 </Link>
               ))}
-              <MarketingMoreMenu />
               <Link
                 to={MARKETING_NAV_ACTION.path}
                 className="marketing-nav-link collab-action"
@@ -214,6 +271,12 @@ export default function Shell({ children }: { children: ReactNode }) {
                 {pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA}
               </Link>
             </Button>
+            <MarketingCompactNav
+              open={open}
+              onClose={closeCompact}
+              pathname={pathname}
+              panelId={compactNavId}
+            />
           </>
         ) : (
           <nav className="pillar-nav" aria-label="Primary">
@@ -262,27 +325,6 @@ export default function Shell({ children }: { children: ReactNode }) {
               </Link>
             </div>
             <p className="nav-foot">Educational atlas with references — not patient-specific advice.</p>
-          </nav>
-        )}
-        {marketing && open && (
-          <nav className="sidebar open marketing-mobile-nav" aria-label="Site">
-            <div className="nav-label">Explore</div>
-            <div className="nav-group">
-              {MARKETING_NAV.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  activeOptions={{ exact: item.path === "/" }}
-                  activeProps={{ className: "active" }}
-                  onClick={() => setOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <Link to={pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH} onClick={() => setOpen(false)}>
-                {pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA}
-              </Link>
-            </div>
           </nav>
         )}
         <main id="main" tabIndex={-1}>
