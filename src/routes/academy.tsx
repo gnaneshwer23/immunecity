@@ -141,14 +141,14 @@ function AcademyLanding() {
       <PageHead
         kicker="Immunology Academy"
         title="Learn mechanisms as connected systems."
-        lede="Academy is a learning layer over Cell Atlas, Mechanism, Knowledge Graph, Disease, Therapy and Evidence — not a separate thirteenth product. Progress is local to this browser. Not certification."
+        lede="Academy is the learning layer under Immune Super Intelligence — connected to Cell Atlas, Mechanism, Knowledge Graph, Disease, Therapy and Evidence. Progress stays in this browser. Not certification."
       />
 
       <section className="section">
         <h2>Tracks</h2>
         <p>
-          Foundation is navigable today. Intermediate reuses existing Mechanism lessons as an honest scaffold.
-          Advanced is labelled scaffold only — no modules yet.
+          <b>Foundation</b> is the primary navigable track today. <b>Intermediate</b> and <b>Advanced</b> are labelled
+          development scaffolds (Intermediate reuses Mechanism lessons; Advanced has no modules yet).
         </p>
         <div className="academy-track-cards">
           {ACADEMY_TRACKS.map((track) => (

@@ -60,6 +60,17 @@ function LiveEvidenceStatus() {
   );
 }
 
+const METHODS_TOC = [
+  { href: "#live-ev-heading", label: "Live evidence coverage" },
+  { href: "#ontology", label: "Graph ontology" },
+  { href: "#signs", label: "Relationship signs" },
+  { href: "#evidence-review", label: "Evidence lifecycle" },
+  { href: "#models", label: "Model assumptions" },
+  { href: "#phases", label: "Platform phases" },
+  { href: "#limitations", label: "Limitations" },
+  { href: "#a11y", label: "Accessibility" },
+] as const;
+
 function Methods() {
   const snap = graphReleaseSnapshot();
   const signs = Object.entries(SEM).reduce<Record<string, string[]>>((a, [rel, s]) => ((a[s] ||= []).push(rel), a), {});
@@ -68,19 +79,30 @@ function Methods() {
       <PageHead
         kicker="Evidence & Methods"
         title="See what supports a claim—and where the evidence stops."
-        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation is only counted as support when it is mapped to that directional claim and reviewed under the platform’s curation process. Educational beta — teaching with references, not clinical decision support.`}
+        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation is only counted as support when it is mapped to that directional claim and reviewed under the platform’s curation process. Educational teaching with references — not clinical decision support.`}
         stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]}
       />
 
+      <nav className="methods-toc" aria-label="On this page">
+        <span className="methods-toc-label">On this page</span>
+        <ol>
+          {METHODS_TOC.map((item) => (
+            <li key={item.href}>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
       <LiveEvidenceStatus />
 
-      <section className="section"><h2>1. The graph ontology</h2>
+      <section className="section" id="ontology"><h2>1. The graph ontology</h2>
         <p>Every concept is a typed node (cell, molecule, receptor, pathway, tissue, pathogen, disease, therapy, biomarker, trial and more) with a stable ID. Every link is one directional claim — subject, predicate, object — with a stable relationship ID of the form <code>REL-subject-predicate-object</code>, a mechanism, a confidence and, where known, a tissue.</p>
         <p>Release <code>{snap.snapshotAt}</code>: core graph v{snap.coreVersion} has {snap.coreNodes} concepts and {snap.coreRelationships} links. Extensions {snap.extensionsVersion} add {snap.draftNodes} draft concepts and {snap.draftRelationships} draft links; drafts are always labelled <b>Draft</b> and never counted as approved evidence. Runtime total is {snap.runtimeNodes} concepts / {snap.runtimeRelationships} links (same snapshot used on the homepage and footer).</p>
         {snap.versionNotes ? <p className="small muted">{snap.versionNotes}</p> : null}
       </section>
 
-      <section className="section"><h2>2. Relationship signs</h2>
+      <section className="section" id="signs"><h2>2. Relationship signs</h2>
         <ul>
           <li><b>+</b> carries an effect forward (e.g. {signs["+"]?.slice(0, 4).join(", ")}).</li>
           <li><b>−</b> flips it (e.g. {signs["-"]?.slice(0, 4).join(", ")}).</li>
@@ -89,7 +111,7 @@ function Methods() {
         </ul>
       </section>
 
-      <section className="section"><h2>3. Evidence review</h2>
+      <section className="section" id="evidence-review"><h2>3. Evidence lifecycle</h2>
         <p>A source supports a link only when a curator maps it to that exact relationship ID and records that it supports the claim. Citations attached to a concept describe the concept and never count as support for a link. Coverage figures on the <Link to="/evidence">Evidence</Link> page use only claim-checked support.</p>
         <h3 style={{ fontSize: "1rem", marginTop: 16 }}>Identifier verification ≠ claim approval</h3>
         <ul>
@@ -107,7 +129,7 @@ function Methods() {
           {(Object.keys(STATUS_INFO) as ReviewStatus[]).map((s) => <tr key={s}><td><span className={`badge rs rs-${s}`}>{STATUS_INFO[s].label}</span></td><td className="small">{STATUS_INFO[s].desc}</td></tr>)}
         </tbody></table>
         <p className="small">Inclusion criteria: peer-reviewed primary research, systematic reviews or regulatory documents with a PubMed ID or DOI; identifiers are checked against PubMed and Crossref metadata before approval. Approval requires claim_support = supports (plus a verified/matched identifier) and records the reviewer and date. Live claim-support counts are on <Link to="/evidence">Evidence</Link> — Gate C progress is real but sparse overall versus runtime link count.</p>
-        <p className="small">Sign-in and curation use <b>Neon Auth</b> with roles in <code>user_roles</code>. New accounts receive the reader role; admin is provisioned explicitly (not “first signup wins”). Approved citations are served by a server-side filter for public pages.</p>
+        <p className="small">Signed-in curation is role-gated: new accounts are readers; write access is provisioned explicitly. Only approved citations appear on public graph pages.</p>
       </section>
 
       <section className="section" id="models"><h2>4. Model assumptions</h2>
@@ -117,7 +139,7 @@ function Methods() {
           <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. Educational illustration — not patient-specific advice.</li>
           <li><b>Ask Immune Super Intelligence:</b> queries are classified, graph context is retrieved, reviewed relationship-level citations are attached when they exist for those links, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Sparse approved cites mean Ask is graph-retrieved, not fully evidence-grounded. Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
           <li><b>Research workbench / literature / model registry:</b> available on <Link to="/research">Research</Link> as candidate workflows and interface contracts (phases B–E partial) — never auto-promoted into the curated graph or live predictors.</li>
-          <li><b>Advanced model adapters</b> (omics, structure, pMHC/epitope, genomics, agents) are modular interface contracts only — none are implemented in production. Dry-run stubs return typed <code>not_available</code> and never invent scores or ranks. Full registry with request-shape previews on <Link to="/research" hash="model-registry">Research</Link>.</li>
+          <li><b>Advanced model adapters</b> (omics, structure, epitope, genomics, agents) are planned interfaces only — none run in production today. Dry-runs report not available and never invent scores. Registry: <Link to="/research" hash="model-registry">Research</Link>.</li>
         </ul>
         <ModelRegistryPanel compact />
       </section>
@@ -135,7 +157,7 @@ function Methods() {
         </tbody></table>
       </section>
 
-      <section className="section"><h2>5. Limitations</h2>
+      <section className="section" id="limitations"><h2>5. Limitations</h2>
         <ul>
           <li>Most links have not yet been claim-checked against a source; claim-level approved support is still sparse overall (single-digit approved relationship claims vs hundreds of runtime links) and does not imply clinical validation.</li>
           <li>Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.</li>
@@ -146,7 +168,7 @@ function Methods() {
         </ul>
       </section>
 
-      <section className="section"><h2>6. Accessibility</h2>
+      <section className="section" id="a11y"><h2>6. Accessibility</h2>
         <p>The knowledge graph has a <Link to="/graph">text table view</Link> with every link, keyboard focus is always visible, and detail drawers close with Escape. Please report barriers via the curation team.</p>
       </section>
     </div>

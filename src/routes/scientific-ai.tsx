@@ -159,25 +159,33 @@ function ScientificAi() {
         </div>
       </section>
 
+      <section className="section">
+        <h2>Ask entry</h2>
+        <p>
+          Use the Ask control on any page (or open Reasoning) to run graph-retrieved teaching. Models for omics and
+          molecular prediction remain planned — dry-runs report not available and never invent scores.
+        </p>
+      </section>
+
       <section className="section mkt-banner" aria-labelledby="sai-cta">
         <div>
-          <h2 id="sai-cta">See the approach in the atlas</h2>
+          <h2 id="sai-cta">Try Ask on a real question</h2>
           <p>
-            Ask retrieves from the graph; the workbench organises candidates; the model registry documents planned
-            adapters that return not_available until wired.
+            Ask retrieves from the graph; the workbench organises candidates; planned model adapters stay unavailable
+            until wired and tested.
           </p>
         </div>
         <div className="bio-actions">
           <Button asChild className="bio-primary">
             <Link to="/reasoning">
-              Open Reasoning <ArrowUpRight />
+              Open Ask / Reasoning <ArrowUpRight />
             </Link>
           </Button>
           <Button asChild variant="ghost" className="bio-secondary">
             <Link to="/research">Research workbench</Link>
           </Button>
           <Button asChild variant="ghost" className="bio-secondary">
-            <Link to="/methods">Read the methods</Link>
+            <Link to="/methods">Evidence &amp; Methods</Link>
           </Button>
         </div>
       </section>

@@ -96,7 +96,7 @@ function Collaborate() {
       <section className="section">
         <p>
           Do not send patient details, PHI, or confidential research data through this form. For product exploration,
-          start with the <Link to="/overview">platform overview</Link> or <Link to="/methods">Methods &amp; trust</Link>.
+          start with the <Link to="/overview">platform overview</Link> or <Link to="/methods">Evidence &amp; Methods</Link>.
         </p>
         <div className="collab-address">
           <span className="small muted">Or email directly:</span>

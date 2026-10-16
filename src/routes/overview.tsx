@@ -46,7 +46,7 @@ export const Route = createFileRoute("/overview")({
   head: () =>
     seoHead({
       title: pageTitle("Platform"),
-      description: `Explore immune cells, mechanisms, disease biology, therapies and evidence through ${FLAGSHIP_NAME} — the ${PRODUCT_NAME} flagship atlas. Causal spine, twelve layers, educational beta.`,
+      description: `Explore immune cells, mechanisms, disease biology, therapies and evidence through ${FLAGSHIP_NAME} — the ${PRODUCT_NAME} flagship atlas. Causal spine, twelve layers, educational model with references.`,
       path: "/overview",
     }),
   component: Overview,

@@ -42,16 +42,15 @@ function About() {
             “superintelligence.”
           </li>
           <li>
-            <b>{FLAGSHIP_NAME}</b> — flagship interactive causal immunology knowledge platform (the live educational
-            beta you can explore here).
+            <b>{FLAGSHIP_NAME}</b> — flagship interactive causal immunology knowledge platform you can explore here.
           </li>
           <li>
-            <b>Immunology Academy</b> — learning overlay at <Link to="/academy">/academy</Link> (foundation
-            navigable; intermediate and advanced labelled scaffolds). Not a finished curriculum or certification.
+            <b>Immunology Academy</b> — learning tracks at <Link to="/academy">Academy</Link> (Foundation primary;
+            Intermediate and Advanced labelled as in development). Not certification.
           </li>
           <li>
-            <b>Scientific AI Workbench</b> — guided research workflow; candidate artefacts remain drafts until human
-            review.
+            <b>Ask</b> and the <b>research workbench</b> — graph-retrieved teaching and guided research workflows;
+            candidates stay drafts until human review.
           </li>
         </ul>
       </section>
@@ -72,7 +71,7 @@ function About() {
           Graph exploration, cell atlas content, mechanism walks and several teaching tools are available in beta.
           Evidence curation, fully evidence-grounded AI and the research workbench are still evolving. Omics and
           molecular prediction integrations remain planned until implemented and tested. Details live on{" "}
-          <Link to="/methods">Methods &amp; trust</Link> and <Link to="/insights">Insights</Link>.
+          <Link to="/methods">Evidence &amp; Methods</Link>.
         </p>
       </section>
 
