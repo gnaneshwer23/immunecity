@@ -9,9 +9,12 @@ export const PRODUCT_LINE = `${PRODUCT_NAME} — ${TAGLINE}`;
 export const ASK_NAME = `Ask ${PRODUCT_NAME}`;
 export const CANONICAL_ORIGIN = "https://www.immune-super-intelligence.co.uk";
 export const CANONICAL_URL = `${CANONICAL_ORIGIN}/`;
-/** Primary marketing CTA → platform overview (umbrella brand, not flagship name). */
+/** Primary marketing CTA → platform overview (flagship Immune City entry). */
 export const EXPLORE_PATH = "/overview" as const;
-export const EXPLORE_CTA = "Explore the platform";
+export const EXPLORE_CTA = "Explore Immune City";
+/** Academy overview — learning entry (not a 13th atlas layer). */
+export const LEARN_PATH = "/academy" as const;
+export const LEARN_CTA = "Start learning";
 /** Atlas graph entry from the platform overview CTA. */
 export const ATLAS_PATH = "/graph" as const;
 export const ATLAS_CTA = "Enter atlas";

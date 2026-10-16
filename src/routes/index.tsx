@@ -9,6 +9,8 @@ import {
   FLAGSHIP_NAME,
   HERO_HEADLINE,
   HERO_SUPPORT,
+  LEARN_CTA,
+  LEARN_PATH,
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
@@ -17,6 +19,12 @@ import {
   featuresByStatus,
   type CapabilityStatus,
 } from "@/data/capabilityStatus";
+import { byId, human } from "@/lib/immune/engine";
+import {
+  EXEMPLAR_MATURITY_LABEL,
+  EXEMPLAR_PATHWAYS,
+  reportExemplar,
+} from "@/lib/immune/exemplarPathways";
 import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
@@ -54,6 +62,62 @@ const AUDIENCES = [
 
 const STATUS_ORDER: CapabilityStatus[] = ["beta", "partial", "in_development", "planned"];
 
+/** Home causal preview: TNF→RA exemplar (documented reviewed maturity; live cites still load in the graph). */
+const HOME_EXEMPLAR = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-tnf-ra")!;
+
+function HomeCausalPreview() {
+  const report = reportExemplar(HOME_EXEMPLAR);
+  return (
+    <section className="bio-section home-causal" aria-labelledby="causal-heading">
+      <div className="bio-section-heading">
+        <div>
+          <span className="bio-section-number">00 / CAUSAL PREVIEW</span>
+          <h2 id="causal-heading">{HOME_EXEMPLAR.title}</h2>
+        </div>
+        <p>
+          A real pathway from the curated graph — each hop links to a graph record with its current evidence status.
+          Maturity: {EXEMPLAR_MATURITY_LABEL[report.maturity]}.
+        </p>
+      </div>
+      <ol className="home-causal-path" aria-label={`${HOME_EXEMPLAR.title} relationships`}>
+        {report.segments.flatMap((seg) =>
+          (seg.steps ?? []).map((step, i) => {
+            const rid = seg.relIds[i]!;
+            const review = seg.reviews[i]!;
+            const label = report.edgeReviews.find((x) => x.relId === rid)?.label ?? String(review);
+            const subj = byId[step.r.subject_id];
+            const obj = byId[step.r.object_id];
+            if (!subj || !obj) return null;
+            return (
+              <li key={`${rid}-${i}`}>
+                <Link
+                  className="home-causal-hop"
+                  to="/graph"
+                  search={{ focus: step.r.subject_id }}
+                  title={`Open ${subj.name} in the knowledge graph`}
+                >
+                  <span className="home-causal-names">
+                    <strong>{subj.name}</strong>
+                    <span className="home-causal-rel">{human(step.r.relation)}</span>
+                    <strong>{obj.name}</strong>
+                  </span>
+                  <span className={`badge rs rs-${review}`}>{label}</span>
+                </Link>
+              </li>
+            );
+          }),
+        )}
+      </ol>
+      <p className="home-causal-note">
+        {HOME_EXEMPLAR.purpose} Teaching axis only — not disease-complete.{" "}
+        <Link to="/overview">See more exemplars on the platform</Link>
+        {" · "}
+        <Link to="/methods">Evidence lifecycle</Link>
+      </p>
+    </section>
+  );
+}
+
 function Home() {
   return (
     <div className="home-page">
@@ -71,8 +135,13 @@ function Home() {
             <span className="status-dot" /> {BRAND_EYEBROW}
           </div>
           <h1>{PRODUCT_NAME}</h1>
+          <p className="hero-tagline">{TAGLINE}</p>
           <p className="hero-subtitle">{HERO_HEADLINE}</p>
           <p className="hero-description">{HERO_SUPPORT}</p>
+          <p className="hero-brand-note">
+            <b>{PRODUCT_NAME}</b> is the umbrella brand. <b>{FLAGSHIP_NAME}</b> is the flagship interactive atlas you
+            explore below.
+          </p>
           <div className="bio-actions">
             <Button asChild className="bio-primary">
               <Link to={EXPLORE_PATH}>
@@ -80,9 +149,9 @@ function Home() {
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary">
-              <a href="#how-it-works">
-                See how it works <ArrowRight />
-              </a>
+              <Link to={LEARN_PATH}>
+                {LEARN_CTA} <ArrowRight />
+              </Link>
             </Button>
           </div>
           <div className="bio-hero-note">Educational beta · curated graph · references when reviewed</div>
@@ -90,6 +159,8 @@ function Home() {
       </section>
 
       <div className="bio-content home-sections">
+        <HomeCausalPreview />
+
         <section className="bio-section" aria-labelledby="pillars-heading">
           <div className="bio-section-heading">
             <div>
@@ -99,14 +170,14 @@ function Home() {
             <p>Connected experiences under one brand — not separate products.</p>
           </div>
           <div className="platform-pillars">
-            <Link className="platform-pillar" to="/mechanism">
+            <Link className="platform-pillar" to={LEARN_PATH}>
               <span className="platform-pillar-kicker">Learn immunology</span>
               <h3>Immunology Academy</h3>
               <p>
                 Mechanism lessons plus a navigable foundation scaffold and an in-development intermediate scaffold —
                 not a finished curriculum or certification.
               </p>
-              <span className="platform-pillar-cta">Explore the Academy scaffold</span>
+              <span className="platform-pillar-cta">Start learning</span>
             </Link>
             <Link className="platform-pillar" to={EXPLORE_PATH}>
               <span className="platform-pillar-kicker">Explore the science</span>
@@ -147,29 +218,10 @@ function Home() {
           </ol>
         </section>
 
-        <section className="bio-section" aria-labelledby="trust-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="bio-section-number">03 / TRANSPARENCY</span>
-              <h2 id="trust-heading">What is labelled — and what is not.</h2>
-            </div>
-          </div>
-          <p className="home-trust">
-            {FLAGSHIP_NAME} combines a structured immunology graph with an evolving evidence-review and AI workflow.
-            Some relationships remain unreviewed, and some advanced AI integrations are still planned. We label drafts
-            and limitations explicitly rather than presenting them as validated scientific findings. Educating with
-            references — not clinical decision support.
-          </p>
-          <p className="home-trust-link">
-            <Link to="/methods">Read the methods</Link>
-            <Link to="/disclaimer">Educational disclaimer</Link>
-          </p>
-        </section>
-
         <section className="bio-section" aria-labelledby="audience-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">04 / WHO IT IS FOR</span>
+              <span className="bio-section-number">03 / WHO IT IS FOR</span>
               <h2 id="audience-heading">Built for exploration and teaching.</h2>
             </div>
             <p>Not marketed as a patient treatment tool.</p>
@@ -187,7 +239,7 @@ function Home() {
         <section className="bio-section" aria-labelledby="status-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">05 / AVAILABLE NOW</span>
+              <span className="bio-section-number">04 / AVAILABLE NOW</span>
               <h2 id="status-heading">Current beta · In development · Planned</h2>
             </div>
             <p>Status from one maintained capability list — not hard-coded page claims.</p>
@@ -213,6 +265,22 @@ function Home() {
           </div>
         </section>
 
+        <section className="bio-section" aria-labelledby="trust-heading">
+          <div className="bio-section-heading">
+            <div>
+              <span className="bio-section-number">05 / TRUST</span>
+              <h2 id="trust-heading">Educational beta — references when reviewed.</h2>
+            </div>
+          </div>
+          <p className="home-trust">
+            {FLAGSHIP_NAME} labels drafts and unreviewed links explicitly. Ask retrieves from the graph; it is not fully
+            evidence-grounded AI. Not clinical decision support.{" "}
+            <Link to="/methods">Methods</Link>
+            {" · "}
+            <Link to="/disclaimer">Disclaimer</Link>
+          </p>
+        </section>
+
         <section className="bio-banner home-final-cta" aria-labelledby="cta-heading">
           <div>
             <div className="bio-eyebrow">Open the {FLAGSHIP_NAME} beta</div>
@@ -222,11 +290,16 @@ function Home() {
               wider immune system.
             </p>
           </div>
-          <Button asChild className="bio-primary">
-            <Link to={EXPLORE_PATH}>
-              Open the {FLAGSHIP_NAME} beta <ArrowUpRight />
-            </Link>
-          </Button>
+          <div className="bio-actions">
+            <Button asChild className="bio-primary">
+              <Link to={EXPLORE_PATH}>
+                {EXPLORE_CTA} <ArrowUpRight />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
+              <Link to={LEARN_PATH}>{LEARN_CTA}</Link>
+            </Button>
+          </div>
         </section>
       </div>
     </div>
