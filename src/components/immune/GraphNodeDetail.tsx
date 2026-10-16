@@ -20,7 +20,20 @@ export default function GraphNodeDetail({ id, onClose }: { id: string; onClose: 
         <button className="id-close" onClick={onClose} aria-label="Close detail"><X size={14} /></button>
       </div>
       <p className="small" style={{ marginTop: 10 }}>{n.desc}</p>
+      <p className="xs muted" style={{ marginTop: 8 }}>
+        Role in the atlas: <b>{TYPES[n.node_type].label}</b>
+        {n.draft ? " · draft extension (not curated core)" : ""}. Incoming and outgoing links below are
+        typed and directional; association is not the same as proven causality.
+      </p>
       <NodeCitations id={id} />
+      <div className="id-section" style={{ marginTop: 10 }}>
+        <h5 className="id-sub">Limitations</h5>
+        <p className="xs muted">
+          Coverage is incomplete. Missing neighbours or unreviewed edges are gaps in this educational
+          model — not evidence that a relationship does not exist. Citations support a link only after
+          claim-level review.
+        </p>
+      </div>
       <div className="row" style={{ marginTop: 12, gap: 6 }}>
         <Link className="btn sm" to="/graph" search={{ focus: id, sim: id, mode: "inhibit" }}>Simulate blocking</Link>
         <Link className="btn sm" to="/graph" search={{ focus: id, sim: id, mode: "activate" }}>Simulate giving</Link>

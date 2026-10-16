@@ -705,7 +705,8 @@ html[data-theme][data-theme] {
   isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
-  min-height: min(90vh, 780px);
+  /* Keep CTAs in the first viewport on short laptop heights */
+  min-height: min(78vh, 680px);
   overflow: hidden;
   color: oklch(0.94 0.02 210);
   background:
@@ -735,7 +736,7 @@ html[data-theme][data-theme] {
   flex-direction: column;
   justify-content: center;
   max-width: 38rem;
-  padding: 80px var(--mkt-gutter, 64px) 96px;
+  padding: 64px var(--mkt-gutter, 64px) 72px;
   /* Solid reading plane so helix never washes out copy */
   background: linear-gradient(90deg, oklch(0.12 0.04 255 / 0.94) 0%, oklch(0.12 0.04 255 / 0.78) 70%, transparent 100%);
 }
@@ -751,12 +752,12 @@ html[data-theme][data-theme] {
 }
 .home-helix-hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(2.25rem, 1.5rem + 2.6vw, 3.65rem);
+  font-size: clamp(2.05rem, 1.35rem + 2.2vw, 3.25rem);
   line-height: 1.05;
   letter-spacing: -0.035em;
   font-weight: 600;
   max-width: 14ch;
-  margin: 0 0 20px;
+  margin: 0 0 16px;
   color: oklch(0.98 0.01 210);
   animation: bio-rise .75s ease both;
   text-wrap: balance;
@@ -1016,11 +1017,11 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
 @media (max-width: 980px) {
   .home-helix-hero {
     grid-template-columns: 1fr;
-    min-height: min(86vh, 700px);
+    min-height: min(72vh, 620px);
   }
   .home-helix-copy {
     max-width: none;
-    padding: 56px 28px 80px;
+    padding: 48px 28px 56px;
     background: linear-gradient(180deg, oklch(0.12 0.04 255 / 0.88) 0%, oklch(0.12 0.04 255 / 0.72) 100%);
   }
   .home-helix-hero h1 { max-width: 16ch; }
@@ -1033,10 +1034,11 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
   .home-limit-list { grid-template-columns: 1fr; gap: 18px; }
 }
 @media (max-width: 480px) {
-  .home-helix-hero { min-height: 620px; }
-  .home-helix-copy { padding: 44px 22px 72px; }
-  .home-helix-hero h1 { font-size: 2.05rem; max-width: none; }
+  .home-helix-hero { min-height: min(70vh, 560px); }
+  .home-helix-copy { padding: 36px 22px 48px; }
+  .home-helix-hero h1 { font-size: 1.95rem; max-width: none; }
   .home-helix-hero .hero-description { font-size: 15.5px; }
+  .home-helix-foot { margin-top: 20px; }
   .platform-map-layer-grid { grid-template-columns: 1fr; }
   .platform-map-layer-body small { display: none; }
 }
@@ -1830,4 +1832,133 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
   .mkt-hero h1,
   .mkt-enter,
   .mkt-path-hop { transition: none; }
+}
+
+/* --- Immune City graph explorer (flagship) --- */
+.graph-explorer {
+  --graph-stage-bg: oklch(0.14 0.035 250);
+  --graph-stage-border: oklch(0.28 0.04 220 / 0.55);
+}
+.graph-view-toggle {
+  display: inline-flex;
+  gap: 8px;
+  margin: 0 0 16px;
+  flex-wrap: wrap;
+}
+.graph-view-toggle .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+}
+.graph-layout-hidden {
+  display: none !important;
+}
+.graph-list-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.graph-list-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.graph-a11y-embedded {
+  padding: 16px 18px;
+}
+.gt-concept {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--primary);
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.gt-concept:hover,
+.gt-concept:focus-visible {
+  color: var(--text);
+  outline: none;
+}
+.graph-starters {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+.graph-starter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-2, var(--surface));
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: border-color .15s, background .15s;
+}
+.graph-starter:hover,
+.graph-starter:focus-visible {
+  border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+  background: var(--primary-soft);
+  outline: none;
+}
+.graph-starter-family {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.graph-starter-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+.graph-find-empty {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  background: var(--surface-2, var(--surface));
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+}
+.graph-explorer .graph-stage {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, oklch(0.22 0.04 200 / 0.35), transparent 70%),
+    var(--graph-stage-bg);
+  border-color: var(--graph-stage-border);
+}
+.graph-explorer .node-label {
+  fill: oklch(0.92 0.02 210);
+  stroke: oklch(0.14 0.035 250);
+}
+.graph-explorer .graph-legend {
+  background: color-mix(in oklab, oklch(0.16 0.03 250) 92%, transparent);
+  border-color: var(--graph-stage-border);
+  color: oklch(0.86 0.02 210);
+}
+.graph-explorer .graph-tools .icon-btn {
+  background: color-mix(in oklab, oklch(0.18 0.03 250) 90%, transparent);
+  border: 1px solid var(--graph-stage-border);
+  color: oklch(0.9 0.02 210);
+}
+.graph-explorer .empty {
+  color: oklch(0.78 0.03 210);
+  background: color-mix(in oklab, oklch(0.12 0.03 250) 70%, transparent);
 }

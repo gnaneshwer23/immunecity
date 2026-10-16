@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Fragment, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { KG, TYPES, SPINE_DESC, byId, human, nodesOf, type NodeType } from "@/lib/immune/engine";
+import { KG, TYPES, SPINE_DESC, byId, human, nodesOf, spineLabel, type NodeType } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { CONTENT } from "@/data/content";
 import { NAV_GROUPS } from "@/components/immune/nav";
@@ -176,7 +176,7 @@ function Overview() {
                 onClick={() => setSpineStep(spineStep === step ? null : step)}
               >
                 <span className="mkt-spine-num">{String(i + 1).padStart(2, "0")}</span>
-                <span className="mkt-spine-label">{step}</span>
+                <span className="mkt-spine-label">{spineLabel(step)}</span>
               </button>
             ))}
             <span className="mkt-spine-loop" aria-hidden="true">
@@ -191,7 +191,7 @@ function Overview() {
             return (
               <div className="mkt-spine-detail" role="tabpanel">
                 <div className="mkt-spine-detail-head">
-                  <strong>{spineStep}</strong>
+                  <strong>{spineLabel(spineStep)}</strong>
                   <span>
                     {SPINE_DESC[spineStep] ?? ""}
                     {t ? ` — shown as “${t.label}” concepts in the graph` : ""}

@@ -3,7 +3,6 @@ import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { lazy, Suspense } from "react";
 import { PageHead } from "@/components/immune/ui";
-import GraphTable from "@/components/immune/GraphTable";
 
 const GraphView = lazy(() => import("@/components/immune/GraphView"));
 
@@ -30,8 +29,15 @@ export const Route = createFileRoute("/graph")({
 
 function Fallback() {
   return (
-    <div className="page">
-      <PageHead kicker="Layer 04 · Knowledge graph" title="The causal map" lede="Loading the graph…" />
+    <div className="page graph-explorer">
+      <PageHead
+        kicker="Layer 04 · Immune City · Knowledge graph"
+        title="The causal map"
+        lede="Loading the graph…"
+      />
+      <p className="empty" role="status">
+        Preparing the explorer — typed concepts and directional links from the curated graph.
+      </p>
     </div>
   );
 }
@@ -39,13 +45,10 @@ function Fallback() {
 function GraphPage() {
   const { focus, sim, mode } = Route.useSearch();
   return (
-    <>
-      <ClientOnly fallback={<Fallback />}>
-        <Suspense fallback={<Fallback />}>
-          <GraphView focusId={focus || null} simId={sim || null} modeParam={mode} />
-        </Suspense>
-      </ClientOnly>
-      <div className="page graph-a11y-wrap"><GraphTable /></div>
-    </>
+    <ClientOnly fallback={<Fallback />}>
+      <Suspense fallback={<Fallback />}>
+        <GraphView focusId={focus || null} simId={sim || null} modeParam={mode} />
+      </Suspense>
+    </ClientOnly>
   );
 }

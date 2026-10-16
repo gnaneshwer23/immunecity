@@ -91,6 +91,32 @@ export const SPINE_DESC: Record<string, string> = {
   DATA: "Real-world data", MODEL: "Inference & modelling", DISCOVERY: "New knowledge",
 };
 
+/**
+ * Display labels for the 15-step spine. Data key remains MODEL (KG `core_spine`);
+ * public copy uses AI to match the product brief without inventing a 16th step.
+ */
+export const SPINE_LABEL: Record<string, string> = {
+  TRIGGER: "TRIGGER",
+  RECOGNITION: "RECOGNITION",
+  SIGNALLING: "SIGNALLING",
+  RESPONSE: "RESPONSE",
+  CONSEQUENCE: "CONSEQUENCE",
+  FAILURE: "FAILURE",
+  DISEASE: "DISEASE",
+  BIOMARKER: "BIOMARKER",
+  TARGET: "TARGET",
+  THERAPY: "THERAPY",
+  TRIAL: "TRIAL",
+  PATIENT: "PATIENT",
+  DATA: "DATA",
+  MODEL: "AI",
+  DISCOVERY: "DISCOVERY",
+};
+
+export function spineLabel(step: string): string {
+  return SPINE_LABEL[step] ?? step;
+}
+
 export const byId: Record<string, KGNode> = Object.fromEntries(nodes.map((n) => [n.id, n]));
 export const out: Record<string, KGEdge[]> = {};
 export const inn: Record<string, KGEdge[]> = {};

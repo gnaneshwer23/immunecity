@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { NAV_GROUPS } from "@/components/immune/nav";
-import { KG, SPINE_DESC } from "@/lib/immune/engine";
+import { KG, SPINE_DESC, spineLabel } from "@/lib/immune/engine";
 import { FLAGSHIP_NAME } from "@/lib/brand";
 
 /**
@@ -27,14 +27,14 @@ export function PlatformMapVisual() {
                 title={SPINE_DESC[step] ?? step}
               >
                 <span className="platform-map-spine-num">{String(i + 1).padStart(2, "0")}</span>
-                <span className="platform-map-spine-label">{step}</span>
+                <span className="platform-map-spine-label">{spineLabel(step)}</span>
               </Link>
             </li>
           ))}
         </ol>
         <p className="platform-map-note">
           Trigger → recognition → signalling → response → consequence → failure → disease → biomarker →
-          target → therapy → trial → patient → data → model → discovery — with feedback closing the loop.
+          target → therapy → trial → patient → data → AI → discovery — with feedback closing the loop.
         </p>
       </div>
 

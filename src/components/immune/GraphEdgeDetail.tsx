@@ -36,8 +36,13 @@ export default function GraphEdgeDetail({ edge, onClose }: { edge: KGEdge; onClo
         </p>
       </div>
       <div className="id-section">
-        <h5 className="id-sub">Sources</h5>
+        <h5 className="id-sub">Evidence &amp; provenance</h5>
         <p className="small"><EdgeReference edge={edge} /></p>
+        <p className="xs muted" style={{ marginTop: 8 }}>
+          Evidence class on the edge: <b>{edge.evidence_status}</b>. Review badges reflect relationship-level
+          curation only — concept-level cites do not inflate link support. An empty or pending citation is a
+          curation gap, not a negative finding.
+        </p>
       </div>
       <button className="btn sm" style={{ marginTop: 10 }} onClick={() => inspect({ kind: "relationship", id: relId(edge) })}>Full scientific detail</button>
     </div>

@@ -1,15 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
-import { ZoomIn, ZoomOut, Maximize2, Download } from "lucide-react";
+import { ZoomIn, ZoomOut, Maximize2, Download, List, Network } from "lucide-react";
 import { KG, TYPES, byId, SEM, deg, out, inn, propagate, human, TISSUES, edgeTissues, type NodeType, type Tissue, type KGEdge } from "@/lib/immune/engine";
 import { download, graphToCytoscape, graphToGraphML, graphToCSV } from "@/lib/immune/export";
 import { PageHead, NodeLink } from "./ui";
 import GraphNodeDetail from "./GraphNodeDetail";
 import GraphEdgeDetail from "./GraphEdgeDetail";
+import GraphTable from "./GraphTable";
 
 const DEFAULT_TYPES: NodeType[] = ["CELL", "MOLECULE", "RECEPTOR", "PATHWAY", "DISEASE", "INTERVENTION"];
 const ALL_TYPES = KG.node_types;
+
+/** Curated starters from real graph IDs — highest-degree non-draft per family. */
+function buildStartingPoints() {
+  const families: { label: string; type: NodeType }[] = [
+    { label: "Cells", type: "CELL" },
+    { label: "Molecules", type: "MOLECULE" },
+    { label: "Receptors", type: "RECEPTOR" },
+    { label: "Pathways", type: "PATHWAY" },
+    { label: "Diseases", type: "DISEASE" },
+    { label: "Therapies", type: "INTERVENTION" },
+  ];
+  return families
+    .map(({ label, type }) => {
+      const pick = KG.nodes
+        .filter((n) => n.node_type === type && !n.draft)
+        .sort((a, b) => deg(b.id) - deg(a.id))[0];
+      return pick ? { label, id: pick.id, name: pick.name, type } : null;
+    })
+    .filter(Boolean) as { label: string; id: string; name: string; type: NodeType }[];
+}
+
+const STARTING_POINTS = buildStartingPoints();
 
 export default function GraphView({ focusId, simId, modeParam }: { focusId: string | null; simId: string | null; modeParam: string }) {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -159,17 +182,25 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
   const zoomReset = () => { if (svgRef.current && zoomRef.current) (d3.select(svgRef.current).transition().duration(220) as any).call(zoomRef.current.transform, d3.zoomIdentity); };
 
   const [findQ, setFindQ] = useState("");
+  const [viewMode, setViewMode] = useState<"graph" | "list">("graph");
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    // Prefer list/detail on first paint for narrow viewports — never force a tiny canvas.
+    if (window.matchMedia("(max-width: 900px)").matches) setViewMode("list");
+  }, []);
   const findHits = useMemo(() => {
     const s = findQ.trim().toLowerCase();
     if (!s) return [];
-    return KG.nodes.filter((n) => n.name.toLowerCase().includes(s)).slice(0, 8);
+    return KG.nodes.filter((n) => n.name.toLowerCase().includes(s) || n.id.toLowerCase().includes(s)).slice(0, 8);
   }, [findQ]);
+  const findSearched = findQ.trim().length > 0;
   const findGo = useCallback((id: string) => {
     setFindQ("");
     const n = byId[id];
     if (!n) return;
     setActive((prev) => (prev.has(n.node_type) ? prev : new Set(prev).add(n.node_type)));
     setPick((prev) => ({ ids: new Set(prev.ids).add(id), detail: id }));
+    setViewMode("graph");
     // centre the view on the node once the simulation has placed it
     window.setTimeout(() => {
       const stage = stageRef.current, svgEl = svgRef.current, zoom = zoomRef.current;
@@ -185,13 +216,47 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
   const simNode = simId ? byId[simId] : null;
 
   return (
-    <div className="page">
+    <div className="page graph-explorer">
       <PageHead
-        kicker="Layer 04 · Knowledge graph"
+        kicker="Layer 04 · Immune City · Knowledge graph"
         title="The causal map"
-        lede="Every concept and every typed link. Drag to arrange, zoom with the controls or your scroll wheel, then select as many concepts as you like — by click or keyboard — to read each one's causal links and sources in place."
+        lede="Flagship explorer for typed immune concepts and directional links. Search or pick a starting point, inspect evidence on each relationship, and use the list view on small screens — an empty filter is not a scientific negative finding."
       />
-      <div className="graph-layout">
+      <div className="graph-view-toggle" role="group" aria-label="Explorer view">
+        <button
+          type="button"
+          className={`chip${viewMode === "graph" ? " on" : ""}`}
+          aria-pressed={viewMode === "graph"}
+          onClick={() => setViewMode("graph")}
+        >
+          <Network size={14} aria-hidden /> Graph
+        </button>
+        <button
+          type="button"
+          className={`chip${viewMode === "list" ? " on" : ""}`}
+          aria-pressed={viewMode === "list"}
+          onClick={() => setViewMode("list")}
+        >
+          <List size={14} aria-hidden /> List &amp; detail
+        </button>
+      </div>
+      {viewMode === "list" ? (
+        <div className="graph-list-mode">
+          <GraphTable
+            embedded
+            onFocusConcept={(id) => {
+              findGo(id);
+            }}
+          />
+          {pick.detail && byId[pick.detail] ? (
+            <div className="graph-detail"><GraphNodeDetail id={pick.detail} onClose={hideDetail} /></div>
+          ) : null}
+          {edgePick ? (
+            <div className="graph-detail graph-edge-detail"><GraphEdgeDetail edge={edgePick} onClose={() => setEdgePick(null)} /></div>
+          ) : null}
+        </div>
+      ) : null}
+      <div className={`graph-layout${viewMode === "list" ? " graph-layout-hidden" : ""}`}>
         <aside className="graph-panel">
           <div className="card">
             <h3>Find a concept</h3>
@@ -214,10 +279,38 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
                     </button>
                   ))}
                 </div>
+              ) : findSearched ? (
+                <p className="graph-find-empty" role="status">
+                  No concepts match “{findQ.trim()}”. Try another spelling — this is a search miss, not evidence of absence.
+                </p>
               ) : null}
             </div>
             <p className="xs muted" style={{ marginTop: 6 }}>Jumps to one concept, centres it, and opens its links and sources.</p>
           </div>
+          {STARTING_POINTS.length ? (
+            <div className="card">
+              <h3>Starting points</h3>
+              <div className="graph-starters">
+                {STARTING_POINTS.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className="graph-starter"
+                    onClick={() => findGo(s.id)}
+                  >
+                    <span className="graph-starter-family">{s.label}</span>
+                    <span className="graph-starter-name">
+                      <span className="dot" style={{ background: `var(${TYPES[s.type].c})` }} />
+                      {s.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <p className="xs muted" style={{ marginTop: 6 }}>
+                Real curated concepts (highest connectivity per family) — not decorative placeholders.
+              </p>
+            </div>
+          ) : null}
           <div className="card">
             <h3>Concept types</h3>
             <div className="type-list">
@@ -304,6 +397,15 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
           <div className="graph-detail graph-edge-detail"><GraphEdgeDetail edge={edgePick} onClose={() => setEdgePick(null)} /></div>
         ) : null}
       </div>
+      {viewMode === "graph" ? (
+        <div className="graph-a11y-wrap">
+          <GraphTable
+            onFocusConcept={(id) => {
+              findGo(id);
+            }}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
