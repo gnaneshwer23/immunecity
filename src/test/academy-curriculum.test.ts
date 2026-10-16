@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   ACADEMY_TRACKS,
+  ADVANCED_TRACK,
   FOUNDATION_TRACK,
   INTERMEDIATE_TRACK,
   moduleForLesson,
@@ -9,11 +10,14 @@ import { CONTENT } from "@/data/content";
 import { byId } from "@/lib/immune/engine";
 
 describe("Academy curriculum honesty", () => {
-  it("exposes foundation navigable and intermediate scaffold only", () => {
-    expect(ACADEMY_TRACKS).toHaveLength(2);
+  it("exposes foundation navigable, intermediate scaffold, and advanced empty scaffold", () => {
+    expect(ACADEMY_TRACKS).toHaveLength(3);
     expect(FOUNDATION_TRACK.status).toBe("navigable");
     expect(INTERMEDIATE_TRACK.status).toBe("scaffold");
     expect(INTERMEDIATE_TRACK.level).toBe("intermediate");
+    expect(ADVANCED_TRACK.status).toBe("scaffold");
+    expect(ADVANCED_TRACK.level).toBe("advanced");
+    expect(ADVANCED_TRACK.modules).toHaveLength(0);
   });
 
   it("binds every module to an existing Mechanism lesson and known graph ids", () => {

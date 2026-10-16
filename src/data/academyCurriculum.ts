@@ -292,7 +292,21 @@ export const INTERMEDIATE_TRACK: AcademyTrack = {
   ],
 };
 
-export const ACADEMY_TRACKS: AcademyTrack[] = [FOUNDATION_TRACK, INTERMEDIATE_TRACK];
+/**
+ * Advanced scaffold — labelled only; no modules shipped yet.
+ * Do not market as an available advanced curriculum.
+ */
+export const ADVANCED_TRACK: AcademyTrack = {
+  id: "advanced-systems-integration",
+  title: "Advanced: systems integration (scaffold)",
+  level: "advanced",
+  summary:
+    "Placeholder for multi-pathway integration lessons. No modules are navigable yet — labelled scaffold only, not a finished advanced course or certification.",
+  status: "scaffold",
+  modules: [],
+};
+
+export const ACADEMY_TRACKS: AcademyTrack[] = [FOUNDATION_TRACK, INTERMEDIATE_TRACK, ADVANCED_TRACK];
 
 export function trackById(id: string): AcademyTrack | undefined {
   return ACADEMY_TRACKS.find((t) => t.id === id);

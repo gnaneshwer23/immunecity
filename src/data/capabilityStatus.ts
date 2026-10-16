@@ -49,7 +49,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     description: "Walk illustrative cascades; Academy foundation is navigable, intermediate is an honest scaffold.",
     status: "partial",
     statusAsOf: "2026-10",
-    relatedAppRoute: "/mechanism",
+    relatedAppRoute: "/academy",
     sourceOfTruth: "src/data/academyCurriculum.ts",
   },
   {
@@ -120,10 +120,10 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Immunology Academy curriculum",
     page: "academy",
     description:
-      "Foundation navigable + intermediate scaffold over existing lessons — still in development; not certification.",
+      "Foundation navigable + intermediate scaffold + advanced labelled empty — still in development; not certification.",
     status: "in_development",
     statusAsOf: "2026-10",
-    relatedAppRoute: "/mechanism",
+    relatedAppRoute: "/academy",
     sourceOfTruth: "src/data/academyCurriculum.ts",
   },
 ] as const;

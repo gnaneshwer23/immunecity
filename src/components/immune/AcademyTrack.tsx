@@ -229,7 +229,9 @@ export default function AcademyTrack({ lessonId }: { lessonId: string }) {
       <h2 id="academy-track-heading">Immunology Academy</h2>
       <p className="lede">
         Foundation is a navigable teaching scaffold; intermediate is an honest in-development scaffold over existing
-        Mechanism lessons. Progress stays in this browser — not certification, not Gate C evidence coverage.
+        Mechanism lessons; advanced is labelled empty. Progress stays in this browser — not certification, not Gate C
+        evidence coverage.{" "}
+        <Link to="/academy">Academy overview</Link>
       </p>
       <div className="grid auto" style={{ gap: 16 }}>
         {ACADEMY_TRACKS.map((track) => (
