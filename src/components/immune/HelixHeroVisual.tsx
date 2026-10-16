@@ -48,19 +48,19 @@ export function HelixHeroVisual() {
     resize();
 
     const drawStaticBackdrop = () => {
-      const g = ctx.createRadialGradient(w * 0.55, h * 0.42, 0, w * 0.55, h * 0.42, Math.max(w, h) * 0.55);
-      g.addColorStop(0, "rgba(56, 189, 198, 0.14)");
-      g.addColorStop(0.45, "rgba(20, 48, 92, 0.35)");
+      // Quiet depth field — keep the left reading plane clean
+      const g = ctx.createRadialGradient(w * 0.68, h * 0.44, 0, w * 0.68, h * 0.44, Math.max(w, h) * 0.48);
+      g.addColorStop(0, "rgba(56, 189, 198, 0.1)");
+      g.addColorStop(0.5, "rgba(20, 48, 92, 0.22)");
       g.addColorStop(1, "rgba(6, 14, 32, 0)");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
 
-      // Fine molecular dust
-      ctx.fillStyle = "rgba(160, 220, 230, 0.22)";
-      for (let i = 0; i < 48; i++) {
-        const x = ((i * 97) % 1000) / 1000 * w;
+      ctx.fillStyle = "rgba(160, 220, 230, 0.16)";
+      for (let i = 0; i < 28; i++) {
+        const x = 0.42 * w + ((i * 97) % 1000) / 1000 * w * 0.55;
         const y = ((i * 61) % 1000) / 1000 * h;
-        const r = 0.6 + (i % 3) * 0.35;
+        const r = 0.55 + (i % 3) * 0.3;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fill();
@@ -68,9 +68,9 @@ export function HelixHeroVisual() {
     };
 
     const drawHelix = (time: number) => {
-      const cx = w * 0.58;
+      const cx = w * 0.68;
       const cy = h * 0.5;
-      const amp = Math.min(w, h) * 0.16;
+      const amp = Math.min(w, h) * 0.15;
       const turns = 3.2;
       const steps = 160;
       const len = Math.min(h * 0.78, w * 0.72);

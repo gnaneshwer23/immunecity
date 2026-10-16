@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PlatformMapVisual } from "@/components/immune/PlatformMapVisual";
 import { TrustBlock } from "@/components/immune/marketing";
 import {
   BRAND_EYEBROW,
@@ -10,16 +11,12 @@ import {
   FLAGSHIP_NAME,
   HERO_HEADLINE,
   HERO_SUPPORT,
+  HERO_TRUST,
   LEARN_CTA,
   LEARN_PATH,
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
-import {
-  CAPABILITY_STATUS_LABEL,
-  featuresByStatus,
-  type CapabilityStatus,
-} from "@/data/capabilityStatus";
 import { byId, human } from "@/lib/immune/engine";
 import {
   EXEMPLAR_MATURITY_LABEL,
@@ -37,47 +34,36 @@ export const Route = createFileRoute("/")({
     seoHead({
       title: `${PRODUCT_NAME} | ${TAGLINE}`,
       description:
-        "Immune Super Intelligence — learn immunology as a connected system. Explore mechanisms, a curated causal knowledge graph and Ask that educates with references. Educational model; not clinical advice.",
+        "Immune Super Intelligence — see the immune system as a connected system. Explore mechanisms, a curated causal knowledge graph and Ask that educates with references. Educational beta; not clinical advice.",
       path: "/",
     }),
   component: Home,
 });
 
-const NARRATIVE_ARC = [
-  { label: "Molecular", path: "/graph" as const },
-  { label: "Immune cells", path: "/learn" as const },
-  { label: "Mechanisms", path: "/mechanism" as const },
-  { label: "Disease", path: "/disease" as const },
-  { label: "Therapy", path: "/therapy" as const },
-  { label: "Evidence", path: "/evidence" as const },
-] as const;
-
 const HOW_IT_WORKS = [
-  { n: "01", title: "Start with a question", copy: "Choose an immune concept, pathway, disease or research problem." },
-  { n: "02", title: "Trace the biology", copy: "Explore the relationships connecting molecules, cells, tissues and outcomes." },
-  { n: "03", title: "Inspect the evidence", copy: "Open the sources, context, review status and limitations behind a relationship." },
-  { n: "04", title: "Investigate further", copy: "Use the research workbench to organise evidence, mechanisms and candidate hypotheses." },
+  {
+    n: "01",
+    title: "Start with a question",
+    copy: "Choose an immune concept, pathway, disease or research problem.",
+  },
+  {
+    n: "02",
+    title: "Trace the mechanism",
+    copy: "Follow the relationships connecting molecules, cells, tissues and outcomes.",
+  },
+  {
+    n: "03",
+    title: "Inspect the evidence",
+    copy: "Open sources, context, review status and limitations behind each relationship.",
+  },
+  {
+    n: "04",
+    title: "Form a hypothesis",
+    copy: "Use the research workbench to organise candidates — drafts until human review.",
+  },
 ] as const;
 
-const AUDIENCES = [
-  {
-    title: "Learners and educators",
-    copy: "Understand mechanisms through structured explanations and linked pathways.",
-  },
-  {
-    title: "Immunology researchers",
-    copy: "Explore causal relationships, inspect sources and identify gaps worth investigating.",
-  },
-  {
-    title: "Computational biologists and AI teams",
-    copy: "Understand the current graph and tool architecture and explore potential integration work.",
-  },
-] as const;
-
-/** Concise trust strip — beta + partial only; avoid dumping every planned stub. */
-const TRUST_STATUSES: CapabilityStatus[] = ["beta", "partial"];
-
-/** Home causal preview: TNF→RA exemplar (documented reviewed maturity; live cites still load in the graph). */
+/** Home causal preview: TNF→RA exemplar (documented maturity; live cites still load in the graph). */
 const HOME_EXEMPLAR = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-tnf-ra")!;
 
 function HomeCausalPathway() {
@@ -87,7 +73,7 @@ function HomeCausalPathway() {
     <div className="home-pathway">
       <div className="bio-section-heading">
         <div>
-          <span className="bio-section-number">01 / LIVE GRAPH PATHWAY</span>
+          <span className="bio-section-number">02 / LIVE GRAPH PATHWAY</span>
           <h2 id="demo-heading">{HOME_EXEMPLAR.title}</h2>
         </div>
         <p>
@@ -162,33 +148,16 @@ function Home() {
               </Link>
             </Button>
           </div>
-          <p className="home-helix-foot">
-            Educational model · curated graph · not clinical decision support
-          </p>
+          <p className="home-helix-foot">{HERO_TRUST}</p>
         </div>
       </section>
 
-      <nav className="home-narrative" aria-label="Scientific narrative arc">
-        <ol>
-          {NARRATIVE_ARC.map((step, i) => (
-            <li key={step.label}>
-              {i > 0 ? <span className="home-narrative-sep" aria-hidden="true" /> : null}
-              <Link to={step.path}>{step.label}</Link>
-            </li>
-          ))}
-        </ol>
-      </nav>
-
       <div className="bio-content home-sections">
-        <section className="bio-section" aria-labelledby="demo-heading">
-          <HomeCausalPathway />
-        </section>
-
         <section className="bio-section" aria-labelledby="pillars-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">02 / LEARN · EXPLORE · INVESTIGATE</span>
-              <h2 id="pillars-heading">Three connected experiences.</h2>
+              <span className="bio-section-number">01 / LEARN · EXPLORE · INVESTIGATE</span>
+              <h2 id="pillars-heading">Three ways into the same system.</h2>
             </div>
             <p>One brand — not separate products.</p>
           </div>
@@ -221,13 +190,17 @@ function Home() {
           </div>
         </section>
 
+        <section className="bio-section" aria-labelledby="demo-heading">
+          <HomeCausalPathway />
+        </section>
+
         <section className="bio-section" id="how-it-works" aria-labelledby="how-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">03 / HOW IT WORKS</span>
+              <span className="bio-section-number">03 / QUESTION → HYPOTHESIS</span>
               <h2 id="how-heading">From a question to inspectable biology.</h2>
             </div>
-            <p>One clear path into the atlas and research tools.</p>
+            <p>Mechanism, evidence and hypothesis — one clear path.</p>
           </div>
           <ol className="home-steps">
             {HOW_IT_WORKS.map((step) => (
@@ -240,55 +213,45 @@ function Home() {
           </ol>
         </section>
 
-        <section className="bio-section" aria-labelledby="audience-heading">
+        <section className="bio-section" aria-labelledby="atlas-map-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">04 / WHO IT IS FOR</span>
-              <h2 id="audience-heading">Built for exploration and teaching.</h2>
+              <span className="bio-section-number">04 / LAYERS &amp; SPINE</span>
+              <h2 id="atlas-map-heading">Twelve layers. Fifteen causal stages.</h2>
             </div>
-            <p>Not marketed as a patient treatment tool.</p>
+            <p>
+              The atlas structure behind {FLAGSHIP_NAME} — open any layer or the full Platform map.
+            </p>
           </div>
-          <div className="home-audiences">
-            {AUDIENCES.map((a) => (
-              <div key={a.title} className="home-audience">
-                <h3>{a.title}</h3>
-                <p>{a.copy}</p>
-              </div>
-            ))}
-          </div>
+          <PlatformMapVisual />
         </section>
 
         <section className="bio-section" aria-labelledby="trust-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">05 / TRUST &amp; CAPABILITY</span>
-              <h2 id="trust-heading">What works today.</h2>
+              <span className="bio-section-number">05 / EVIDENCE &amp; LIMITS</span>
+              <h2 id="trust-heading">Review status stays visible.</h2>
             </div>
-            <p>Status from one maintained capability list — not hard-coded page claims.</p>
+            <p>Summarised here — Methods holds the full lifecycle.</p>
           </div>
           <TrustBlock className="home-trust" />
-          <div className="home-status-grid home-status-compact">
-            {TRUST_STATUSES.map((status) => {
-              const items = featuresByStatus(status);
-              if (!items.length) return null;
-              return (
-                <div key={status} className="home-status-col">
-                  <h3>{CAPABILITY_STATUS_LABEL[status]}</h3>
-                  <ul>
-                    {items.map((f) => (
-                      <li key={f.id}>
-                        <Link to={f.relatedAppRoute}>{f.name}</Link>
-                        <span>{f.description}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+          <ul className="home-limit-list">
+            <li>
+              <strong>Reviewed when mapped</strong>
+              <span>Citations support a relationship only after claim-level review — not concept-level padding.</span>
+            </li>
+            <li>
+              <strong>Unreviewed stays labelled</strong>
+              <span>Teaching edges remain visible with honest status; coverage is still sparse overall.</span>
+            </li>
+            <li>
+              <strong>Educational beta</strong>
+              <span>Not clinical decision support. Ask retrieves from the graph — not fully evidence-grounded AI.</span>
+            </li>
+          </ul>
           <p className="home-trust-link">
             <Link to="/methods">Evidence &amp; Methods</Link>
-            <Link to="/overview">Platform overview</Link>
+            <Link to="/disclaimer">Educational disclaimer</Link>
           </p>
         </section>
 

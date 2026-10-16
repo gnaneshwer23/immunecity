@@ -39,9 +39,9 @@ function Insights() {
   return (
     <div className="page marketing-page">
       <PageHead
-        kicker="Science"
+        kicker="Science · Draft series"
         title="Insights"
-        lede="Explainers, methods notes and release context tied to the live graph — every note should link back to a path, lesson or methods statement. Full editorial series will grow as reviewed content is ready; we do not publish unverified scientific claims here."
+        lede="Explainers, methods notes and release context tied to the live graph — every note should link back to a path, lesson or methods statement. Full editorial series will grow as reviewed content is ready; we do not publish unverified scientific claims here. This destination stays out of primary navigation until the series is ready."
       />
 
       <section className="section">
