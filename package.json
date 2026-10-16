@@ -12,6 +12,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:nav": "playwright test e2e/marketing-nav.spec.ts",
     "a11y": "bun scripts/a11y-suite.ts",
     "sme:status": "bun scripts/sme-gold-set-status.ts",
     "evidence:queue": "bun scripts/build-relationship-evidence-queue.ts",
@@ -116,6 +118,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "@playwright/test": "1.64.1"
   }
 }
