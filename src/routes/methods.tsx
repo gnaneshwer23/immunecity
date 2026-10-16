@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { SEM } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { PROMPT_VERSION } from "@/lib/askGrounding";
@@ -6,6 +7,7 @@ import { PageHead } from "@/components/immune/ui";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
+import { approvedQuery } from "@/lib/citations.functions";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 
@@ -20,6 +22,44 @@ export const Route = createFileRoute("/methods")({
   component: Methods,
 });
 
+function LiveEvidenceStatus() {
+  const { data, isError, isPending, isFetching, dataUpdatedAt, error } = useQuery(approvedQuery);
+  const approvedClaim = (data ?? []).filter(
+    (c) => c.relationship_id && c.claim_support === "supports",
+  ).length;
+  const withId = (data ?? []).filter((c) => c.pmid || c.doi).length;
+  const fetchedAt = dataUpdatedAt ? new Date(dataUpdatedAt).toISOString() : null;
+
+  if (isError) {
+    return (
+      <section className="section" aria-labelledby="live-ev-heading">
+        <h2 id="live-ev-heading">Live evidence service</h2>
+        <p className="lede" role="alert">
+          Evidence service unavailable
+          {error instanceof Error ? ` (${error.message})` : ""}. This is a service error, not a finding that the graph
+          has zero reviewed citations. Retry shortly, or use the static ontology notes below.
+        </p>
+        {fetchedAt ? <p className="small muted">Last successful fetch: {fetchedAt}</p> : null}
+      </section>
+    );
+  }
+
+  return (
+    <section className="section" aria-labelledby="live-ev-heading">
+      <h2 id="live-ev-heading">Live evidence service</h2>
+      <p>
+        {isPending || (isFetching && !data)
+          ? "Loading approved citation rows from the curation database…"
+          : `${data?.length ?? 0} approved citation row(s) loaded · ${withId} with PMID/DOI · ${approvedClaim} with relationship_id + claim_support=supports (relationship-level only).`}
+      </p>
+      <p className="small muted">
+        Fetched at <code>{fetchedAt ?? "—"}</code>. Concept-level rows never inflate link coverage. Full breakdown on{" "}
+        <Link to="/evidence">Evidence</Link>.
+      </p>
+    </section>
+  );
+}
+
 function Methods() {
   const snap = graphReleaseSnapshot();
   const signs = Object.entries(SEM).reduce<Record<string, string[]>>((a, [rel, s]) => ((a[s] ||= []).push(rel), a), {});
@@ -31,6 +71,8 @@ function Methods() {
         lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation is only counted as support when it is mapped to that directional claim and reviewed under the platform’s curation process. Educational beta — teaching with references, not clinical decision support.`}
         stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]}
       />
+
+      <LiveEvidenceStatus />
 
       <section className="section"><h2>1. The graph ontology</h2>
         <p>Every concept is a typed node (cell, molecule, receptor, pathway, tissue, pathogen, disease, therapy, biomarker, trial and more) with a stable ID. Every link is one directional claim — subject, predicate, object — with a stable relationship ID of the form <code>REL-subject-predicate-object</code>, a mechanism, a confidence and, where known, a tissue.</p>
@@ -49,6 +91,18 @@ function Methods() {
 
       <section className="section"><h2>3. Evidence review</h2>
         <p>A source supports a link only when a curator maps it to that exact relationship ID and records that it supports the claim. Citations attached to a concept describe the concept and never count as support for a link. Coverage figures on the <Link to="/evidence">Evidence</Link> page use only claim-checked support.</p>
+        <h3 style={{ fontSize: "1rem", marginTop: 16 }}>Identifier verification ≠ claim approval</h3>
+        <ul>
+          <li>
+            <b>ID verification</b> — PubMed / Crossref metadata check confirms a PMID or DOI resolves. That alone yields
+            “Source linked” (<code>source-verified</code>), not approved support.
+          </li>
+          <li>
+            <b>Claim approval</b> — a human maps the source to <code>REL-subject-relation-object</code>, sets{" "}
+            <code>claim_support = supports</code>, and marks curation approved. Only then does the link count as Supported.
+          </li>
+          <li>There is no mass-approve path. Concept-level cites never inflate relationship coverage.</li>
+        </ul>
         <table className="rs-table"><tbody>
           {(Object.keys(STATUS_INFO) as ReviewStatus[]).map((s) => <tr key={s}><td><span className={`badge rs rs-${s}`}>{STATUS_INFO[s].label}</span></td><td className="small">{STATUS_INFO[s].desc}</td></tr>)}
         </tbody></table>
@@ -85,7 +139,7 @@ function Methods() {
         <ul>
           <li>Most links have not yet been claim-checked against a source; claim-level approved support is still sparse overall (single-digit approved relationship claims vs hundreds of runtime links) and does not imply clinical validation.</li>
           <li>Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.</li>
-          <li>The Immunology Academy on <Link to="/mechanism">Mechanism</Link> ships a navigable foundation scaffold plus an in-development intermediate scaffold — not a finished curriculum, certification, or Gate C coverage claim.</li>
+          <li>The Immunology Academy on <Link to="/academy">/academy</Link> ships a navigable foundation scaffold plus in-development intermediate and advanced scaffolds — not a finished curriculum, certification, or Gate C coverage claim.</li>
           <li>Links simplify dose, timing, species and individual variation.</li>
           <li>Tissue context is sparse; many effects are recorded without one.</li>
           <li>This product educates with references; it is not medical advice, clinician decision support, or patient-specific guidance.</li>

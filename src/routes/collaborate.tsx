@@ -24,6 +24,21 @@ const STAKEHOLDERS = [
   "Other",
 ] as const;
 
+/** Practical work-email check — requires a domain with a dot; not a full RFC parser. */
+function isValidWorkEmail(value: string): boolean {
+  const v = value.trim();
+  if (v.length < 5 || v.length > 254) return false;
+  if (/\s/.test(v)) return false;
+  const at = v.lastIndexOf("@");
+  if (at < 1) return false;
+  const local = v.slice(0, at);
+  const domain = v.slice(at + 1);
+  if (!local || !domain || local.includes("@")) return false;
+  if (!domain.includes(".") || domain.startsWith(".") || domain.endsWith(".")) return false;
+  if (domain.split(".").some((p) => !p)) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
 function Collaborate() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -32,10 +47,27 @@ function Collaborate() {
   const [interest, setInterest] = useState("");
   const [message, setMessage] = useState("");
   const [privacy, setPrivacy] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  async function copyAddress() {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!privacy || !name.trim() || !email.trim() || !message.trim()) return;
+    if (!privacy || !name.trim() || !message.trim()) return;
+    if (!isValidWorkEmail(email)) {
+      setEmailError("Enter a valid work email (name@organisation.domain).");
+      return;
+    }
+    setEmailError(null);
     const body = [
       `Name: ${name.trim()}`,
       `Email: ${email.trim()}`,
@@ -45,7 +77,7 @@ function Collaborate() {
       "",
       message.trim(),
       "",
-      "— Sent from the Collaborate page. Do not include patient details or confidential research data.",
+      "— Sent from the Collaborate page. Do not include patient details, PHI, or confidential research data.",
     ].join("\n");
     const href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
       `[Collaborate] ${stakeholder} — ${PRODUCT_NAME}`,
@@ -63,10 +95,19 @@ function Collaborate() {
 
       <section className="section">
         <p>
-          Do not send patient details or confidential research data through this form. For product exploration, start
-          with the <Link to="/overview">platform overview</Link> or{" "}
-          <Link to="/methods">Methods &amp; trust</Link>.
+          Do not send patient details, PHI, or confidential research data through this form. For product exploration,
+          start with the <Link to="/overview">platform overview</Link> or <Link to="/methods">Methods &amp; trust</Link>.
         </p>
+        <div className="collab-address">
+          <span className="small muted">Or email directly:</span>
+          <code>{CONTACT_EMAIL}</code>
+          <Button type="button" variant="ghost" className="bio-secondary" onClick={copyAddress}>
+            {copied ? "Copied" : "Copy address"}
+          </Button>
+          <a className="small" href={`mailto:${CONTACT_EMAIL}`}>
+            Open mail app
+          </a>
+        </div>
       </section>
 
       <form className="collab-form" onSubmit={onSubmit} noValidate>
@@ -82,8 +123,23 @@ function Collaborate() {
             autoComplete="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            aria-invalid={emailError ? true : undefined}
+            aria-describedby={emailError ? "email-error" : undefined}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError(null);
+            }}
+            onBlur={() => {
+              if (email.trim() && !isValidWorkEmail(email)) {
+                setEmailError("Enter a valid work email (name@organisation.domain).");
+              }
+            }}
           />
+          {emailError ? (
+            <span id="email-error" className="collab-error" role="alert">
+              {emailError}
+            </span>
+          ) : null}
         </label>
         <label>
           Organisation <span className="muted">(optional)</span>
@@ -105,13 +161,20 @@ function Collaborate() {
         </label>
         <label>
           Message
-          <textarea name="message" required rows={6} value={message} onChange={(e) => setMessage(e.target.value)} />
+          <textarea
+            name="message"
+            required
+            rows={6}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Describe your interest. Do not include patient identifiers or PHI."
+          />
         </label>
         <label className="collab-check">
           <input type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} required />
           <span>
             I understand this enquiry may be processed as described in the <Link to="/privacy">privacy notice</Link>,
-            and I will not include patient-identifiable or confidential research data.
+            and I will not include patient-identifiable information (PHI) or confidential research data.
           </span>
         </label>
         <div className="bio-actions">
@@ -120,8 +183,8 @@ function Collaborate() {
           </Button>
         </div>
         <p className="small muted collab-form-note">
-          Opens your email client to {CONTACT_EMAIL}. If mail is not configured on your device, copy the address and
-          send manually.
+          Submitting opens your email client to <code>{CONTACT_EMAIL}</code> with a pre-filled message (mailto). If mail
+          is not configured on your device, use Copy address above and send manually.
         </p>
       </form>
     </div>

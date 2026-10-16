@@ -46,8 +46,8 @@ function About() {
             beta you can explore here).
           </li>
           <li>
-            <b>Immunology Academy</b> — learning scaffolds on Mechanism (foundation navigable; intermediate in
-            development). Not a finished curriculum or certification.
+            <b>Immunology Academy</b> — learning overlay at <Link to="/academy">/academy</Link> (foundation
+            navigable; intermediate and advanced labelled scaffolds). Not a finished curriculum or certification.
           </li>
           <li>
             <b>Scientific AI Workbench</b> — guided research workflow; candidate artefacts remain drafts until human

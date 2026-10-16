@@ -2,6 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { graphReleaseLabel, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
+import {
+  EXEMPLAR_MATURITY_LABEL,
+  EXEMPLAR_PATHWAYS,
+  reportExemplar,
+} from "@/lib/immune/exemplarPathways";
 import { pageTitle, FLAGSHIP_NAME, PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 
@@ -13,6 +18,20 @@ export const Route = createFileRoute("/insights")({
       path: "/insights",
     }),
   component: Insights,
+});
+
+/** Source-linked mechanism explainers prepared from exemplars — unpublished until reviewed. */
+const DRAFT_EXPLAINERS = EXEMPLAR_PATHWAYS.map((pathway) => {
+  const report = reportExemplar(pathway);
+  return {
+    id: `draft-${pathway.id}`,
+    title: pathway.title,
+    purpose: pathway.purpose,
+    maturity: report.maturity,
+    maturityLabel: EXEMPLAR_MATURITY_LABEL[report.maturity],
+    note: pathway.notes[0] ?? "",
+    published: false as const,
+  };
 });
 
 function Insights() {
@@ -38,6 +57,33 @@ function Insights() {
           Same counts appear on the homepage footer and <Link to="/methods">Methods &amp; trust</Link>. Explore the
           platform at <Link to="/overview">{FLAGSHIP_NAME} overview</Link>.
         </p>
+      </section>
+
+      <section className="section">
+        <h2>Draft mechanism explainers (unpublished)</h2>
+        <p>
+          Three source-linked explainers prepared from maintained exemplar pathways. They remain{" "}
+          <b>draft / unpublished</b> until editorial review — Insights stays secondary until useful reviewed content
+          ships. Follow the graph links; do not treat these blurbs as finished articles.
+        </p>
+        <div className="insight-drafts">
+          {DRAFT_EXPLAINERS.map((d) => (
+            <article key={d.id} className="insight-draft">
+              <span className="badge rs rs-draft">Draft · unpublished</span>
+              <h3>{d.title}</h3>
+              <p className="small muted">{d.purpose}</p>
+              <p className="xs">
+                Exemplar maturity: {d.maturityLabel}
+                {d.note ? ` — ${d.note}` : ""}
+              </p>
+              <p className="xs" style={{ marginTop: 8 }}>
+                <Link to="/overview">Platform exemplars</Link>
+                {" · "}
+                <Link to="/methods">Methods</Link>
+              </p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="section">
@@ -75,15 +121,6 @@ function Insights() {
             </li>
           ))}
         </ul>
-      </section>
-
-      <section className="section">
-        <h2>Content series (planned)</h2>
-        <p>
-          Mechanism explainers, evidence notes, research pathway walkthroughs and deeper build notes will appear here
-          only when linked to reviewed graph relationships or explicit methods statements. Until then, use the live
-          atlas layers and Methods page as the source of truth.
-        </p>
       </section>
     </div>
   );
