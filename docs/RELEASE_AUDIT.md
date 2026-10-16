@@ -172,7 +172,7 @@ Do **not** mass-approve or invent PMIDs.
 
 | ID | Sev | Description | Status |
 |----|-----|-------------|--------|
-| D-05 | P0 science | Sparse Gate C (9/549) | **Open** — exemplars improved, incomplete |
+| D-05 | P0 science | Sparse Gate C (9/549) | **Open** — TNF on-path reviewed; PD-1 1/4 + Chemnitz partial; IFN scaffold (BAFF detour approved); see `docs/CURATOR_EVIDENCE_QUEUE.md` P0 matrix |
 | D-06 | P1 | Dual public URLs (Vercel + Lovable) | **Open** |
 | D-08 | P1 | In-memory rate limit | Accepted for beta |
 | D-11 | P2 | Vitest hang risk | Open |

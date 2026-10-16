@@ -10,7 +10,13 @@ import { PageHead, NodeChip } from "@/components/immune/ui";
 import AskAtlas from "@/components/immune/AskAtlas";
 import MechanismWorkspace from "@/components/immune/MechanismWorkspace";
 import { approvedQuery } from "@/lib/citations.functions";
-import { EXEMPLAR_PATHWAYS, reportExemplar } from "@/lib/immune/exemplarPathways";
+import {
+  EXEMPLAR_MATURITY_LABEL,
+  EXEMPLAR_PATHWAYS,
+  exemplarAllowsEvidenceGroundedClaim,
+  reportExemplar,
+} from "@/lib/immune/exemplarPathways";
+import { STATUS_INFO } from "@/lib/immune/evidenceStatus";
 
 export const Route = createFileRoute("/reasoning")({
   validateSearch: zodValidator(z.object({ from: fallback(z.string(), "").default("") })),
@@ -60,16 +66,22 @@ function Reasoning() {
         {evidenceUnavailable ? (
           <p className="lede" role="alert">Evidence service unavailable — pathway maturity below cannot be recomputed from live approvals (not the same as zero reviewed support).</p>
         ) : (
-          <p className="lede">PRD priority pathways — connected in the graph. TNF→RA on-path claim review is furthest along; PD-1 partial; IFN→SLE still largely scaffold-ish. Maturity badges recompute from live approvals.</p>
+          <p className="lede">
+            PRD priority pathways — graph-connected teaching scaffolds. Maturity badges recompute from live approved+supports cites.
+            Partial and scaffold pathways are not evidence-grounded AI demos.
+          </p>
         )}
         <div className="grid auto">
           {EXEMPLAR_PATHWAYS.map((p) => {
             const report = reportExemplar(p, approvedCites);
+            const maturityTitle = EXEMPLAR_MATURITY_LABEL[report.maturity];
             return (
               <article className="card" key={p.id}>
                 <div className="row" style={{ justifyContent: "space-between", gap: 8 }}>
                   <h3 style={{ fontSize: "1.05rem" }}>{p.title}</h3>
-                  <span className="chip">{report.maturity}</span>
+                  <span className={`badge rs rs-${report.maturity === "reviewed" ? "approved" : report.maturity === "partially-reviewed" ? "claim-assessed" : "unreviewed"}`} title={maturityTitle}>
+                    {report.maturity}
+                  </span>
                 </div>
                 <p className="small muted" style={{ marginTop: 8 }}>{p.purpose}</p>
                 <div className="row" style={{ marginTop: 10, flexWrap: "wrap", gap: 6 }}>
@@ -78,10 +90,26 @@ function Reasoning() {
                 <p className="xs muted" style={{ marginTop: 10 }}>
                   {report.connected ? "Waypoints are graph-connected." : `Gap: ${report.missingSegment ?? "incomplete path"}`}
                   {" · "}
-                  Claim review: {report.maturity === "scaffold" ? "not yet reviewed (scaffold)" : report.maturity}
+                  {report.approvedEdgeCount}/{report.uniqueRelIds.length} unique on-path edges with approved+supports
+                  {" · "}
+                  {maturityTitle}
+                  {!exemplarAllowsEvidenceGroundedClaim(report.maturity) ? " · not evidence-grounded" : ""}
                 </p>
+                {report.edgeReviews.length ? (
+                  <ul className="xs muted" style={{ marginTop: 8, paddingLeft: 18 }}>
+                    {report.edgeReviews.map((e) => (
+                      <li key={e.relId}>
+                        <code>{e.relId}</code>{" "}
+                        <span className={`badge rs rs-${e.review}`} title={STATUS_INFO[e.review].desc}>{e.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {p.notes.slice(0, 2).map((n) => (
+                  <p className="xs muted" key={n} style={{ marginTop: 6 }}>{n}</p>
+                ))}
                 {p.mechanism ? (
-                  <p className="xs muted">Mechanism defaults: {byId[p.mechanism.startId]?.name} → {byId[p.mechanism.perturbId]?.name} → {byId[p.mechanism.outcomeId]?.name}</p>
+                  <p className="xs muted" style={{ marginTop: 6 }}>Mechanism defaults: {byId[p.mechanism.startId]?.name} → {byId[p.mechanism.perturbId]?.name} → {byId[p.mechanism.outcomeId]?.name}</p>
                 ) : null}
               </article>
             );

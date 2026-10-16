@@ -16,7 +16,12 @@ import HealthReport from "@/components/immune/HealthReport";
 import manifest from "@/data/citation-manifest.json";
 import relationshipQueue from "@/data/relationship-evidence-queue.json";
 import { byId, human, inn, out, relId } from "@/lib/immune/engine";
-import { EXEMPLAR_PATHWAYS, exemplarQueueFocus } from "@/lib/immune/exemplarPathways";
+import {
+  EXEMPLAR_CURATOR_TARGETS,
+  EXEMPLAR_MATURITY_LABEL,
+  EXEMPLAR_PATHWAYS,
+  exemplarQueueFocus,
+} from "@/lib/immune/exemplarPathways";
 
 export const Route = createFileRoute("/_authenticated/curation")({
   head: () => ({
@@ -257,6 +262,29 @@ function Curation() {
               Focus queue slots on these pathway edges first ({exemplarRelCount} exemplar relIds in graph).
             </li>
           </ol>
+          <div style={{ marginTop: 14 }}>
+            <p className="small" style={{ marginBottom: 8 }}>
+              <strong>P0 exemplar Gate C gaps</strong> ({EXEMPLAR_CURATOR_TARGETS.length} targets) — PubMed queries are search starts; verify identifiers before approve.
+            </p>
+            <ul className="xs muted" style={{ paddingLeft: 18, margin: 0 }}>
+              {EXEMPLAR_PATHWAYS.map((p) => (
+                <li key={p.id} style={{ marginBottom: 6 }}>
+                  <b>{p.title}</b> — {EXEMPLAR_MATURITY_LABEL[p.maturity]}
+                  <ul style={{ paddingLeft: 16, marginTop: 4 }}>
+                    {EXEMPLAR_CURATOR_TARGETS.filter((t) => t.pathwayId === p.id).map((t) => (
+                      <li key={t.relId}>
+                        <code>{t.relId}</code>: {t.pubmedQuery}
+                        {t.neonHint ? ` · ${t.neonHint}` : ""}
+                      </li>
+                    ))}
+                    {!EXEMPLAR_CURATOR_TARGETS.some((t) => t.pathwayId === p.id) ? (
+                      <li>No open P0 targets listed — on-path approved+supports complete (teaching caveats still apply).</li>
+                    ) : null}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : null}
 

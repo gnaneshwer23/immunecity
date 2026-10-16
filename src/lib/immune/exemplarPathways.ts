@@ -2,9 +2,16 @@
    Waypoints are canonical concept IDs. Evidence maturity is honest: most edges
    still lack approved claim-linked assessments — do not market as fully reviewed. */
 import { byId, shortestPath, relId, type PathStep } from "@/lib/immune/engine";
-import { relationshipStatus, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
+import { relationshipStatus, STATUS_INFO, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 
 export type ExemplarMaturity = "scaffold" | "partially-reviewed" | "reviewed";
+
+/** User-facing maturity labels — never imply Gate C is complete when partial/scaffold. */
+export const EXEMPLAR_MATURITY_LABEL: Record<ExemplarMaturity, string> = {
+  scaffold: "Scaffold — few or no approved claim cites",
+  "partially-reviewed": "Partially reviewed — some edges still need approved+supports",
+  reviewed: "On-path edges reviewed — teaching axis, not disease-complete",
+};
 
 export interface ExemplarPathway {
   id: string;
@@ -14,8 +21,22 @@ export interface ExemplarPathway {
   waypointIds: string[];
   /** Suggested mechanism-workspace defaults. */
   mechanism?: { startId: string; perturbId: string; outcomeId: string; mode: "inhibit" | "activate" };
+  /**
+   * Documented baseline when live approved cites are unavailable.
+   * Live `reportExemplar(..., cites)` recomputes from approved+supports when cites are provided.
+   */
   maturity: ExemplarMaturity;
   notes: string[];
+}
+
+/** Curator-facing PubMed/Crossref search hints — never invent PMIDs; human verifies. */
+export interface ExemplarCuratorTarget {
+  relId: string;
+  pathwayId: string;
+  claimHint: string;
+  pubmedQuery: string;
+  /** Known Neon row state as of last audit (read-only hint; live DB wins). */
+  neonHint?: string;
 }
 
 export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
@@ -25,9 +46,9 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     purpose: "Classic inflammatory cytokine → disease, with a therapy target on the same axis.",
     waypointIds: ["C003", "M001", "D001", "I001"],
     mechanism: { startId: "C003", perturbId: "I001", outcomeId: "D001", mode: "inhibit" },
-    maturity: "partially-reviewed",
+    maturity: "reviewed",
     notes: [
-      "Macrophage → TNF → RA on-path edges carry approved claim-linked cites (Chu / Feldmann / Lipsky).",
+      "On-path edges Macrophage→TNF, TNF→RA, Infliximab→TNF carry approved claim-linked cites (Chu / Feldmann / Lipsky).",
       "Still a teaching axis — do not treat the whole disease biology as evidence-complete.",
     ],
   },
@@ -39,8 +60,9 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     mechanism: { startId: "R012", perturbId: "I008", outcomeId: "R011", mode: "inhibit" },
     maturity: "partially-reviewed",
     notes: [
+      "CD8→PD-1 expression has approved support (Barber). Pembrolizumab→PD-1 block is approved off this shortest path (KEYNOTE).",
+      "Still open for Gate C on this path: PD-L1→CD8 suppress (Chemnitz mapped partial), PD-L1 expression measures PD-L1, PD-L1 expression predicts pembrolizumab response.",
       "Separate cell biology, tumour context, therapeutic mechanism and trial endpoints — do not overgeneralise response rates.",
-      "Some edges have approved support (e.g. Barber / KEYNOTE axis); full pathway claim review remains partial.",
     ],
   },
   {
@@ -51,9 +73,66 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     mechanism: { startId: "C005", perturbId: "I015", outcomeId: "D007", mode: "inhibit" },
     maturity: "scaffold",
     notes: [
-      "Show where the chain is direct, indirect or still under review.",
-      "A few edges reviewed (e.g. IFN→BAFF / belimumab axis); overall pathway remains scaffold-ish.",
+      "Shortest graph path Type-I IFN→SLE currently detours via BAFF/belimumab (Lopez / Shin / Navarra approved) — not a direct IFN→SLE claim review.",
+      "Still open: pDC→IFN signalling, IFNAR→signalling, IFN↔IFNAR bind, Anifrolumab→SLE.",
+      "Show where the chain is direct, indirect or still under review — overall pathway remains scaffold-ish.",
     ],
+  },
+];
+
+/**
+ * P0 curator focus: exemplar edges still needing honest approved+supports.
+ * Queries are search starting points only — curator must verify identifiers before approve.
+ */
+export const EXEMPLAR_CURATOR_TARGETS: ExemplarCuratorTarget[] = [
+  {
+    relId: "REL-R012-suppresses-C015",
+    pathwayId: "ex-pd1-io",
+    claimHint: "PD-L1 suppresses CD8 CTL activity via PD-1 checkpoint engagement",
+    pubmedQuery: "PD-L1 PD-1 CD8 T cell suppression OR Chemnitz PD-L1 2004",
+    neonHint: "RELQ row verified; claim_support=partial (Chemnitz 2004) — reassess to supports only if source truly supports, else leave partial / find better cite",
+  },
+  {
+    relId: "REL-B011-measures-R012",
+    pathwayId: "ex-pd1-io",
+    claimHint: "PD-L1 expression biomarker / assay measures PD-L1 (R012)",
+    pubmedQuery: "PD-L1 immunohistochemistry companion diagnostic assay measures expression",
+    neonHint: "No mapped evidence_records row yet",
+  },
+  {
+    relId: "REL-B011-predicts_response_to-I008",
+    pathwayId: "ex-pd1-io",
+    claimHint: "PD-L1 expression predicts response to pembrolizumab",
+    pubmedQuery: "PD-L1 expression predicts pembrolizumab response KEYNOTE biomarker",
+    neonHint: "No mapped evidence_records row yet (KEYNOTE-006 is on REL-I008-blocks-R011, not this edge)",
+  },
+  {
+    relId: "REL-C005-produces-P004",
+    pathwayId: "ex-ifn-sle",
+    claimHint: "Plasmacytoid dendritic cells produce type-I interferon signalling",
+    pubmedQuery: "plasmacytoid dendritic cell type I interferon production TLR7 TLR9",
+    neonHint: "No mapped evidence_records row yet",
+  },
+  {
+    relId: "REL-R018-signals_through-P004",
+    pathwayId: "ex-ifn-sle",
+    claimHint: "IFNAR1 signals through type-I interferon pathway",
+    pubmedQuery: "IFNAR1 type I interferon receptor signalling pathway",
+    neonHint: "No mapped evidence_records row yet",
+  },
+  {
+    relId: "REL-M018-binds-R018",
+    pathwayId: "ex-ifn-sle",
+    claimHint: "Type I interferon binds IFNAR1",
+    pubmedQuery: "type I interferon IFN-alpha IFNAR1 binding receptor",
+    neonHint: "No mapped evidence_records row yet",
+  },
+  {
+    relId: "REL-I015-treats-D007",
+    pathwayId: "ex-ifn-sle",
+    claimHint: "Anifrolumab treats SLE (IFNAR blockade)",
+    pubmedQuery: "anifrolumab systemic lupus erythematosus TULIP randomised trial",
+    neonHint: "No mapped evidence_records row yet",
   },
 ];
 
@@ -62,8 +141,21 @@ export interface ExemplarPathReport {
   segments: { fromId: string; toId: string; steps: PathStep[] | null; relIds: string[]; reviews: ReviewStatus[] }[];
   connected: boolean;
   missingSegment: string | null;
-  /** Honest maturity from approved claim cites when provided; else scaffold. */
+  /** Honest maturity from approved claim cites when provided; else documented baseline. */
   maturity: ExemplarMaturity;
+  /** Unique on-path relationship IDs (order of first appearance). */
+  uniqueRelIds: string[];
+  /** Per unique relId review status (worst/conflict-aware via relationshipStatus on first matching step). */
+  edgeReviews: { relId: string; review: ReviewStatus; label: string }[];
+  approvedEdgeCount: number;
+}
+
+function maturityFromReviews(reviews: ReviewStatus[]): ExemplarMaturity {
+  if (!reviews.length) return "scaffold";
+  const approved = reviews.filter((r) => r === "approved").length;
+  if (approved === reviews.length) return "reviewed";
+  if (approved > 0 || reviews.some((r) => r === "claim-assessed")) return "partially-reviewed";
+  return "scaffold";
 }
 
 /** Stitch shortest undirected paths between successive waypoints. */
@@ -91,31 +183,72 @@ export function reportExemplar(pathway: ExemplarPathway, cites: CitationLike[] =
     }
   }
   const connected = !missing && segments.every((s) => s.steps !== null);
-  let maturity: ExemplarMaturity = pathway.maturity;
-  if (connected && allReviews.length) {
-    const approved = allReviews.filter((r) => r === "approved").length;
-    if (approved === allReviews.length) maturity = "reviewed";
-    else if (approved > 0 || allReviews.some((r) => r === "claim-assessed")) maturity = "partially-reviewed";
-    else maturity = "scaffold";
+
+  const seen = new Set<string>();
+  const uniqueRelIds: string[] = [];
+  const edgeReviews: ExemplarPathReport["edgeReviews"] = [];
+  for (const seg of segments) {
+    if (!seg.steps) continue;
+    for (let i = 0; i < seg.steps.length; i++) {
+      const rid = seg.relIds[i]!;
+      if (seen.has(rid)) continue;
+      seen.add(rid);
+      uniqueRelIds.push(rid);
+      const review = seg.reviews[i]!;
+      edgeReviews.push({ relId: rid, review, label: STATUS_INFO[review].label });
+    }
   }
+
+  // Without live cites, keep documented baseline — do not demote to scaffold from KG source refs alone.
+  let maturity: ExemplarMaturity = pathway.maturity;
+  if (connected && allReviews.length && cites.length > 0) {
+    maturity = maturityFromReviews(allReviews);
+  }
+
+  const approvedEdgeCount = edgeReviews.filter((e) => e.review === "approved").length;
+
   return {
     pathway,
     segments,
     connected,
     missingSegment: missing,
     maturity,
+    uniqueRelIds,
+    edgeReviews,
+    approvedEdgeCount,
   };
 }
 
 /** Unique relationship IDs on exemplar pathways — curator focus order, no auto-approve. */
 export function exemplarQueueFocus(): {
-  pathways: { pathwayId: string; title: string; relIds: string[] }[];
+  pathways: { pathwayId: string; title: string; relIds: string[]; maturity: ExemplarMaturity }[];
   relIds: string[];
+  /** Edges still lacking approved+supports under provided cites (or all curator targets if cites empty). */
+  pendingTargets: ExemplarCuratorTarget[];
 } {
   const pathways = EXEMPLAR_PATHWAYS.map((p) => {
     const report = reportExemplar(p);
     const relIds = [...new Set(report.segments.flatMap((s) => s.relIds))];
-    return { pathwayId: p.id, title: p.title, relIds };
+    return { pathwayId: p.id, title: p.title, relIds, maturity: p.maturity };
   });
-  return { pathways, relIds: [...new Set(pathways.flatMap((p) => p.relIds))] };
+  const relIds = [...new Set(pathways.flatMap((p) => p.relIds))];
+  return {
+    pathways,
+    relIds,
+    pendingTargets: EXEMPLAR_CURATOR_TARGETS.filter((t) => relIds.includes(t.relId)),
+  };
+}
+
+/** Pending Gate C targets for a pathway given live cites. */
+export function pendingExemplarTargets(pathwayId: string, cites: CitationLike[]): ExemplarCuratorTarget[] {
+  const pathway = EXEMPLAR_PATHWAYS.find((p) => p.id === pathwayId);
+  if (!pathway) return [];
+  const report = reportExemplar(pathway, cites);
+  const approved = new Set(report.edgeReviews.filter((e) => e.review === "approved").map((e) => e.relId));
+  return EXEMPLAR_CURATOR_TARGETS.filter((t) => t.pathwayId === pathwayId && report.uniqueRelIds.includes(t.relId) && !approved.has(t.relId));
+}
+
+/** Marketing / copy guard: never call a pathway "evidence-grounded" or fully reviewed unless maturity is reviewed. */
+export function exemplarAllowsEvidenceGroundedClaim(maturity: ExemplarMaturity): boolean {
+  return maturity === "reviewed";
 }
