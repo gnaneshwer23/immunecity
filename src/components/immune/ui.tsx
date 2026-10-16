@@ -20,10 +20,21 @@ export function PageHead({ kicker, title, lede, stats }: { kicker: ReactNode; ti
 export function NodeChip({ id, label }: { id: string; label?: string }) {
   const n = byId[id];
   if (!n) return null;
+  const draft = Boolean(n.draft);
   return (
-    <Link className="chip" to="/graph" search={{ focus: id }} title={`${n.name} · ${TYPES[n.node_type].label}`}>
+    <Link
+      className="chip"
+      to="/graph"
+      search={{ focus: id }}
+      title={`${n.name} · ${TYPES[n.node_type].label}${draft ? " · draft extension (not curated core)" : ""}`}
+    >
       <span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} />
       {label || n.name}
+      {draft ? (
+        <span className="badge rs rs-draft" style={{ marginLeft: 4, fontSize: "0.65rem" }}>
+          draft
+        </span>
+      ) : null}
     </Link>
   );
 }

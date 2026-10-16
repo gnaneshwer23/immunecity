@@ -46,7 +46,8 @@ function About() {
             beta you can explore here).
           </li>
           <li>
-            <b>Immunology Academy</b> — structured learning journey; foundation track is a navigable scaffold today.
+            <b>Immunology Academy</b> — learning scaffolds on Mechanism (foundation navigable; intermediate in
+            development). Not a finished curriculum or certification.
           </li>
           <li>
             <b>Scientific AI Workbench</b> — guided research workflow; candidate artefacts remain drafts until human

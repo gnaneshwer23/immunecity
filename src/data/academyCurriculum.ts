@@ -166,7 +166,133 @@ export const FOUNDATION_TRACK: AcademyTrack = {
   ],
 };
 
-export const ACADEMY_TRACKS: AcademyTrack[] = [FOUNDATION_TRACK];
+/**
+ * Intermediate scaffold — reuses existing Mechanism lessons only.
+ * Status stays `scaffold` / capability `in_development` until a fuller curriculum ships.
+ * Do not market as a finished intermediate course.
+ */
+export const INTERMEDIATE_TRACK: AcademyTrack = {
+  id: "intermediate-adaptive-checkpoints",
+  title: "Intermediate: adaptive brakes, IFN sensing, type-2 effectors",
+  level: "intermediate",
+  summary:
+    "Honest scaffold over three existing Mechanism lessons (checkpoint, cGAS–STING, type-2). Not a finished intermediate curriculum — labelled in development; local quizzes only.",
+  status: "scaffold",
+  modules: [
+    {
+      id: "mod-checkpoint",
+      title: "Checkpoints at the synapse (CTLA-4 / PD-1)",
+      objectives: [
+        "Contrast CTLA-4 (priming) vs PD-1 (peripheral brake) as a teaching scaffold.",
+        "Name one toxicity-pattern difference that follows from where each acts.",
+        "State why MHC-I loss can blunt anti-PD-1 response without inventing patient advice.",
+      ],
+      lessonId: "checkpoint",
+      prerequisiteLessonIds: ["tlr4", "il6"],
+      graphIds: ["R019", "R011", "R012", "I008", "I009"],
+      evidenceNote:
+        "Checkpoint teaching path is educational. Live Gate C on PD-1 exemplar edges may still be partial — finishing this module is not claim review.",
+      teachingSimplifications: [
+        "Synapse timing is simplified; real tumours and autoimmunity diverge.",
+        "Trial response rates are context, not Academy proof of Gate C.",
+      ],
+      quiz: [
+        {
+          id: "q-chk-ctla4-vs-pd1",
+          prompt: "Where does CTLA-4 mainly act relative to PD-1 in the teaching model?",
+          choices: [
+            "Early at priming (lymph node / B7 competition) vs later peripheral brake",
+            "Only inside the tumour nucleus",
+            "Only on neutrophils",
+            "Only after MHC class II loss",
+          ],
+          correctIndex: 0,
+          rationale: "CTLA-4 competes with CD28 early; PD-1 restrains effectors in inflamed tissue.",
+        },
+        {
+          id: "q-chk-mhci",
+          prompt: "If a tumour loses MHC class I, what happens to CD8-dependent anti-PD-1 logic?",
+          choices: [
+            "Reinvigorated CD8 cells may have nothing to recognise on the tumour",
+            "Anti-PD-1 always cures the tumour",
+            "CTLA-4 becomes irrelevant forever",
+            "Complement replaces all T-cell killing",
+          ],
+          correctIndex: 0,
+          rationale: "Without peptide–MHC-I, CD8 effectors cannot see the tumour even if PD-1 is blocked.",
+        },
+      ],
+    },
+    {
+      id: "mod-sting-ifn",
+      title: "Cytosolic DNA → type I IFN (cGAS–STING)",
+      objectives: [
+        "Trace cytosolic DNA to IFNAR-driven ISG programmes at teaching depth.",
+        "Link type I IFN amplification to BAFF / B-cell survival as a scaffold (not disease-complete).",
+        "Name one IFNAR-targeted educational example without claiming CDS.",
+      ],
+      lessonId: "sting",
+      prerequisiteLessonIds: ["checkpoint"],
+      graphIds: ["P011", "M018", "R018", "P004", "I015", "D007"],
+      evidenceNote:
+        "IFN teaching reuses the STING lesson. Exemplar IFN→SLE Gate C may still be scaffold — do not treat quiz completion as evidence approval.",
+      teachingSimplifications: [
+        "pDC and non-pDC IFN sources are collapsed for teaching.",
+        "SLE biology is broader than the cGAS–STING spine shown here.",
+      ],
+      quiz: [
+        {
+          id: "q-sting-second-messenger",
+          prompt: "What second messenger does cGAS produce after binding cytosolic dsDNA?",
+          choices: ["2′3′-cGAMP", "cAMP only", "IP3 only", "Retinoic acid"],
+          correctIndex: 0,
+          rationale: "cGAS synthesises 2′3′-cGAMP, which activates STING.",
+        },
+        {
+          id: "q-sting-ifnar",
+          prompt: "Which receptor complex does type I IFN use to drive the ISG programme in this lesson?",
+          choices: ["IFNAR1/2", "IL-6R alone", "PD-1/PD-L1", "C5aR only"],
+          correctIndex: 0,
+          rationale: "IFN-α/β signal through IFNAR1/2 → JAK/STAT → ISGF3 / ISGs.",
+        },
+      ],
+    },
+    {
+      id: "mod-type2",
+      title: "Type-2 effectors (alarmins → asthma teaching path)",
+      objectives: [
+        "Place TSLP/IL-33 alarmins upstream of ILC2/Th2 teaching cascades.",
+        "Explain why an upstream alarmin block can differ from eosinophil-only blockade.",
+        "Keep the path educational — not a prescribing algorithm.",
+      ],
+      lessonId: "type2",
+      prerequisiteLessonIds: ["sting"],
+      graphIds: ["M022", "M021", "C009", "M007", "I006", "I028"],
+      evidenceNote:
+        "Type-2 lesson is curated teaching content. Biologic names are educational examples; Academy progress ≠ clinical recommendation.",
+      teachingSimplifications: [
+        "Asthma endotypes are reduced to a single teaching spine.",
+        "Real dosing, eligibility and safety decisions are out of scope.",
+      ],
+      quiz: [
+        {
+          id: "q-type2-tslp",
+          prompt: "Why can an anti-TSLP approach act upstream of eosinophil-only blockade in the teaching model?",
+          choices: [
+            "TSLP is an epithelial alarmin that licences multiple type-2 arms, not only eosinophils",
+            "TSLP is only made by eosinophils",
+            "Anti-TSLP replaces all vaccines",
+            "TSLP is a complement protein",
+          ],
+          correctIndex: 0,
+          rationale: "Alarmins sit above ILC2/Th2 programmes; eosinophil-targeted drugs act further downstream.",
+        },
+      ],
+    },
+  ],
+};
+
+export const ACADEMY_TRACKS: AcademyTrack[] = [FOUNDATION_TRACK, INTERMEDIATE_TRACK];
 
 export function trackById(id: string): AcademyTrack | undefined {
   return ACADEMY_TRACKS.find((t) => t.id === id);
@@ -178,4 +304,9 @@ export function moduleForLesson(lessonId: string): { track: AcademyTrack; module
     if (module) return { track, module };
   }
   return undefined;
+}
+
+/** Prefer foundation when a lesson sits in multiple tracks (none today). */
+export function primaryTrackForLesson(lessonId: string): AcademyTrack | undefined {
+  return moduleForLesson(lessonId)?.track;
 }

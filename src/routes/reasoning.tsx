@@ -61,8 +61,8 @@ function Reasoning() {
         <p className="lede">Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with reviewed cites when present. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
         <AskAtlas />
       </section>
-      <section className="section">
-        <h2>Exemplar pathways</h2>
+      <section className="section" aria-labelledby="exemplar-pathways-heading">
+        <h2 id="exemplar-pathways-heading">Exemplar pathways</h2>
         {evidenceUnavailable ? (
           <p className="lede" role="alert">Evidence service unavailable — pathway maturity below cannot be recomputed from live approvals (not the same as zero reviewed support).</p>
         ) : (
@@ -76,10 +76,14 @@ function Reasoning() {
             const report = reportExemplar(p, approvedCites);
             const maturityTitle = EXEMPLAR_MATURITY_LABEL[report.maturity];
             return (
-              <article className="card" key={p.id}>
+              <article className="card" key={p.id} aria-labelledby={`exemplar-${p.id}-title`}>
                 <div className="row" style={{ justifyContent: "space-between", gap: 8 }}>
-                  <h3 style={{ fontSize: "1.05rem" }}>{p.title}</h3>
-                  <span className={`badge rs rs-${report.maturity === "reviewed" ? "approved" : report.maturity === "partially-reviewed" ? "claim-assessed" : "unreviewed"}`} title={maturityTitle}>
+                  <h3 id={`exemplar-${p.id}-title`} style={{ fontSize: "1.05rem" }}>{p.title}</h3>
+                  <span
+                    className={`badge rs rs-${report.maturity === "reviewed" ? "approved" : report.maturity === "partially-reviewed" ? "claim-assessed" : "unreviewed"}`}
+                    title={maturityTitle}
+                    aria-label={maturityTitle}
+                  >
                     {report.maturity}
                   </span>
                 </div>

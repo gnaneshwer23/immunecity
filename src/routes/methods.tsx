@@ -85,7 +85,7 @@ function Methods() {
         <ul>
           <li>Most links have not yet been claim-checked against a source; claim-level approved support is still sparse overall (single-digit approved relationship claims vs hundreds of runtime links) and does not imply clinical validation.</li>
           <li>Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.</li>
-          <li>The Immunology Academy foundation track on <Link to="/mechanism">Mechanism</Link> is a navigable teaching scaffold — not a finished curriculum, certification, or Gate C coverage claim.</li>
+          <li>The Immunology Academy on <Link to="/mechanism">Mechanism</Link> ships a navigable foundation scaffold plus an in-development intermediate scaffold — not a finished curriculum, certification, or Gate C coverage claim.</li>
           <li>Links simplify dose, timing, species and individual variation.</li>
           <li>Tissue context is sparse; many effects are recorded without one.</li>
           <li>This product educates with references; it is not medical advice, clinician decision support, or patient-specific guidance.</li>

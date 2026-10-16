@@ -78,11 +78,11 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
     hit.append("title").text((d: any) => `${byId[d.subject_id]?.name ?? d.subject_id} — ${human(d.relation)} → ${byId[d.object_id]?.name ?? d.object_id}. Click for details.`);
     const node = root.append("g").selectAll("circle").data(nodes).join("circle")
       .attr("tabindex", 0).attr("role", "button")
-      .attr("aria-label", (d: any) => `${d.name} — ${TYPES[d.node_type as NodeType].label}. Press Enter to add or remove it from the selection.`)
+      .attr("aria-label", (d: any) => `${d.name} — ${TYPES[d.node_type as NodeType].label}${d.draft ? " (draft extension, not curated core)" : ""}. Press Enter to add or remove it from the selection.`)
       .style("cursor", "pointer")
       .on("click", (_e: any, d: any) => togglePick(d.id))
       .on("keydown", (e: any, d: any) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); togglePick(d.id); } });
-    node.append("title").text((d: any) => `${d.name} · ${TYPES[d.node_type as NodeType].label}`);
+    node.append("title").text((d: any) => `${d.name} · ${TYPES[d.node_type as NodeType].label}${d.draft ? " · draft extension" : ""}`);
     const label = root.append("g").selectAll("text")
       .data(nodes.filter((d) => deg(d.id) >= 3 || d.id === focusId)).join("text")
       .attr("class", "node-label").attr("text-anchor", "middle").attr("dy", -12).text((d: any) => d.name);
@@ -124,8 +124,9 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
     ns.attr("r", (d: any) => Math.min(14, 4 + Math.sqrt(deg(d.id))))
       .attr("aria-pressed", (d: any) => (sel.has(d.id) ? "true" : "false"))
       .style("fill", (d: any) => `var(${TYPES[d.node_type as NodeType].c})`)
-      .style("stroke", (d: any) => (sel.has(d.id) ? "var(--primary)" : d.id === focusId ? "var(--text)" : "var(--surface)"))
-      .style("stroke-width", (d: any) => (sel.has(d.id) ? 3.5 : d.id === focusId ? 3 : 1.5))
+      .style("stroke", (d: any) => (sel.has(d.id) ? "var(--primary)" : d.id === focusId ? "var(--text)" : d.draft ? "var(--warn)" : "var(--surface)"))
+      .style("stroke-width", (d: any) => (sel.has(d.id) ? 3.5 : d.id === focusId ? 3 : d.draft ? 2 : 1.5))
+      .style("stroke-dasharray", (d: any) => (d.draft && !sel.has(d.id) ? "3 2" : null))
       .attr("opacity", (d: any) => (!hasSel ? 1 : sel.has(d.id) ? 1 : near!.has(d.id) ? 0.7 : 0.15));
     if (ls) {
       const isPickedEdge = (l: any) => edgePick && l.subject_id === edgePick.subject_id && l.object_id === edgePick.object_id && l.relation === edgePick.relation;
@@ -205,10 +206,11 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
               {findHits.length ? (
                 <div className="search-results">
                   {findHits.map((n) => (
-                    <button key={n.id} onClick={() => findGo(n.id)}>
+                    <button key={n.id} type="button" onClick={() => findGo(n.id)}>
                       <span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} />
                       {n.name}
                       <span className="sr-type">{TYPES[n.node_type].label}</span>
+                      {n.draft ? <span className="badge rs rs-draft">draft</span> : null}
                     </button>
                   ))}
                 </div>

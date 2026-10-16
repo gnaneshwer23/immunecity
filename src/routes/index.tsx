@@ -103,10 +103,10 @@ function Home() {
               <span className="platform-pillar-kicker">Learn immunology</span>
               <h3>Immunology Academy</h3>
               <p>
-                Build from core immune concepts to specialised mechanisms with structured lessons and connected
-                pathways. Foundation track is a navigable scaffold today.
+                Mechanism lessons plus a navigable foundation scaffold and an in-development intermediate scaffold —
+                not a finished curriculum or certification.
               </p>
-              <span className="platform-pillar-cta">Explore the Academy</span>
+              <span className="platform-pillar-cta">Explore the Academy scaffold</span>
             </Link>
             <Link className="platform-pillar" to={EXPLORE_PATH}>
               <span className="platform-pillar-kicker">Explore the science</span>

@@ -84,7 +84,7 @@ function SiteFooter() {
             Educational immunology platform with curated references. Ask teaches from the graph—not patient-specific
             advice or fully evidence-grounded AI.
           </p>
-          <span className="sf-status"><span className="sf-dot" /> Educational beta · reviewed cites when available · Academy foundation scaffold</span>
+          <span className="sf-status"><span className="sf-dot" /> Educational beta · reviewed cites when available · Academy scaffolds in development</span>
         </div>
         {FOOTER_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">

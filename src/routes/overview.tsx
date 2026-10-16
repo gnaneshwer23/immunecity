@@ -66,7 +66,7 @@ function Overview() {
           <Link className="platform-pillar" to="/learn">
             <span className="platform-pillar-kicker">Foundations</span>
             <h3>Cell atlas · Mechanism</h3>
-            <p>Meet the immune-system components, then follow mechanisms step by step. Academy foundation track is a navigable scaffold on Mechanism.</p>
+            <p>Meet the immune-system components, then follow mechanisms step by step. Academy scaffolds on Mechanism are educational — foundation navigable, intermediate still in development.</p>
           </Link>
           <Link className="platform-pillar" to="/evidence">
             <span className="platform-pillar-kicker">Clinical knowledge</span>

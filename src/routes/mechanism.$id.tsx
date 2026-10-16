@@ -54,9 +54,9 @@ function Mechanism() {
   return (
     <div className="page">
       <PageHead
-        kicker={`Layer 03 · Mechanism · Module ${lesson.module}`}
+        kicker={`Layer 03 · Mechanism · Module ${lesson.module}${lesson.draft ? " · draft" : ""}`}
         title="Cascades"
-        lede="Pick a lesson, then walk its steps. Each step opens the mechanism, what fails if that component is absent, and the clinical read-out."
+        lede="Pick a lesson, then walk its steps. Each step opens the mechanism, what fails if that component is absent, and the clinical read-out. Draft extension lessons are labelled — not curated core."
         stats={[
           { v: lessons.length, l: "LESSONS" },
           { v: steps.length, l: "STEPS IN THIS CASCADE" },
@@ -65,16 +65,44 @@ function Mechanism() {
       />
       <AcademyTrack lessonId={lesson.id} />
 
-      <div className="lesson-tabs">
-        {lessons.map((l) => (
-          <button key={l.id} className={l.id === lesson.id ? "on" : undefined} onClick={() => navigate({ to: "/mechanism/$id", params: { id: l.id } })}>
-            <span className="m">{l.module}</span>{l.title.split(":")[0]}
-          </button>
-        ))}
+      <div className="lesson-tabs" role="tablist" aria-label="Mechanism lessons">
+        {lessons.map((l) => {
+          const selected = l.id === lesson.id;
+          return (
+            <button
+              key={l.id}
+              role="tab"
+              type="button"
+              aria-selected={selected}
+              className={selected ? "on" : undefined}
+              onClick={() => navigate({ to: "/mechanism/$id", params: { id: l.id } })}
+            >
+              <span className="m">{l.module}</span>
+              {l.title.split(":")[0]}
+              {l.draft ? (
+                <span className="badge rs rs-draft" style={{ marginLeft: 4 }}>
+                  draft
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
       </div>
 
       <div className="card" style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: "1.35rem", marginBottom: 8 }}>{lesson.title}</h2>
+        <h2 style={{ fontSize: "1.35rem", marginBottom: 8 }}>
+          {lesson.title}
+          {lesson.draft ? (
+            <span className="badge rs rs-draft" style={{ marginLeft: 8, verticalAlign: "middle" }}>
+              draft extension
+            </span>
+          ) : null}
+        </h2>
+        {lesson.draft ? (
+          <p className="small" role="note" style={{ marginBottom: 8 }}>
+            Draft extension lesson — added to close a coverage gap; not curated core until expert review.
+          </p>
+        ) : null}
         <p className="muted">{lesson.question}</p>
         <div className="row" style={{ marginTop: 12 }}>{cellNames.map((n) => <span className="chip" key={n}>{n}</span>)}</div>
         <div className="row" style={{ marginTop: 8 }}>

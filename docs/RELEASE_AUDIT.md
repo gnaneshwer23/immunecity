@@ -185,10 +185,12 @@ Do **not** mass-approve or invent PMIDs.
 
 ## 10. Owner / human actions remaining
 
-1. **SME:** Sign `docs/SME_GOLD_SET_SIGNOFF.md`.
-2. **A11y:** Human keyboard / contrast pass (and Lighthouse if desired).
-3. **Curator:** Continue honest literature for remaining PD-1 / IFN→SLE edges — no invented PMIDs.
-4. **Ops:** Decide retirement timeline for Lovable secondary URL; optionally point local smoke at production with explicit env (D-18).
+1. **SME:** Sign `docs/SME_GOLD_SET_SIGNOFF.md` (actionable checklist + case ids; no AI signature).
+2. **A11y / CWV:** Human keyboard + contrast pass on Academy/Reasoning/Graph; optional Lighthouse — do not invent scores. Code quick wins (tab roles, quiz `aria-pressed`, draft labels) shipped in P1; full audit still human.
+3. **Curator:** Continue honest literature for remaining PD-1 / IFN→SLE edges — no invented PMIDs. Queue still ~37/549 mapped candidates.
+4. **Ops:** Decide retirement timeline for Lovable secondary URL; optionally point local smoke at production with explicit env (D-18). Apex `.co.uk` DNS/TLS may still fail if Livedns is wrong — `immunecity.vercel.app` and `www` are the verified prod surfaces.
+5. **Academy:** Intermediate scaffold is labelled `in_development` — full curriculum / certification still human content work.
+6. **Eval set:** Stays at 50 automated cases until SME proposes graph-true expansions toward PRD 100+.
 
 ---
 
