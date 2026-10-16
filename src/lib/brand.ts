@@ -4,6 +4,8 @@ export const PRODUCT_SHORT = "ISI";
 /** Flagship interactive platform under the umbrella brand. */
 export const FLAGSHIP_NAME = "Immune City";
 export const TAGLINE = "Where Immunology Meets Advanced AI";
+/** Exact homepage H1 — includes the terminal period from the product brief. */
+export const HERO_HEADLINE = "Where Immunology Meets Advanced AI.";
 export const BRAND_EYEBROW = "Immunology × Scientific AI";
 export const PRODUCT_LINE = `${PRODUCT_NAME} — ${TAGLINE}`;
 export const ASK_NAME = `Ask ${PRODUCT_NAME}`;
@@ -27,12 +29,13 @@ export const CONTACT_EMAIL = "collaborate@immune-super-intelligence.co.uk";
 export const PROPOSITION =
   "Immune Super Intelligence is building tools that connect immunology, scientific evidence and advanced AI—helping people learn mechanisms, explore biological relationships and investigate research questions.";
 
-export const HERO_HEADLINE =
-  "Understand the immune system as a connected, evidence-aware system.";
-
 /** Short hero supporting line — keep the first viewport lean. */
 export const HERO_SUPPORT =
-  "Learn mechanisms, explore causal relationships, and investigate research questions—with references.";
+  "Learn mechanisms, explore causal relationships, and investigate research questions—with references. Educational teaching with curated graph references; not clinical decision support.";
+
+/** Single public trust line — reuse; avoid repeating “educational beta” on every section. */
+export const TRUST_STATEMENT =
+  "Educational immunology model with curated references. Ask retrieves from the graph and is not fully evidence-grounded AI. Not clinical decision support.";
 
 export function pageTitle(section?: string): string {
   return section ? `${section} — ${PRODUCT_NAME}` : PRODUCT_LINE;
