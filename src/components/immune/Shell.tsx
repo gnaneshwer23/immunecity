@@ -203,7 +203,8 @@ export default function Shell({ children }: { children: ReactNode }) {
   const [askOpen, setAskOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const marketing = isMarketingPath(pathname);
-  const isHome = pathname === "/";
+  /** Midnight hero chrome on marketing routes (matches home + deep page heroes). */
+  const darkMarketingChrome = marketing;
   const compactNavId = useId();
   const closeCompact = () => setOpen(false);
 
@@ -222,7 +223,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
-      <header className={`topbar${isHome ? " home-topbar" : ""}${marketing ? " marketing-topbar" : ""}`}>
+      <header className={`topbar${darkMarketingChrome ? " home-topbar" : ""}${marketing ? " marketing-topbar" : ""}`}>
         {!marketing && (
           <Button variant="ghost" size="icon" className="icon-btn nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open} title="Toggle navigation"><Menu size={20} /></Button>
         )}

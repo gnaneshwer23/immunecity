@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
+import { MarketingBody, MarketingHero, MarketingSection } from "@/components/immune/marketing";
 import { CONTACT_EMAIL, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 
@@ -86,107 +86,152 @@ function Collaborate() {
   }
 
   return (
-    <div className="page marketing-page">
-      <PageHead
-        kicker="Organisation"
-        title="Help shape an evidence-aware platform"
+    <div className="mkt-page">
+      <MarketingHero
+        eyebrow="Organisation · Collaborate"
+        title="Help shape an evidence-aware platform."
         lede={`We welcome conversations with immunology educators, researchers, computational biologists and technology teams interested in knowledge graphs, literature curation and responsible scientific AI for ${PRODUCT_NAME}.`}
+        foot="No patient details · no PHI · no confidential research data via this form"
       />
 
-      <section className="section">
-        <p>
-          Do not send patient details, PHI, or confidential research data through this form. For product exploration,
-          start with the <Link to="/overview">platform overview</Link> or <Link to="/methods">Evidence &amp; Methods</Link>.
-        </p>
-        <div className="collab-address">
-          <span className="small muted">Or email directly:</span>
-          <code>{CONTACT_EMAIL}</code>
-          <Button type="button" variant="ghost" className="bio-secondary" onClick={copyAddress}>
-            {copied ? "Copied" : "Copy address"}
-          </Button>
-          <a className="small" href={`mailto:${CONTACT_EMAIL}`}>
-            Open mail app
-          </a>
-        </div>
-      </section>
+      <MarketingBody>
+        <div className="mkt-collab-layout">
+          <aside className="mkt-collab-aside">
+            <MarketingSection
+              id="direct"
+              eyebrow="DIRECT"
+              title="Email first."
+              lede="Prefer a short note? Reach the public collaboration inbox directly."
+            >
+              <div className="mkt-collab-address">
+                <code>{CONTACT_EMAIL}</code>
+                <div className="bio-actions">
+                  <Button type="button" variant="ghost" className="bio-secondary" onClick={copyAddress}>
+                    {copied ? "Copied" : "Copy address"}
+                  </Button>
+                  <a className="mkt-text-link" href={`mailto:${CONTACT_EMAIL}`}>
+                    Open mail app
+                  </a>
+                </div>
+              </div>
+              <p className="mkt-aside">
+                Explore first: <Link to="/overview">Platform</Link>
+                {" · "}
+                <Link to="/methods">Evidence &amp; Methods</Link>
+                {" · "}
+                <Link to="/privacy">Privacy</Link>
+              </p>
+            </MarketingSection>
+          </aside>
 
-      <form className="collab-form" onSubmit={onSubmit} noValidate>
-        <label>
-          Name
-          <input name="name" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} />
-        </label>
-        <label>
-          Work email
-          <input
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            aria-invalid={emailError ? true : undefined}
-            aria-describedby={emailError ? "email-error" : undefined}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (emailError) setEmailError(null);
-            }}
-            onBlur={() => {
-              if (email.trim() && !isValidWorkEmail(email)) {
-                setEmailError("Enter a valid work email (name@organisation.domain).");
-              }
-            }}
-          />
-          {emailError ? (
-            <span id="email-error" className="collab-error" role="alert">
-              {emailError}
-            </span>
-          ) : null}
-        </label>
-        <label>
-          Organisation <span className="muted">(optional)</span>
-          <input name="org" autoComplete="organization" value={org} onChange={(e) => setOrg(e.target.value)} />
-        </label>
-        <label>
-          Stakeholder type
-          <select value={stakeholder} onChange={(e) => setStakeholder(e.target.value as (typeof STAKEHOLDERS)[number])}>
-            {STAKEHOLDERS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Area of interest <span className="muted">(optional)</span>
-          <input name="interest" value={interest} onChange={(e) => setInterest(e.target.value)} />
-        </label>
-        <label>
-          Message
-          <textarea
-            name="message"
-            required
-            rows={6}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Describe your interest. Do not include patient identifiers or PHI."
-          />
-        </label>
-        <label className="collab-check">
-          <input type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} required />
-          <span>
-            I understand this enquiry may be processed as described in the <Link to="/privacy">privacy notice</Link>,
-            and I will not include patient-identifiable information (PHI) or confidential research data.
-          </span>
-        </label>
-        <div className="bio-actions">
-          <Button type="submit" className="bio-primary" disabled={!privacy}>
-            Start a conversation
-          </Button>
+          <div className="mkt-collab-main">
+            <MarketingSection
+              id="form"
+              eyebrow="ENQUIRY"
+              title="Start a conversation."
+              lede="Submitting opens your email client with a pre-filled message (mailto)."
+            >
+              <form className="collab-form" onSubmit={onSubmit} noValidate>
+                <label>
+                  Name
+                  <input
+                    name="name"
+                    autoComplete="name"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Work email
+                  <input
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    aria-invalid={emailError ? true : undefined}
+                    aria-describedby={emailError ? "email-error" : undefined}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailError) setEmailError(null);
+                    }}
+                    onBlur={() => {
+                      if (email.trim() && !isValidWorkEmail(email)) {
+                        setEmailError("Enter a valid work email (name@organisation.domain).");
+                      }
+                    }}
+                  />
+                  {emailError ? (
+                    <span id="email-error" className="collab-error" role="alert">
+                      {emailError}
+                    </span>
+                  ) : null}
+                </label>
+                <label>
+                  Organisation <span className="muted">(optional)</span>
+                  <input
+                    name="org"
+                    autoComplete="organization"
+                    value={org}
+                    onChange={(e) => setOrg(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Stakeholder type
+                  <select
+                    value={stakeholder}
+                    onChange={(e) => setStakeholder(e.target.value as (typeof STAKEHOLDERS)[number])}
+                  >
+                    {STAKEHOLDERS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Area of interest <span className="muted">(optional)</span>
+                  <input name="interest" value={interest} onChange={(e) => setInterest(e.target.value)} />
+                </label>
+                <label>
+                  Message
+                  <textarea
+                    name="message"
+                    required
+                    rows={6}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Describe your interest. Do not include patient identifiers or PHI."
+                  />
+                </label>
+                <label className="collab-check">
+                  <input
+                    type="checkbox"
+                    checked={privacy}
+                    onChange={(e) => setPrivacy(e.target.checked)}
+                    required
+                  />
+                  <span>
+                    I understand this enquiry may be processed as described in the{" "}
+                    <Link to="/privacy">privacy notice</Link>, and I will not include patient-identifiable information
+                    (PHI) or confidential research data.
+                  </span>
+                </label>
+                <div className="bio-actions">
+                  <Button type="submit" className="bio-primary" disabled={!privacy}>
+                    Start a conversation
+                  </Button>
+                </div>
+                <p className="small muted collab-form-note">
+                  If mail is not configured on your device, use Copy address and send manually to{" "}
+                  <code>{CONTACT_EMAIL}</code>.
+                </p>
+              </form>
+            </MarketingSection>
+          </div>
         </div>
-        <p className="small muted collab-form-note">
-          Submitting opens your email client to <code>{CONTACT_EMAIL}</code> with a pre-filled message (mailto). If mail
-          is not configured on your device, use Copy address above and send manually.
-        </p>
-      </form>
+      </MarketingBody>
     </div>
   );
 }

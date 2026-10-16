@@ -3,13 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { SEM } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { PROMPT_VERSION } from "@/lib/askGrounding";
-import { PageHead } from "@/components/immune/ui";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { approvedQuery } from "@/lib/citations.functions";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
+import { MarketingBody, MarketingHero, MarketingSection } from "@/components/immune/marketing";
 
 export const Route = createFileRoute("/methods")({
   head: () =>
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/methods")({
   component: Methods,
 });
 
-function LiveEvidenceStatus() {
+function LiveEvidencePanel() {
   const { data, isError, isPending, isFetching, dataUpdatedAt, error } = useQuery(approvedQuery);
   const approvedClaim = (data ?? []).filter(
     (c) => c.relationship_id && c.claim_support === "supports",
@@ -32,145 +32,255 @@ function LiveEvidenceStatus() {
 
   if (isError) {
     return (
-      <section className="section" aria-labelledby="live-ev-heading">
-        <h2 id="live-ev-heading">Live evidence service</h2>
-        <p className="lede" role="alert">
+      <div className="mkt-ev-panel" role="alert">
+        <h3 id="live-ev-heading">Live evidence service</h3>
+        <p>
           Evidence service unavailable
           {error instanceof Error ? ` (${error.message})` : ""}. This is a service error, not a finding that the graph
-          has zero reviewed citations. Retry shortly, or use the static ontology notes below.
+          has zero reviewed citations.
         </p>
-        {fetchedAt ? <p className="small muted">Last successful fetch: {fetchedAt}</p> : null}
-      </section>
+        {fetchedAt ? <p className="mkt-aside">Last successful fetch: {fetchedAt}</p> : null}
+      </div>
     );
   }
 
+  const loading = isPending || (isFetching && !data);
+
   return (
-    <section className="section" aria-labelledby="live-ev-heading">
-      <h2 id="live-ev-heading">Live evidence service</h2>
-      <p>
-        {isPending || (isFetching && !data)
-          ? "Loading approved citation rows from the curation database…"
-          : `${data?.length ?? 0} approved citation row(s) loaded · ${withId} with PMID/DOI · ${approvedClaim} with relationship_id + claim_support=supports (relationship-level only).`}
+    <div className="mkt-ev-panel" aria-labelledby="live-ev-heading">
+      <h3 id="live-ev-heading">Live evidence service</h3>
+      <dl className="mkt-ev-metrics">
+        <div>
+          <dt>Approved rows</dt>
+          <dd>{loading ? "…" : (data?.length ?? 0)}</dd>
+        </div>
+        <div>
+          <dt>With PMID/DOI</dt>
+          <dd>{loading ? "…" : withId}</dd>
+        </div>
+        <div>
+          <dt>Claim-supporting</dt>
+          <dd>{loading ? "…" : approvedClaim}</dd>
+        </div>
+      </dl>
+      <p className="mkt-aside">
+        Fetched at <code>{fetchedAt ?? "—"}</code>. Only rows with <code>relationship_id</code> +{" "}
+        <code>claim_support=supports</code> count as link support. Concept-level rows never inflate coverage.{" "}
+        <Link to="/evidence">Full Evidence breakdown</Link>
       </p>
-      <p className="small muted">
-        Fetched at <code>{fetchedAt ?? "—"}</code>. Concept-level rows never inflate link coverage. Full breakdown on{" "}
-        <Link to="/evidence">Evidence</Link>.
-      </p>
-    </section>
+    </div>
   );
 }
 
 const METHODS_TOC = [
-  { href: "#live-ev-heading", label: "Live evidence coverage" },
+  { href: "#lifecycle", label: "Evidence lifecycle" },
+  { href: "#live-ev-heading", label: "Live coverage" },
+  { href: "#statuses", label: "Review statuses" },
   { href: "#ontology", label: "Graph ontology" },
-  { href: "#signs", label: "Relationship signs" },
-  { href: "#evidence-review", label: "Evidence lifecycle" },
   { href: "#models", label: "Model assumptions" },
-  { href: "#phases", label: "Platform phases" },
   { href: "#limitations", label: "Limitations" },
-  { href: "#a11y", label: "Accessibility" },
+] as const;
+
+const LIFECYCLE = [
+  {
+    n: "01",
+    title: "Claim",
+    copy: "A directional relationship ID: REL-subject-relation-object.",
+  },
+  {
+    n: "02",
+    title: "Citation",
+    copy: "PMID/DOI linked and metadata-checked — identity only, not claim approval.",
+  },
+  {
+    n: "03",
+    title: "Review",
+    copy: "Human maps the source to the exact claim and sets claim_support.",
+  },
+  {
+    n: "04",
+    title: "Limits",
+    copy: "Unreviewed stays labelled; sparse approval never implies clinical validation.",
+  },
 ] as const;
 
 function Methods() {
   const snap = graphReleaseSnapshot();
   const signs = Object.entries(SEM).reduce<Record<string, string[]>>((a, [rel, s]) => ((a[s] ||= []).push(rel), a), {});
+  const statuses = Object.keys(STATUS_INFO) as ReviewStatus[];
+
   return (
-    <div className="page methods marketing-page">
-      <PageHead
-        kicker="Evidence & Methods"
+    <div className="mkt-page methods">
+      <MarketingHero
+        eyebrow="Evidence & Methods"
         title="See what supports a claim—and where the evidence stops."
-        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation is only counted as support when it is mapped to that directional claim and reviewed under the platform’s curation process. Educational teaching with references — not clinical decision support.`}
-        stats={[{ v: snap.coreNodes, l: "CORE CONCEPTS" }, { v: snap.draftNodes, l: "DRAFT CONCEPTS" }, { v: snap.runtimeRelationships, l: "RUNTIME LINKS" }]}
+        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation counts as support only when mapped to that directional claim and reviewed. Educational teaching with references — not clinical decision support.`}
+        foot={`Core ${snap.coreNodes} concepts / ${snap.coreRelationships} links · ${snap.draftNodes} draft concepts labelled · snapshot ${snap.snapshotAt}`}
       />
 
-      <nav className="methods-toc" aria-label="On this page">
-        <span className="methods-toc-label">On this page</span>
-        <ol>
-          {METHODS_TOC.map((item) => (
-            <li key={item.href}>
-              <a href={item.href}>{item.label}</a>
+      <MarketingBody className="methods-body">
+        <nav className="mkt-toc" aria-label="On this page">
+          <span className="mkt-toc-label">On this page</span>
+          <ol>
+            {METHODS_TOC.map((item) => (
+              <li key={item.href}>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+
+        <MarketingSection
+          id="lifecycle"
+          eyebrow="01 / LIFECYCLE"
+          title="Claims, citations, review, limits."
+          lede="Trust comes from inspectable process — not decorative badges."
+        >
+          <ol className="mkt-lifecycle">
+            {LIFECYCLE.map((step) => (
+              <li key={step.n}>
+                <span className="mkt-lifecycle-n">{step.n}</span>
+                <strong>{step.title}</strong>
+                <p>{step.copy}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="mkt-split">
+            <div>
+              <h3>Identifier verification ≠ claim approval</h3>
+              <ul className="mkt-principle-list">
+                <li>
+                  <b>ID verification</b> — PubMed / Crossref confirms a PMID or DOI resolves → “Source linked,” not
+                  Supported.
+                </li>
+                <li>
+                  <b>Claim approval</b> — a human maps the source to <code>REL-…</code>, sets{" "}
+                  <code>claim_support = supports</code>, and marks curation approved.
+                </li>
+                <li>No mass-approve path. Concept-level cites never inflate relationship coverage.</li>
+              </ul>
+            </div>
+            <LiveEvidencePanel />
+          </div>
+        </MarketingSection>
+
+        <MarketingSection
+          id="statuses"
+          eyebrow="02 / REVIEW STATUSES"
+          title="Every relationship carries an honest label."
+        >
+          <ul className="mkt-status-panels">
+            {statuses.map((s) => (
+              <li key={s}>
+                <span className={`badge rs rs-${s}`}>{STATUS_INFO[s].label}</span>
+                <p>{STATUS_INFO[s].desc}</p>
+              </li>
+            ))}
+          </ul>
+        </MarketingSection>
+
+        <MarketingSection
+          id="ontology"
+          eyebrow="03 / GRAPH"
+          title="Typed concepts. Directional claims."
+        >
+          <p>
+            Every concept is a typed node with a stable ID. Every link is one directional claim — subject, predicate,
+            object — with relationship ID <code>REL-subject-predicate-object</code>, a mechanism, a confidence and,
+            where known, a tissue.
+          </p>
+          <p className="mkt-aside">
+            Release <code>{snap.snapshotAt}</code>: core v{snap.coreVersion} · {snap.coreNodes}/{snap.coreRelationships}{" "}
+            core · extensions {snap.extensionsVersion} add {snap.draftNodes}/{snap.draftRelationships} drafts · runtime{" "}
+            {snap.runtimeNodes}/{snap.runtimeRelationships}. Drafts are always labelled and never counted as approved
+            evidence.
+          </p>
+          {snap.versionNotes ? <p className="mkt-aside">{snap.versionNotes}</p> : null}
+          <h3 className="mkt-subhead">Relationship signs</h3>
+          <ul className="mkt-principle-list">
+            <li>
+              <b>+</b> carries an effect forward (e.g. {signs["+"]?.slice(0, 4).join(", ")}).
             </li>
-          ))}
-        </ol>
-      </nav>
+            <li>
+              <b>−</b> flips it (e.g. {signs["-"]?.slice(0, 4).join(", ")}).
+            </li>
+            <li>
+              <b>r+</b> is descriptive; a positive effect flows from object back to subject (e.g.{" "}
+              {signs["r+"]?.slice(0, 3).join(", ")}).
+            </li>
+            <li>Other predicates are descriptive only and are not used in simulations.</li>
+          </ul>
+        </MarketingSection>
 
-      <LiveEvidenceStatus />
+        <MarketingSection
+          id="models"
+          eyebrow="04 / MODELS"
+          title="Assumptions stay explicit."
+        >
+          <ul className="mkt-principle-list">
+            <li>
+              <b>Perturbation (graph):</b> signed spread along + / − / r+ links, decaying 28% per hop, weighted by
+              confidence, up to 4 hops. Direction, not real-world magnitude.
+            </li>
+            <li>
+              <b>System simulator:</b> coupled equations in normalised units with hand-set parameters — not fitted to
+              patient data.
+            </li>
+            <li>
+              <b>Patient layer:</b> transparent additive rules. Educational illustration — not patient-specific advice.
+            </li>
+            <li>
+              <b>Ask:</b> classify → retrieve graph context → attach reviewed relationship cites when present → optional
+              synthesis from that extract only (prompt {PROMPT_VERSION}). Sparse cites mean Ask is graph-retrieved, not
+              fully evidence-grounded. Answers can still be wrong.
+            </li>
+            <li>
+              <b>Research / literature / adapters:</b> candidate workflows on <Link to="/research">Research</Link> —
+              never auto-promoted into the curated graph. Advanced adapters are planned interfaces; dry-runs report not
+              available.
+            </li>
+          </ul>
+          <ModelRegistryPanel compact />
+          <h3 className="mkt-subhead">Platform phases</h3>
+          <ul className="mkt-phase-list">
+            {IMPLEMENTATION_PHASES.map((p) => (
+              <li key={p.id}>
+                <span className="badge rs">
+                  Phase {p.id} · {p.status.replace("_", " ")}
+                </span>
+                <strong>{p.title}</strong>
+                <span>{p.notes}</span>
+              </li>
+            ))}
+          </ul>
+        </MarketingSection>
 
-      <section className="section" id="ontology"><h2>1. The graph ontology</h2>
-        <p>Every concept is a typed node (cell, molecule, receptor, pathway, tissue, pathogen, disease, therapy, biomarker, trial and more) with a stable ID. Every link is one directional claim — subject, predicate, object — with a stable relationship ID of the form <code>REL-subject-predicate-object</code>, a mechanism, a confidence and, where known, a tissue.</p>
-        <p>Release <code>{snap.snapshotAt}</code>: core graph v{snap.coreVersion} has {snap.coreNodes} concepts and {snap.coreRelationships} links. Extensions {snap.extensionsVersion} add {snap.draftNodes} draft concepts and {snap.draftRelationships} draft links; drafts are always labelled <b>Draft</b> and never counted as approved evidence. Runtime total is {snap.runtimeNodes} concepts / {snap.runtimeRelationships} links (same snapshot used on the homepage and footer).</p>
-        {snap.versionNotes ? <p className="small muted">{snap.versionNotes}</p> : null}
-      </section>
-
-      <section className="section" id="signs"><h2>2. Relationship signs</h2>
-        <ul>
-          <li><b>+</b> carries an effect forward (e.g. {signs["+"]?.slice(0, 4).join(", ")}).</li>
-          <li><b>−</b> flips it (e.g. {signs["-"]?.slice(0, 4).join(", ")}).</li>
-          <li><b>r+</b> is descriptive; a positive effect flows from object back to subject (e.g. {signs["r+"]?.slice(0, 3).join(", ")}).</li>
-          <li>Other predicates are descriptive only and are not used in simulations.</li>
-        </ul>
-      </section>
-
-      <section className="section" id="evidence-review"><h2>3. Evidence lifecycle</h2>
-        <p>A source supports a link only when a curator maps it to that exact relationship ID and records that it supports the claim. Citations attached to a concept describe the concept and never count as support for a link. Coverage figures on the <Link to="/evidence">Evidence</Link> page use only claim-checked support.</p>
-        <h3 style={{ fontSize: "1rem", marginTop: 16 }}>Identifier verification ≠ claim approval</h3>
-        <ul>
-          <li>
-            <b>ID verification</b> — PubMed / Crossref metadata check confirms a PMID or DOI resolves. That alone yields
-            “Source linked” (<code>source-verified</code>), not approved support.
-          </li>
-          <li>
-            <b>Claim approval</b> — a human maps the source to <code>REL-subject-relation-object</code>, sets{" "}
-            <code>claim_support = supports</code>, and marks curation approved. Only then does the link count as Supported.
-          </li>
-          <li>There is no mass-approve path. Concept-level cites never inflate relationship coverage.</li>
-        </ul>
-        <table className="rs-table"><tbody>
-          {(Object.keys(STATUS_INFO) as ReviewStatus[]).map((s) => <tr key={s}><td><span className={`badge rs rs-${s}`}>{STATUS_INFO[s].label}</span></td><td className="small">{STATUS_INFO[s].desc}</td></tr>)}
-        </tbody></table>
-        <p className="small">Inclusion criteria: peer-reviewed primary research, systematic reviews or regulatory documents with a PubMed ID or DOI; identifiers are checked against PubMed and Crossref metadata before approval. Approval requires claim_support = supports (plus a verified/matched identifier) and records the reviewer and date. Live claim-support counts are on <Link to="/evidence">Evidence</Link> — Gate C progress is real but sparse overall versus runtime link count.</p>
-        <p className="small">Signed-in curation is role-gated: new accounts are readers; write access is provisioned explicitly. Only approved citations appear on public graph pages.</p>
-      </section>
-
-      <section className="section" id="models"><h2>4. Model assumptions</h2>
-        <ul>
-          <li><b>Perturbation (graph):</b> signed spread along + / − / r+ links, decaying 28% per hop, weighted by confidence (high 1.0, medium 0.8, low 0.6) or a measured weight, up to 4 hops. It shows direction, not magnitude in real units.</li>
-          <li><b>System simulator:</b> a small set of coupled equations for pathogen, innate and adaptive response, cytokines, damage, memory and exhaustion, in normalised units with hand-set parameters. It is not fitted to patient data.</li>
-          <li><b>Patient layer:</b> transparent additive rules; each score lists the rules that produced it. Educational illustration — not patient-specific advice.</li>
-          <li><b>Ask Immune Super Intelligence:</b> queries are classified, graph context is retrieved, reviewed relationship-level citations are attached when they exist for those links, then an AI model may synthesise only from that extract (prompt {PROMPT_VERSION}). Sparse approved cites mean Ask is graph-retrieved, not fully evidence-grounded. Unsupported, omics-not-wired and personal clinical questions abstain without model synthesis. Answers can still be wrong.</li>
-          <li><b>Research workbench / literature / model registry:</b> available on <Link to="/research">Research</Link> as candidate workflows and interface contracts (phases B–E partial) — never auto-promoted into the curated graph or live predictors.</li>
-          <li><b>Advanced model adapters</b> (omics, structure, epitope, genomics, agents) are planned interfaces only — none run in production today. Dry-runs report not available and never invent scores. Registry: <Link to="/research" hash="model-registry">Research</Link>.</li>
-        </ul>
-        <ModelRegistryPanel compact />
-      </section>
-
-      <section className="section" id="phases"><h2>4b. Platform phase status</h2>
-        <table className="rs-table"><tbody>
-          {IMPLEMENTATION_PHASES.map((p) => (
-            <tr key={p.id}>
-              <td><b>Phase {p.id}</b></td>
-              <td>{p.title}</td>
-              <td><span className="badge rs">{p.status.replace("_", " ")}</span></td>
-              <td className="small">{p.notes}</td>
-            </tr>
-          ))}
-        </tbody></table>
-      </section>
-
-      <section className="section" id="limitations"><h2>5. Limitations</h2>
-        <ul>
-          <li>Most links have not yet been claim-checked against a source; claim-level approved support is still sparse overall (single-digit approved relationship claims vs hundreds of runtime links) and does not imply clinical validation.</li>
-          <li>Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.</li>
-          <li>The Immunology Academy on <Link to="/academy">/academy</Link> ships a navigable foundation scaffold plus in-development intermediate and advanced scaffolds — not a finished curriculum, certification, or Gate C coverage claim.</li>
-          <li>Links simplify dose, timing, species and individual variation.</li>
-          <li>Tissue context is sparse; many effects are recorded without one.</li>
-          <li>This product educates with references; it is not medical advice, clinician decision support, or patient-specific guidance.</li>
-        </ul>
-      </section>
-
-      <section className="section" id="a11y"><h2>6. Accessibility</h2>
-        <p>The knowledge graph has a <Link to="/graph">text table view</Link> with every link, keyboard focus is always visible, and detail drawers close with Escape. Please report barriers via the curation team.</p>
-      </section>
+        <MarketingSection id="limitations" eyebrow="05 / LIMITS" title="Where the evidence stops.">
+          <ul className="mkt-principle-list">
+            <li>
+              Most links have not yet been claim-checked; approved relationship claims remain sparse versus runtime link
+              count and do not imply clinical validation.
+            </li>
+            <li>
+              Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially
+              reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.
+            </li>
+            <li>
+              The Academy ships a navigable foundation scaffold plus in-development intermediate and advanced scaffolds —
+              not a finished curriculum or Gate C coverage claim.
+            </li>
+            <li>Links simplify dose, timing, species and individual variation; tissue context is sparse.</li>
+            <li>
+              This product educates with references; it is not medical advice, clinician decision support, or
+              patient-specific guidance. See the <Link to="/disclaimer">educational disclaimer</Link>.
+            </li>
+          </ul>
+          <p className="mkt-aside">
+            Accessibility: the knowledge graph has a <Link to="/graph">text table view</Link>; keyboard focus is always
+            visible; detail drawers close with Escape.
+          </p>
+        </MarketingSection>
+      </MarketingBody>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
+import { MarketingBody, MarketingCta, MarketingHero, MarketingSection } from "@/components/immune/marketing";
 import { EXPLORE_CTA, EXPLORE_PATH, FLAGSHIP_NAME, pageTitle, PRODUCT_NAME, PROPOSITION } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 import { ArrowUpRight } from "lucide-react";
@@ -17,73 +17,92 @@ export const Route = createFileRoute("/about")({
 
 function About() {
   return (
-    <div className="page marketing-page">
-      <PageHead
-        kicker="Organisation"
+    <div className="mkt-page">
+      <MarketingHero
+        eyebrow="Organisation"
         title={`About ${PRODUCT_NAME}`}
         lede={PROPOSITION}
+        foot="Visible knowledge structure · explicit uncertainty · transparent AI evaluation"
       />
 
-      <section className="section">
-        <h2>Mission</h2>
-        <p>
-          {PRODUCT_NAME} explores how immunology and advanced AI can work together. We are building an environment
-          where biological concepts, causal relationships, scientific evidence and computational tools can be explored
-          in one connected workflow. Our approach is to make the knowledge structure visible, keep uncertainty explicit
-          and develop AI capabilities through transparent evaluation rather than unsupported claims.
-        </p>
-      </section>
-
-      <section className="section">
-        <h2>Brand architecture</h2>
-        <ul>
-          <li>
-            <b>{PRODUCT_NAME}</b> — umbrella brand for mission, principles and roadmap. We do not claim current
-            “superintelligence.”
-          </li>
-          <li>
-            <b>{FLAGSHIP_NAME}</b> — flagship interactive causal immunology knowledge platform you can explore here.
-          </li>
-          <li>
-            <b>Immunology Academy</b> — learning tracks at <Link to="/academy">Academy</Link> (Foundation primary;
-            Intermediate and Advanced labelled as in development). Not certification.
-          </li>
-          <li>
-            <b>Ask</b> and the <b>research workbench</b> — graph-retrieved teaching and guided research workflows;
-            candidates stay drafts until human review.
-          </li>
-        </ul>
-      </section>
-
-      <section className="section">
-        <h2>Principles</h2>
-        <ul>
-          <li>Educating with references from a curated graph — not clinical decision support.</li>
-          <li>Relationship-level evidence: a citation supports a link only when mapped and reviewed for that claim.</li>
-          <li>Drafts, unreviewed links and planned integrations are labelled honestly.</li>
-          <li>Patient and therapy layers stay educational explorations — not diagnosis or prescribing tools.</li>
-        </ul>
-      </section>
-
-      <section className="section">
-        <h2>Roadmap honesty</h2>
-        <p>
-          Graph exploration, cell atlas content, mechanism walks and several teaching tools are available in beta.
-          Evidence curation, fully evidence-grounded AI and the research workbench are still evolving. Omics and
-          molecular prediction integrations remain planned until implemented and tested. Details live on{" "}
-          <Link to="/methods">Evidence &amp; Methods</Link>.
-        </p>
-      </section>
-
-      <section className="section mkt-banner" aria-labelledby="about-cta">
-        <div>
-          <h2 id="about-cta">Work with us</h2>
-          <p>
-            Educators, immunology researchers, computational biologists and technology teams — we welcome focused
-            collaboration conversations.
+      <MarketingBody>
+        <MarketingSection id="mission" eyebrow="01 / MISSION" title="Make immunology inspectable.">
+          <p className="mkt-prose">
+            {PRODUCT_NAME} explores how immunology and advanced AI can work together. We are building an environment
+            where biological concepts, causal relationships, scientific evidence and computational tools can be explored
+            in one connected workflow. Our approach is to make the knowledge structure visible, keep uncertainty
+            explicit and develop AI capabilities through transparent evaluation rather than unsupported claims.
           </p>
-        </div>
-        <div className="bio-actions">
+        </MarketingSection>
+
+        <MarketingSection
+          id="architecture"
+          eyebrow="02 / BRAND ARCHITECTURE"
+          title="One umbrella. Clear products."
+          lede="We do not claim current “superintelligence.” Names describe roles, not maturity theatre."
+        >
+          <ol className="mkt-brand-arch">
+            <li>
+              <span className="mkt-brand-arch-n">01</span>
+              <div>
+                <strong>{PRODUCT_NAME}</strong>
+                <p>Umbrella brand for mission, principles and roadmap.</p>
+              </div>
+            </li>
+            <li>
+              <span className="mkt-brand-arch-n">02</span>
+              <div>
+                <strong>{FLAGSHIP_NAME}</strong>
+                <p>
+                  Flagship interactive causal immunology knowledge platform — start at the{" "}
+                  <Link to="/overview">Platform overview</Link>.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span className="mkt-brand-arch-n">03</span>
+              <div>
+                <strong>Immunology Academy</strong>
+                <p>
+                  Learning tracks at <Link to="/academy">Academy</Link> (Foundation primary; Intermediate and Advanced
+                  labelled in development). Not certification.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span className="mkt-brand-arch-n">04</span>
+              <div>
+                <strong>Ask &amp; research workbench</strong>
+                <p>
+                  Graph-retrieved teaching and guided research workflows; candidates stay drafts until human review.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </MarketingSection>
+
+        <MarketingSection id="principles" eyebrow="03 / PRINCIPLES" title="How we build.">
+          <ul className="mkt-principle-list">
+            <li>Educating with references from a curated graph — not clinical decision support.</li>
+            <li>Relationship-level evidence: a citation supports a link only when mapped and reviewed for that claim.</li>
+            <li>Drafts, unreviewed links and planned integrations are labelled honestly.</li>
+            <li>Patient and therapy layers stay educational explorations — not diagnosis or prescribing tools.</li>
+          </ul>
+        </MarketingSection>
+
+        <MarketingSection id="roadmap" eyebrow="04 / ROADMAP HONESTY" title="Beta where it works. Labels where it does not.">
+          <p className="mkt-prose">
+            Graph exploration, cell atlas content, mechanism walks and several teaching tools are available in beta.
+            Evidence curation, fully evidence-grounded AI and the research workbench are still evolving. Omics and
+            molecular prediction integrations remain planned until implemented and tested. Details live on{" "}
+            <Link to="/methods">Evidence &amp; Methods</Link>.
+          </p>
+        </MarketingSection>
+
+        <MarketingCta
+          title="Work with us."
+          lede="Educators, immunology researchers, computational biologists and technology teams — we welcome focused collaboration conversations."
+        >
           <Button asChild className="bio-primary">
             <Link to="/collaborate">
               Collaborate <ArrowUpRight />
@@ -92,8 +111,8 @@ function About() {
           <Button asChild variant="ghost" className="bio-secondary">
             <Link to={EXPLORE_PATH}>{EXPLORE_CTA}</Link>
           </Button>
-        </div>
-      </section>
+        </MarketingCta>
+      </MarketingBody>
     </div>
   );
 }
