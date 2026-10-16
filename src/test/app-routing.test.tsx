@@ -24,4 +24,10 @@ describe("App routing", () => {
     expect(overview.at(-1)?.routeId).not.toBe(rootRouteId);
     expect(overview.at(-1)?.routeId).not.toBe(home.at(-1)?.routeId);
   });
+
+  it("matches Academy overview at /academy (not a bare redirect-only root)", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    const academy = router.matchRoutes("/academy");
+    expect(academy.at(-1)?.routeId).toBe("/academy");
+  });
 });

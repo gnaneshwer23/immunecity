@@ -2,7 +2,14 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, Menu, MessageSquare, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { NAV_GROUPS } from "./nav";
-import { FOOTER_GROUPS, isMarketingPath, MARKETING_NAV } from "@/data/marketingNav";
+import {
+  FOOTER_GROUPS,
+  isMarketingPath,
+  MARKETING_NAV,
+  MARKETING_NAV_ACTION,
+  MARKETING_NAV_MORE,
+  MARKETING_NAV_PRIMARY,
+} from "@/data/marketingNav";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -17,6 +24,49 @@ import {
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
+
+function MarketingMoreMenu() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [open]);
+  return (
+    <div className="marketing-more" ref={ref}>
+      <button
+        type="button"
+        className={`marketing-more-btn${open ? " open" : ""}`}
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={() => setOpen(!open)}
+      >
+        More
+        <ChevronDown size={14} />
+      </button>
+      {open ? (
+        <div className="marketing-more-menu" role="menu" aria-label="More">
+          {MARKETING_NAV_MORE.map((item) => (
+            <Link key={item.path} to={item.path} role="menuitem" onClick={() => setOpen(false)}>
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 function Logo() {
   return (
@@ -139,7 +189,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         {marketing ? (
           <>
             <nav className="marketing-nav" aria-label="Primary">
-              {MARKETING_NAV.map((item) => (
+              {MARKETING_NAV_PRIMARY.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -150,6 +200,14 @@ export default function Shell({ children }: { children: ReactNode }) {
                   {item.label}
                 </Link>
               ))}
+              <MarketingMoreMenu />
+              <Link
+                to={MARKETING_NAV_ACTION.path}
+                className="marketing-nav-link collab-action"
+                activeProps={{ className: "marketing-nav-link collab-action current" }}
+              >
+                {MARKETING_NAV_ACTION.label}
+              </Link>
             </nav>
             <Button asChild className="bio-primary topbar-cta">
               <Link to={pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH}>
