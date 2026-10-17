@@ -536,17 +536,25 @@ html[data-theme='light'] .ask-pill:hover { transform:translateY(-1px); backgroun
   .global-ask-dialog .ask-composer { padding: 12px; }
 }
 
-/* Page-corner chatbot, without a page-blocking overlay */
-.ask-launcher { position: fixed; right: 24px; bottom: 24px; z-index: 60; height: 48px; padding: 0 20px; gap: 8px; border-radius: 24px; background: var(--primary); color: var(--primary-foreground); box-shadow: var(--shadow-lg); font-weight: 600; }
+/* Page-corner chatbot — reserved footprint so CTAs/content are not covered */
+html[data-theme] {
+  --ask-fab-size: 48px;
+  --ask-fab-gap: 24px;
+  --ask-fab-clearance: calc(var(--ask-fab-size) + var(--ask-fab-gap) + 28px);
+}
+.ask-launcher { position: fixed; right: var(--ask-fab-gap); bottom: var(--ask-fab-gap); z-index: 60; height: var(--ask-fab-size); padding: 0 20px; gap: 8px; border-radius: 24px; background: var(--primary); color: var(--primary-foreground); box-shadow: var(--shadow-lg); font-weight: 600; }
 .ask-launcher:hover { background: var(--primary-hover); color: var(--primary-foreground); }
-.corner-ask-dialog { position: fixed; right: 24px; bottom: 84px; z-index: 60; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 108px); border: 1px solid var(--border-strong); box-shadow: var(--shadow-lg); outline: none; }
-.corner-ask-dialog .ask-atlas { max-height: calc(100dvh - 108px); }
+.ask-launcher:focus-visible { outline: 2px solid var(--primary-foreground); outline-offset: 3px; }
+.corner-ask-dialog { position: fixed; right: var(--ask-fab-gap); bottom: calc(var(--ask-fab-size) + var(--ask-fab-gap) + 12px); z-index: 60; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - var(--ask-fab-clearance) - 40px); border: 1px solid var(--border-strong); box-shadow: var(--shadow-lg); outline: none; }
+.corner-ask-dialog .ask-atlas { max-height: calc(100dvh - var(--ask-fab-clearance) - 40px); }
 .corner-ask-dialog .ask-scroll { max-height: min(360px, 40dvh); }
 .corner-ask-close { position: absolute; right: 10px; top: 12px; z-index: 1; color: var(--muted); }
+.corner-ask-close:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 @media(max-width:800px) {
-  .ask-launcher { right: 16px; bottom: 16px; }
-  .corner-ask-dialog { right: 16px; bottom: 76px; max-height: calc(100dvh - 92px); }
-  .corner-ask-dialog .ask-atlas { max-height: calc(100dvh - 92px); }
+  html[data-theme] { --ask-fab-gap: 16px; --ask-fab-clearance: calc(var(--ask-fab-size) + var(--ask-fab-gap) + 36px); }
+  .ask-launcher { right: var(--ask-fab-gap); bottom: var(--ask-fab-gap); }
+  .corner-ask-dialog { right: var(--ask-fab-gap); bottom: calc(var(--ask-fab-size) + var(--ask-fab-gap) + 12px); max-height: calc(100dvh - var(--ask-fab-clearance) - 24px); }
+  .corner-ask-dialog .ask-atlas { max-height: calc(100dvh - var(--ask-fab-clearance) - 24px); }
 }
 
 /* ---------- Restrained scientific layer (credibility upgrade) ---------- */
@@ -717,22 +725,24 @@ html[data-theme][data-theme] {
 .home-helix-eyebrow { color: var(--primary); }
 .home-helix-eyebrow .status-dot { background: oklch(0.72 0.12 185); animation: none; }
 .home-brand-signal {
-  margin: 16px 0 12px;
+  margin: 14px 0 10px;
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1rem + 0.45vw, 1.4rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--mkt-cyan, oklch(0.72 0.09 195));
+  font-size: clamp(1.85rem, 1.35rem + 1.6vw, 2.65rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  text-wrap: balance;
 }
 .home-helix-hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(2.05rem, 1.35rem + 2.2vw, 3.25rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
-  font-weight: 600;
-  max-width: 14ch;
+  font-size: clamp(1.35rem, 1.05rem + 1.1vw, 1.85rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  max-width: 28ch;
   margin: 0 0 16px;
-  color: var(--text);
+  color: var(--muted);
   animation: bio-rise .75s ease both;
   text-wrap: balance;
 }
@@ -993,7 +1003,6 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
 @media (max-width: 480px) {
   .home-helix-hero { min-height: min(70vh, 560px); }
   .home-helix-copy { padding: 36px 22px 48px; }
-  .home-helix-hero h1 { font-size: 1.95rem; max-width: none; }
   .home-helix-hero .hero-description { font-size: 15.5px; }
   .home-helix-foot { margin-top: 20px; }
   .platform-map-layer-grid { grid-template-columns: 1fr; }
@@ -1897,6 +1906,17 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
   border: 1px dashed var(--border);
 }
 .graph-explorer .graph-stage { background: var(--graph-stage-bg); border-color: var(--graph-stage-border); }
+.graph-explorer .graph-stage-loading {
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--primary) 4%, var(--graph-stage-bg)), var(--graph-stage-bg));
+}
+.graph-explorer .graph-stage-loading .empty {
+  margin: 0;
+  max-width: 28rem;
+  background: transparent;
+}
 .graph-explorer .node-label { fill: var(--text); stroke: var(--surface); }
 .graph-explorer .graph-legend { background: var(--surface); border-color: var(--border); color: var(--muted); }
 .graph-explorer .graph-tools .icon-btn { background: var(--surface); border-color: var(--border-strong); color: var(--text); }
@@ -2085,12 +2105,16 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 .spine-glance-stats dd { margin: 2px 0 0; font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; color: var(--text); }
 @media (max-width: 900px) { .mkt-hero-split { grid-template-columns: 1fr; } }
 
-/* ===== Phone footer: brand visible, clear of the Ask button ===== */
+/* Footer + page bottoms clear of the Ask FAB (desktop and phone) */
+.site-footer { padding-bottom: var(--ask-fab-clearance, 96px); }
+.home-final-cta, .mkt-cta, .bio-banner.home-final-cta { padding-bottom: calc(var(--isi-space-5, 32px) + 8px); margin-bottom: 8px; }
+.isi-final-links { padding-right: min(140px, 28vw); }
 @media (max-width: 640px) {
   .site-footer .brand-text { display: flex; }
   .site-footer .brand-text small { display: block; }
-  .site-footer { padding-bottom: 96px; padding-left: 20px; padding-right: 20px; }
+  .site-footer { padding-left: 20px; padding-right: 20px; }
   .sf-grid-marketing { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .isi-final-links { padding-right: 0; padding-bottom: 8px; }
 }
 
 /* Shared professional layout rhythm: flat sections, precise tools, calm tables. */
@@ -2117,7 +2141,8 @@ button.bg-primary { color: var(--primary-foreground); }
 .edu-banner a, .section p a:not(.btn), .ask-head p a, .collab-form label a { text-decoration: underline; text-underline-offset: 3px; }
 .marketing-compact-nav { z-index: 70; }
 .home-helix-secondary:hover, .mkt-hero .bio-secondary:hover { color: var(--primary); }
-.home-helix-hero h1, .mkt-hero h1 { letter-spacing: 0; font-size: 48px; }
+.mkt-hero h1 { letter-spacing: 0; font-size: clamp(2rem, 1.4rem + 1.8vw, 2.75rem); }
+.home-helix-hero h1 { letter-spacing: -0.02em; }
 .home-helix-visual { opacity: 1; }
 .home-helix-copy { max-width: 42rem; }
 .mkt-hero::after, .home-helix-hero::after { display: none; }
@@ -2127,7 +2152,9 @@ button.bg-primary { color: var(--primary-foreground); }
   .home-helix-copy { background: color-mix(in oklab, var(--surface) 82%, transparent); }
 }
 @media (max-width: 640px) {
-  .bio-page-head h1, .home-helix-hero h1, .mkt-hero h1 { font-size: 32px; }
+  .bio-page-head h1, .mkt-hero h1 { font-size: 32px; }
+  .home-brand-signal { font-size: clamp(1.65rem, 6.5vw, 2.1rem); }
+  .home-helix-hero h1 { font-size: 1.25rem; max-width: none; }
   .page-head { padding-bottom: 20px; }
   .topbar .brand-text { display: flex; min-width: 0; }
   .topbar .brand-text strong { font-size: 13px; white-space: normal; }

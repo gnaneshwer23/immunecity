@@ -24,6 +24,7 @@ import {
   EXPLORE_PATH,
   PRODUCT_NAME,
   TAGLINE,
+  TRUST_STATEMENT,
 } from "@/lib/brand";
 
 function Logo() {
@@ -88,11 +89,8 @@ function SiteFooter() {
       <div className="sf-grid sf-grid-marketing">
         <div className="sf-brand">
           <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span></Link>
-          <p>
-            Educational immunology platform with curated references. Ask teaches from the graph—not patient-specific
-            advice or fully evidence-grounded AI.
-          </p>
-          <span className="sf-status"><span className="sf-dot" /> Educational model · reviewed cites when available · Academy scaffolds in development</span>
+          <p className="sf-trust">{TRUST_STATEMENT}</p>
+          <span className="sf-status"><span className="sf-dot" /> Reviewed cites when available · Academy scaffolds in development</span>
         </div>
         {FOOTER_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">
@@ -107,7 +105,11 @@ function SiteFooter() {
       </div>
       <div className="sf-bottom">
         <span>© {new Date().getFullYear()} {PRODUCT_NAME}</span>
-        <span>Educational model with references. Not patient-specific medical advice.</span>
+        <span>
+          <Link to="/methods">Methods</Link>
+          {" · "}
+          <Link to="/disclaimer">Disclaimer</Link>
+        </span>
       </div>
     </footer>
   );
@@ -225,11 +227,14 @@ export default function Shell({ children }: { children: ReactNode }) {
   const [askOpen, setAskOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const marketing = isMarketingPath(pathname);
+  /** Full Ask page already hosts AskAtlas — hide the corner FAB to avoid overlap. */
+  const showAskFab = pathname !== "/ask";
   const compactNavId = useId();
   const closeCompact = () => setOpen(false);
 
   useEffect(() => { setAskOpen(false); setOpen(false); }, [pathname]);
   useEffect(() => {
+    if (!showAskFab) return;
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -238,7 +243,7 @@ export default function Shell({ children }: { children: ReactNode }) {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, []);
+  }, [showAskFab]);
 
   return (
     <>
@@ -299,19 +304,23 @@ export default function Shell({ children }: { children: ReactNode }) {
             panelId={compactNavId}
           />
         )}
-      <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? "Close Ask chatbot" : "Open Ask chatbot"} title={ASK_NAME}>
-        {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask</span>
-      </Button>
-      <Dialog modal={false} open={askOpen} onOpenChange={setAskOpen}>
-        <DialogPortal>
-        <DialogPrimitive.Content className="global-ask-dialog corner-ask-dialog" onInteractOutside={(e) => e.preventDefault()}>
-          <DialogTitle className="sr-only">{ASK_NAME}</DialogTitle>
-          <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references, not patient-specific advice.</DialogDescription>
-          <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label="Minimize chatbot" title="Minimize chatbot"><X size={18} /></Button>
-          <AskAtlas showFullPageLink />
-        </DialogPrimitive.Content>
-        </DialogPortal>
-      </Dialog>
+      {showAskFab ? (
+        <>
+          <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? "Close Ask chatbot" : "Open Ask chatbot"} title={ASK_NAME}>
+            {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask</span>
+          </Button>
+          <Dialog modal={false} open={askOpen} onOpenChange={setAskOpen}>
+            <DialogPortal>
+            <DialogPrimitive.Content className="global-ask-dialog corner-ask-dialog" onInteractOutside={(e) => e.preventDefault()}>
+              <DialogTitle className="sr-only">{ASK_NAME}</DialogTitle>
+              <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references, not patient-specific advice.</DialogDescription>
+              <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label="Minimize chatbot" title="Minimize chatbot"><X size={18} /></Button>
+              <AskAtlas showFullPageLink />
+            </DialogPrimitive.Content>
+            </DialogPortal>
+          </Dialog>
+        </>
+      ) : null}
       <ScientificInspector />
       <div className={`shell nav-closed${marketing ? " marketing-shell" : ""}`}>
         <main id="main" tabIndex={-1}>

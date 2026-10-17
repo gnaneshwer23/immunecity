@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { CausalSpine } from "@/components/immune/CausalSpine";
 import { IsiCityBand } from "@/components/immune/IsiCityBand";
 import { VISION_MOTTO } from "@/data/vision";
-import { TrustBlock } from "@/components/immune/marketing";
 import {
   BRAND_EYEBROW,
   EXPLORE_CTA,
@@ -309,7 +308,6 @@ function Home() {
               {SNAP.draftNodes} draft concepts and {SNAP.draftRelationships} draft links awaiting review.
             </p>
           </div>
-          <TrustBlock className="home-trust" />
           <ul className="home-limit-list">
             <li>
               <strong>Reviewed when mapped</strong>
@@ -320,8 +318,8 @@ function Home() {
               <span>Teaching edges remain visible with honest status; coverage is still sparse overall.</span>
             </li>
             <li>
-              <strong>Educational beta</strong>
-              <span>Not clinical decision support. Ask retrieves from the graph — not fully evidence-grounded AI.</span>
+              <strong>Ask retrieval</strong>
+              <span>Answers come from the curated graph and show cites when reviewed — not fully evidence-grounded AI.</span>
             </li>
           </ul>
           <p className="home-trust-link">

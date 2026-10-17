@@ -273,7 +273,8 @@ html[data-theme] {
 .home-page .home-helix-hero .home-helix-visual { position: static; inset: auto; order: 2; width: 100%; height: auto; opacity: 1; pointer-events: auto; mask-image: none; -webkit-mask-image: none; }
 .home-page .home-helix-hero .home-hero-art { height: auto; border: 1px solid var(--border); }
 .home-page .home-helix-hero .home-helix-copy { position: static; order: 1; max-width: none; padding: 0; }
-.home-page .home-helix-hero h1, .home-page .home-helix-hero .home-brand-signal { color: var(--text); }
+.home-page .home-helix-hero .home-brand-signal { color: var(--text); }
+.home-page .home-helix-hero h1 { color: var(--muted); font-weight: 500; }
 .home-page .home-helix-hero .hero-description, .home-page .home-helix-hero .home-helix-foot, .home-page .home-helix-hero .home-helix-eyebrow { color: var(--muted); }
 .home-page .home-helix-hero .home-helix-primary { background: var(--primary); color: var(--primary-foreground, #fff); }
 .home-page .home-helix-hero .home-helix-secondary { color: var(--text); border-color: var(--border-strong); }

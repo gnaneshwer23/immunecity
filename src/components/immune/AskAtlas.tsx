@@ -227,7 +227,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
               {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New conversation</button> : null}
             </span>
           </div>
-          <p className="xs muted">Graph-retrieved teaching · educational beta · cites when reviewed · not fully evidence-grounded AI</p>
+          <p className="xs muted">Graph-retrieved teaching · cites when reviewed · not fully evidence-grounded AI</p>
           <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Not patient-specific advice. Questions are sent to the configured AI service; see our <Link to="/privacy">privacy notice</Link>.</p>
         </div>
       </div>

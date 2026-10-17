@@ -19,17 +19,28 @@ export const Route = createFileRoute("/graph")({
   component: GraphPage,
 });
 
+/** Match GraphView chrome so ClientOnly → Suspense does not collapse the stage. */
 function Fallback() {
   return (
-    <div className="page graph-explorer">
+    <div className="page graph-explorer" aria-busy="true">
       <PageHead
         kicker="Layer 04 · Immune City · Knowledge graph"
         title="The causal map"
         lede="Loading the graph…"
       />
-      <p className="empty" role="status">
-        Preparing the explorer — typed concepts and directional links from the curated graph.
-      </p>
+      <div className="graph-layout">
+        <aside className="graph-panel" aria-hidden="true">
+          <div className="card">
+            <h2 className="graph-panel-h">Find a concept</h2>
+            <p className="xs muted">Preparing filters…</p>
+          </div>
+        </aside>
+        <div className="graph-stage graph-stage-loading">
+          <p className="empty" role="status">
+            Preparing the explorer — typed concepts and directional links from the curated graph.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
