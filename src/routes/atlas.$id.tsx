@@ -14,6 +14,7 @@ import { inspect } from "@/lib/immune/inspector";
 import { StatusBadge } from "@/components/immune/ScientificInspector";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
+import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
 
 export const Route = createFileRoute("/atlas/$id")({
   loader: ({ params }) => {
@@ -66,6 +67,11 @@ function MiniDiagram({ id }: { id: string }) {
   );
 }
 
+function firstSentence(s: string) {
+  const m = s.match(/^.+?[.!?](\s|$)/);
+  return (m ? m[0] : s).trim();
+}
+
 function ConceptPage() {
   const { id } = Route.useLoaderData();
   const n = byId[id]!;
@@ -73,7 +79,24 @@ function ConceptPage() {
   const groups = neighboursByType(id);
   const steps = learningSteps(id);
   const doms = domainsFor(id);
-  const total = conceptNeighbours(id).length;
+  const all = conceptNeighbours(id);
+  const total = all.length;
+  const outN = all.filter((r) => r.dir === "out").length;
+  const inN = total - outN;
+  const art = DOMAIN_ART[doms[0]?.id ?? "foundations"];
+  const src = useSources([id], all.map((r) => relId(r.edge)));
+  const desc = n.desc || "No definition has been recorded for this concept yet.";
+  const topTypes = GROUP_ORDER.filter((t) => groups[t]?.length).slice(0, 3).map((t) => `${groups[t]!.length} ${TYPES[t].label.toLowerCase()}`);
+
+  const takeaways = [
+    <><b>What it is:</b> a {TYPES[n.node_type].label.toLowerCase()}{doms[0] ? <> in {doms[0].title.toLowerCase()}</> : null}.</>,
+    total
+      ? <><b>How it connects:</b> acts on {outN} and is affected by {inN} concepts{topTypes.length ? <> — mostly {topTypes.join(", ")}</> : null}.</>
+      : <><b>How it connects:</b> no links recorded yet.</>,
+    x.spineSteps.length
+      ? <><b>Where it sits:</b> {x.spineSteps.map((s) => spineLabel(s)).join(", ").toLowerCase()} on the 15-step immune chain.</>
+      : x.clinical ? <><b>Why it matters:</b> {firstSentence(x.clinical)}</> : null,
+  ].filter(Boolean);
 
   return (
     <article className="page isi-concept">
@@ -85,44 +108,39 @@ function ConceptPage() {
           <li><span aria-current="page">{n.name}</span></li>
         </ol>
       </nav>
-      <header className="isi-concept-head">
-        <span className="isi-concept-kicker">
-          <span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} /> {TYPES[n.node_type].label} · <span className="mono">{n.id}</span>
-          {x.evidenceStatus ? <> · concept status: {x.evidenceStatus.toLowerCase()}</> : null}
-        </span>
-        <h1>{n.name}</h1>
+
+      <ExplainHero
+        art={art}
+        kicker={<><span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} /> {TYPES[n.node_type].label}</>}
+        title={n.name}
+        summary={firstSentence(desc)}
+      >
         {x.aliases.length ? <p className="small muted">Also called: {x.aliases.join(", ")}</p> : null}
-        <p className="isi-concept-def">{n.desc || "No definition has been recorded for this concept yet."}</p>
-        {n.draft ? <p className="si-warn" role="note">Draft — not curated core. Added to close a coverage gap and awaiting expert review.</p> : null}
+        {n.draft ? <p className="si-warn" role="note">Draft — added to close a coverage gap and awaiting expert review.</p> : null}
         {!n.draft && total < 2 ? <p className="si-warn" role="note">Sparsely connected — only {total} link recorded so far.</p> : null}
         <div className="isi-concept-actions">
-          <Link className="btn sm primary" to="/ask" search={{ about: n.id }}><MessageSquare size={14} /> Ask ISI about {n.name}</Link>
-          <Link className="btn sm" to="/graph" search={{ focus: n.id }}><Network size={14} /> Open in graph</Link>
-          <Link className="btn sm" to="/research" search={{ lib: n.name }} hash="library"><BookOpen size={14} /> Find papers</Link>
+          <Link className="btn sm primary" to="/ask" search={{ about: n.id }}><MessageSquare size={14} /> Ask about {n.name}</Link>
+          <Link className="btn sm" to="/graph" search={{ focus: n.id }}><Network size={14} /> See in graph</Link>
+          <SourcesPill count={src.isLoading || src.isError ? null : src.items.length} />
         </div>
-      </header>
+      </ExplainHero>
+
+      <KeyTakeaways items={takeaways} />
 
       <div className="isi-concept-grid">
         <div>
-          {(x.clinical || x.spineSteps.length) ? (
-            <section className="section">
-              <h2>Why it matters</h2>
-              {x.spineSteps.length ? (
-                <p>Sits at {x.spineSteps.map((s) => spineLabel(s)).join(", ").toLowerCase()} on the 15-step causal chain.</p>
-              ) : null}
+          {desc !== firstSentence(desc) || x.clinical ? (
+            <ExplainerSection title="What it does" summary={x.clinical ? firstSentence(x.clinical) : "The full definition from the curated knowledge graph."}>
+              <p>{desc}</p>
               {x.clinical ? <p>{x.clinical}</p> : null}
-              <p className="xs muted">From the curated graph record; individual claims are not yet claim-level reviewed.</p>
-            </section>
+            </ExplainerSection>
           ) : null}
 
-          <section className="section">
-            <h2>Direct connections</h2>
-            {total ? <MiniDiagram id={id} /> : <p className="muted">No links recorded yet.</p>}
-          </section>
-
-          <section className="section">
-            <h2>Related concepts and evidence</h2>
-            <p className="small muted">Select a link to see its mechanism and evidence for that specific relationship.</p>
+          <ExplainerSection
+            title="Its connections at a glance"
+            summary={total ? `Each dot is a concept directly linked to ${n.name}. Colours show the kind of concept.` : "No links recorded yet."}
+            visual={total ? <MiniDiagram id={id} /> : null}
+          >
             {GROUP_ORDER.filter((t) => groups[t]?.length).map((t) => (
               <div key={t} className="isi-rel-group">
                 <h3>{TYPES[t].label}</h3>
@@ -133,29 +151,35 @@ function ConceptPage() {
                         {r.dir === "out" ? <>{human(r.edge.relation)}</> : <>{human(r.edge.relation)} (by)</>}
                       </button>{" "}
                       <Link to="/atlas/$id" params={{ id: r.node.id }}>{r.node.name}</Link>{" "}
-                      {r.edge.location ? <span className="xs muted">· {r.edge.location}</span> : null}{" "}
                       <StatusBadge edge={r.edge} />
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
-          </section>
+          </ExplainerSection>
+
+          {(steps.prereq.length || steps.next.length) ? (
+            <section className="ex-section">
+              <div className="ex-section-text" style={{ gridColumn: "1 / -1" }}>
+                <h2>Learn next</h2>
+                <div className="ex-cards">
+                  {[...steps.prereq.slice(0, 3).map((p) => ({ p, k: "Comes before" })), ...steps.next.slice(0, 3).map((p) => ({ p, k: "Leads to" }))].map(({ p, k }) => (
+                    <Link key={k + p.id} className="ex-card" to="/atlas/$id" params={{ id: p.id }}>
+                      <span className="xs muted">{k}</span>
+                      <b>{p.name}</b>
+                      <span className="xs muted">{TYPES[p.node_type].label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+          ) : null}
         </div>
 
         <aside className="isi-concept-side">
           <section>
-            <h2>Learn next</h2>
-            {steps.prereq.length ? (
-              <><h3>Comes before</h3><ul>{steps.prereq.map((p) => <li key={p.id}><Link to="/atlas/$id" params={{ id: p.id }}>{p.name}</Link></li>)}</ul></>
-            ) : null}
-            {steps.next.length ? (
-              <><h3>Leads to</h3><ul>{steps.next.map((p) => <li key={p.id}><Link to="/atlas/$id" params={{ id: p.id }}>{p.name}</Link></li>)}</ul></>
-            ) : null}
-            {!steps.prereq.length && !steps.next.length ? <p className="small muted">No learning path recorded yet.</p> : null}
-          </section>
-          <section>
-            <h2>Ask ISI</h2>
+            <h2>Questions to ask</h2>
             <ul>
               {askShortcuts(n).map((q) => (
                 <li key={q}><Link to="/ask" search={{ about: n.id, q }}>{q}</Link></li>
@@ -163,18 +187,25 @@ function ConceptPage() {
             </ul>
           </section>
           <section>
-            <h2>Research</h2>
-            <p className="small">Search five Nature Portfolio journals for "{n.name}". Results are source metadata, not reviewed evidence.</p>
-            <Link to="/research" search={{ lib: n.name }} hash="library">Search publications →</Link>
+            <h2>Read the research</h2>
+            <p className="small">Find recent papers on {n.name}.</p>
+            <Link to="/research" search={{ lib: n.name }} hash="library"><BookOpen size={13} /> Search publications →</Link>
           </section>
           {doms.length ? (
             <section>
-              <h2>Atlas domains</h2>
+              <h2>Part of</h2>
               <ul>{doms.map((d) => <li key={d.id}><Link to="/atlas" hash={d.id}>{d.title}</Link></li>)}</ul>
             </section>
           ) : null}
         </aside>
       </div>
+
+      <SourcesFold
+        items={src.items}
+        isLoading={src.isLoading}
+        isError={src.isError}
+        note={<>Graph ID <span className="mono">{n.id}</span>{x.evidenceStatus ? <> · concept status: {x.evidenceStatus.toLowerCase()}</> : null}. Select any connection above to inspect evidence for that specific link.</>}
+      />
     </article>
   );
 }

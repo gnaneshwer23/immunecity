@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { ART } from "@/components/immune/explain";
 import { ArrowRight, ArrowUpRight, BookOpen, FlaskConical, Microscope, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CausalSpine } from "@/components/immune/CausalSpine";
@@ -28,9 +28,6 @@ import { seoHead } from "@/lib/seo";
 import { inspect } from "@/lib/immune/inspector";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 
-const HelixHeroVisual = lazy(() =>
-  import("@/components/immune/HelixHeroVisual").then((m) => ({ default: m.HelixHeroVisual })),
-);
 
 export const Route = createFileRoute("/")({
   head: () =>
@@ -147,11 +144,9 @@ const SNAP = graphReleaseSnapshot();
 function Home() {
   return (
     <div className="home-page home-page-helix">
-      <section className="home-helix-hero isi-dark-band" aria-label={PRODUCT_NAME}>
+      <section className="home-helix-hero" aria-label={PRODUCT_NAME}>
         <div className="home-helix-visual" aria-hidden="true">
-          <Suspense fallback={<div className="helix-stage helix-fallback" />}>
-            <HelixHeroVisual />
-          </Suspense>
+          <img className="home-hero-art" src={ART.heroCity} alt="" width={1536} height={1024} />
         </div>
         <div className="home-helix-copy">
           <div className="bio-eyebrow home-helix-eyebrow">
@@ -178,9 +173,9 @@ function Home() {
 
       <div className="bio-content home-sections">
         <nav className="isi-three" aria-label="Three ways in">
-          <Link to="/ask"><b>Ask ISI</b><span>Ask a question; answers link to the concepts and links behind them.</span></Link>
-          <Link to="/atlas"><b>Knowledge Atlas</b><span>Browse every concept across eight domains, each with its own page.</span></Link>
-          <Link to="/research" hash="library"><b>Research</b><span>Search five Nature Portfolio journals and start reviewable candidates.</span></Link>
+          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask ISI</b><span>Ask anything about the immune system in plain language.</span></Link>
+          <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Explore cells, molecules, diseases and therapies — one page each.</span></Link>
+          <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Read recent papers from leading immunology journals.</span></Link>
         </nav>
         {/* B — What ISI enables */}
         <section className="bio-section" aria-labelledby="enables-heading">

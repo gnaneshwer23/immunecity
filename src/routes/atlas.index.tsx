@@ -7,6 +7,7 @@ import { DOMAINS, conceptExtras } from "@/lib/immune/concepts";
 import { PageHead } from "@/components/immune/ui";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
+import { DOMAIN_ART } from "@/components/immune/explain";
 
 export const Route = createFileRoute("/atlas/")({
   head: () =>
@@ -34,7 +35,7 @@ function Atlas() {
       <PageHead
         kicker="Knowledge Atlas"
         title="Every concept, connected."
-        lede="Eight domains drawn from the curated knowledge graph. Each concept page shows its definition, direct links, evidence status, learning path and related research. Topics the graph does not cover yet are listed as gaps, not filled with invented content."
+        lede="Pick an area to explore. Every concept has its own page with a short explanation, a picture of its connections and what to learn next."
         stats={[
           { v: KG.nodes.length, l: "CONCEPTS" },
           { v: DOMAINS.length, l: "DOMAINS" },
@@ -59,23 +60,30 @@ function Atlas() {
         ) : null}
       </section>
 
-      <div className="isi-domains">
-        {DOMAINS.map((d, i) => (
-          <section key={d.id} id={d.id} className="isi-domain" aria-labelledby={`dom-${d.id}`}>
-            <span className="bio-section-number">{String(i + 1).padStart(2, "0")}</span>
-            <h2 id={`dom-${d.id}`}>{d.title}</h2>
-            <p className="small muted">{d.blurb}</p>
-            {d.conceptIds.length ? (
-              <ul className="isi-domain-list">
-                {d.conceptIds.slice(0, 14).map((id) => (
-                  <li key={id}><Link to="/atlas/$id" params={{ id }}>{byId[id]!.name}</Link></li>
-                ))}
-              </ul>
-            ) : <p className="small">No graph concepts in this domain yet.</p>}
-            {d.conceptIds.length > 14 ? <p className="xs muted">+{d.conceptIds.length - 14} more — use search above.</p> : null}
-            {d.topics.some((t) => !t.covered) ? (
-              <p className="xs isi-gaps"><b>Not yet in the atlas:</b> {d.topics.filter((t) => !t.covered).map((t) => t.label).join(" · ")}</p>
-            ) : null}
+      <div className="ex-tiles">
+        {DOMAINS.map((d) => (
+          <section key={d.id} id={d.id} className="ex-tile" aria-labelledby={`dom-${d.id}`}>
+            <img src={DOMAIN_ART[d.id]} alt="" loading="lazy" width={1024} height={768} />
+            <div className="ex-tile-body">
+              <h2 id={`dom-${d.id}`}>{d.title} <span className="ex-count">{d.conceptIds.length}</span></h2>
+              <p className="small muted">{d.blurb}</p>
+              {d.conceptIds.length ? (
+                <ul className="ex-chips">
+                  {d.conceptIds.slice(0, 6).map((id) => (
+                    <li key={id}><Link to="/atlas/$id" params={{ id }}>{byId[id]!.name}</Link></li>
+                  ))}
+                </ul>
+              ) : <p className="small">No graph concepts in this domain yet.</p>}
+              {d.conceptIds.length > 6 ? (
+                <details className="ex-tile-more">
+                  <summary>See all {d.conceptIds.length}</summary>
+                  <ul className="ex-chips">{d.conceptIds.slice(6).map((id) => <li key={id}><Link to="/atlas/$id" params={{ id }}>{byId[id]!.name}</Link></li>)}</ul>
+                </details>
+              ) : null}
+              {d.topics.some((t) => !t.covered) ? (
+                <p className="xs isi-gaps"><b>Not yet covered:</b> {d.topics.filter((t) => !t.covered).map((t) => t.label).join(" · ")}</p>
+              ) : null}
+            </div>
           </section>
         ))}
       </div>

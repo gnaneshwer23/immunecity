@@ -1,3 +1,4 @@
+import { ART } from "@/components/immune/explain";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -19,7 +20,7 @@ function Disease() {
 
   return (
     <div className="page">
-      <PageHead
+      <PageHead art={ART.diseaseArt}
         kicker="Layer 07 · Disease"
         title="When mechanism becomes pathology"
         lede="Four hypersensitivity types describe how a normal effector mechanism turns on the host. The cancer immunity cycle shows the seven steps a tumour must defeat — each one a therapeutic opportunity."

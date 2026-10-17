@@ -1,3 +1,4 @@
+import { ART } from "@/components/immune/explain";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
@@ -56,7 +57,7 @@ function Therapy() {
   }, []);
   return (
     <div className="page">
-      <PageHead
+      <PageHead art={ART.therapyArt}
         kicker="Layer 08 · Therapy"
         title="Pull one lever, follow the chain"
         lede={`${all.length} interventions, each linked to what it acts on and the trials that tested it.`}

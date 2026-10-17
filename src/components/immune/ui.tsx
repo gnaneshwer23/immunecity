@@ -3,9 +3,10 @@ import { JOURNEY_NAV } from "@/data/marketingNav";
 import type { ReactNode } from "react";
 import { TYPES, byId } from "@/lib/immune/engine";
 
-export function PageHead({ kicker, title, lede, stats }: { kicker: ReactNode; title: ReactNode; lede?: ReactNode; stats?: { v: ReactNode; l: string }[] }) {
+export function PageHead({ kicker, title, lede, stats, art }: { kicker: ReactNode; title: ReactNode; lede?: ReactNode; stats?: { v: ReactNode; l: string }[]; art?: string }) {
   return (
-    <header className="page-head bio-page-head">
+    <header className={`page-head bio-page-head${art ? " ex-has-art" : ""}`}>
+      {art ? <img className="ex-head-art" src={art} alt="" width={1024} height={768} /> : null}
       <Breadcrumbs />
       <div className="kicker bio-eyebrow"><span className="status-dot" />{kicker}</div>
       <h1>{title}</h1>

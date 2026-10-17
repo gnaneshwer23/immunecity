@@ -1,3 +1,4 @@
+import { ART } from "@/components/immune/explain";
 import { useCallback, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -56,7 +57,7 @@ function Research() {
 
   return (
     <div className="page">
-      <PageHead
+      <PageHead art={ART.researchArt}
         kicker="Layer 12 · Research Workbench"
         title="Turn a research question into a reviewable investigation."
         lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature is a local candidate workflow (not live PubMed bulk ingest); model adapters are planned / interface-only stubs."

@@ -13,6 +13,7 @@
 - User-facing product name is **Immune Super Intelligence** (`src/lib/brand.ts`, canonical https://www.immune-super-intelligence.co.uk/). Internal paths may still say `immune-city`. Brand marks live in `public/favicon.svg`, `public/logo.svg`, and the Shell logo.
 
 ## Architecture rules
+- Subdirectories have their own `AGENTS.md`; read it before changing files there.
 - Leaf content routes own canonical and indexing metadata through `seoHead`; the root has no canonical; why: shared root metadata must not canonicalize every page to the homepage.
 - Evidence curation reads use bounded keyset pages with server-side filters; why: evidence growth must not force the browser to load the entire table.
 - App chrome, reading surfaces and scientific visualizations share semantic theme tokens in `src/biotech.css`; why: a theme change must reach every page and tool without isolated color overrides.
@@ -26,13 +27,11 @@
 - Approved citations reach public pages via `getApprovedCitations` in `src/lib/citations.functions.ts` (server-side `curation = 'approved'` filter on Neon); why: graph pages are public but only approved records may leave curation.
 - Homepage, footer, Methods and exports share counts via `graphReleaseSnapshot()` in `src/lib/immune/graphRelease.ts`; why: core vs draft totals must stay consistent across marketing surfaces.
 - The corner assistant reuses AskAtlas in an accessible non-modal dialog, with local concept matching before AI submission; why: one entry handles lookup and explanation without blocking the page or charging for simple concept discovery.
-- Links are identified as `REL-subject-relation-object` (`relId`) and evidence supports a link only via `evidence_records.relationship_id` + `claim_support`; status logic lives in `src/lib/immune/evidenceStatus.ts`; why: concept-level citations must never inflate link coverage.
-- One global Scientific Inspector drawer (`src/lib/immune/inspector.ts` store, mounted in Shell) is opened via `inspect()` from any layer; why: one consistent, deep detail view.
 - Ask retrieval, guardrails and rate limiting live in browser-safe `src/lib/askGrounding.ts`; why: they are unit-tested without the AI call.
 - Global header IA is the Learn / Explore / Investigate `JOURNEY_NAV` in `src/data/marketingNav.ts`, shared by every page; `NAV_GROUPS` stays the twelve-layer map; why: journeys are how users navigate, layers are the science model.
 - Shared ISI tokens and page patterns (dark band, breadcrumbs, library, homepage sections) live in `src/isi.css`, imported after `biotech.css`; why: one documented foundation without touching graph-specific styles.
-- Nature Immunology metadata comes from Crossref via `searchNatureImmunology` (`src/lib/research/natureImmunology.functions.ts`) with parsing in browser-safe `src/lib/research/crossref.ts`; why: no credentials or scraping, and parsing/de-duplication are unit-tested. Library proposals only seed draft literature projects — never evidence approval.
 - Breadcrumbs derive from `JOURNEY_NAV` inside `PageHead`; why: one menu definition drives navigation and wayfinding.
 - Concept pages, Atlas domains, Ask prefill and neighbour grouping come from browser-safe `src/lib/immune/concepts.ts`; every internal concept link uses `/atlas/$id` by graph ID; why: Ask, Atlas, Inspector and Research share one identifier scheme instead of name matching.
 - Atlas domain gaps are computed from keyword coverage of real graph concepts, never filled with authored content; why: the brief forbids invented scientific records.
 - The full Ask page reuses `AskAtlas` with a single localStorage conversation key restored after hydration; the corner assistant stays unpersisted; why: one transport and guardrail path for both entries.
+- Content pages use shared explainer blocks in `src/components/immune/explain.tsx` with a closed-by-default Sources fold; why: content first, references on demand.

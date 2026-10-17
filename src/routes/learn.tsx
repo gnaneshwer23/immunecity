@@ -1,3 +1,4 @@
+import { ART } from "@/components/immune/explain";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CONTENT } from "@/data/content";
@@ -127,7 +128,7 @@ function Learn() {
 
   return (
     <div className="page">
-      <PageHead
+      <PageHead art={ART.cellsArt}
         kicker="Layer 02 · Cell atlas"
         title="The residents"
         lede={`${LEGACY.cells.length} entries — immune cell types and the complement system beside them — each with an everyday metaphor, the mechanistic detail behind it, and where that metaphor stops being true. Expand a card for the full entry.`}

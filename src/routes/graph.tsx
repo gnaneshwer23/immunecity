@@ -2,7 +2,7 @@ import { seoHead } from "@/lib/seo";
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { PageHead } from "@/components/immune/ui";
 
 const GraphView = lazy(() => import("@/components/immune/GraphView"));
@@ -34,13 +34,33 @@ function Fallback() {
   );
 }
 
+const GUIDE_KEY = "isi-graph-guide-dismissed";
+function GraphGuide() {
+  const [show, setShow] = useState(false);
+  useEffect(() => { setShow(localStorage.getItem(GUIDE_KEY) !== "1"); }, []);
+  if (!show) return null;
+  return (
+    <aside className="ex-guide page" aria-label="How to use the graph">
+      <ol>
+        <li><span className="ex-num">1</span><span><b>Search or click</b> a concept to focus on it.</span></li>
+        <li><span className="ex-num">2</span><span><b>Follow the arrows</b> — they show what causes what.</span></li>
+        <li><span className="ex-num">3</span><span><b>Select a link</b> to see how well it is supported.</span></li>
+      </ol>
+      <button type="button" className="btn sm" onClick={() => { localStorage.setItem(GUIDE_KEY, "1"); setShow(false); }}>Got it</button>
+    </aside>
+  );
+}
+
 function GraphPage() {
   const { focus, sim, mode } = Route.useSearch();
   return (
+    <>
+    <GraphGuide />
     <ClientOnly fallback={<Fallback />}>
       <Suspense fallback={<Fallback />}>
         <GraphView focusId={focus || null} simId={sim || null} modeParam={mode} />
       </Suspense>
     </ClientOnly>
+    </>
   );
 }

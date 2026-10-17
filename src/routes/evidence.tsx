@@ -1,3 +1,4 @@
+import { ART } from "@/components/immune/explain";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -36,7 +37,7 @@ function Evidence() {
 
   return (
     <div className="page">
-      <PageHead
+      <PageHead art={ART.researchArt}
         kicker="Layer 09 · Evidence"
         title="Trials as experiments"
         lede="Each trial is a test of a biological hypothesis in humans. The negative ones teach the most: a mechanism that is real in a dish can be irrelevant, redundant, or protective in a tissue. Claim-level approved support for graph links is still sparse — coverage below is the honest source of truth."
