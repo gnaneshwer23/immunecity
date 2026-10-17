@@ -83,7 +83,9 @@ export default function GroundingPanel({ grounding }: { grounding: AskGrounding 
               {n.name}
             </button>
             {n.draft ? <span className={`evidence-tier ${TIER_CLASS.draft}`}>Draft</span> : null}
-            <Link className="xs" to="/graph" search={{ focus: n.id }}>graph</Link>
+            <Link className="xs" to="/atlas/$id" params={{ id: n.id }}>concept page</Link>{" "}
+            <Link className="xs" to="/graph" search={{ focus: n.id }}>graph</Link>{" "}
+            <Link className="xs" to="/research" search={{ lib: n.name }} hash="library">papers</Link>
           </li>
         ))}
       </ul>

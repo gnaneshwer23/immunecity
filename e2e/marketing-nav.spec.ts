@@ -12,7 +12,7 @@ async function expectDesktopNav(page: Page) {
   await expect(nav.getByRole("link", { name: "Vision", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "About", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /More/i })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Explore Immune City" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Explore the Immune System" }).first()).toBeVisible();
   // Insights stays out of primary header
   await expect(nav.getByRole("link", { name: "Insights" })).toHaveCount(0);
 }
@@ -46,7 +46,7 @@ test.describe("marketing navigation", () => {
     for (const label of DESTINATIONS) {
       await expect(panel.getByRole("link", { name: label, exact: true })).toBeVisible();
     }
-    await expect(panel.getByRole("link", { name: /Explore Immune City|Enter atlas/ })).toBeVisible();
+    await expect(panel.getByRole("link", { name: /Explore the Immune System|Enter atlas/ })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(panel).toBeHidden();
   });

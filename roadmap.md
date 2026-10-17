@@ -72,3 +72,18 @@ Machine-readable copy: `src/data/implementation-phases.ts`.
 - [x] Stage 5: end-to-end audit + fixes (report isi-audit-v2.md)
 - [x] Shortened Evidence/Therapy/Research on phones; merged Reasoning + Scientific AI; one phone menu; Platform spine panel; phone footer
 - [ ] Sign-in/curation: blocked on Neon keys or Cloud move
+
+## ISI master brief v2
+- [x] Trust menu group; breadcrumbs on science pages; shared `isi.css` foundation
+- [x] Homepage A–H (dark opening band, interactive interferon mechanism, research, investigate tools, verified counts)
+- [x] Research Library: live Nature Immunology metadata search, filters, details, paging, propose-as-candidate
+- [x] Simulator assumptions panel; Ask links to library search
+- [ ] Saved library imports and import history — blocked on database configuration
+- [ ] Deeper per-page redesign (Cell atlas filters, Disease/Therapy established vs experimental, Patient rule evidence) — next pass
+
+## Master build (Ask · Atlas · Research)
+- [x] Concept layer, 8-domain Knowledge Atlas, a page for every concept (drafts/sparse noindex)
+- [x] Full Ask ISI page: grouped suggestions, one saved conversation, copy/retry, concept-page links, ?about context
+- [x] Research Library: five Nature Portfolio journals, journal filter, DOI search, Review labelling, concept links
+- [x] Menu, homepage three-ways strip, sitemap, tests
+- [ ] Ask answers blocked while the evidence service is unavailable (database configuration)

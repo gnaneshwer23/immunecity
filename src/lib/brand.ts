@@ -5,7 +5,7 @@ export const PRODUCT_SHORT = "ISI";
 export const FLAGSHIP_NAME = "Immune City";
 export const TAGLINE = "Where Immunology Meets Advanced AI";
 /** Exact homepage H1 — includes the terminal period from the product brief. */
-export const HERO_HEADLINE = "See the immune system as a connected system.";
+export const HERO_HEADLINE = "Understand the immune system as a connected, investigable system.";
 export const BRAND_EYEBROW = "Immunology × Scientific AI";
 export const PRODUCT_LINE = `${PRODUCT_NAME} — ${TAGLINE}`;
 export const ASK_NAME = `Ask ${PRODUCT_NAME}`;
@@ -13,7 +13,7 @@ export const CANONICAL_ORIGIN = "https://www.immune-super-intelligence.co.uk";
 export const CANONICAL_URL = `${CANONICAL_ORIGIN}/`;
 /** Primary marketing CTA → platform overview (flagship Immune City entry). */
 export const EXPLORE_PATH = "/overview" as const;
-export const EXPLORE_CTA = "Explore Immune City";
+export const EXPLORE_CTA = "Explore the Immune System";
 /** Academy overview — learning entry (not a 13th atlas layer). */
 export const LEARN_PATH = "/academy" as const;
 export const LEARN_CTA = "Explore the Academy";
@@ -31,7 +31,10 @@ export const PROPOSITION =
 
 /** Short hero supporting line — keep the first viewport lean. */
 export const HERO_SUPPORT =
-  "Explore immune mechanisms, trace biological relationships and investigate the evidence connecting cells, molecules and disease.";
+  "Explore immune mechanisms, connect biological entities, trace scientific evidence and investigate how immune responses change across cells, tissues, diseases and therapies.";
+/** Secondary homepage CTA → mechanism explorer. */
+export const INVESTIGATE_PATH = "/mechanism" as const;
+export const INVESTIGATE_CTA = "Investigate a Mechanism";
 /** Hero trust line — educational beta framing for the first viewport. */
 export const HERO_TRUST =
   "Educational beta · curated graph · not clinical decision support";

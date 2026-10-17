@@ -8,10 +8,12 @@ import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
+import ResearchLibrary from "@/components/immune/ResearchLibrary";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
+import type { SearchMetadata } from "@/lib/research/literatureWorkflow";
 
 export const Route = createFileRoute("/research")({
   validateSearch: zodValidator(
@@ -20,13 +22,14 @@ export const Route = createFileRoute("/research")({
       start: fallback(z.string(), "").default(""),
       perturb: fallback(z.string(), "").default(""),
       outcome: fallback(z.string(), "").default(""),
+      lib: fallback(z.string().max(200), "").default(""),
     }),
   ),
   head: () =>
     seoHead({
-      title: `Scientific Research Workbench | ${PRODUCT_NAME}`,
+      title: `Research Library & Workbench | ${PRODUCT_NAME}`,
       description:
-        "Organise research questions, evidence, mechanisms and candidate hypotheses. Interface-only model adapters — not live predictors or auto-published claims.",
+        "Search Nature Immunology article metadata, start reviewable evidence candidates and organise hypotheses. Nothing is auto-approved or auto-published.",
       path: "/research",
     }),
   component: Research,
@@ -42,6 +45,7 @@ function Research() {
   const search = Route.useSearch();
   const [litHandoff, setLitHandoff] = useState<string | null>(null);
   const clearLitHandoff = useCallback(() => setLitHandoff(null), []);
+  const [litSeed, setLitSeed] = useState<{ key: string; seed: Partial<SearchMetadata> } | null>(null);
 
   const seed = {
     question: search.q || undefined,
@@ -65,6 +69,7 @@ function Research() {
 
       <nav className="page-jump" aria-label="On this page">
         <a href="#workbench">Workbench</a>
+        <a href="#library">Library</a>
         <a href="#literature">Literature</a>
         <a href="#model-registry">Models</a>
         <a href="#phases">Phases</a>
@@ -84,12 +89,42 @@ function Research() {
         />
       </section>
 
+      <section className="section" id="library">
+        <h2>Research Library · Nature Portfolio journals</h2>
+        <p className="lede">
+          Search live article metadata from five Nature Portfolio journals. Proposing an article starts an unreviewed candidate in the literature workflow
+          below — it never becomes approved evidence without curator review. Saving imports to the shared evidence store
+          is not yet available (database configuration pending).
+        </p>
+        <ResearchLibrary
+          initialQuery={search.lib}
+          onPropose={(a) => {
+            setLitSeed({
+              key: `${a.doi}-${Date.now()}`,
+              seed: {
+                source: "paste_metadata",
+                query: a.title,
+                doi: a.doi,
+                title: a.title,
+                journal: a.journal,
+                year: a.year ? String(a.year) : undefined,
+                notes: `Proposed from Research Library (Crossref metadata, fetched ${new Date().toISOString()}).`,
+              },
+            });
+            requestAnimationFrame(() => document.getElementById("literature")?.scrollIntoView({ behavior: "smooth" }));
+          }}
+        />
+      </section>
+
       <section className="section" id="literature">
         <h2>Literature intelligence</h2>
         <p className="lede">
           Phase C workflow — local metadata + candidate claims. Not live bulk PubMed ingest; export candidates or send them into the workbench evidence step (still drafts).
         </p>
-        <PhoneFold label="Show literature queue"><LiteratureQueue onSendToWorkbench={setLitHandoff} /></PhoneFold>
+        {litSeed ? (
+          <p className="small" role="status">Started a candidate from <b>{litSeed.seed.title}</b> (DOI {litSeed.seed.doi}). Status: unreviewed.</p>
+        ) : null}
+        <PhoneFold label="Show literature queue"><LiteratureQueue key={litSeed?.key ?? "blank"} seed={litSeed?.seed} onSendToWorkbench={setLitHandoff} /></PhoneFold>
       </section>
 
       <section className="section" id="model-registry">

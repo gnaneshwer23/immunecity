@@ -35,6 +35,7 @@ export default function GraphNodeDetail({ id, onClose }: { id: string; onClose: 
         </p>
       </div>
       <div className="row" style={{ marginTop: 12, gap: 6 }}>
+        <Link className="btn sm primary" to="/atlas/$id" params={{ id }}>Concept page</Link>
         <Link className="btn sm" to="/graph" search={{ focus: id, sim: id, mode: "inhibit" }}>Simulate blocking</Link>
         <Link className="btn sm" to="/graph" search={{ focus: id, sim: id, mode: "activate" }}>Simulate giving</Link>
         <Link className="btn sm" to="/reasoning" search={{ from: id }}>Trace from here</Link>

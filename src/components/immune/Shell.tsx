@@ -6,6 +6,8 @@ import {
   FOOTER_GROUPS,
   isMarketingPath,
   JOURNEY_NAV,
+  journeyKey,
+  type JourneyItem,
   JOURNEY_SECONDARY,
   MARKETING_NAV_ACTION,
 } from "@/data/marketingNav";
@@ -40,7 +42,7 @@ function Logo() {
 
 function PillarMenu({ label, items, pathname, onNavigate }: {
   label: string;
-  items: readonly { n: string; path: string; title: string; desc: string }[];
+  items: readonly JourneyItem[];
   pathname: string;
   onNavigate: () => void;
 }) {
@@ -69,7 +71,7 @@ function PillarMenu({ label, items, pathname, onNavigate }: {
       {open && (
         <div className="pillar-menu" role="menu" aria-label={label}>
           {items.map((l) => (
-            <Link key={l.path} to={l.path} role="menuitem" className="pillar-item" activeOptions={{ exact: l.path === "/" }} activeProps={{ className: "pillar-item current" }} onClick={() => { setOpen(false); onNavigate(); }}>
+            <Link key={journeyKey(l)} to={l.path as "/"} hash={l.hash} role="menuitem" className="pillar-item" activeOptions={{ exact: l.path === "/", includeHash: Boolean(l.hash) }} activeProps={{ className: "pillar-item current" }} onClick={() => { setOpen(false); onNavigate(); }}>
               <span className="pillar-num">{l.n}</span>
               <span className="pillar-body"><strong>{l.title}</strong><small>{l.desc}</small></span>
             </Link>
@@ -177,7 +179,7 @@ function MarketingCompactNav({
             <div key={g.label} className="marketing-compact-group">
               <span className="marketing-compact-label">{g.label}</span>
               {g.items.map((item) => (
-                <Link key={item.path} to={item.path} activeProps={{ className: "active" }} onClick={onClose}>
+                <Link key={journeyKey(item)} to={item.path as "/"} hash={item.hash} activeProps={{ className: "active" }} onClick={onClose}>
                   {item.title}
                 </Link>
               ))}
@@ -306,7 +308,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <DialogTitle className="sr-only">{ASK_NAME}</DialogTitle>
           <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references, not patient-specific advice.</DialogDescription>
           <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label="Minimize chatbot" title="Minimize chatbot"><X size={18} /></Button>
-          <AskAtlas />
+          <AskAtlas showFullPageLink />
         </DialogPrimitive.Content>
         </DialogPortal>
       </Dialog>

@@ -54,6 +54,7 @@ function ConceptBody({ id }: { id: string }) {
       <section>
         <h3>Appears in</h3>
         <div className="si-links">
+          <Link className="btn sm primary" to="/atlas/$id" params={{ id }}>Open concept page</Link>
           <Link className="btn sm" to="/graph" search={{ focus: id }}>Knowledge graph</Link>
           <Link className="btn sm" to="/reasoning" search={{ from: id }}>Path tracer</Link>
           {(cellForNode[id] || []).length ? <Link className="btn sm" to="/learn">Cell atlas</Link> : null}

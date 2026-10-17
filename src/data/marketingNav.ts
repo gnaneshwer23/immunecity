@@ -92,37 +92,54 @@ export function isMarketingPath(pathname: string): boolean {
  * Global header IA: the three ISI user journeys (Learn / Explore / Investigate).
  * Separate from NAV_GROUPS, which is the twelve-layer Immune City map.
  */
-export const JOURNEY_NAV = [
+export type JourneyItem = { n: string; path: string; hash?: string; title: string; desc: string };
+
+/** Unique key for a journey item (path + optional in-page section). */
+export function journeyKey(i: { path: string; hash?: string }): string {
+  return i.hash ? `${i.path}#${i.hash}` : i.path;
+}
+
+export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[] }[] = [
   {
     label: "Learn",
     items: [
-      { n: "L1", path: "/overview", title: "Platform", desc: "The 15-step causal spine and twelve layers in one view." },
-      { n: "L2", path: "/learn", title: "Cell atlas", desc: "Immune cells, what they do, and their limits." },
-      { n: "L3", path: "/academy", title: "Academy", desc: "Guided foundation track through core immunology." },
-      { n: "L4", path: "/mechanism", title: "Mechanisms", desc: "Step-by-step cascades and perturbations." },
-      { n: "L5", path: "/patient", title: "Patient guide", desc: "Educational, rule-based — not medical advice." },
+      { n: "L1", path: "/ask", title: "Ask ISI", desc: "Ask immunology questions answered from the graph." },
+      { n: "L2", path: "/atlas", title: "Knowledge atlas", desc: "Every concept across eight domains, with its own page." },
+      { n: "L3", path: "/overview", title: "Overview", desc: "The 15-step causal spine and twelve layers in one view." },
+      { n: "L4", path: "/learn", title: "Cell atlas", desc: "Immune cells, what they do, and their limits." },
+      { n: "L5", path: "/academy", title: "Immune system foundations", desc: "Guided foundation track through core immunology." },
+      { n: "L6", path: "/mechanism", title: "Mechanisms and pathways", desc: "Step-by-step cascades and perturbations." },
     ],
   },
   {
     label: "Explore",
     items: [
       { n: "E1", path: "/graph", title: "Knowledge graph", desc: "Every concept and typed causal link." },
-      { n: "E2", path: "/disease", title: "Disease", desc: "Hypersensitivity and the cancer immunity cycle." },
-      { n: "E3", path: "/therapy", title: "Therapy", desc: "Interventions, their targets and trials." },
-      { n: "E4", path: "/simulator", title: "Simulator", desc: "Illustrative infection and treatment model." },
-      { n: "E5", path: "/dynamics", title: "Dynamics", desc: "Tissues, metabolism and genetics." },
+      { n: "E2", path: "/dynamics", title: "Immune dynamics", desc: "Tissues, metabolism and genetics." },
+      { n: "E3", path: "/disease", title: "Disease explorer", desc: "Hypersensitivity and the cancer immunity cycle." },
+      { n: "E4", path: "/therapy", title: "Therapy explorer", desc: "Interventions, their targets and trials." },
     ],
   },
   {
     label: "Investigate",
     items: [
-      { n: "I1", path: "/evidence", title: "Evidence", desc: "Trials as experiments and claim coverage." },
-      { n: "I2", path: "/methods", title: "Methods", desc: "How evidence is graded and reviewed." },
-      { n: "I3", path: "/reasoning", title: "Reasoning & AI", desc: "Ask, how the AI works, and the path tracer." },
-      { n: "I4", path: "/research", title: "Research workbench", desc: "Literature candidates and draft hypotheses." },
+      { n: "I1", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
+      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Ask, how the AI works, and the path tracer." },
+      { n: "I3", path: "/research", title: "Research library", desc: "Nature Immunology metadata, candidates and workbench." },
+      { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Trials as experiments and claim coverage." },
+      { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Educational, rule-based — not medical advice." },
     ],
   },
-] as const;
+  {
+    label: "Trust",
+    items: [
+      { n: "T1", path: "/methods", title: "Methods", desc: "Data model and how the platform is built." },
+      { n: "T2", path: "/methods", hash: "statuses", title: "Evidence standards", desc: "What each evidence status means." },
+      { n: "T3", path: "/methods", hash: "lifecycle", title: "Scientific review", desc: "How a claim moves from candidate to approved." },
+      { n: "T4", path: "/methods", hash: "limitations", title: "Data sources and limitations", desc: "Where the evidence stops." },
+    ],
+  },
+];
 
 /** Secondary header links shown after the journeys. */
 export const JOURNEY_SECONDARY = [

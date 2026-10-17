@@ -3,6 +3,7 @@
 @import "tw-animate-css";
 @import "./atlas.css";
 @import "./biotech.css";
+@import "./isi.css";
 
 @custom-variant dark (&:is(.dark *));
 

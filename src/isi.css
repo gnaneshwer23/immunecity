@@ -1,0 +1,213 @@
+/* ISI design foundation (brief v2).
+   Shared tokens and page patterns layered on top of biotech.css. Graph-specific
+   styles stay in atlas.css / biotech.css. Colours are semantic variables only.
+
+   Tokens
+   - Spacing scale:  --isi-space-1..6  (4 / 8 / 12 / 20 / 32 / 56 px)
+   - Radii:          --isi-radius-sm / --isi-radius (6 / 10 px)
+   - Content widths: --isi-measure (reading) / --isi-wide (workspaces)
+   - Dark band:      .isi-dark-band re-scopes surface/text tokens to midnight ink
+*/
+html[data-theme] {
+  --isi-space-1: 4px;
+  --isi-space-2: 8px;
+  --isi-space-3: 12px;
+  --isi-space-4: 20px;
+  --isi-space-5: 32px;
+  --isi-space-6: 56px;
+  --isi-radius-sm: 6px;
+  --isi-radius: 10px;
+  --isi-measure: 68ch;
+  --isi-wide: 1240px;
+  --isi-ok: oklch(0.5 0.1 160);
+  --isi-danger: oklch(0.52 0.17 25);
+}
+
+/* Dark scientific opening band (homepage only); light surfaces everywhere else. */
+.isi-dark-band {
+  --bg: oklch(0.17 0.03 250);
+  --surface: oklch(0.19 0.032 250);
+  --text: oklch(0.96 0.01 90);
+  --muted: oklch(0.8 0.02 240);
+  --border: oklch(0.9 0.02 240 / 0.14);
+  --border-strong: oklch(0.9 0.02 240 / 0.32);
+  --primary: oklch(0.78 0.11 195);
+  --primary-hover: oklch(0.85 0.1 195);
+  --primary-foreground: oklch(0.17 0.03 250);
+  --mkt-cyan: oklch(0.82 0.1 195);
+  background: var(--surface);
+  color: var(--text);
+}
+.isi-dark-band.home-helix-hero::after {
+  background: linear-gradient(180deg, transparent, oklch(0.17 0.03 250 / 0.6));
+}
+.isi-dark-band .home-helix-foot { color: var(--muted); }
+
+/* Breadcrumbs */
+.isi-crumbs { margin: 0 0 var(--isi-space-3); font-size: 13px; color: var(--muted); }
+.isi-crumbs ol { display: flex; flex-wrap: wrap; gap: var(--isi-space-2); list-style: none; margin: 0; padding: 0; }
+.isi-crumbs li + li::before { content: "/"; margin-right: var(--isi-space-2); opacity: 0.5; }
+.isi-crumbs a { color: var(--muted); text-decoration: none; }
+.isi-crumbs a:hover { color: var(--primary); text-decoration: underline; }
+.isi-crumbs [aria-current] { color: var(--text); font-weight: 500; }
+
+/* Homepage D — interactive mechanism */
+.isi-mech { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.isi-mech-step {
+  display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; align-items: center;
+  gap: var(--isi-space-3); padding: var(--isi-space-3) 0; border-bottom: 1px solid var(--border);
+}
+.isi-mech-n { font-family: var(--font-mono, monospace); font-size: 12px; color: var(--muted); }
+.isi-mech-body { display: flex; flex-wrap: wrap; align-items: center; gap: var(--isi-space-2); }
+.isi-mech-node, .isi-mech-rel {
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
+  border-radius: var(--isi-radius-sm); padding: 4px 10px; font: inherit; font-weight: 600; cursor: pointer;
+}
+.isi-mech-rel { border-style: dashed; font-weight: 500; color: var(--primary); }
+.isi-mech-node:hover, .isi-mech-rel:hover { border-color: var(--primary); }
+.isi-mech-node:focus-visible, .isi-mech-rel:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* Homepage E — split text + ladder */
+.isi-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--isi-space-6); align-items: start; }
+.isi-split .lede { margin: var(--isi-space-3) 0 var(--isi-space-4); color: var(--muted); max-width: var(--isi-measure); }
+.isi-ladder { list-style: none; margin: 0; padding: 0; counter-reset: ladder; }
+.isi-ladder li {
+  counter-increment: ladder; display: grid; gap: 2px; padding: var(--isi-space-3) 0 var(--isi-space-3) 2.5rem;
+  border-left: 2px solid var(--border-strong); position: relative;
+}
+.isi-ladder li::before {
+  content: counter(ladder); position: absolute; left: -0.8rem; top: var(--isi-space-3);
+  width: 1.5rem; height: 1.5rem; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface); border: 2px solid var(--primary); color: var(--primary); font-size: 12px; font-weight: 700;
+}
+.isi-ladder span { color: var(--muted); font-size: 14px; }
+
+/* Homepage F — tools with limits */
+.isi-tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--border); }
+.isi-tool {
+  display: grid; align-content: start; gap: var(--isi-space-2); padding: var(--isi-space-4);
+  border-right: 1px solid var(--border); color: var(--text); text-decoration: none;
+}
+.isi-tool:last-child { border-right: 0; }
+.isi-tool svg { color: var(--primary); }
+.isi-tool h3 { margin: 0; font-size: 1.05rem; }
+.isi-tool p { margin: 0; color: var(--muted); font-size: 14px; }
+.isi-tool .isi-tool-limit { font-size: 13px; border-left: 2px solid var(--border-strong); padding-left: var(--isi-space-2); }
+.isi-tool:hover h3 { color: var(--primary); text-decoration: underline; }
+
+/* Homepage H — final paths */
+.isi-final-links { display: grid; gap: var(--isi-space-2); min-width: min(100%, 300px); }
+.isi-final-links a {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--isi-space-3);
+  padding: var(--isi-space-3) var(--isi-space-4); border: 1px solid var(--border-strong);
+  border-radius: var(--isi-radius-sm); color: var(--text); text-decoration: none; font-weight: 600; background: var(--surface);
+}
+.isi-final-links a:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Research Library */
+.isi-library-source { color: var(--muted); max-width: var(--isi-measure); margin: 0 0 var(--isi-space-4); font-size: 14px; }
+.isi-library-form {
+  display: flex; flex-wrap: wrap; align-items: end; gap: var(--isi-space-3);
+  padding: var(--isi-space-4); border: 1px solid var(--border); border-radius: var(--isi-radius); background: var(--surface);
+}
+.isi-field { display: grid; gap: 6px; flex: 1 1 160px; }
+.isi-field-wide { flex: 2 1 260px; }
+.isi-field-narrow { flex: 0 1 110px; }
+.isi-field-check { display: flex; align-items: center; gap: var(--isi-space-2); flex: 0 0 auto; padding-bottom: 8px; }
+.isi-library-status { margin: var(--isi-space-3) 0; font-size: 13px; color: var(--muted); min-height: 1.4em; }
+.isi-error { color: var(--isi-danger); font-weight: 600; }
+.isi-empty { padding: var(--isi-space-5); text-align: center; color: var(--muted); border: 1px dashed var(--border-strong); border-radius: var(--isi-radius); }
+.isi-article-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.isi-article { padding: var(--isi-space-4) 0; border-bottom: 1px solid var(--border); }
+.isi-article h3 { margin: 6px 0 4px; font-size: 1.05rem; line-height: 1.35; }
+.isi-article-meta { display: flex; flex-wrap: wrap; gap: var(--isi-space-2); align-items: center; font-size: 12px; color: var(--muted); }
+.isi-tag { border: 1px solid var(--border-strong); border-radius: 999px; padding: 1px 8px; }
+.isi-tag-oa { border-color: var(--isi-ok); color: var(--isi-ok); }
+.isi-article-authors { margin: 0; font-size: 13px; color: var(--muted); }
+.isi-article-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--isi-space-3); margin-top: var(--isi-space-2); }
+.isi-link { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--primary); }
+.isi-article-detail { margin-top: var(--isi-space-3); padding: var(--isi-space-4); background: var(--bg); border-radius: var(--isi-radius); font-size: 14px; }
+.isi-article-detail dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px var(--isi-space-4); margin: 0 0 var(--isi-space-3); }
+.isi-article-detail dt { color: var(--muted); }
+.isi-article-detail dd { margin: 0; overflow-wrap: anywhere; }
+.isi-article-detail h4 { margin: var(--isi-space-3) 0 4px; font-size: 13px; }
+.isi-article-detail p { max-width: var(--isi-measure); }
+.isi-pager { display: flex; align-items: center; justify-content: center; gap: var(--isi-space-3); margin-top: var(--isi-space-4); }
+
+/* Simulated vs observed notice */
+.isi-assumptions { border-left: 3px solid var(--primary); padding: var(--isi-space-3) var(--isi-space-4); background: var(--surface); }
+.isi-assumptions ul { margin: 6px 0 0; padding-left: 1.2rem; color: var(--muted); font-size: 14px; }
+
+@media (max-width: 860px) {
+  .isi-split { grid-template-columns: 1fr; gap: var(--isi-space-4); }
+  .isi-tools { grid-template-columns: 1fr; }
+  .isi-tool { border-right: 0; border-bottom: 1px solid var(--border); }
+  .isi-mech-step { grid-template-columns: 2rem minmax(0, 1fr); }
+  .isi-mech-step .badge { grid-column: 2; justify-self: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .isi-library * { transition: none !important; }
+}
+.isi-split h2 { font-family: var(--font-display); font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.25rem); font-weight: 500; letter-spacing: -0.02em; margin: var(--isi-space-2) 0 0; }
+
+.isi-select { height: 36px; border: 1px solid var(--border-strong); border-radius: var(--isi-radius-sm); background: var(--surface); color: var(--text); padding: 0 8px; font: inherit; }
+
+/* Knowledge Atlas */
+.isi-domains { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--border); margin-top: var(--isi-space-5); }
+.isi-domain { padding: var(--isi-space-5) var(--isi-space-4); border-bottom: 1px solid var(--border); scroll-margin-top: 90px; }
+.isi-domain:nth-child(odd) { border-right: 1px solid var(--border); }
+.isi-domain h2 { margin: 4px 0 6px; font-size: 1.3rem; }
+.isi-domain-list { display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; padding: 0; margin: var(--isi-space-3) 0; font-size: 14px; }
+.isi-gaps { color: var(--muted); border-left: 2px solid var(--border-strong); padding-left: var(--isi-space-2); }
+.isi-atlas-hits { columns: 3 220px; list-style: none; padding: 0; margin: var(--isi-space-3) 0 0; font-size: 14px; }
+.isi-atlas-hits li { break-inside: avoid; padding: 3px 0; }
+
+/* Concept page */
+.isi-concept-head { padding-bottom: var(--isi-space-4); border-bottom: 1px solid var(--border); }
+.isi-concept-kicker { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.isi-concept-kicker .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.isi-concept-head h1 { margin: var(--isi-space-2) 0; }
+.isi-concept-def { font-size: 1.1rem; max-width: var(--isi-measure); }
+.isi-concept-actions { display: flex; flex-wrap: wrap; gap: var(--isi-space-2); margin-top: var(--isi-space-3); }
+.isi-concept-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: var(--isi-space-5); }
+.isi-concept-side section { padding: var(--isi-space-4) 0; border-bottom: 1px solid var(--border); }
+.isi-concept-side h2 { font-size: 1rem; margin: 0 0 6px; }
+.isi-concept-side h3 { font-size: 12px; margin: 8px 0 4px; color: var(--muted); }
+.isi-concept-side ul { margin: 0; padding-left: 1.1rem; font-size: 14px; }
+.isi-mini { width: 100%; max-width: 640px; height: auto; display: block; }
+.isi-mini-edge { stroke: var(--border-strong); stroke-width: 1.2; }
+.isi-mini-label { font-size: 11px; fill: var(--muted); }
+.isi-mini-center { font-size: 14px; font-weight: 700; fill: var(--text); }
+.isi-rel-group h3 { font-size: 13px; margin: var(--isi-space-4) 0 4px; color: var(--muted); }
+.isi-rel-list { list-style: none; padding: 0; margin: 0; }
+.isi-rel-list li { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.isi-rel-btn { border: 1px dashed var(--border-strong); background: transparent; color: var(--primary); border-radius: var(--isi-radius-sm); padding: 1px 8px; font: inherit; font-size: 13px; cursor: pointer; }
+.isi-rel-btn:hover, .isi-rel-btn:focus-visible { border-color: var(--primary); outline: none; }
+
+/* Ask page */
+.isi-ask-page .ask-atlas { min-height: 560px; }
+.isi-ask-context { padding: var(--isi-space-2) var(--isi-space-3); border-left: 3px solid var(--primary); background: var(--surface); margin-bottom: var(--isi-space-3); }
+.ask-head-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ask-head-actions { display: inline-flex; gap: 6px; }
+.ask-mini-btn { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); border-radius: 999px; padding: 2px 10px; font-size: 12px; cursor: pointer; text-decoration: none; margin-top: 6px; }
+.ask-mini-btn:hover { border-color: var(--primary); color: var(--primary); }
+.ask-suggest-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--isi-space-4); }
+.ask-suggest-group { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.ask-suggest-group .chip { text-align: left; white-space: normal; }
+.ask-concept-wrap { display: inline-flex; align-items: center; gap: 1px; }
+.ask-concept-page { color: var(--primary); display: inline-grid; place-items: center; }
+
+/* Homepage three experiences strip */
+.isi-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.isi-three a { padding: var(--isi-space-4); color: var(--text); text-decoration: none; border-right: 1px solid var(--border); display: grid; gap: 4px; }
+.isi-three a:last-child { border-right: 0; }
+.isi-three b { font-size: 1.05rem; }
+.isi-three span { color: var(--muted); font-size: 14px; }
+.isi-three a:hover b { color: var(--primary); text-decoration: underline; }
+
+@media (max-width: 860px) {
+  .isi-domains, .isi-concept-grid, .ask-suggest-groups, .isi-three { grid-template-columns: 1fr; }
+  .isi-domain:nth-child(odd) { border-right: 0; }
+  .isi-three a { border-right: 0; border-bottom: 1px solid var(--border); }
+}
+.isi-concept-head h1 { font-family: var(--font-display); font-size: clamp(2rem, 1.4rem + 2vw, 3rem); line-height: 1.08; letter-spacing: -0.03em; font-weight: 600; }

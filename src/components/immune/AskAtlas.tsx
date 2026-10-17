@@ -3,7 +3,8 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
 import { Link } from "@tanstack/react-router";
-import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight } from "lucide-react";
+import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight, Copy, RotateCcw, Maximize2 } from "lucide-react";
+import type { UIMessage } from "ai";
 import { byId, out, inn, human, TYPES, edgeByRel, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import { prepareAsk, runExplanationAction, type AskGrounding, type ExplanationAction } from "@/lib/askGrounding";
@@ -114,11 +115,48 @@ function Inspector({ pick, onClose }: { pick: Pick; onClose: () => void }) {
   );
 }
 
-export default function AskAtlas() {
-  const { messages, sendMessage, status, stop, error } = useChat({
+export type AskAtlasProps = {
+  /** localStorage key for one saved conversation in this browser. */
+  persistKey?: string;
+  /** Prefilled question (not sent automatically). */
+  initialInput?: string;
+  /** Show grouped starter questions instead of the short list. */
+  groupedSuggestions?: { label: string; items: string[] }[];
+  /** Show the "Open full page" link (corner assistant). */
+  showFullPageLink?: boolean;
+};
+
+export default function AskAtlas({ persistKey, initialInput = "", groupedSuggestions, showFullPageLink }: AskAtlasProps = {}) {
+  const { messages, sendMessage, status, stop, error, setMessages, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: "/api/ask" }),
   });
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialInput);
+  const [restored, setRestored] = useState(!persistKey);
+  const [copied, setCopied] = useState<string | null>(null);
+  // Restore the saved conversation after hydration (never during SSR).
+  useEffect(() => {
+    if (!persistKey) return;
+    try {
+      const raw = window.localStorage.getItem(persistKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as UIMessage[];
+        if (Array.isArray(saved)) setMessages(saved);
+      }
+    } catch { /* ignore corrupt storage */ }
+    setRestored(true);
+  }, [persistKey, setMessages]);
+  useEffect(() => {
+    if (!persistKey || !restored || status === "streaming" || status === "submitted") return;
+    try {
+      if (messages.length) window.localStorage.setItem(persistKey, JSON.stringify(messages.slice(-20)));
+      else window.localStorage.removeItem(persistKey);
+    } catch { /* storage full or blocked */ }
+  }, [persistKey, restored, messages, status]);
+  useEffect(() => { if (initialInput) setInput(initialInput); }, [initialInput]);
+  const newConversation = () => { setMessages([]); setGrounding(null); setLocalNote(null); setInput(""); inputRef.current?.focus(); };
+  const copyText = async (id: string, text: string) => {
+    try { await navigator.clipboard.writeText(text); setCopied(id); setTimeout(() => setCopied(null), 1500); } catch { /* clipboard blocked */ }
+  };
   const [pick, setPick] = useState<Pick | null>(null);
   const [grounding, setGrounding] = useState<AskGrounding | null>(null);
   const [localNote, setLocalNote] = useState<string | null>(null);
@@ -159,9 +197,12 @@ export default function AskAtlas() {
       const n = byId[id];
       if (!n) return <span>{children}</span>;
       return (
-        <button type="button" className="ask-concept" onClick={() => inspect({ kind: "concept", id })} title={`Inspect ${n.name}`}>
-          <span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} />{children}
-        </button>
+        <span className="ask-concept-wrap">
+          <button type="button" className="ask-concept" onClick={() => inspect({ kind: "concept", id })} title={`Inspect ${n.name}`}>
+            <span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} />{children}
+          </button>
+          <Link to="/atlas/$id" params={{ id }} className="ask-concept-page" aria-label={`Open the ${n.name} concept page`}><ArrowUpRight size={11} /></Link>
+        </span>
       );
     }
     if (href?.startsWith("edge:")) {
@@ -181,18 +222,34 @@ export default function AskAtlas() {
       <div className="ask-head">
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
         <div>
-          <h3>Ask Immune Super Intelligence</h3>
+          <div className="ask-head-row">
+            <h3>Ask Immune Super Intelligence</h3>
+            <span className="ask-head-actions">
+              {showFullPageLink ? <Link to="/ask" className="ask-mini-btn"><Maximize2 size={13} /> Open full page</Link> : null}
+              {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New conversation</button> : null}
+            </span>
+          </div>
           <p className="xs muted">Graph-retrieved teaching · educational beta · cites when reviewed · not fully evidence-grounded AI</p>
           <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Not patient-specific advice. Questions are sent to the configured AI service; see our <Link to="/privacy">privacy notice</Link>.</p>
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>
         {messages.length === 0 ? (
+          groupedSuggestions ? (
+            <div className="ask-suggest-groups">
+              {groupedSuggestions.map((g) => (
+                <div key={g.label} className="ask-suggest-group">
+                  <span className="ask-insp-label">{g.label}</span>
+                  {g.items.map((q) => <button key={q} type="button" className="chip" onClick={() => send(q)}>{q}</button>)}
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="ask-suggestions">
             {SUGGESTIONS.map((s) => (
               <button key={s} className="chip" onClick={() => send(s)}>{s}</button>
             ))}
-          </div>
+          </div>)
         ) : null}
         {messages.map((m) => {
           const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
@@ -205,6 +262,11 @@ export default function AskAtlas() {
                   <>
                     <div className="ask-ai-badge" role="note">AI-generated · graph-retrieved teaching · not patient-specific advice</div>
                     <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
+                    {!busy || m !== lastAssistant ? (
+                      <button type="button" className="ask-mini-btn" onClick={() => copyText(m.id, text)} aria-label="Copy answer">
+                        <Copy size={12} /> {copied === m.id ? "Copied" : "Copy answer"}
+                      </button>
+                    ) : null}
                   </>
                 ) : <p>{text}</p>}
                 {m === lastAssistant && grounding ? (
@@ -223,6 +285,17 @@ export default function AskAtlas() {
                     ) : null}
                   </>
                 ) : null}
+                {m === lastAssistant && !busy ? (() => {
+                  const lastUser = [...messages].reverse().find((x) => x.role === "user");
+                  const q = lastUser ? lastUser.parts.map((p) => (p.type === "text" ? p.text : "")).join("").slice(0, 200) : "";
+                  return q ? (
+                    <p className="xs muted">
+                      Look for literature:{" "}
+                      <Link to="/research" search={{ lib: q }} hash="library">search Nature Immunology metadata</Link>{" "}
+                      (source records only — not reviewed evidence).
+                    </p>
+                  ) : null;
+                })() : null}
                 {fu.length > 0 && (
                   <div className="ask-followups">
                     <span className="ask-insp-label">Explore next</span>
@@ -244,7 +317,7 @@ export default function AskAtlas() {
             </div>
           </div>
         ) : null}
-        {error ? <div className="ask-msg assistant"><span className="ask-role">Atlas</span><div className="ask-body"><p className="muted">{/429|Too many/.test(error.message) ? "You've asked a lot of questions quickly — please wait a minute." : "Sorry — the answer could not be generated. Please try again."}</p></div></div> : null}
+        {error ? <div className="ask-msg assistant"><span className="ask-role">Atlas</span><div className="ask-body"><p className="muted">{/429|Too many/.test(error.message) ? "You've asked a lot of questions quickly — please wait a minute." : "Sorry — the answer could not be generated."}</p>{!/429|Too many/.test(error.message) ? <button type="button" className="ask-mini-btn" onClick={() => regenerate()}><RotateCcw size={12} /> Retry</button> : null}</div></div> : null}
       </div>
       {matches.length > 0 && (
         <div className="ask-quick-matches" aria-label="Matching concepts">

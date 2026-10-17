@@ -32,6 +32,7 @@ import {
   type ClaimSupport,
   type LiteratureProject,
 } from "@/lib/research/literatureWorkflow";
+import type { SearchMetadata } from "@/lib/research/literatureWorkflow";
 
 function downloadJson(filename: string, text: string) {
   const blob = new Blob([text], { type: "application/json" });
@@ -46,11 +47,13 @@ function downloadJson(filename: string, text: string) {
 type Props = {
   /** Hand project JSON to the Scientific Workbench on Research (candidates only). */
   onSendToWorkbench?: (projectJson: string) => void;
+  /** Prefill source metadata (e.g. from the Research Library); remount with a new key to apply. */
+  seed?: Partial<SearchMetadata>;
 };
 
-export default function LiteratureQueue({ onSendToWorkbench }: Props) {
+export default function LiteratureQueue({ onSendToWorkbench, seed }: Props) {
   const [project, setProject] = useState<LiteratureProject>(() =>
-    createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION),
+    createLiteratureProject(GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, seed),
   );
   const [claimText, setClaimText] = useState("");
   const [excerpt, setExcerpt] = useState("");

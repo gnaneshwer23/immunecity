@@ -30,3 +30,9 @@
 - One global Scientific Inspector drawer (`src/lib/immune/inspector.ts` store, mounted in Shell) is opened via `inspect()` from any layer; why: one consistent, deep detail view.
 - Ask retrieval, guardrails and rate limiting live in browser-safe `src/lib/askGrounding.ts`; why: they are unit-tested without the AI call.
 - Global header IA is the Learn / Explore / Investigate `JOURNEY_NAV` in `src/data/marketingNav.ts`, shared by every page; `NAV_GROUPS` stays the twelve-layer map; why: journeys are how users navigate, layers are the science model.
+- Shared ISI tokens and page patterns (dark band, breadcrumbs, library, homepage sections) live in `src/isi.css`, imported after `biotech.css`; why: one documented foundation without touching graph-specific styles.
+- Nature Immunology metadata comes from Crossref via `searchNatureImmunology` (`src/lib/research/natureImmunology.functions.ts`) with parsing in browser-safe `src/lib/research/crossref.ts`; why: no credentials or scraping, and parsing/de-duplication are unit-tested. Library proposals only seed draft literature projects — never evidence approval.
+- Breadcrumbs derive from `JOURNEY_NAV` inside `PageHead`; why: one menu definition drives navigation and wayfinding.
+- Concept pages, Atlas domains, Ask prefill and neighbour grouping come from browser-safe `src/lib/immune/concepts.ts`; every internal concept link uses `/atlas/$id` by graph ID; why: Ask, Atlas, Inspector and Research share one identifier scheme instead of name matching.
+- Atlas domain gaps are computed from keyword coverage of real graph concepts, never filled with authored content; why: the brief forbids invented scientific records.
+- The full Ask page reuses `AskAtlas` with a single localStorage conversation key restored after hydration; the corner assistant stays unpersisted; why: one transport and guardrail path for both entries.

@@ -40,6 +40,15 @@ function Simulator() {
         </div>
         {cur ? <p className="small muted" style={{ marginTop: 10 }}>{cur.note}</p> : null}
       </section>
+      <aside className="isi-assumptions" aria-label="Model assumptions">
+        <b>Simulated, not observed.</b> Curves come from a simple equation model, not from experiments.
+        <ul>
+          <li>Units are normalised (0–1 scale), not cell counts or titres.</li>
+          <li>Parameters are hand-set for teaching and are not fitted to data.</li>
+          <li>Treatments act as single multipliers; real pharmacology, timing and side-effects are not modelled.</li>
+          <li>Comparisons show direction of change only — differences in size are not meaningful.</li>
+        </ul>
+      </aside>
       <section className="section">
         <InfectionSim key={key} initial={(cur?.p ?? {}) as Partial<SimParams>} />
       </section>

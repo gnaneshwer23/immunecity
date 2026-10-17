@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AccessibilityRouteImport } from './routes/accessibility'
+import { Route as AskRouteImport } from './routes/ask'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CollaborateRouteImport } from './routes/collaborate'
 import { Route as DisclaimerRouteImport } from './routes/disclaimer'
@@ -39,6 +40,8 @@ import { Route as TherapyRouteImport } from './routes/therapy'
 import { Route as VisionRouteImport } from './routes/vision'
 import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticated/curation'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
+import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
+import { Route as AtlasIdRouteImport } from './routes/atlas.$id'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
 import { Route as MechanismIdRouteImport } from './routes/mechanism.$id'
 
@@ -64,6 +67,11 @@ const AcademyRoute = AcademyRouteImport.update({
 const AccessibilityRoute = AccessibilityRouteImport.update({
   id: '/accessibility',
   path: '/accessibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AskRoute = AskRouteImport.update({
+  id: '/ask',
+  path: '/ask',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -191,6 +199,16 @@ const ApiAskRoute = ApiAskRouteImport.update({
   path: '/api/ask',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AtlasIndexRoute = AtlasIndexRouteImport.update({
+  id: '/atlas/',
+  path: '/atlas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtlasIdRoute = AtlasIdRouteImport.update({
+  id: '/atlas/$id',
+  path: '/atlas/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MechanismIndexRoute = MechanismIndexRouteImport.update({
   id: '/mechanism/',
   path: '/mechanism/',
@@ -207,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/academy': typeof AcademyRoute
   '/accessibility': typeof AccessibilityRoute
+  '/ask': typeof AskRoute
   '/auth': typeof AuthRoute
   '/collaborate': typeof CollaborateRoute
   '/disclaimer': typeof DisclaimerRoute
@@ -232,7 +251,9 @@ export interface FileRoutesByFullPath {
   '/vision': typeof VisionRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
+  '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
+  '/atlas/': typeof AtlasIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
 }
 export interface FileRoutesByTo {
@@ -240,6 +261,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/academy': typeof AcademyRoute
   '/accessibility': typeof AccessibilityRoute
+  '/ask': typeof AskRoute
   '/auth': typeof AuthRoute
   '/collaborate': typeof CollaborateRoute
   '/disclaimer': typeof DisclaimerRoute
@@ -265,7 +287,9 @@ export interface FileRoutesByTo {
   '/vision': typeof VisionRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
+  '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
+  '/atlas': typeof AtlasIndexRoute
   '/mechanism': typeof MechanismIndexRoute
 }
 export interface FileRoutesById {
@@ -275,6 +299,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/academy': typeof AcademyRoute
   '/accessibility': typeof AccessibilityRoute
+  '/ask': typeof AskRoute
   '/auth': typeof AuthRoute
   '/collaborate': typeof CollaborateRoute
   '/disclaimer': typeof DisclaimerRoute
@@ -300,7 +325,9 @@ export interface FileRoutesById {
   '/vision': typeof VisionRoute
   '/_authenticated/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
+  '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
+  '/atlas/': typeof AtlasIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
 }
 export interface FileRouteTypes {
@@ -310,6 +337,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/academy'
     | '/accessibility'
+    | '/ask'
     | '/auth'
     | '/collaborate'
     | '/disclaimer'
@@ -335,7 +363,9 @@ export interface FileRouteTypes {
     | '/vision'
     | '/curation'
     | '/api/ask'
+    | '/atlas/$id'
     | '/mechanism/$id'
+    | '/atlas/'
     | '/mechanism/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -343,6 +373,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/academy'
     | '/accessibility'
+    | '/ask'
     | '/auth'
     | '/collaborate'
     | '/disclaimer'
@@ -368,7 +399,9 @@ export interface FileRouteTypes {
     | '/vision'
     | '/curation'
     | '/api/ask'
+    | '/atlas/$id'
     | '/mechanism/$id'
+    | '/atlas'
     | '/mechanism'
   id:
     | '__root__'
@@ -377,6 +410,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/academy'
     | '/accessibility'
+    | '/ask'
     | '/auth'
     | '/collaborate'
     | '/disclaimer'
@@ -402,7 +436,9 @@ export interface FileRouteTypes {
     | '/vision'
     | '/_authenticated/curation'
     | '/api/ask'
+    | '/atlas/$id'
     | '/mechanism/$id'
+    | '/atlas/'
     | '/mechanism/'
   fileRoutesById: FileRoutesById
 }
@@ -412,6 +448,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AcademyRoute: typeof AcademyRoute
   AccessibilityRoute: typeof AccessibilityRoute
+  AskRoute: typeof AskRoute
   AuthRoute: typeof AuthRoute
   CollaborateRoute: typeof CollaborateRoute
   DisclaimerRoute: typeof DisclaimerRoute
@@ -436,7 +473,9 @@ export interface RootRouteChildren {
   TherapyRoute: typeof TherapyRoute
   VisionRoute: typeof VisionRoute
   ApiAskRoute: typeof ApiAskRoute
+  AtlasIdRoute: typeof AtlasIdRoute
   MechanismIdRoute: typeof MechanismIdRoute
+  AtlasIndexRoute: typeof AtlasIndexRoute
   MechanismIndexRoute: typeof MechanismIndexRoute
 }
 
@@ -475,6 +514,13 @@ declare module '@tanstack/react-router' {
       path: '/accessibility'
       fullPath: '/accessibility'
       preLoaderRoute: typeof AccessibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ask': {
+      id: '/ask'
+      path: '/ask'
+      fullPath: '/ask'
+      preLoaderRoute: typeof AskRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -652,6 +698,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/atlas/': {
+      id: '/atlas/'
+      path: '/atlas'
+      fullPath: '/atlas/'
+      preLoaderRoute: typeof AtlasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atlas/$id': {
+      id: '/atlas/$id'
+      path: '/atlas/$id'
+      fullPath: '/atlas/$id'
+      preLoaderRoute: typeof AtlasIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mechanism/': {
       id: '/mechanism/'
       path: '/mechanism'
@@ -686,6 +746,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AcademyRoute: AcademyRoute,
   AccessibilityRoute: AccessibilityRoute,
+  AskRoute: AskRoute,
   AuthRoute: AuthRoute,
   CollaborateRoute: CollaborateRoute,
   DisclaimerRoute: DisclaimerRoute,
@@ -710,7 +771,9 @@ const rootRouteChildren: RootRouteChildren = {
   TherapyRoute: TherapyRoute,
   VisionRoute: VisionRoute,
   ApiAskRoute: ApiAskRoute,
+  AtlasIdRoute: AtlasIdRoute,
   MechanismIdRoute: MechanismIdRoute,
+  AtlasIndexRoute: AtlasIndexRoute,
   MechanismIndexRoute: MechanismIndexRoute,
 }
 export const routeTree = rootRouteImport

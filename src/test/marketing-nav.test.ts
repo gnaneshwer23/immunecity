@@ -52,7 +52,7 @@ describe("marketing IA wiring", () => {
 
   it("wires Explore / Learn CTAs and footer destinations to known nav or marketing paths", () => {
     expect(EXPLORE_PATH).toBe("/overview");
-    expect(EXPLORE_CTA).toBe("Explore Immune City");
+    expect(EXPLORE_CTA).toBe("Explore the Immune System");
     expect(LEARN_PATH).toBe("/academy");
     expect(LEARN_CTA).toBe("Explore the Academy");
     expect(ATLAS_PATH).toBe("/graph");
