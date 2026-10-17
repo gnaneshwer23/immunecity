@@ -70,6 +70,7 @@ async function parseJson<T>(res: Response): Promise<AuthResult<T>> {
 
 export const neonAuth = {
   async getSession(): Promise<AuthResult<{ session: NeonAuthSession | null; user: NeonAuthUser | null }>> {
+    try {
     const res = await authFetch("/get-session", { method: "GET" });
     const parsed = await parseJson<{ session?: NeonAuthSession | null; user?: NeonAuthUser | null } | null>(res);
     if (parsed.error) return { data: null, error: parsed.error };
@@ -81,6 +82,9 @@ export const neonAuth = {
       },
       error: null,
     };
+    } catch {
+      return { data: null, error: { message: "Sign-in is currently unavailable. The app owner needs to check the sign-in service configuration." } };
+    }
   },
 
   async getUser(): Promise<AuthResult<{ user: NeonAuthUser | null }>> {

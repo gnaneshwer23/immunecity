@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CONTENT } from "@/data/content";
@@ -8,14 +9,7 @@ import { DetailToggle } from "@/components/immune/InlineDetail";
 import TherapyDetail from "@/components/immune/TherapyDetail";
 
 export const Route = createFileRoute("/patient")({
-  head: () => ({
-    meta: [
-      { title: "Patient: precision immunology — Immune Super Intelligence" },
-      { name: "description", content: "Select patient features and see which therapies the mechanism supports or cautions against, rule by rule." },
-      { property: "og:title", content: "Precision immunology — Immune Super Intelligence" },
-      { property: "og:description", content: "Rank immunotherapies against comorbidities, biomarkers and clinical state." },
-    ],
-  }),
+  head: () => seoHead({ title: "Patient: precision immunology — Immune Super Intelligence", description: "Select patient features and see which therapies the mechanism supports or cautions against, rule by rule.", path: "/patient" }),
   component: Patient,
 });
 

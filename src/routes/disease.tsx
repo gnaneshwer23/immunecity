@@ -1,17 +1,11 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CONTENT } from "@/data/content";
 import { PageHead } from "@/components/immune/ui";
 
 export const Route = createFileRoute("/disease")({
-  head: () => ({
-    meta: [
-      { title: "Disease: hypersensitivity and cancer immunity — Immune Super Intelligence" },
-      { name: "description", content: "The four hypersensitivity types and the seven-step cancer immunity cycle, each with its therapeutic lever." },
-      { property: "og:title", content: "When mechanism becomes pathology — Immune Super Intelligence" },
-      { property: "og:description", content: "Hypersensitivity types and the cancer immunity cycle." },
-    ],
-  }),
+  head: () => seoHead({ title: "Disease: hypersensitivity and cancer immunity — Immune Super Intelligence", description: "The four hypersensitivity types and the seven-step cancer immunity cycle, each with its therapeutic lever.", path: "/disease" }),
   component: Disease,
 });
 

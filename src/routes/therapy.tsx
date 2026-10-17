@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { nodesOf, out, human, byId } from "@/lib/immune/engine";
@@ -7,16 +8,7 @@ import PhoneFold from "@/components/immune/PhoneFold";
 import { getLiveTrials, type LiveTrial } from "@/lib/liveData.functions";
 
 export const Route = createFileRoute("/therapy")({
-  head: () => ({
-    meta: [
-      { title: "Therapy: interventions and their targets — Immune Super Intelligence" },
-      { name: "description", content: "Every intervention in the causal graph, what it targets and which trials tested it." },
-      { property: "og:title", content: "Therapy — Immune Super Intelligence" },
-      { property: "og:description", content: "Immune therapies mapped to their mechanisms and pivotal trials." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => seoHead({ title: "Therapy: interventions and their targets — Immune Super Intelligence", description: "Every intervention in the causal graph, what it targets and which trials tested it.", path: "/therapy" }),
   component: Therapy,
 });
 
@@ -50,10 +42,16 @@ function Therapy() {
     return (out[n.id] || []).some((r) => r.relation !== "tested_in" && byId[r.object_id]?.node_type === cls);
   });
   const [live, setLive] = useState<Record<string, LiveTrial>>({});
+  const [liveState, setLiveState] = useState<"loading" | "ready" | "partial" | "unavailable">("loading");
   useEffect(() => {
     let on = true;
     const names = nodesOf("TRIAL").map((t) => t.name);
-    getLiveTrials({ data: { names } }).then((r) => { if (on && r) setLive(r); }).catch(() => {});
+    getLiveTrials({ data: { names } }).then((r) => {
+      if (!on) return;
+      setLive(r);
+      const values = Object.values(r);
+      setLiveState(values.every((t) => t.unavailable) ? "unavailable" : values.some((t) => t.unavailable) ? "partial" : "ready");
+    }).catch(() => { if (on) setLiveState("unavailable"); });
     return () => { on = false; };
   }, []);
   return (
@@ -64,10 +62,11 @@ function Therapy() {
         lede={`${all.length} interventions, each linked to what it acts on and the trials that tested it.`}
         stats={[
           { v: all.length, l: "INTERVENTIONS" },
-          { v: "LIVE", l: "TRIAL STATUS" },
+          { v: liveState === "loading" ? "Loading" : liveState === "unavailable" ? "Unavailable" : liveState === "partial" ? "Partial" : "Updated", l: "TRIAL STATUS" },
         ]}
       />
       <section className="section">
+        {liveState !== "ready" ? <p className="small muted" role="status">{liveState === "loading" ? "Checking ClinicalTrials.gov statuses…" : "Some trial statuses are temporarily unavailable. Curated therapy and trial lessons remain available."}</p> : null}
         <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter therapies…" aria-label="Filter therapies" style={{ maxWidth: 360, marginBottom: 16 }} />
         <div className="therapy-filters">
           <button className={`chip${cls === null ? " on" : ""}`} onClick={() => setCls(null)}>All targets · {all.length}</button>
@@ -105,7 +104,7 @@ function Therapy() {
                         ) : (
                           <span className="live-badge">● {lt.status.replace(/_/g, " ").toLowerCase()}</span>
                         )
-                      ) : null}
+                      ) : lt?.unavailable ? <span className="muted"> · status unavailable</span> : lt ? <span className="muted"> · no registry match</span> : null}
                     </div>
                   );
                 })}</div> : null}

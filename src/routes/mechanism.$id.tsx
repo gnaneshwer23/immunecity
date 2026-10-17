@@ -5,6 +5,7 @@ import { LEGACY } from "@/data/legacy";
 import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 import AcademyTrack from "@/components/immune/AcademyTrack";
+import { seoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/mechanism/$id")({
   loader: ({ params }) => {
@@ -14,17 +15,10 @@ export const Route = createFileRoute("/mechanism/$id")({
   head: ({ params }) => {
     const l = CONTENT.lessons.find((x) => x.id === params.id);
     if (!l) {
-      return { meta: [{ title: "Mechanism not found — Immune Super Intelligence" }, { name: "robots", content: "noindex" }] };
+      return seoHead({ title: "Mechanism not found — Immune Super Intelligence", description: "This mechanism is not available. Browse the existing immune mechanism lessons.", path: `/mechanism/${params.id}`, noIndex: true });
     }
     const title = `${l.title.split(":")[0]} — Mechanism — Immune Super Intelligence`;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: l.question },
-        { property: "og:title", content: title },
-        { property: "og:description", content: l.question },
-      ],
-    };
+    return seoHead({ title, description: l.question, path: `/mechanism/${params.id}` });
   },
   component: Mechanism,
   notFoundComponent: MechanismNotFound,

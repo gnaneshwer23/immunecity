@@ -14,7 +14,7 @@ import appCss from "../styles.css?url";
 import Shell from "../components/immune/Shell";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CANONICAL_URL, PRODUCT_NAME, TAGLINE } from "../lib/brand";
-import { OG_IMAGE_URL, siteJsonLd } from "../lib/seo";
+import { siteJsonLd } from "../lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -89,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "googlebot", content: "index, follow" },
       { name: "author", content: PRODUCT_NAME },
-      { name: "theme-color", content: "#0a1220" },
+      { name: "theme-color", content: "#ffffff" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: CANONICAL_URL },
       { property: "og:site_name", content: PRODUCT_NAME },
@@ -99,8 +99,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Educational immunology platform: mechanisms, curated evidence and scientific AI that teaches with references.",
       },
-      { property: "og:image", content: OG_IMAGE_URL },
-      { property: "og:image:alt", content: `${PRODUCT_NAME} — ${TAGLINE}` },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: `${PRODUCT_NAME} — ${TAGLINE}` },
       {
@@ -108,14 +106,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Educational immunology platform: mechanisms, curated evidence and scientific AI that teaches with references.",
       },
-      { name: "twitter:image", content: OG_IMAGE_URL },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "canonical", href: CANONICAL_URL },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },

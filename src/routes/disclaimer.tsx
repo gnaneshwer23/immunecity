@@ -1,17 +1,10 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { FLAGSHIP_NAME, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/disclaimer")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Educational disclaimer") },
-      {
-        name: "description",
-        content: `${PRODUCT_NAME} is an educational scientific exploration beta — not clinical decision support or patient-specific advice.`,
-      },
-    ],
-  }),
+  head: () => seoHead({ title: pageTitle("Educational disclaimer"), description: `${PRODUCT_NAME} is an educational scientific exploration beta — not clinical decision support or patient-specific advice.`, path: "/disclaimer" }),
   component: Disclaimer,
 });
 

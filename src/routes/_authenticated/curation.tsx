@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -16,6 +17,8 @@ import HealthReport from "@/components/immune/HealthReport";
 import manifest from "@/data/citation-manifest.json";
 import relationshipQueue from "@/data/relationship-evidence-queue.json";
 import { byId, human, inn, out, relId } from "@/lib/immune/engine";
+import { Button } from "@/components/ui/button";
+import { KG } from "@/lib/immune/engine";
 import {
   EXEMPLAR_CURATOR_TARGETS,
   EXEMPLAR_MATURITY_LABEL,
@@ -24,16 +27,7 @@ import {
 } from "@/lib/immune/exemplarPathways";
 
 export const Route = createFileRoute("/_authenticated/curation")({
-  head: () => ({
-    meta: [
-      { title: "Evidence curation — Immune Super Intelligence" },
-      { name: "description", content: "Import citation manifests, cross-check identifiers against PubMed and Crossref, and approve citations." },
-      { property: "og:title", content: "Evidence curation — Immune Super Intelligence" },
-      { property: "og:description", content: "Curate the atlas citation layer." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => seoHead({ title: "Evidence curation — Immune Super Intelligence", description: "Import citation manifests, cross-check identifiers against PubMed and Crossref, and approve citations.", path: "/curation", noIndex: true }),
   component: Curation,
 });
 
@@ -66,6 +60,10 @@ function Curation() {
   const [email, setEmail] = useState<string | null>(null);
   const [rows, setRows] = useState<Rec[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [after, setAfter] = useState<string | undefined>();
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [pageHistory, setPageHistory] = useState<(string | undefined)[]>([]);
   const [msg, setMsg] = useState("");
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [filter, setFilter] = useState({ q: "", status: "all", type: "all", curation: "all" });
@@ -73,19 +71,26 @@ function Curation() {
   const isAdmin = role === "admin";
 
   const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
     try {
-      const data = await listFn();
-      setRows(data as Rec[]);
+      const data = await listFn({ data: { ...filter, after, limit: 50 } });
+      setRows(data.items);
+      setNextCursor(data.nextCursor);
     } catch (e) {
+      setLoadError(true);
       setMsg(e instanceof Error ? e.message : "Failed to load evidence records");
     }
     setLoading(false);
-  }, [listFn]);
+  }, [listFn, filter, after]);
 
   useEffect(() => {
-    roleFn().then((r) => { setRole(r.role); setEmail(r.email); }).catch(() => setRole("reader"));
+    roleFn().then((r) => { setRole(r.role); setEmail(r.email); }).catch(() => { setRole(null); setMsg("Your access level could not be loaded. Editing is unavailable."); });
+  }, [roleFn]);
+  useEffect(() => {
     load();
-  }, [roleFn, load]);
+  }, [load]);
+  const changeFilter = (next: typeof filter) => { setAfter(undefined); setPageHistory([]); setFilter(next); };
 
   const stats = useMemo(() => {
     const c: Record<string, number> = {};
@@ -131,22 +136,22 @@ function Curation() {
     if (!targets.length) { setMsg("Every research-required slot already has suggestions."); return; }
     setProgress({ done: 0, total: targets.length });
     let found = 0;
+    let failed = 0;
     for (let i = 0; i < targets.length; i += 6) {
       try { found += (await suggestFn({ data: { ids: targets.slice(i, i + 6) } })).found; }
-      catch { setMsg("Some suggestions failed — PubMed was unreachable."); }
+      catch { failed += targets.slice(i, i + 6).length; }
       setProgress({ done: Math.min(i + 6, targets.length), total: targets.length });
     }
     setProgress(null);
-    setMsg(`Found candidate sources for ${found} of ${targets.length} slots. Open Details to pick one; nothing is approved automatically.`);
+    setMsg(`Found candidate sources for ${found} of ${targets.length} slots on this page.${failed ? ` ${failed} lookups failed; their sources could not be checked.` : ""} Open Details to pick one; nothing is approved automatically.`);
     await load();
   };
 
   const patch = async (id: string, p: Partial<Pick<Rec, "curation" | "pmid" | "doi" | "notes" | "relationship_id" | "claim_support">>, recheck = false) => {
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...p } : r)));
     try {
       await updateFn({ data: { id, ...p } });
       if (recheck) await checkFn({ data: { ids: [id] } });
-      if (recheck) await load();
+      await load();
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Save failed");
       await load();
@@ -223,7 +228,7 @@ function Curation() {
     (filter.curation === "all" || r.curation === filter.curation) &&
     (!filter.q || `${r.node_name} ${r.evidence_id} ${r.source_ref ?? ""}`.toLowerCase().includes(filter.q.toLowerCase())),
   );
-  const types = [...new Set(rows.map((r) => r.node_type))];
+  const types = [...new Set(KG.nodes.map((r) => r.node_type))];
 
   return (
     <div className="page">
@@ -288,6 +293,7 @@ function Curation() {
         </div>
       ) : null}
 
+      <p className="small muted">Statistics and batch actions apply to the current page of records.</p>
       <div className="ev-stats">
         <div className="ev-stat"><b>{stats.total}</b><span>citation slots</span></div>
         <div className="ev-stat"><b>{stats.withSource}</b><span>name a source</span></div>
@@ -327,16 +333,16 @@ function Curation() {
       {isAdmin ? <HealthReport /> : null}
 
       <div className="ev-filters">
-        <input type="text" placeholder="Search concept, ID or source" value={filter.q} onChange={(e) => setFilter({ ...filter, q: e.target.value })} />
-        <select value={filter.status} onChange={(e) => setFilter({ ...filter, status: e.target.value })}>
+        <input type="text" aria-label="Search evidence records" placeholder="Search concept, ID or source" value={filter.q} onChange={(e) => changeFilter({ ...filter, q: e.target.value })} />
+        <select aria-label="Check result" value={filter.status} onChange={(e) => changeFilter({ ...filter, status: e.target.value })}>
           <option value="all">Any check result</option>
           {Object.entries(STATUS_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <select value={filter.type} onChange={(e) => setFilter({ ...filter, type: e.target.value })}>
+        <select aria-label="Concept type" value={filter.type} onChange={(e) => changeFilter({ ...filter, type: e.target.value })}>
           <option value="all">Any type</option>
           {types.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
-        <select value={filter.curation} onChange={(e) => setFilter({ ...filter, curation: e.target.value })}>
+        <select aria-label="Curation decision" value={filter.curation} onChange={(e) => changeFilter({ ...filter, curation: e.target.value })}>
           <option value="all">Any decision</option>
           <option value="unreviewed">Unreviewed</option>
           <option value="approved">Approved</option>
@@ -345,8 +351,10 @@ function Curation() {
         <span className="xs muted">{shown.length} shown</span>
       </div>
 
-      {loading ? <p className="empty">Loading records…</p> : !rows.length ? (
-        <p className="empty card">No records yet.{isAdmin ? " Import a manifest above to begin." : ""}</p>
+      {loading ? <p className="empty">Loading records…</p> : loadError ? (
+        <p className="callout" role="alert">Evidence records could not be loaded. This is not an empty collection. <Button variant="outline" onClick={load}>Retry</Button></p>
+      ) : !rows.length ? (
+        <p className="empty card">No records match this page or filter.{isAdmin ? " Import a manifest above to begin if the collection is empty." : ""}</p>
       ) : (
         <div className="table-wrap">
           <table className="ev-table">
@@ -384,6 +392,11 @@ function Curation() {
           </table>
         </div>
       )}
+      <div className="row" aria-label="Evidence pages">
+        <Button variant="outline" disabled={loading || !pageHistory.length} onClick={() => { setAfter(pageHistory.at(-1)); setPageHistory((h) => h.slice(0, -1)); }}>Previous page</Button>
+        <span className="small">Page {pageHistory.length + 1}</span>
+        <Button variant="outline" disabled={loading || loadError || !nextCursor} onClick={() => { if (!nextCursor) return; setPageHistory((h) => [...h, after]); setAfter(nextCursor); }}>Next page</Button>
+      </div>
     </div>
   );
 }

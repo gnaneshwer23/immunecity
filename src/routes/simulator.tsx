@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CONTENT } from "@/data/content";
@@ -7,16 +8,7 @@ import InfectionSim from "@/components/immune/InfectionSim";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/simulator")({
-  head: () => ({
-    meta: [
-      { title: "System simulator — Immune Super Intelligence" },
-      { name: "description", content: "Run an infection over 30 days: tune pathogen growth, innate and adaptive strength, and add steroids, antibiotics or checkpoint blockade." },
-      { property: "og:title", content: "System simulator — Immune Super Intelligence" },
-      { property: "og:description", content: "A teaching model of infection, immunity, damage and treatment over time." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => seoHead({ title: "System simulator — Immune Super Intelligence", description: "Run an infection over 30 days: tune pathogen growth, innate and adaptive strength, and add steroids, antibiotics or checkpoint blockade.", path: "/simulator" }),
   component: Simulator,
 });
 

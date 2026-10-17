@@ -183,7 +183,7 @@ export default function AskAtlas() {
         <div>
           <h3>Ask Immune Super Intelligence</h3>
           <p className="xs muted">Graph-retrieved teaching · educational beta · cites when reviewed · not fully evidence-grounded AI</p>
-          <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Educating with references — not patient-specific advice. Nothing is stored.</p>
+          <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Not patient-specific advice. Questions are sent to the configured AI service; see our <Link to="/privacy">privacy notice</Link>.</p>
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>
@@ -271,6 +271,7 @@ export default function AskAtlas() {
           <button type="submit" className="btn sm primary" disabled={!input.trim()} aria-label="Send question"><Send size={14} /> Ask</button>
         )}
       </form>
+      {pick ? <Inspector pick={pick} onClose={() => setPick(null)} /> : null}
     </div>
   );
 }

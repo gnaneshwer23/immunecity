@@ -82,7 +82,7 @@ function PillarMenu({ label, items, pathname, onNavigate }: {
 
 function SiteFooter() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" role="contentinfo">
       <div className="sf-grid sf-grid-marketing">
         <div className="sf-brand">
           <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span></Link>
@@ -223,8 +223,6 @@ export default function Shell({ children }: { children: ReactNode }) {
   const [askOpen, setAskOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const marketing = isMarketingPath(pathname);
-  /** Midnight hero chrome on marketing routes (matches home + deep page heroes). */
-  const darkMarketingChrome = marketing;
   const compactNavId = useId();
   const closeCompact = () => setOpen(false);
 
@@ -243,7 +241,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
-      <header className={`topbar${darkMarketingChrome ? " home-topbar" : ""} marketing-topbar`}>
+      <header className="topbar marketing-topbar">
         {(
           <Button
             variant="ghost"

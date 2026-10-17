@@ -4,8 +4,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-export interface LiveTrial { name: string; nctId: string | null; phase: string | null; status: string | null; url: string | null }
-export interface LiveProtein { gene: string; protein: string | null; accession: string | null; size: number | null; url: string | null }
+export interface LiveTrial { name: string; nctId: string | null; phase: string | null; status: string | null; url: string | null; unavailable?: boolean }
+export interface LiveProtein { gene: string; protein: string | null; accession: string | null; size: number | null; url: string | null; unavailable?: boolean }
 
 const cache = new Map<string, { at: number; value: unknown }>();
 const TTL = 6 * 60 * 60 * 1000; // 6 h
@@ -29,7 +29,7 @@ async function fetchTrial(name: string): Promise<LiveTrial> {
   return (
     (await cached(`trial:${name}`, async () => {
       const url = `${CTG}?query.term=${encodeURIComponent(name)}&pageSize=1&fields=NCTId,BriefTitle,Phase,OverallStatus`;
-      const res = await fetch(url, { headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" } });
+      const res = await fetch(url, { headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" }, signal: AbortSignal.timeout(5000) });
       if (!res.ok) throw new Error(`ClinicalTrials.gov ${res.status}`);
       const j: any = await res.json();
       const s = j.studies?.[0];
@@ -43,7 +43,7 @@ async function fetchTrial(name: string): Promise<LiveTrial> {
         status: p.statusModule?.overallStatus ?? null,
         url: id ? `https://clinicaltrials.gov/study/${id}` : null,
       } as LiveTrial;
-    })) ?? empty
+    })) ?? { ...empty, unavailable: true }
   );
 }
 
@@ -54,6 +54,7 @@ async function fetchProtein(gene: string): Promise<LiveProtein> {
       const q = encodeURIComponent(`gene_exact:${gene} AND organism_id:9606 AND reviewed:true`);
       const res = await fetch(`${UNIPROT}?query=${q}&size=1&fields=accession,protein_name,gene_names,length`, {
         headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" },
+        signal: AbortSignal.timeout(5000),
       });
       if (!res.ok) throw new Error(`UniProt ${res.status}`);
       const j: any = await res.json();
@@ -67,7 +68,7 @@ async function fetchProtein(gene: string): Promise<LiveProtein> {
         size: e.sequence?.length ?? null,
         url: acc ? `https://www.uniprot.org/uniprotkb/${acc}` : null,
       } as LiveProtein;
-    })) ?? empty
+    })) ?? { ...empty, unavailable: true }
   );
 }
 
@@ -75,7 +76,10 @@ export const getLiveTrials = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ names: z.array(z.string().max(80)).max(30) }).parse(d))
   .handler(async ({ data }) => {
     const out: Record<string, LiveTrial> = {};
-    for (const name of data.names) out[name] = await fetchTrial(name);
+    for (let i = 0; i < data.names.length; i += 6) {
+      const batch = await Promise.all(data.names.slice(i, i + 6).map(fetchTrial));
+      batch.forEach((trial) => { out[trial.name] = trial; });
+    }
     return out;
   });
 

@@ -13,6 +13,9 @@
 - User-facing product name is **Immune Super Intelligence** (`src/lib/brand.ts`, canonical https://www.immune-super-intelligence.co.uk/). Internal paths may still say `immune-city`. Brand marks live in `public/favicon.svg`, `public/logo.svg`, and the Shell logo.
 
 ## Architecture rules
+- Leaf content routes own canonical and indexing metadata through `seoHead`; the root has no canonical; why: shared root metadata must not canonicalize every page to the homepage.
+- Evidence curation reads use bounded keyset pages with server-side filters; why: evidence growth must not force the browser to load the entire table.
+- App chrome, reading surfaces and scientific visualizations share semantic theme tokens in `src/biotech.css`; why: a theme change must reach every page and tool without isolated color overrides.
 - Original atlas styling lives in `src/atlas.css`, with the editorial visual layer in `src/biotech.css` and tokens scoped to `html[data-theme]`; why: preserve scientific visualization classes while sharing the refreshed theme across pages.
 - Graph data and reasoning (`src/lib/immune/engine.ts`) and page content (`src/data/*`) are plain browser-safe modules; why: every page reads them synchronously during SSR.
 - The D3 graph (`GraphView`) is loaded via `React.lazy` behind `<ClientOnly>`; why: d3 touches the DOM and must not run during SSR.

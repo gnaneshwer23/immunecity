@@ -59,7 +59,7 @@ function HomeCausalPathway() {
     <div className="home-pathway">
       <div className="bio-section-heading">
         <div>
-          <span className="bio-section-number">LIVE GRAPH PATHWAY</span>
+          <span className="bio-section-number">CURATED GRAPH PATHWAY</span>
           <h2 id="demo-heading">{HOME_EXEMPLAR.title}</h2>
         </div>
         <p>

@@ -188,7 +188,7 @@ export default function ScientificWorkbench({
   return (
     <div className="scientific-workbench">
       <p className="lede">
-        Guided research flow (PRD FR-038–040): question → evidence → mechanism → hypothesis → experiment → review.
+        Research investigation: question → evidence → mechanism → hypothesis → experiment → review.
         Every artefact is labelled <CandidateBadge />. Nothing auto-promotes into the curated graph or marks a claim
         experimentally supported.
       </p>

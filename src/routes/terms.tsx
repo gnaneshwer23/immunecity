@@ -1,17 +1,10 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { FLAGSHIP_NAME, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/terms")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Terms") },
-      {
-        name: "description",
-        content: `Terms of use for the ${PRODUCT_NAME} educational beta and ${FLAGSHIP_NAME} atlas.`,
-      },
-    ],
-  }),
+  head: () => seoHead({ title: pageTitle("Terms"), description: `Terms of use for the ${PRODUCT_NAME} educational beta and ${FLAGSHIP_NAME} atlas.`, path: "/terms" }),
   component: Terms,
 });
 

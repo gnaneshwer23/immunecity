@@ -1,22 +1,15 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { neonAuth } from "@/integrations/neon/auth-client";
 import { PageHead } from "@/components/immune/ui";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: zodValidator(z.object({ redirect: fallback(z.string(), "/curation").default("/curation") })),
-  head: () => ({
-    meta: [
-      { title: "Sign in — Immune Super Intelligence" },
-      { name: "description", content: "Sign in to curate the Immune Super Intelligence citation layer." },
-      { property: "og:title", content: "Sign in — Immune Super Intelligence" },
-      { property: "og:description", content: "Sign in to curate the atlas citation layer." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => seoHead({ title: "Sign in — Immune Super Intelligence", description: "Sign in to curate the Immune Super Intelligence citation layer.", path: "/auth", noIndex: true }),
   component: AuthPage,
 });
 
@@ -30,10 +23,13 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [available, setAvailable] = useState(false);
   const target = safePath(redirect);
 
   useEffect(() => {
-    neonAuth.getUser().then(({ data }) => {
+    neonAuth.getUser().then(({ data, error }) => {
+      setAvailable(!error);
+      if (error) setMsg(error.message);
       if (data?.user) navigate({ to: target });
     });
   }, [navigate, target]);
@@ -42,6 +38,7 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     setMsg("");
+    try {
     if (mode === "in") {
       const { error } = await neonAuth.signInEmail(email, password);
       if (error) setMsg(error.message);
@@ -52,18 +49,27 @@ function AuthPage() {
       else if (!data?.session && !data?.user) setMsg("Account created. Sign in to continue.");
       else navigate({ to: target });
     }
-    setBusy(false);
+    } catch {
+      setMsg("Sign-in could not be completed. Please try again later.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const google = async () => {
     setBusy(true);
     setMsg("");
+    try {
     sessionStorage.setItem("postAuth", target);
     const { error } = await neonAuth.signInWithGoogle(
       window.location.origin + "/auth?redirect=" + encodeURIComponent(target),
     );
     if (error) {
       setMsg(error.message);
+      setBusy(false);
+    }
+    } catch {
+      setMsg("Google sign-in is currently unavailable. Please try again later.");
       setBusy(false);
     }
   };
@@ -76,9 +82,9 @@ function AuthPage() {
         lede="Curation is open to signed-in readers. Editing rights are granted by the team, not on sign-up."
       />
       <div className="card">
-        <button className="btn" style={{ width: "100%", justifyContent: "center" }} onClick={google}>
+        <Button variant="outline" className="w-full" disabled={busy || !available} onClick={google}>
           Continue with Google
-        </button>
+        </Button>
         <p className="xs muted" style={{ textAlign: "center", margin: "14px 0" }}>
           or with email
         </p>
@@ -97,16 +103,16 @@ function AuthPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
-          <button className="btn primary" disabled={busy} type="submit">
+          <Button disabled={busy || !available} type="submit">
             {mode === "in" ? "Sign in" : "Create account"}
-          </button>
+          </Button>
         </form>
-        {msg ? <p className="callout" style={{ marginTop: 12 }}>{msg}</p> : null}
+        {msg ? <p className="callout" role="status" style={{ marginTop: 12 }}>{msg}</p> : null}
         <p className="small" style={{ marginTop: 14 }}>
           {mode === "in" ? "No account yet? " : "Already registered? "}
-          <button className="nodelink" onClick={() => setMode(mode === "in" ? "up" : "in")}>
+          <Button variant="link" disabled={busy || !available} onClick={() => setMode(mode === "in" ? "up" : "in")}>
             {mode === "in" ? "Create one" : "Sign in"}
-          </button>
+          </Button>
         </p>
       </div>
     </div>

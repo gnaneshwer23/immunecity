@@ -1,8 +1,17 @@
 # Roadmap
 
+- [x] Fix confirmed code-level production-audit failures (lookup, accessibility, metadata, error states, bounded pagination, and stale navigation assertions)
+- [x] Re-audit public journeys after fixes: 60 page checks, zero axe/overflow/page errors; 140 unit tests; report isi-production-re-audit.md
+- [ ] Verify authenticated curation, real evidence pagination, approved-source read-back and evidence-grounded Ask — blocked by existing auth/database configuration
+- [ ] Owner privacy/operator and scientific claim review — requires operator and expert confirmation
+- [ ] Run repository JavaScript E2E suite — blocked by unavailable runner browser; equivalent Python Playwright journeys passed
+
+- [x] Refresh the entire app with a light professional theme and consistent page layouts
+- [x] Verify light surfaces, scientific tools, navigation, and narrow-screen layouts (24 pages at desktop and phone widths; existing sign-in configuration blocker unchanged)
+
 - [x] Launch audit: all pages and core interactions
 - [x] Resolve vulnerable dependencies and rerun security checks
-- [x] Record launch limitations and readiness: public workflows pass; curation is empty; approval writes not exercised; expert review and AI spending safeguards remain owner launch considerations
+- [x] Record launch limitations: public educational workflows pass; evidence service is unavailable (not confirmed empty); authenticated approval writes unverified; owner and scientific review remain required
 
 - [x] Replace header search with a unified Ask chatbot and instant concept lookup
 - [x] Verify assistant opening, concept inspection, graph navigation, and header layout

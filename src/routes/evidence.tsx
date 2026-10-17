@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CONTENT } from "@/data/content";
@@ -8,16 +9,7 @@ import DomainCoveragePanel from "@/components/immune/DomainCoveragePanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 
 export const Route = createFileRoute("/evidence")({
-  head: () => ({
-    meta: [
-      { title: "Evidence: trials as experiments — Immune Super Intelligence" },
-      { name: "description", content: "Landmark immunology trials as hypothesis tests, plus honest claim-level evidence coverage. Educational beta — most runtime links are not yet claim-approved." },
-      { property: "og:title", content: "Trials as experiments — Immune Super Intelligence" },
-      { property: "og:description", content: "Trials as experiments and live claim coverage. Sparse approved relationship cites; educational teaching with references." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => seoHead({ title: "Evidence: trials as experiments — Immune Super Intelligence", description: "Landmark immunology trials as hypothesis tests, plus honest claim-level evidence coverage. Educational beta — most runtime links are not yet claim-approved.", path: "/evidence" }),
   component: Evidence,
 });
 
@@ -55,7 +47,7 @@ function Evidence() {
       />
       <div className="row" style={{ marginBottom: 24 }}>
         <Link className="btn" to="/curation">Citation curation</Link>
-        <span className="xs muted">Neon Auth curation: import a citation manifest, cross-check identifiers against PubMed and Crossref, and approve claim-linked records. Admin is provisioned explicitly.</span>
+        <span className="xs muted">Signed-in readers can browse citations. Approved curators can import references, check them against PubMed and Crossref, and review support for individual claims.</span>
       </div>
       <nav className="page-jump" aria-label="On this page">
         <a href="#coverage">Coverage</a>

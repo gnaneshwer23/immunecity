@@ -267,7 +267,7 @@ function Overview() {
               <p>{selected.desc}</p>
               <div
                 className="mkt-chain"
-                role="img"
+                role="group"
                 aria-label={`Causal chain: ${selected.chain.map((id: string) => byId[id]?.name ?? id).join(" leads to ")}`}
               >
                 {selected.chain.map((id: string, i: number) => {

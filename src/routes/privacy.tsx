@@ -1,17 +1,10 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { CONTACT_EMAIL, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Privacy") },
-      {
-        name: "description",
-        content: `Privacy notice for ${PRODUCT_NAME}: what we collect for the educational beta and collaboration enquiries.`,
-      },
-    ],
-  }),
+  head: () => seoHead({ title: pageTitle("Privacy"), description: `Privacy notice for ${PRODUCT_NAME}: what we collect for the educational beta and collaboration enquiries.`, path: "/privacy" }),
   component: Privacy,
 });
 
@@ -28,11 +21,12 @@ function Privacy() {
         <ul>
           <li>
             <b>Account and curation (admins).</b> If you sign in for citation curation, authentication and role data are
-            handled by the configured auth provider; curation writes are admin-gated.
+            handled by Neon Auth; curation records and role data use the configured Neon database. Curation writes are admin-gated.
           </li>
           <li>
-            <b>Ask usage.</b> Questions may be processed by server-side Ask endpoints subject to rate limits and
-            guardrails. Do not submit patient-identifiable information.
+            <b>Ask usage.</b> Questions and retrieved graph context are sent to the configured AI service: Lovable's AI
+            gateway or OpenAI. The app does not save chat history to its evidence database. Provider and hosting logs
+            may have separate retention policies; no promise of zero retention is made. Do not submit patient-identifiable information.
           </li>
           <li>
             <b>Collaborate form.</b> Enquiries open your email client to {CONTACT_EMAIL}; we process what you choose to
@@ -43,6 +37,14 @@ function Privacy() {
             and secure the service.
           </li>
         </ul>
+      </section>
+      <section className="section">
+        <h2>Browser storage and external services</h2>
+        <p>Research drafts saved by you and Academy progress remain in this browser's storage until cleared.
+          Fonts are requested from Fontshare and Google Fonts; those services receive standard request metadata.
+          Protein and trial lookups use UniProt and ClinicalTrials.gov. Hosting and optional preview error reporting use Lovable.</p>
+        <p>For details of the responsible operator, applicable data rights and retention periods, contact {CONTACT_EMAIL}.
+          These operational details require confirmation by the operator before a broader production launch.</p>
       </section>
       <section className="section">
         <h2>What we ask you not to send</h2>

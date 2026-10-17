@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import { z } from "zod";
 import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { getDb, getSqlClient } from "@/lib/db.server";
@@ -7,6 +7,7 @@ import { evidenceAuditEvents, evidenceRecords } from "@/lib/db/schema.server";
 import { edgeByRel } from "./immune/engine";
 import { computeEvidenceUpdate } from "./immune/evidenceInvariants";
 import { checkRecord, suggestFor, type CheckInput } from "./evidenceCheck";
+import { evidencePage, evidencePageSchema } from "./immune/evidencePagination";
 
 function auditSnapshot(r: typeof evidenceRecords.$inferSelect) {
   return {
@@ -52,15 +53,15 @@ function rowToClient(r: typeof evidenceRecords.$inferSelect) {
     manifest_status: r.manifestStatus,
     check_status: r.checkStatus,
     check_detail: r.checkDetail as Record<string, string | number | boolean | null> | null,
-    checked_at: r.checkedAt?.toISOString?.() ?? r.checkedAt,
+    checked_at: r.checkedAt?.toISOString() ?? null,
     curation: r.curation,
     notes: r.notes,
-    created_at: r.createdAt?.toISOString?.() ?? r.createdAt,
-    updated_at: r.updatedAt?.toISOString?.() ?? r.updatedAt,
+    created_at: r.createdAt.toISOString(),
+    updated_at: r.updatedAt.toISOString(),
     relationship_id: r.relationshipId,
     claim_support: r.claimSupport,
     reviewed_by: r.reviewedBy,
-    reviewed_at: r.reviewedAt?.toISOString?.() ?? r.reviewedAt,
+    reviewed_at: r.reviewedAt?.toISOString() ?? null,
   };
 }
 
@@ -71,13 +72,22 @@ export const getMyRole = createServerFn({ method: "GET" })
     return { role: rows[0]?.ok ? "admin" : "reader", email: context.email ?? null };
   });
 
-/** Signed-in readers can list all evidence rows (admin gates writes separately). */
+/** Signed-in readers browse bounded pages (admin gates writes separately). */
 export const listEvidenceRecords = createServerFn({ method: "GET" })
   .middleware([requireNeonAuth])
-  .handler(async () => {
+  .inputValidator((d: unknown) => evidencePageSchema.parse(d))
+  .handler(async ({ data }) => {
     const db = getDb();
-    const rows = await db.select().from(evidenceRecords).orderBy(evidenceRecords.evidenceId);
-    return rows.map(rowToClient);
+    const term = `%${data.q.replace(/[\\%_]/g, "\\$&")}%`;
+    const rows = await db.select().from(evidenceRecords).where(and(
+      data.after ? gt(evidenceRecords.evidenceId, data.after) : undefined,
+      data.status !== "all" ? eq(evidenceRecords.checkStatus, data.status) : undefined,
+      data.type !== "all" ? eq(evidenceRecords.nodeType, data.type) : undefined,
+      data.curation !== "all" ? eq(evidenceRecords.curation, data.curation) : undefined,
+      data.q ? or(ilike(evidenceRecords.nodeName, term), ilike(evidenceRecords.evidenceId, term), ilike(evidenceRecords.sourceRef, term)) : undefined,
+    )).orderBy(evidenceRecords.evidenceId).limit(data.limit + 1);
+    const page = evidencePage(rows, data.limit);
+    return { items: page.items.map(rowToClient), nextCursor: page.nextCursor };
   });
 
 const pmidRe = /PMID[:\s]*(\d+)/i;

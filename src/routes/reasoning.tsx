@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useQuery } from "@tanstack/react-query";
@@ -22,16 +23,7 @@ import { AiPrinciples, CapabilityRegistry, ResearchWorkspace } from "@/component
 
 export const Route = createFileRoute("/reasoning")({
   validateSearch: zodValidator(z.object({ from: fallback(z.string(), "").default("") })),
-  head: () => ({
-    meta: [
-      { title: "Reasoning & Scientific AI — Immune Super Intelligence" },
-      { name: "description", content: "Ask with graph context, see exactly how the AI retrieves evidence, trace paths and run start–perturbation–outcome reasoning. Educational beta — teaching with references." },
-      { property: "og:title", content: "Reasoning & Scientific AI — Immune Super Intelligence" },
-      { property: "og:description", content: "One place for Ask, how the AI works, exemplar pathways and the path tracer. Reviewed cites when available." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () => seoHead({ title: "Reasoning & Scientific AI — Immune Super Intelligence", description: "Ask with graph context, see exactly how the AI retrieves evidence, trace paths and run start–perturbation–outcome reasoning. Educational beta — teaching with references.", path: "/reasoning" }),
   component: Reasoning,
 });
 

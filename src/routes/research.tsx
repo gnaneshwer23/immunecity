@@ -75,7 +75,7 @@ function Research() {
       <section className="section" id="workbench">
         <h2>Workbench</h2>
         <p className="lede">
-          Phase E — candidates only. Curation queue handoff is a human-gated export stub (wired=false); no silent KG write-back.
+          Candidate investigations only. Export for human review; nothing is automatically published to the knowledge graph.
         </p>
         <ScientificWorkbench
           pendingLitImport={litHandoff}

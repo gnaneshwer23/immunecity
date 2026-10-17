@@ -41,7 +41,6 @@ import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticat
 import { Route as ApiAskRouteImport } from './routes/api/ask'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
 import { Route as MechanismIdRouteImport } from './routes/mechanism.$id'
-import { Route as ApiPublicGithubSyncRouteImport } from './routes/api/public/github-sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -202,11 +201,6 @@ const MechanismIdRoute = MechanismIdRouteImport.update({
   path: '/mechanism/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicGithubSyncRoute = ApiPublicGithubSyncRouteImport.update({
-  id: '/api/public/github-sync',
-  path: '/api/public/github-sync',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -240,7 +234,6 @@ export interface FileRoutesByFullPath {
   '/api/ask': typeof ApiAskRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/mechanism/': typeof MechanismIndexRoute
-  '/api/public/github-sync': typeof ApiPublicGithubSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -274,7 +267,6 @@ export interface FileRoutesByTo {
   '/api/ask': typeof ApiAskRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/mechanism': typeof MechanismIndexRoute
-  '/api/public/github-sync': typeof ApiPublicGithubSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -310,7 +302,6 @@ export interface FileRoutesById {
   '/api/ask': typeof ApiAskRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/mechanism/': typeof MechanismIndexRoute
-  '/api/public/github-sync': typeof ApiPublicGithubSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -346,7 +337,6 @@ export interface FileRouteTypes {
     | '/api/ask'
     | '/mechanism/$id'
     | '/mechanism/'
-    | '/api/public/github-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -380,7 +370,6 @@ export interface FileRouteTypes {
     | '/api/ask'
     | '/mechanism/$id'
     | '/mechanism'
-    | '/api/public/github-sync'
   id:
     | '__root__'
     | '/'
@@ -415,7 +404,6 @@ export interface FileRouteTypes {
     | '/api/ask'
     | '/mechanism/$id'
     | '/mechanism/'
-    | '/api/public/github-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -450,7 +438,6 @@ export interface RootRouteChildren {
   ApiAskRoute: typeof ApiAskRoute
   MechanismIdRoute: typeof MechanismIdRoute
   MechanismIndexRoute: typeof MechanismIndexRoute
-  ApiPublicGithubSyncRoute: typeof ApiPublicGithubSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -679,13 +666,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MechanismIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/github-sync': {
-      id: '/api/public/github-sync'
-      path: '/api/public/github-sync'
-      fullPath: '/api/public/github-sync'
-      preLoaderRoute: typeof ApiPublicGithubSyncRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -732,7 +712,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAskRoute: ApiAskRoute,
   MechanismIdRoute: MechanismIdRoute,
   MechanismIndexRoute: MechanismIndexRoute,
-  ApiPublicGithubSyncRoute: ApiPublicGithubSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,17 +1,10 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
 import { CONTACT_EMAIL, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/accessibility")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Accessibility") },
-      {
-        name: "description",
-        content: `Accessibility aims for ${PRODUCT_NAME}: WCAG 2.2 AA as a design target, with known limits for complex graph visuals.`,
-      },
-    ],
-  }),
+  head: () => seoHead({ title: pageTitle("Accessibility"), description: `Accessibility aims for ${PRODUCT_NAME}: WCAG 2.2 AA as a design target, with known limits for complex graph visuals.`, path: "/accessibility" }),
   component: Accessibility,
 });
 

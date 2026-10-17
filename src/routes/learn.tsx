@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CONTENT } from "@/data/content";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -17,14 +18,7 @@ const CELL_GENE: Record<string, string> = {
 
 export const Route = createFileRoute("/learn")({
   validateSearch: zodValidator(z.object({ cell: fallback(z.string(), "").default("") })),
-  head: () => ({
-    meta: [
-      { title: "Cell atlas — Immune Super Intelligence" },
-      { name: "description", content: "The immune residents: metaphors, mechanistic detail, clinical relevance and where each metaphor breaks." },
-      { property: "og:title", content: "Cell atlas — Immune Super Intelligence" },
-      { property: "og:description", content: "Meet the immune residents and where their metaphors stop being true." },
-    ],
-  }),
+  head: () => seoHead({ title: "Cell atlas — Immune Super Intelligence", description: "The immune residents: metaphors, mechanistic detail, clinical relevance and where each metaphor breaks.", path: "/learn" }),
   component: Learn,
 });
 
@@ -41,10 +35,17 @@ function CellCard({ c, expanded, onToggle, focusNodes }: { c: Cell; expanded: bo
   const gene = CELL_GENE[c.id];
   const lessons = CONTENT.lessons.filter((l) => ((l.cells || []) as string[]).includes(c.id));
   const [protein, setProtein] = useState<LiveProtein | null>(null);
+  const [proteinState, setProteinState] = useState<"idle" | "loading" | "ready" | "empty" | "unavailable">("idle");
   useEffect(() => {
     if (!expanded || !gene) return;
     let on = true;
-    getLiveProteins({ data: { genes: [gene] } }).then((r) => { if (on && r?.[gene]?.protein) setProtein(r[gene]); }).catch(() => {});
+    setProteinState("loading");
+    getLiveProteins({ data: { genes: [gene] } }).then((r) => {
+      if (!on) return;
+      const result = r[gene];
+      setProtein(result ?? null);
+      setProteinState(result?.unavailable ? "unavailable" : result?.protein ? "ready" : "empty");
+    }).catch(() => { if (on) setProteinState("unavailable"); });
     return () => { on = false; };
   }, [expanded, gene]);
   return (
@@ -87,7 +88,7 @@ function CellCard({ c, expanded, onToggle, focusNodes }: { c: Cell; expanded: bo
             </div>
             {mapped.length ? (
               <p className="small" style={{ marginTop: 8 }}>
-                <Link to="/graph" search={{ focus: mapped[0]! }}>Trace {c.name} in the knowledge graph →</Link>
+                <Link to="/graph" search={{ focus: mapped[0] ?? "" }}>Trace {c.name} in the knowledge graph →</Link>
               </p>
             ) : null}
             <h4>Mechanisms featuring this cell</h4>
@@ -109,6 +110,7 @@ function CellCard({ c, expanded, onToggle, focusNodes }: { c: Cell; expanded: bo
                 </p>
               </>
             ) : null}
+            {gene && proteinState !== "ready" ? <p className="small muted" role="status">{proteinState === "loading" ? "Loading UniProt protein details…" : proteinState === "unavailable" ? "UniProt protein details are temporarily unavailable. The teaching entry remains available." : proteinState === "empty" ? "No reviewed UniProt protein match was found for this marker." : ""}</p> : null}
           </div>
         </div>
       ) : null}

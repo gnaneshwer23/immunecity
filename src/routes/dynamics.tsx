@@ -1,3 +1,4 @@
+import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CONTENT } from "@/data/content";
@@ -5,14 +6,7 @@ import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 
 export const Route = createFileRoute("/dynamics")({
-  head: () => ({
-    meta: [
-      { title: "Dynamics: tissues, metabolism, genetics — Immune Super Intelligence" },
-      { name: "description", content: "Tissue immunology, immunometabolism and immunogenetics: where immunity happens and what it costs." },
-      { property: "og:title", content: "Dynamics — Immune Super Intelligence" },
-      { property: "og:description", content: "Where immunity happens, what fuel it runs on, and which alleles shift the threshold." },
-    ],
-  }),
+  head: () => seoHead({ title: "Dynamics: tissues, metabolism, genetics — Immune Super Intelligence", description: "Tissue immunology, immunometabolism and immunogenetics: where immunity happens and what it costs.", path: "/dynamics" }),
   component: Dynamics,
 });
 

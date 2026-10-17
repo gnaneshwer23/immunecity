@@ -23,7 +23,7 @@ export function seoHead({
   title,
   description,
   path = "/",
-  image = OG_IMAGE_URL,
+  image,
   type = "website",
   noIndex = false,
 }: SeoInput) {
@@ -44,12 +44,14 @@ export function seoHead({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:url", content: url },
-      { property: "og:image", content: image },
-      { property: "og:image:alt", content: `${PRODUCT_NAME} — ${TAGLINE}` },
+      ...(image?.startsWith("https://") ? [
+        { property: "og:image", content: image },
+        { property: "og:image:alt", content: `${PRODUCT_NAME} — ${TAGLINE}` },
+        { name: "twitter:image", content: image },
+      ] : []),
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
-      { name: "twitter:image", content: image },
     ],
     links: [{ rel: "canonical", href: url }],
   };
