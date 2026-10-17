@@ -1,6 +1,7 @@
 /* Lightweight smoke runner when vitest hangs in this environment. */
 import {
   ASK_DISABLED_MESSAGE,
+  attachProvisionalLiterature,
   classifyAskQuery,
   prepareAsk,
   validateAnswerCitations,
@@ -251,7 +252,33 @@ for (const c of SCIENTIFIC_EVAL_SET) {
       const p = EXEMPLAR_PATHWAYS.find((x) => x.id === c.pathwayId)!;
       check(c.id, reportExemplar(p).connected === c.expectConnected);
     } else if (c.kind === "citation-validation") {
-      check(c.id, validateAnswerCitations(c.answerText, graphContext(c.question)).ok === c.expectOk);
+      let g = graphContext(c.question);
+      if (c.provisionalPmids?.length) {
+        g = attachProvisionalLiterature(
+          g,
+          c.provisionalPmids.map((pmid) => ({
+            pmid,
+            doi: null,
+            title: "Fixture",
+            journal: "Fixture",
+            year: "2020",
+            source: "PubMed" as const,
+            url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+          })),
+        );
+      }
+      check(c.id, validateAnswerCitations(c.answerText, g).ok === c.expectOk);
+    } else if (c.kind === "provisional-labelling") {
+      const cls = classifyAskQuery(c.question);
+      check(c.id, cls === "source_lookup" || graphContext(c.question, cls).coverage.matched);
+    } else if (c.kind === "multi-concept") {
+      const gg = graphContext(c.question);
+      check(
+        c.id,
+        gg.coverage.matched &&
+          c.mustRetrieveNodeIds.every((id) => gg.nodeIds.includes(id)) &&
+          (gg.links.length > 0 || gg.chains.length > 0),
+      );
     }
   } catch (e) {
     failed++;

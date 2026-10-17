@@ -306,15 +306,15 @@ export default function Shell({ children }: { children: ReactNode }) {
         )}
       {showAskFab ? (
         <>
-          <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? "Close Ask chatbot" : "Open Ask chatbot"} title={ASK_NAME}>
+          <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? `Close ${ASK_NAME}` : `Open ${ASK_NAME}`} title={ASK_NAME}>
             {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask</span>
           </Button>
           <Dialog modal={false} open={askOpen} onOpenChange={setAskOpen}>
             <DialogPortal>
             <DialogPrimitive.Content className="global-ask-dialog corner-ask-dialog" onInteractOutside={(e) => e.preventDefault()}>
               <DialogTitle className="sr-only">{ASK_NAME}</DialogTitle>
-              <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references, not patient-specific advice.</DialogDescription>
-              <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label="Minimize chatbot" title="Minimize chatbot"><X size={18} /></Button>
+              <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references — not fully evidence-grounded AI, not patient-specific advice.</DialogDescription>
+              <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label={`Minimize ${ASK_NAME}`} title={`Minimize ${ASK_NAME}`}><X size={18} /></Button>
               <AskAtlas showFullPageLink />
             </DialogPrimitive.Content>
             </DialogPortal>

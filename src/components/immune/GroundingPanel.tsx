@@ -58,6 +58,9 @@ export default function GroundingPanel({ grounding }: { grounding: AskGrounding 
 
   const chain = grounding.chains[0];
   const topLinks = grounding.links.slice(0, 6);
+  const provisional = grounding.provisionalLiterature ?? [];
+  const reviewed = grounding.coverage.reviewedEvidenceCount ?? 0;
+  const missing = grounding.coverage.missingSupportCount ?? 0;
 
   return (
     <aside className="grounding-panel" aria-label="Graph grounding used for this answer">
@@ -68,10 +71,17 @@ export default function GroundingPanel({ grounding }: { grounding: AskGrounding 
       <div className="grounding-metrics" aria-label="Evidence coverage">
         <span><b>{classLabel}</b> class</span>
         <span><b>{grounding.coverage.establishedCount}</b> established</span>
+        <span><b>{grounding.coverage.evidenceSupportedCount ?? 0}</b> evidence-supported</span>
         <span><b>{grounding.coverage.emergingCount}</b> emerging</span>
         <span><b>{grounding.coverage.draftCount}</b> draft</span>
-        <span><b>{grounding.coverage.missingSupportCount}</b> missing support</span>
+        <span><b>{missing}</b> missing support</span>
+        <span><b>{reviewed}</b> reviewed cites</span>
+        <span><b>{grounding.coverage.provisionalLiteratureCount ?? provisional.length}</b> provisional lit</span>
       </div>
+      <p className="xs muted">
+        Reviewed = Gate C approved Neon rows. Provisional = unreviewed PubMed/Europe PMC — never auto-approved.
+        Ask Immune is not fully evidence-grounded AI.
+      </p>
       <p className="xs muted">Trace · prompt {grounding.trace.promptVersion} · graph {grounding.trace.graphVersion} · {grounding.trace.graphSnapshot}</p>
 
       <div className="grounding-label">Concepts</div>
@@ -134,11 +144,34 @@ export default function GroundingPanel({ grounding }: { grounding: AskGrounding 
                 <span>{s?.name}</span> <em>{human(l.relation)}</em> <span>{o?.name}</span>
               </button>
               <span className={`evidence-tier ${TIER_CLASS[l.tier]}`}>{TIER_LABEL[l.tier]}</span>
+              {l.reviewedEvidenceCount > 0 ? (
+                <span className="xs muted">{l.reviewedEvidenceCount} reviewed</span>
+              ) : (
+                <span className={`evidence-tier ${TIER_CLASS["missing-support"]}`}>No reviewed cite</span>
+              )}
               {edge ? <EdgeReference edge={edge} /> : null}
             </li>
           );
         })}
       </ul>
+
+      {provisional.length > 0 ? (
+        <>
+          <div className="grounding-label">Unreviewed literature (provisional)</div>
+          <ul className="grounding-links" aria-label="Provisional unreviewed literature">
+            {provisional.map((p) => (
+              <li key={p.pmid ?? p.doi ?? p.title}>
+                <a href={p.url} target="_blank" rel="noreferrer">
+                  {p.pmid ? `PMID ${p.pmid}` : p.doi ? `DOI ${p.doi}` : p.title.slice(0, 60)}
+                </a>
+                <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>Provisional</span>
+                <span className="xs muted">{p.source}{p.year ? ` · ${p.year}` : ""} — not Gate C approved</span>
+                <span className="xs muted">{p.title.slice(0, 120)}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
     </aside>
   );
 }

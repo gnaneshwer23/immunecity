@@ -79,6 +79,12 @@ describe("AI grounding", () => {
     expect(ctx.links.some((l) => l.tier)).toBe(true);
     expect(ctx.text).toMatch(/COVERAGE_SUMMARY|CAUSAL_CHAINS|LINK REL-/);
     expect(ctx.queryClass).toBe("graph_explanation");
+    expect(ctx.coverage).toMatchObject({
+      reviewedEvidenceCount: expect.any(Number),
+      provisionalLiteratureCount: 0,
+      evidenceSupportedCount: expect.any(Number),
+      missingSupportCount: expect.any(Number),
+    });
   });
   it("flags an empty extract for unsupported questions", () => {
     expect(graphContext("zzqx").text).toMatch(/NO_MATCH/);

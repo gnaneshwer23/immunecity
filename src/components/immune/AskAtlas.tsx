@@ -7,6 +7,7 @@ import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight, Copy, Rotat
 import type { UIMessage } from "ai";
 import { byId, out, inn, human, TYPES, edgeByRel, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
+import { ASK_NAME } from "@/lib/brand";
 import { matchConceptSuggestions, prepareAsk, runExplanationAction, type AskGrounding, type ExplanationAction } from "@/lib/askGrounding";
 import EdgeReference, { NodeCitations } from "./EdgeReference";
 import GroundingPanel from "./GroundingPanel";
@@ -177,10 +178,25 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const send = (text: string) => {
     const t = text.trim();
     if (!t || busy) return;
+    // Immediate local grounding; enrich from server (Gate C + provisional lit) when available.
     const prepared = prepareAsk(t);
     setGrounding(prepared.grounding);
     setLocalNote(null);
     setInput("");
+    void (async () => {
+      try {
+        const res = await fetch("/api/ask/prepare", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: t }),
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { grounding?: AskGrounding };
+        if (data.grounding) setGrounding(data.grounding);
+      } catch {
+        /* keep local grounding */
+      }
+    })();
     sendMessage({ text: t });
   };
 
@@ -221,14 +237,14 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
         <div>
           <div className="ask-head-row">
-            <h3>Ask Immune Super Intelligence</h3>
+            <h3>{ASK_NAME}</h3>
             <span className="ask-head-actions">
               {showFullPageLink ? <Link to="/ask" className="ask-mini-btn"><Maximize2 size={13} /> Open full page</Link> : null}
               {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New conversation</button> : null}
             </span>
           </div>
-          <p className="xs muted">Graph-retrieved teaching · cites when reviewed · not fully evidence-grounded AI</p>
-          <p className="xs muted">Answers use retrieved graph concepts, links, and reviewed relationship cites when they exist (sparse overall). Not patient-specific advice. Questions are sent to the configured AI service; see our <Link to="/privacy">privacy notice</Link>.</p>
+          <p className="xs muted">Graph-retrieved teaching · reviewed cites when present · provisional lit labelled · not fully evidence-grounded AI</p>
+          <p className="xs muted">Answers use retrieved graph concepts, links, and Gate C reviewed relationship cites when they exist (sparse overall). PubMed/Europe PMC hits appear only as unreviewed literature. Educational — not patient-specific advice or CDS. Questions are sent to the configured AI service; see our <Link to="/privacy">privacy notice</Link>.</p>
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>
@@ -254,11 +270,11 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           const fu = m === lastAssistant && !busy ? followUps(conceptsIn(text), asked) : [];
           return (
             <div key={m.id} className={`ask-msg ${m.role}`}>
-              <span className="ask-role">{m.role === "user" ? "You" : "Atlas"}</span>
+              <span className="ask-role">{m.role === "user" ? "You" : ASK_NAME}</span>
               <div className="ask-body">
                 {m.role === "assistant" ? (
                   <>
-                    <div className="ask-ai-badge" role="note">AI-generated · graph-retrieved teaching · not patient-specific advice</div>
+                    <div className="ask-ai-badge" role="note">AI-generated · graph-retrieved teaching · not fully evidence-grounded · not patient-specific advice</div>
                     <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
                     {!busy || m !== lastAssistant ? (
                       <button type="button" className="ask-mini-btn" onClick={() => copyText(m.id, text)} aria-label="Copy answer">
@@ -308,14 +324,14 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
         })}
         {status === "submitted" ? (
           <div className="ask-msg assistant">
-            <span className="ask-role">Atlas</span>
+            <span className="ask-role">{ASK_NAME}</span>
             <div className="ask-body">
-              <p className="muted">Retrieving graph evidence…</p>
+              <p className="muted">Retrieving graph context…</p>
               {grounding ? <GroundingPanel grounding={grounding} /> : null}
             </div>
           </div>
         ) : null}
-        {error ? <div className="ask-msg assistant"><span className="ask-role">Atlas</span><div className="ask-body"><p className="muted">{/429|Too many/.test(error.message) ? "You've asked a lot of questions quickly — please wait a minute." : "Sorry — the answer could not be generated."}</p>{!/429|Too many/.test(error.message) ? <button type="button" className="ask-mini-btn" onClick={() => regenerate()}><RotateCcw size={12} /> Retry</button> : null}</div></div> : null}
+        {error ? <div className="ask-msg assistant"><span className="ask-role">{ASK_NAME}</span><div className="ask-body"><p className="muted">{/429|Too many/.test(error.message) ? "You've asked a lot of questions quickly — please wait a minute." : "Sorry — the answer could not be generated."}</p>{!/429|Too many/.test(error.message) ? <button type="button" className="ask-mini-btn" onClick={() => regenerate()}><RotateCcw size={12} /> Retry</button> : null}</div></div> : null}
       </div>
       {matches.length > 0 && (
         <div className="ask-quick-matches" aria-label="Matching concepts">
@@ -334,7 +350,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
           placeholder="Ask about a cell, pathway, drug or connection…"
           rows={2}
-          aria-label="Ask the atlas a question"
+          aria-label={`Ask ${ASK_NAME} a question`}
         />
         {busy ? (
           <button type="button" className="btn sm" onClick={stop} aria-label="Stop generating"><Square size={14} /> Stop</button>

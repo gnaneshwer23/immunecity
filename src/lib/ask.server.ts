@@ -5,22 +5,26 @@ import {
   ASK_DISABLED_MESSAGE,
   MAX_QUESTION_CHARS,
   SYSTEM,
+  attachProvisionalLiterature,
   isAskEmergencyDisabled,
   prepareAsk,
   rateLimited,
   validateAnswerCitations,
+  type AskGrounding,
+  type PrepareAskResult,
 } from "@/lib/askGrounding";
 import { EvidenceServiceError } from "@/lib/citations.functions";
 import { getDb } from "@/lib/db.server";
 import { evidenceRecords } from "@/lib/db/schema.server";
 import type { CitationLike } from "@/lib/immune/evidenceStatus";
+import { fetchProvisionalLiterature } from "@/lib/provisionalLit.server";
 
 export type ReviewedEvidenceResult =
   | { ok: true; cites: CitationLike[] }
   | { ok: false; error: "unavailable"; message: string };
 
 const EVIDENCE_OUTAGE_REPLY =
-  "The evidence database is temporarily unavailable, so I cannot confirm reviewed sources for this answer. This is a service outage, not a finding that no evidence exists. Please try again shortly, or browse the graph and Methods & trust without Ask.";
+  "The evidence database is temporarily unavailable, so I cannot confirm reviewed sources for this answer. This is a service outage, not a finding that no evidence exists. Please try again shortly, or browse the graph and Methods & trust without Ask Immune.";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
 const LOVABLE_MODEL = "openai/gpt-6-astra";
@@ -56,7 +60,7 @@ function textReply(text: string) {
 
 /** Approved Neon evidence for retrieved relationship IDs (claim-level context for Ask). */
 export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<ReviewedEvidenceResult> {
-  if (!relIds.length) return { ok: true, cites: [] };
+  if (!relIds.length) return { ok: true; cites: [] };
   try {
     const db = getDb();
     const rows = await db
@@ -102,7 +106,47 @@ export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<Rev
 }
 
 const CITATION_REJECT =
-  "I drafted an answer but it cited concepts, links or PMIDs outside the retrieved graph extract / reviewed evidence, so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods & trust.";
+  "I drafted an answer but it cited concepts, links or PMIDs outside the retrieved graph extract / reviewed evidence / provisional literature, so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods & trust.";
+
+export type PrepareAskServerResult =
+  | { ok: true; prepared: PrepareAskResult; grounding: AskGrounding; provisionalError?: string; provisionalSkipped?: string }
+  | { ok: false; error: "evidence_unavailable"; message: string };
+
+/**
+ * Full server prepare: graph + Gate C approved cites + optional provisional lit.
+ * Used by /api/ask and /api/ask/prepare so the UI can surface the same tiers.
+ */
+export async function prepareAskServer(
+  question: string,
+  rateKey = "anon",
+): Promise<PrepareAskServerResult> {
+  const preliminary = prepareAsk(question);
+  if (!preliminary.callModel) {
+    return { ok: true, prepared: preliminary, grounding: preliminary.grounding };
+  }
+
+  const evidence = await loadReviewedEvidenceForRels(preliminary.grounding.relIds);
+  if (!evidence.ok) {
+    return { ok: false, error: "evidence_unavailable", message: evidence.message };
+  }
+
+  let prepared = prepareAsk(question, evidence.cites);
+  const lit = await fetchProvisionalLiterature({
+    grounding: prepared.grounding,
+    question,
+    queryClass: prepared.queryClass,
+    rateKey,
+  });
+  const grounding = attachProvisionalLiterature(prepared.grounding, lit.items);
+  prepared = { ...prepared, grounding };
+  return {
+    ok: true,
+    prepared,
+    grounding,
+    provisionalError: lit.error,
+    provisionalSkipped: lit.skipped,
+  };
+}
 
 export async function handleAsk(request: Request): Promise<Response> {
   if (isAskEmergencyDisabled()) {
@@ -144,9 +188,13 @@ export async function handleAsk(request: Request): Promise<Response> {
   }
 
   // Abstentions (clinical, omics, unsupported) must work even when the model key is absent.
-  const preliminary = prepareAsk(question);
-  if (!preliminary.callModel && preliminary.replyText) {
-    return textReply(preliminary.replyText);
+  const serverPrep = await prepareAskServer(question, ip);
+  if (!serverPrep.ok) {
+    return textReply(EVIDENCE_OUTAGE_REPLY);
+  }
+  const { prepared } = serverPrep;
+  if (!prepared.callModel && prepared.replyText) {
+    return textReply(prepared.replyText);
   }
 
   const provider = resolveAskProvider();
@@ -159,12 +207,6 @@ export async function handleAsk(request: Request): Promise<Response> {
       { status: 503 },
     );
   }
-
-  const evidence = await loadReviewedEvidenceForRels(preliminary.grounding.relIds);
-  if (!evidence.ok) {
-    return textReply(EVIDENCE_OUTAGE_REPLY);
-  }
-  const prepared = prepareAsk(question, evidence.cites);
 
   const system =
     SYSTEM +

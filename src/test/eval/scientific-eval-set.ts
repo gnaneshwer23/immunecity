@@ -58,6 +58,21 @@ export type EvalCase =
       question: string;
       answerText: string;
       expectOk: boolean;
+      /** When set, attach these provisional PMIDs before validating. */
+      provisionalPmids?: string[];
+    }
+  | {
+      id: string;
+      kind: "provisional-labelling";
+      question: string;
+      expectSourceLookupOrEmptyReviewed: true;
+    }
+  | {
+      id: string;
+      kind: "multi-concept";
+      question: string;
+      mustRetrieveNodeIds: string[];
+      expectChainsOrLinks: true;
     };
 
 export const SCIENTIFIC_EVAL_SET: EvalCase[] = [
@@ -401,5 +416,47 @@ export const SCIENTIFIC_EVAL_SET: EvalCase[] = [
     kind: "omics-abstention",
     question: "Use Scanpy for single-cell clustering of my h5ad",
     expectClass: "omics_request",
+  },
+  // --- Ask Immune practical next step: multi-concept, follow-up-ish, provisional labelling ---
+  {
+    id: "multi-tnf-macrophage-ra",
+    kind: "multi-concept",
+    question: "How do macrophages, TNF and rheumatoid arthritis connect?",
+    mustRetrieveNodeIds: ["M001", "D001"],
+    expectChainsOrLinks: true,
+  },
+  {
+    id: "multi-pd1-pdl1-tcell",
+    kind: "multi-concept",
+    question: "How do PD-1, PD-L1 and T cells relate in the atlas?",
+    mustRetrieveNodeIds: ["R011", "R012"],
+    expectChainsOrLinks: true,
+  },
+  {
+    id: "followup-ish-downstream-tnf",
+    kind: "classification",
+    question: "What happens downstream if TNF is blocked?",
+    expectClass: "mechanism_perturbation",
+  },
+  {
+    id: "provisional-source-lookup-tnf",
+    kind: "provisional-labelling",
+    question: "What evidence supports the TNF to RA link? Any PMID?",
+    expectSourceLookupOrEmptyReviewed: true,
+  },
+  {
+    id: "cite-provisional-pmid-allowed",
+    kind: "citation-validation",
+    question: "How does TNF drive rheumatoid arthritis?",
+    answerText: "Unreviewed literature includes PMID 11111111 for further reading — not Gate C approved.",
+    expectOk: true,
+    provisionalPmids: ["11111111"],
+  },
+  {
+    id: "cite-invented-pmid-still-rejected",
+    kind: "citation-validation",
+    question: "How does TNF drive rheumatoid arthritis?",
+    answerText: "Proven by PMID 88888888.",
+    expectOk: false,
   },
 ];

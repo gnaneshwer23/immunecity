@@ -8,7 +8,8 @@ export const TAGLINE = "Where Immunology Meets Advanced AI";
 export const HERO_HEADLINE = "Understand the immune system as a connected, investigable system.";
 export const BRAND_EYEBROW = "Immunology × Scientific AI";
 export const PRODUCT_LINE = `${PRODUCT_NAME} — ${TAGLINE}`;
-export const ASK_NAME = `Ask ${PRODUCT_NAME}`;
+/** Conversational assistant product name (umbrella brand stays PRODUCT_NAME). */
+export const ASK_NAME = "Ask Immune";
 export const CANONICAL_ORIGIN = "https://www.immune-super-intelligence.co.uk";
 export const CANONICAL_URL = `${CANONICAL_ORIGIN}/`;
 /** Primary marketing CTA → platform overview (flagship Immune City entry). */
@@ -40,7 +41,7 @@ export const HERO_TRUST =
   "Educational beta · curated graph · not clinical decision support";
 /** Single public trust line — reuse; avoid repeating “educational beta” on every section. */
 export const TRUST_STATEMENT =
-  "Educational immunology model with curated references. Ask retrieves from the graph and is not fully evidence-grounded AI. Not clinical decision support.";
+  "Educational immunology model with curated references. Ask Immune retrieves from the graph (and may show unreviewed literature as provisional) — not fully evidence-grounded AI. Not clinical decision support.";
 
 export function pageTitle(section?: string): string {
   return section ? `${section} — ${PRODUCT_NAME}` : PRODUCT_LINE;

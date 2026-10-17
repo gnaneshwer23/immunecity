@@ -61,8 +61,8 @@ function Reasoning() {
         <a href="#tracer">Path tracer</a>
       </nav>
       <section className="section" id="ask">
-        <h2>Ask Immune Super Intelligence</h2>
-        <p className="lede">Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with reviewed cites when present. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
+        <h2>Ask Immune</h2>
+        <p className="lede">Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with Gate C reviewed cites when present and provisional PubMed/Europe PMC hits labelled unreviewed. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
         <AskAtlas />
       </section>
       <section className="section" id="how-ai-works">

@@ -44,6 +44,7 @@ import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
 import { Route as AtlasIdRouteImport } from './routes/atlas.$id'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
 import { Route as MechanismIdRouteImport } from './routes/mechanism.$id'
+import { Route as ApiAskPrepareRouteImport } from './routes/api/ask.prepare'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -219,6 +220,11 @@ const MechanismIdRoute = MechanismIdRouteImport.update({
   path: '/mechanism/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAskPrepareRoute = ApiAskPrepareRouteImport.update({
+  id: '/prepare',
+  path: '/prepare',
+  getParentRoute: () => ApiAskRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -250,11 +256,12 @@ export interface FileRoutesByFullPath {
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
   '/curation': typeof AuthenticatedCurationRoute
-  '/api/ask': typeof ApiAskRoute
+  '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/atlas/': typeof AtlasIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
+  '/api/ask/prepare': typeof ApiAskPrepareRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -286,11 +293,12 @@ export interface FileRoutesByTo {
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
   '/curation': typeof AuthenticatedCurationRoute
-  '/api/ask': typeof ApiAskRoute
+  '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/atlas': typeof AtlasIndexRoute
   '/mechanism': typeof MechanismIndexRoute
+  '/api/ask/prepare': typeof ApiAskPrepareRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -324,11 +332,12 @@ export interface FileRoutesById {
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
   '/_authenticated/curation': typeof AuthenticatedCurationRoute
-  '/api/ask': typeof ApiAskRoute
+  '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/atlas/': typeof AtlasIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
+  '/api/ask/prepare': typeof ApiAskPrepareRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -367,6 +376,7 @@ export interface FileRouteTypes {
     | '/mechanism/$id'
     | '/atlas/'
     | '/mechanism/'
+    | '/api/ask/prepare'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/mechanism/$id'
     | '/atlas'
     | '/mechanism'
+    | '/api/ask/prepare'
   id:
     | '__root__'
     | '/'
@@ -440,6 +451,7 @@ export interface FileRouteTypes {
     | '/mechanism/$id'
     | '/atlas/'
     | '/mechanism/'
+    | '/api/ask/prepare'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -472,7 +484,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TherapyRoute: typeof TherapyRoute
   VisionRoute: typeof VisionRoute
-  ApiAskRoute: typeof ApiAskRoute
+  ApiAskRoute: typeof ApiAskRouteWithChildren
   AtlasIdRoute: typeof AtlasIdRoute
   MechanismIdRoute: typeof MechanismIdRoute
   AtlasIndexRoute: typeof AtlasIndexRoute
@@ -726,6 +738,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MechanismIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ask/prepare': {
+      id: '/api/ask/prepare'
+      path: '/prepare'
+      fullPath: '/api/ask/prepare'
+      preLoaderRoute: typeof ApiAskPrepareRouteImport
+      parentRoute: typeof ApiAskRoute
+    }
   }
 }
 
@@ -739,6 +758,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface ApiAskRouteChildren {
+  ApiAskPrepareRoute: typeof ApiAskPrepareRoute
+}
+
+const ApiAskRouteChildren: ApiAskRouteChildren = {
+  ApiAskPrepareRoute: ApiAskPrepareRoute,
+}
+
+const ApiAskRouteWithChildren =
+  ApiAskRoute._addFileChildren(ApiAskRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -770,7 +800,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TherapyRoute: TherapyRoute,
   VisionRoute: VisionRoute,
-  ApiAskRoute: ApiAskRoute,
+  ApiAskRoute: ApiAskRouteWithChildren,
   AtlasIdRoute: AtlasIdRoute,
   MechanismIdRoute: MechanismIdRoute,
   AtlasIndexRoute: AtlasIndexRoute,
@@ -779,13 +809,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

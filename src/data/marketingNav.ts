@@ -103,7 +103,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
   {
     label: "Learn",
     items: [
-      { n: "L1", path: "/ask", title: "Ask ISI", desc: "Ask immunology questions answered from the graph." },
+      { n: "L1", path: "/ask", title: "Ask Immune", desc: "Ask immunology questions answered from the graph." },
       { n: "L2", path: "/atlas", title: "Knowledge atlas", desc: "Every concept across eight domains, with its own page." },
       { n: "L3", path: "/overview", title: "Overview", desc: "The 15-step causal spine and twelve layers in one view." },
       { n: "L4", path: "/learn", title: "Cell atlas", desc: "Immune cells, what they do, and their limits." },

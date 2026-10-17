@@ -103,7 +103,7 @@ export function ResearchWorkspace() {
             <li>
               Prompt <code>{grounding.trace.promptVersion}</code>
             </li>
-            <li>Ask remains graph-retrieved teaching — not fully evidence-grounded AI.</li>
+            <li>Ask Immune remains graph-retrieved teaching with provisional lit labelled — not fully evidence-grounded AI.</li>
             <li>Omics / molecular model adapters remain planned stubs and never invent scores.</li>
           </ul>
         </section>

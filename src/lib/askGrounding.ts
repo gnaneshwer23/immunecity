@@ -1,4 +1,4 @@
-/* Browser-safe retrieval and guardrails for Ask Immune Super Intelligence (tested in src/test/ai-grounding.test.ts). */
+/* Browser-safe retrieval and guardrails for Ask Immune (tested in src/test/ai-grounding.test.ts). */
 import { KG, byId, human, out, inn, relId, edgeRef, edgeByRel, shortestPath, type KGNode, type KGEdge } from "@/lib/immune/engine";
 import { conceptExtras } from "@/lib/immune/concepts";
 import { citationsFor, relationshipStatus, STATUS_INFO, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
@@ -6,7 +6,18 @@ import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } fr
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v4";
+export const PROMPT_VERSION = "ask-grounding-v5";
+
+/** Unreviewed literature hits (PubMed / Europe PMC). Never Gate C approved. */
+export interface ProvisionalLitItem {
+  pmid: string | null;
+  doi: string | null;
+  title: string;
+  journal: string;
+  year: string;
+  source: "PubMed" | "EuropePMC";
+  url: string;
+}
 
 /** Fold unicode (TNF-α → tnf a) and punctuation so aliases match typed questions. */
 export function normaliseAskText(s: string): string {
@@ -102,8 +113,26 @@ export interface AskGrounding {
     missingSupportCount: number;
     emergingCount: number;
     establishedCount: number;
+    evidenceSupportedCount: number;
+    /** Sum of approved Neon rows on retrieved links. */
+    reviewedEvidenceCount: number;
+    /** Provisional (unreviewed) literature hits attached server-side. */
+    provisionalLiteratureCount: number;
   };
+  /** Server-attached unreviewed literature; empty on pure client prepareAsk. */
+  provisionalLiterature: ProvisionalLitItem[];
 }
+
+const EMPTY_COVERAGE: AskGrounding["coverage"] = {
+  matched: false,
+  draftCount: 0,
+  missingSupportCount: 0,
+  emergingCount: 0,
+  establishedCount: 0,
+  evidenceSupportedCount: 0,
+  reviewedEvidenceCount: 0,
+  provisionalLiteratureCount: 0,
+};
 
 export interface CitationValidation {
   ok: boolean;
@@ -135,8 +164,10 @@ export function relevantNodes(question: string, limit = 8): KGNode[] {
     let score = 0;
 
     if (name.length > 1 && hasWord(qNorm, name)) score += 8;
+    // Multi-word alias / synonym phrase match (stronger than token scrape)
     for (const a of aliases) {
-      if (hasWord(qNorm, a)) score += a.length <= 3 ? 6 : 7;
+      if (!a) continue;
+      if (hasWord(qNorm, a)) score += a.includes(" ") ? 8 : a.length <= 3 ? 6 : 7;
     }
 
     for (const t of tokens) {
@@ -152,6 +183,36 @@ export function relevantNodes(question: string, limit = 8): KGNode[] {
   return scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score).slice(0, limit).map((s) => s.n);
 }
 
+/** Prefer edges that connect two retrieved concepts; then degree-limited neighbours. */
+function prioritisedEdges(nodes: KGNode[], perNode = 10): KGEdge[] {
+  const idSet = new Set(nodes.map((n) => n.id));
+  const between: KGEdge[] = [];
+  const neighbourhood: KGEdge[] = [];
+  const seen = new Set<string>();
+  for (const n of nodes) {
+    const edges = [...(out[n.id] || []), ...(inn[n.id] || [])];
+    for (const e of edges) {
+      const id = relId(e);
+      if (seen.has(id)) continue;
+      const other = e.subject_id === n.id ? e.object_id : e.subject_id;
+      if (idSet.has(other) && other !== n.id) {
+        seen.add(id);
+        between.push(e);
+      }
+    }
+  }
+  for (const n of nodes) {
+    const edges = [...(out[n.id] || []), ...(inn[n.id] || [])].slice(0, perNode);
+    for (const e of edges) {
+      const id = relId(e);
+      if (seen.has(id)) continue;
+      seen.add(id);
+      neighbourhood.push(e);
+    }
+  }
+  return [...between, ...neighbourhood];
+}
+
 /** Typeahead / instant lookup — same synonym field as retrieval, capped for UI. */
 export function matchConceptSuggestions(query: string, limit = 5): KGNode[] {
   return relevantNodes(query, limit);
@@ -162,10 +223,10 @@ const CLINICAL = /\b(should i|can i take|my (doctor|dose|medication|child|son|da
 export const isPersonalClinical = (q: string) => CLINICAL.test(q);
 
 export const CLINICAL_REFUSAL =
-  "I can't give personal medical advice, dosing or diagnosis. Immune Super Intelligence is an educational causal map — please talk to a clinician. I can explain how the immune mechanisms involved work in general if you rephrase the question.";
+  "I can't give personal medical advice, dosing or diagnosis. Ask Immune is an educational causal map — please talk to a clinician. I can explain how the immune mechanisms involved work in general if you rephrase the question.";
 
 export const OMICS_ABSTENTION =
-  "Omics and molecular-model analysis are not wired into Ask yet — they remain planned adapters in the model registry. I can still map named genes or cells that already exist in the Immune Super Intelligence graph if you ask about those concepts specifically.";
+  "Omics and molecular-model analysis are not wired into Ask Immune yet — they remain planned adapters in the model registry. I can still map named genes or cells that already exist in the Immune Super Intelligence graph if you ask about those concepts specifically.";
 
 export const UNSUPPORTED_ABSTENTION =
   "The Immune Super Intelligence graph does not cover this yet. I won't invent concepts, pathways or citations. Try a named cell, cytokine, receptor, disease or therapy from the atlas, or open Methods & trust for what is currently curated.";
@@ -174,7 +235,8 @@ const OMICS = /\b(scrna|scRNA|single[- ]cell|spatial omics|rna[- ]seq|bulk rna|d
 const HYPOTHESIS = /\b(hypothes[ei]s|propose an experiment|falsif|what if we (block|inhibit|activate)|candidate mechanism|next experiment)\b/i;
 const COMPARISON = /\b(compar(e|ison|ing)|versus|\bvs\.?\b|differ(ence|ent)? between|which is (more|better)|contrast)\b/i;
 const SOURCE = /\b(pmid|doi|citation|source|paper|reference|pubmed|what (evidence|supports)|where is (this|that) (from|cited))\b/i;
-const MECHANISM_PERTURB = /\b(what happens if|if (we |i )?(block|inhibit|activate|knock|delete|neutrali[sz]e)|perturb|downstream (of|effect)|knockout)\b/i;
+const MECHANISM_PERTURB =
+  /\b(what happens if|what happens downstream|if (we |i )?(block|inhibit|activate|knock|delete|neutrali[sz]e)|perturb|downstream (of|effect)|knockout|(is |are |was |were )?(blocked|inhibited|activated|neutrali[sz]ed))\b/i;
 
 /** FR-022: classify before retrieval / model call. */
 export function classifyAskQuery(question: string): AskQueryClass {
@@ -289,7 +351,8 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
         nodes: [],
         links: [],
         chains: [],
-        coverage: { matched: false, draftCount: 0, missingSupportCount: 0, emergingCount: 0, establishedCount: 0 },
+        coverage: { ...EMPTY_COVERAGE },
+        provisionalLiterature: [],
       },
       cls,
       true,
@@ -301,27 +364,31 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
   const links: GroundedLink[] = [];
   lines.push(`QUERY_CLASS ${cls}`);
   for (const n of nodes) {
-    lines.push(`CONCEPT ${n.id} [${n.node_type}]${n.draft ? " [DRAFT]" : ""} ${n.name}: ${n.desc}`);
-    const edges = [...(out[n.id] || []), ...(inn[n.id] || [])].slice(0, 10);
-    for (const e of edges) {
-      const id = relId(e);
-      if (seen.has(id)) continue;
-      seen.add(id);
-      const s = byId[e.subject_id], o = byId[e.object_id];
-      if (!s || !o) continue;
-      const g = groundLink(e, cites);
-      links.push(g);
-      const support = g.hasSourceLink ? "source-linked" : "no-source-link";
-      const reviewed =
-        g.reviewedEvidenceCount > 0
-          ? `reviewed-evidence=${g.reviewedEvidenceCount}${g.hasClaimSupport ? ", claim-supported" : ""}`
-          : "reviewed-evidence=0";
-      lines.push(
-        `LINK ${id} ${s.name} --${human(e.relation)}--> ${o.name}: ${e.mechanism}` +
-          ` (confidence: ${e.confidence}, evidence: ${e.evidence_status}, review: ${g.reviewLabel}, tier: ${g.tier}, support: ${support}, ${reviewed}` +
-          `${e.draft ? ", DRAFT" : ""}${e.location ? `, tissue: ${e.location}` : ""})`,
-      );
-    }
+    const aliases = conceptExtras(n).aliases;
+    const aliasNote = aliases.length ? ` aliases=[${aliases.slice(0, 6).join("; ")}]` : "";
+    lines.push(`CONCEPT ${n.id} [${n.node_type}]${n.draft ? " [DRAFT]" : ""} ${n.name}: ${n.desc}${aliasNote}`);
+  }
+
+  const edges = prioritisedEdges(nodes, 10);
+  for (const e of edges) {
+    const id = relId(e);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const s = byId[e.subject_id], o = byId[e.object_id];
+    if (!s || !o) continue;
+    const g = groundLink(e, cites);
+    links.push(g);
+    const support = g.hasSourceLink ? "source-linked" : "no-source-link";
+    const reviewed =
+      g.reviewedEvidenceCount > 0
+        ? `reviewed-evidence=${g.reviewedEvidenceCount}${g.hasClaimSupport ? ", claim-supported" : ""}`
+        : "reviewed-evidence=0";
+    const tierNote = g.tier === "missing-support" ? ", MISSING-SUPPORT" : "";
+    lines.push(
+      `LINK ${id} ${s.name} --${human(e.relation)}--> ${o.name}: ${e.mechanism}` +
+        ` (confidence: ${e.confidence}, evidence: ${e.evidence_status}, review: ${g.reviewLabel}, tier: ${g.tier}, support: ${support}, ${reviewed}` +
+        `${e.draft ? ", DRAFT" : ""}${tierNote}${e.location ? `, tissue: ${e.location}` : ""})`,
+    );
   }
 
   const chains = buildChains(nodes, cites);
@@ -333,11 +400,13 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
       const hopText = c.hops.map((h) => `${h.fwd ? "→" : "←"}[${h.relId}|${h.tier}]`).join(" ");
       lines.push(`CHAIN ${from} (${c.fromId}) ${hopText} ${to} (${c.toId})`);
     }
+  } else if (nodes.length >= 2) {
+    lines.push("CAUSAL_CHAINS none among top matched concepts — explain via individual LINKs; do not invent a path.");
   }
 
   const reviewedForLinks = cites.filter((c) => c.relationship_id && seen.has(c.relationship_id));
   if (reviewedForLinks.length) {
-    lines.push("REVIEWED_EVIDENCE (approved Neon records for retrieved links — cite only these PMIDs/DOIs):");
+    lines.push("REVIEWED_EVIDENCE (approved Neon / Gate C records for retrieved links — cite only these PMIDs/DOIs as reviewed):");
     for (const c of reviewedForLinks.slice(0, 40)) {
       lines.push(
         `EVIDENCE ${c.evidence_id} edge:${c.relationship_id} claim:${c.claim_support} ${c.label}` +
@@ -350,18 +419,23 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
     );
   }
 
-  const coverage = {
+  const reviewedEvidenceCount = links.reduce((n, l) => n + l.reviewedEvidenceCount, 0);
+  const coverage: AskGrounding["coverage"] = {
     matched: true,
     draftCount: links.filter((l) => l.tier === "draft").length + nodes.filter((n) => n.draft).length,
     missingSupportCount: links.filter((l) => l.tier === "missing-support").length,
     emergingCount: links.filter((l) => l.tier === "emerging" || l.tier === "hypothesis").length,
     establishedCount: links.filter((l) => l.tier === "established").length,
+    evidenceSupportedCount: links.filter((l) => l.tier === "evidence-supported").length,
+    reviewedEvidenceCount,
+    provisionalLiteratureCount: 0,
   };
 
   lines.push(
     `COVERAGE_SUMMARY matched=${coverage.matched} established=${coverage.establishedCount}` +
-      ` evidence-supported/emerging=${coverage.emergingCount} draft=${coverage.draftCount} missing-support=${coverage.missingSupportCount}` +
-      ` reviewed-evidence-rows=${reviewedForLinks.length}`,
+      ` evidence-supported=${coverage.evidenceSupportedCount} emerging/hypothesis=${coverage.emergingCount}` +
+      ` draft=${coverage.draftCount} missing-support=${coverage.missingSupportCount}` +
+      ` reviewed-evidence-rows=${reviewedEvidenceCount} provisional-lit=0`,
   );
   lines.push(`TRACE prompt=${PROMPT_VERSION} graph=${GRAPH_CORE_VERSION} extensions=${GRAPH_EXTENSIONS_VERSION}`);
 
@@ -374,11 +448,50 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
       links,
       chains,
       coverage,
+      provisionalLiterature: [],
     },
     cls,
     false,
     null,
   );
+}
+
+/** Whether Ask should request provisional PubMed/Europe PMC (server decides; UI mirrors). */
+export function shouldFetchProvisionalLit(grounding: AskGrounding, queryClass: AskQueryClass): boolean {
+  if (!grounding.coverage.matched || grounding.trace.abstained) return false;
+  if (queryClass === "source_lookup") return true;
+  return grounding.coverage.reviewedEvidenceCount === 0;
+}
+
+/** UI / SYSTEM copy for provisional hits — never Gate C. */
+export function provisionalLitLabel(): string {
+  return "Unreviewed literature (provisional)";
+}
+
+/** Attach server-fetched provisional literature and rewrite extract lines (never upgrades Gate C). */
+export function attachProvisionalLiterature(grounding: AskGrounding, items: ProvisionalLitItem[]): AskGrounding {
+  if (!items.length) return grounding;
+  const lines = [
+    "PROVISIONAL_LITERATURE (unreviewed PubMed/Europe PMC hits — NOT Gate C approved; NEVER claim these support a relationship; label clearly as unreviewed literature):",
+  ];
+  for (const it of items.slice(0, 8)) {
+    const id = it.pmid ? `PMID ${it.pmid}` : it.doi ? `DOI ${it.doi}` : "no-id";
+    lines.push(
+      `PROVISIONAL ${id} source=${it.source} year=${it.year || "?"} journal=${it.journal || "?"} title=${it.title.slice(0, 180)} url=${it.url}`,
+    );
+  }
+  const text = grounding.text
+    .replace(/provisional-lit=\d+/, `provisional-lit=${items.length}`)
+    .concat("\n", lines.join("\n"));
+  return {
+    ...grounding,
+    text,
+    provisionalLiterature: items,
+    coverage: {
+      ...grounding.coverage,
+      provisionalLiteratureCount: items.length,
+    },
+  };
 }
 
 /** Orchestrate classify → retrieve → abstain-or-call (FR-022/024/026/028). */
@@ -393,7 +506,8 @@ export function prepareAsk(question: string, cites: CitationLike[] = []): Prepar
         nodes: [],
         links: [],
         chains: [],
-        coverage: { matched: false, draftCount: 0, missingSupportCount: 0, emergingCount: 0, establishedCount: 0 },
+        coverage: { ...EMPTY_COVERAGE },
+        provisionalLiterature: [],
       },
       queryClass,
       true,
@@ -462,7 +576,10 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     else if (!allowedRels.has(id)) unretrievedRelIds.push(id);
   }
 
-  // Also catch fabricated PMID/DOI strings that look like citations
+  const provisionalPmids = new Set(
+    grounding.provisionalLiterature.map((p) => p.pmid).filter((p): p is string => !!p),
+  );
+  // Fabricated PMIDs outside reviewed OR provisional extract are rejected.
   for (const m of text.matchAll(/\bPMID[:\s]*(\d{6,9})\b/gi)) {
     const pmid = m[1]!;
     const linked = grounding.links.some((l) => {
@@ -470,7 +587,7 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
       const e = edgeByRel[l.relId];
       return !!e && (e.pmid === pmid || e.reference === pmid || (e.source_refs || []).includes(pmid));
     });
-    if (!linked) inventedRelIds.push(`PMID:${pmid}`);
+    if (!linked && !provisionalPmids.has(pmid)) inventedRelIds.push(`PMID:${pmid}`);
   }
 
   return {
@@ -534,17 +651,18 @@ export function runExplanationAction(action: ExplanationAction, grounding: AskGr
   }
 }
 
-export const SYSTEM = `You are the Immune Super Intelligence assistant — an AI-native educational causal immunology knowledge graph.
+export const SYSTEM = `You are Ask Immune — the conversational assistant for Immune Super Intelligence, an AI-native educational causal immunology knowledge graph.
 Positioning: "Immune Super Intelligence — Where Immunology Meets Advanced AI." Answer using ONLY the graph extract below. Explain cells, molecules, pathways and causal connections clearly for a curious non-specialist.
 Rules:
 - Ground every claim in the CONCEPT/LINK lines. If the extract says NO_MATCH or does not cover the question, say plainly "The Immune Super Intelligence graph does not cover this yet" and suggest a related covered concept if any. Never fill gaps from general knowledge. Never invent citations, PMIDs, DOIs or LINK IDs.
 - Prefer CAUSAL_CHAINS when explaining how two concepts connect. End with a short "Causal chain used:" section that lists the chain hops with [phrase](edge:REL_ID) links, or state that no chain was available.
-- Distinguish evidence tiers explicitly: established, evidence-supported, emerging, hypothesis, draft, missing-support. Say when a link is DRAFT or has no-source-link.
-- REVIEWED_EVIDENCE lists approved Neon claim assessments. If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
-- Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE or on the LINK line itself.
+- Distinguish evidence tiers explicitly: established, evidence-supported, emerging, hypothesis, draft, missing-support. Say when a link is DRAFT, MISSING-SUPPORT or has no-source-link.
+- REVIEWED_EVIDENCE lists approved Neon (Gate C) claim assessments. If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
+- PROVISIONAL_LITERATURE (if present) is unreviewed PubMed/Europe PMC search — never treat it as approved evidence or "supports". If you mention those items, label them explicitly as "unreviewed literature" / provisional. Do not invent extra PMIDs.
+- Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, PROVISIONAL_LITERATURE, or on the LINK line itself.
 - For QUERY_CLASS hypothesis_request: label every suggestion as a candidate hypothesis and include at least one alternative or disconfirming consideration.
 - Concise: a short explanation, then compact bullets of key connections, then the causal chain used.
-- Educational only. Never give diagnosis, dosing or treatment recommendations for a real person.
+- Educational only. Never give diagnosis, dosing or treatment recommendations for a real person. Not clinical decision support. Not fully evidence-grounded AI.
 - LINKING (required): write concepts as [Name](concept:ID) and relationships as [phrase](edge:REL_ID) using the exact LINK IDs (they start with REL-). Never invent IDs.
 
 GRAPH EXTRACT:
@@ -604,4 +722,4 @@ export function isAskEmergencyDisabled(
 }
 
 export const ASK_DISABLED_MESSAGE =
-  "Ask Immune Super Intelligence is temporarily disabled by the operator. Graph exploration and Methods & trust remain available.";
+  "Ask Immune is temporarily disabled by the operator. Graph exploration and Methods & trust remain available.";

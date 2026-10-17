@@ -173,7 +173,7 @@ function Home() {
           <div className="bio-actions">
             <Button asChild className="bio-primary home-helix-primary">
               <Link to="/ask">
-                Ask ISI <ArrowUpRight />
+                Ask Immune <ArrowUpRight />
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
@@ -188,7 +188,7 @@ function Home() {
 
       <div className="bio-content home-sections">
         <nav className="isi-three" aria-label="Three ways in">
-          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask ISI</b><span>Ask anything about the immune system in plain language.</span></Link>
+          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>Ask anything about the immune system in plain language.</span></Link>
           <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Explore cells, molecules, diseases and therapies — one page each.</span></Link>
           <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Read recent papers from leading immunology journals.</span></Link>
         </nav>

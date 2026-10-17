@@ -34,9 +34,9 @@ if (/aria-label=\"Layers\"/.test(shell)) pass("Layers nav label");
 else fail("Layers nav label", "sidebar missing aria-label=Layers");
 if (/<main id=\"main\"/.test(shell)) pass("Main landmark id");
 else fail("Main landmark id", "missing <main id=\"main\">");
-if (/sr-only/.test(shell) && /ASK_NAME|Ask Immune Super Intelligence/.test(shell)) pass("Ask dialog accessible name");
+if (/sr-only/.test(shell) && /ASK_NAME|Ask Immune/.test(shell)) pass("Ask dialog accessible name");
 else fail("Ask dialog accessible name", "DialogTitle/sr-only Ask label missing");
-if (/not patient-specific advice|Educational only, not medical advice/.test(shell)) pass("Ask educational disclaimer");
+if (/not patient-specific advice|Educational only, not medical advice|not fully evidence-grounded/.test(shell)) pass("Ask educational disclaimer");
 else fail("Ask educational disclaimer", "missing sr-only disclaimer copy");
 
 const methods = readFileSync(resolve(root, "src/routes/methods.tsx"), "utf8");
@@ -44,7 +44,7 @@ if (/text table|keyboard focus|Escape/i.test(methods)) pass("Methods a11y disclo
 else fail("Methods a11y disclosure", "methods page missing keyboard/table note");
 
 const ask = readFileSync(resolve(root, "src/components/immune/AskAtlas.tsx"), "utf8");
-if (/aria-label=\"Ask the atlas a question\"/.test(ask)) pass("Ask input label");
+if (/aria-label=\{`Ask \$\{ASK_NAME\} a question`\}|aria-label=\"Ask Immune a question\"/.test(ask)) pass("Ask input label");
 else fail("Ask input label", "textbox missing aria-label");
 
 const atlasCss = existsSync(resolve(root, "src/atlas.css"))
@@ -68,7 +68,7 @@ if (!runAxe) {
     <a href="/"><strong>Immune Super Intelligence</strong></a>
     <nav aria-label="Primary"><a href="/learn">Learn</a><a href="/graph">Graph</a></nav>
   </header>
-  <button type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Open Ask chatbot">Ask</button>
+  <button type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Open Ask Immune">Ask</button>
   <div class="shell">
     <nav aria-label="Layers"><a href="/">Home</a><a href="/overview">Overview</a><a href="/evidence">Evidence</a></nav>
     <main id="main" tabindex="-1">

@@ -1,7 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { shortestPath } from "@/lib/immune/engine";
 import { reasonMechanism } from "@/lib/immune/mechanismReasoning";
-import { classifyAskQuery, graphContext, isPersonalClinical, prepareAsk, validateAnswerCitations, SYSTEM } from "@/lib/askGrounding";
+import {
+  attachProvisionalLiterature,
+  classifyAskQuery,
+  graphContext,
+  isPersonalClinical,
+  prepareAsk,
+  provisionalLitLabel,
+  shouldFetchProvisionalLit,
+  validateAnswerCitations,
+  SYSTEM,
+} from "@/lib/askGrounding";
 import { SCIENTIFIC_EVAL_SET } from "@/test/eval/scientific-eval-set";
 import { MODEL_REGISTRY, dryRunAllStubs, implementedModels } from "@/lib/ai/modelRegistry";
 import { EXEMPLAR_PATHWAYS, reportExemplar } from "@/lib/immune/exemplarPathways";
@@ -59,12 +69,63 @@ describe("scientific evaluation set", () => {
         const report = reportExemplar(p!);
         expect(report.connected).toBe(c.expectConnected);
       } else if (c.kind === "citation-validation") {
-        const g = graphContext(c.question);
+        let g = graphContext(c.question);
+        if (c.provisionalPmids?.length) {
+          g = attachProvisionalLiterature(
+            g,
+            c.provisionalPmids.map((pmid) => ({
+              pmid,
+              doi: null,
+              title: "Fixture provisional title",
+              journal: "Fixture",
+              year: "2020",
+              source: "PubMed" as const,
+              url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+            })),
+          );
+        }
         const v = validateAnswerCitations(c.answerText, g);
         expect(v.ok).toBe(c.expectOk);
+      } else if (c.kind === "provisional-labelling") {
+        const cls = classifyAskQuery(c.question);
+        const g = graphContext(c.question, cls);
+        expect(shouldFetchProvisionalLit(g, cls) || cls === "source_lookup").toBe(true);
+        expect(provisionalLitLabel()).toMatch(/[Uu]nreviewed/);
+        expect(SYSTEM).toMatch(/PROVISIONAL_LITERATURE/);
+        expect(SYSTEM).toMatch(/not fully evidence-grounded/);
+      } else if (c.kind === "multi-concept") {
+        const g = graphContext(c.question);
+        expect(g.coverage.matched).toBe(true);
+        for (const id of c.mustRetrieveNodeIds) expect(g.nodeIds).toContain(id);
+        expect(g.links.length > 0 || g.chains.length > 0).toBe(true);
+        expect(g.coverage.reviewedEvidenceCount).toBeDefined();
+        expect(g.coverage.provisionalLiteratureCount).toBe(0);
       }
     });
   }
+});
+
+describe("Ask Immune provisional literature helpers", () => {
+  it("attaches provisional lines without upgrading reviewed counts", () => {
+    const g = graphContext("How does TNF drive rheumatoid arthritis?");
+    const next = attachProvisionalLiterature(g, [
+      {
+        pmid: "12345678",
+        doi: null,
+        title: "Example TNF review",
+        journal: "J Immunol",
+        year: "2019",
+        source: "PubMed",
+        url: "https://pubmed.ncbi.nlm.nih.gov/12345678/",
+      },
+    ]);
+    expect(next.coverage.provisionalLiteratureCount).toBe(1);
+    expect(next.coverage.reviewedEvidenceCount).toBe(g.coverage.reviewedEvidenceCount);
+    expect(next.text).toMatch(/PROVISIONAL_LITERATURE/);
+    expect(next.text).toMatch(/NOT Gate C approved/);
+    expect(shouldFetchProvisionalLit(g, "source_lookup")).toBe(true);
+    expect(shouldFetchProvisionalLit(g, "graph_explanation")).toBe(g.coverage.reviewedEvidenceCount === 0);
+  });
 });
 
 describe("hypothesis draft template", () => {

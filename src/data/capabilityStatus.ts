@@ -74,13 +74,14 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
   },
   {
     id: "ask-atlas",
-    name: "Ask (graph-retrieved teaching)",
+    name: "Ask Immune (graph-retrieved teaching)",
     page: "scientific-ai",
-    description: "Ask retrieves graph context and reviewed relationship cites when present — not fully evidence-grounded AI.",
+    description:
+      "Ask Immune retrieves graph context and Gate C approved cites when present; may surface PubMed/Europe PMC hits as provisional unreviewed literature only — not fully evidence-grounded AI.",
     status: "partial",
-    statusAsOf: "2026-04",
-    relatedAppRoute: "/reasoning",
-    sourceOfTruth: "src/lib/askGrounding.ts",
+    statusAsOf: "2026-10",
+    relatedAppRoute: "/ask",
+    sourceOfTruth: "src/lib/askGrounding.ts + provisionalLit.server.ts",
   },
   {
     id: "research-workbench",
@@ -98,11 +99,11 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Literature intelligence",
     page: "scientific-ai",
     description:
-      "Local candidate claim workflow + curation export. Not live PubMed bulk ingest — identifier checks stay on the server curation path after human import.",
+      "Local candidate claim workflow + curation export. Ask Immune may fetch provisional PubMed/Europe PMC hits for empty-approved or source-lookup queries; they never auto-upgrade to approved/supports.",
     status: "partial",
     statusAsOf: "2026-10",
     relatedAppRoute: "/research",
-    sourceOfTruth: "src/data/implementation-phases.ts phase C",
+    sourceOfTruth: "src/data/implementation-phases.ts phase C + provisionalLit.server.ts",
   },
   {
     id: "omics-adapters",

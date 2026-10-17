@@ -5,7 +5,7 @@ import AskAtlas from "@/components/immune/AskAtlas";
 import { PageHead } from "@/components/immune/ui";
 import { byId } from "@/lib/immune/engine";
 import { askPrefill } from "@/lib/immune/concepts";
-import { PRODUCT_NAME } from "@/lib/brand";
+import { ASK_NAME, PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 
 const ASK_SUGGESTIONS = [
@@ -24,9 +24,9 @@ export const Route = createFileRoute("/ask")({
   ),
   head: () =>
     seoHead({
-      title: `Ask ISI — immunology questions answered from the graph | ${PRODUCT_NAME}`,
+      title: `${ASK_NAME} — immunology questions from the graph | ${PRODUCT_NAME}`,
       description:
-        "Ask immunology questions from foundations to research. Answers retrieve concepts and links from the curated knowledge graph, show evidence status and link to concept pages. Educational; not medical advice.",
+        "Ask Immune answers from the curated knowledge graph, shows Gate C reviewed cites when present, and may list unreviewed PubMed/Europe PMC hits as provisional only. Educational; not medical advice; not fully evidence-grounded AI.",
       path: "/ask",
     }),
   component: AskPage,
@@ -38,9 +38,9 @@ function AskPage() {
   return (
     <div className="page isi-ask-page">
       <PageHead
-        kicker="Ask ISI"
+        kicker={ASK_NAME}
         title="Ask about the immune system."
-        lede="Answers are built from concepts and links retrieved from the curated knowledge graph. Each matched concept opens its own page; reviewed citations appear only where they exist, and missing evidence is said out loud. Your conversation is kept in this browser only."
+        lede="Answers are built from concepts and links retrieved from the curated knowledge graph. Each matched concept opens its own page; Gate C reviewed citations appear only where they exist; provisional literature is labelled unreviewed; missing evidence is said out loud. Your conversation is kept in this browser only."
       />
       {ctx ? (
         <p className="isi-ask-context" role="status">
@@ -49,7 +49,7 @@ function AskPage() {
       ) : null}
       <AskAtlas persistKey="isi-ask-conversation" initialInput={askPrefill(about, q)} groupedSuggestions={ASK_SUGGESTIONS} />
       <p className="xs muted" style={{ marginTop: 16 }}>
-        For personal symptoms, diagnosis or treatment, speak to a qualified clinician. ISI gives general education only.{" "}
+        For personal symptoms, diagnosis or treatment, speak to a qualified clinician. {ASK_NAME} gives general education only — not clinical decision support.{" "}
         <Link to="/methods">How answers are built</Link> · <Link to="/atlas">Browse the Knowledge Atlas</Link>
       </p>
     </div>

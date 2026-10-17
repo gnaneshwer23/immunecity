@@ -1,8 +1,14 @@
 # Curator evidence queue
 
-**Honest status (2026-10-16 P0 refresh):** Production Neon still has **9** approved+supports distinct `relationship_id`s / **46** evidence rows total. Runtime links ≈ **549**. Wrong-PMID Stohl/Groom mappings remain rejected/unrelated. Queue pack itself only creates unreviewed candidates — approvals are human-only.
+**Honest status (2026-10-17 Ask Immune refresh):** Production Neon still has sparse approved+supports claim links vs ~549 runtime edges. Wrong-PMID Stohl/Groom mappings remain rejected/unrelated. Queue pack itself only creates unreviewed candidates — approvals are human-only.
 
-Gate C is **not** done. Do not market Ask or exemplars as fully evidence-grounded until broader claim-linked coverage lands and SME gold-set is signed.
+Gate C is **not** done. Do not market Ask Immune or exemplars as fully evidence-grounded until broader claim-linked coverage lands and SME gold-set is signed.
+
+## Ask Immune vs Gate C (human path)
+
+Ask Immune can surface **provisional** PubMed / Europe PMC hits when graph matches but Gate C cites are empty (or on `source_lookup`). Those hits are **unreviewed literature only** — they never auto-upgrade to `approved` / `supports`.
+
+**P0 edges unlock “evidence-backed” more than new APIs.** Curator claim-linked approvals on the exemplar matrix below are what move Ask from “graph-retrieved + provisional lit” toward reviewed support in the UI. Prefer finishing those human Gate C actions over inventing PMIDs or mass-approving.
 
 ## What shipped
 
@@ -70,7 +76,7 @@ Also approved off-exemplar-path (counts toward Gate C numerator, not these waypo
 1. **PD-1 Chemnitz reassessment** — open `RELQ-REL-R012-suppresses-C015-C1` on `/curation`; decide `supports` vs leave `partial`.
 2. **PD-1 biomarker edges** — literature workflow / PubMed for `REL-B011-measures-R012` and `REL-B011-predicts_response_to-I008`; Check → claim_support → Approve.
 3. **IFN scaffold spine** — same for `REL-C005-produces-P004`, `REL-R018-signals_through-P004`, `REL-M018-binds-R018`, `REL-I015-treats-D007`.
-4. Do **not** invent PMIDs, mass-approve, or mark Ask “evidence-grounded” until these land (and SME gold-set is signed).
+4. Do **not** invent PMIDs, mass-approve, or mark Ask Immune “evidence-grounded” / fully evidence-backed until these land (and SME gold-set is signed). Provisional lit in Ask does **not** substitute for Gate C.
 
 Use `EXEMPLAR_CURATOR_TARGETS` / curation UI callout for the same hints. Maturity stays `scaffold` / `partially-reviewed` until live approved+supports cover unique on-path edges.
 

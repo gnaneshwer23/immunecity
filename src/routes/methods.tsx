@@ -233,8 +233,9 @@ function Methods() {
               <b>Patient layer:</b> transparent additive rules. Educational illustration — not patient-specific advice.
             </li>
             <li>
-              <b>Ask:</b> classify → retrieve graph context → attach reviewed relationship cites when present → optional
-              synthesis from that extract only (prompt {PROMPT_VERSION}). Sparse cites mean Ask is graph-retrieved, not
+              <b>Ask Immune:</b> classify → retrieve graph context → attach Gate C reviewed relationship cites when
+              present → optionally fetch provisional PubMed/Europe PMC hits (never auto-approved) → optional synthesis
+              from that extract only (prompt {PROMPT_VERSION}). Sparse cites mean Ask Immune is graph-retrieved, not
               fully evidence-grounded. Answers can still be wrong.
             </li>
             <li>

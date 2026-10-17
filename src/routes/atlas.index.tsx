@@ -56,7 +56,7 @@ function Atlas() {
                 </li>
               ))}
             </ul>
-          ) : <p className="isi-empty" style={{ marginTop: 12 }}>No concept matches "{q}". Try Ask ISI for a broader question.</p>
+          ) : <p className="isi-empty" style={{ marginTop: 12 }}>No concept matches "{q}". Try Ask Immune for a broader question.</p>
         ) : null}
       </section>
 
