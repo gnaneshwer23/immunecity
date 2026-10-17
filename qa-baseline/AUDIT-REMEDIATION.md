@@ -3,8 +3,9 @@
 **Canonical:** https://www.immune-super-intelligence.co.uk/  
 **Repo (GitHub):** `gnaneshwer23/immunecity` · default branch `main`  
 **Branch:** `audit/remediation`  
-**Synced GitHub HEAD (origin/main):** `040b973` — *Visual-explainer redesign: illustrated pages, In-short takeaways, on-demand sources; audit fixes*  
-**Prior session baseline (stale):** `fcd6309` / roughly `0eb7d17` — **superseded** by four commits on `main` after fetch.
+**Synced GitHub HEAD (origin/main):** `3973551` — *Improve Ask synonym matching and curator ID-vs-claim clarity.* (merged from `audit/remediation`)  
+**Production deploy:** `dpl_6N6Cj9ygdFBrP7gaNeFEtgGJvgdJ` → www + `immunecity.vercel.app` (post-audit fix commit may supersede)  
+**Prior session baseline (stale):** `fcd6309` / roughly `0eb7d17` — **superseded**.
 
 ## GitHub sync (2026-10-17)
 

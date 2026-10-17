@@ -52,7 +52,7 @@ export function CausalSpine({ compact = false }: { compact?: boolean }) {
         {members.length > 0 ? (
           <>
             <p className="spine-count">
-              {members.length} graph concept{members.length === 1 ? "" : "s"} participate at this stage.
+              {`${members.length} graph concept${members.length === 1 ? "" : "s"} participate at this stage.`}
             </p>
             <ul className="spine-examples">
               {examples.map((n) => (

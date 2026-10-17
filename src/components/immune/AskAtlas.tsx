@@ -289,8 +289,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                   return q ? (
                     <p className="xs muted">
                       Look for literature:{" "}
-                      <Link to="/research" search={{ lib: q }} hash="library">search Nature Immunology metadata</Link>{" "}
-                      (source records only — not reviewed evidence).
+                      <Link to="/research" search={{ lib: q }} hash="library">search journal metadata (Crossref)</Link>{" "}
+                      (source records only — not reviewed evidence; no Nature Portfolio affiliation).
                     </p>
                   ) : null;
                 })() : null}

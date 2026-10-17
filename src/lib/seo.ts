@@ -85,7 +85,7 @@ export function siteJsonLd(): Record<string, unknown> {
           "@type": "SearchAction",
           target: {
             "@type": "EntryPoint",
-            urlTemplate: `${CANONICAL_ORIGIN}/reasoning?q={search_term_string}`,
+            urlTemplate: `${CANONICAL_ORIGIN}/ask?q={search_term_string}`,
           },
           "query-input": "required name=search_term_string",
         },

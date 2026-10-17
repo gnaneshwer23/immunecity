@@ -243,8 +243,9 @@ function Home() {
             <span className="bio-section-number">04 / RESEARCH INTELLIGENCE</span>
             <h2 id="research-heading">From a paper to a reviewable claim.</h2>
             <p className="lede">
-              The Research Library searches live Nature Immunology article metadata. An article can start a candidate
-              claim, which is mapped to graph concepts and stays unreviewed until a curator approves it.
+              The Research Library searches live Crossref metadata across Nature Portfolio immunology journals
+              (no affiliation implied). An article can start a candidate claim, which is mapped to graph concepts and
+              stays unreviewed until a curator approves it.
             </p>
             <Button asChild className="bio-primary">
               <Link to="/research" hash="library"><BookOpen /> Browse the Research Library</Link>

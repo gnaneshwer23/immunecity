@@ -64,8 +64,11 @@ function LiveEvidencePanel() {
         </div>
       </dl>
       <p className="mkt-aside">
-        Fetched at <code>{fetchedAt ?? "—"}</code>. Only rows with <code>relationship_id</code> +{" "}
-        <code>claim_support=supports</code> count as link support. Concept-level rows never inflate coverage.{" "}
+        {loading
+          ? "Fetching approved citations…"
+          : <>Fetched at <code>{fetchedAt ?? "unavailable"}</code>.</>}{" "}
+        Only rows with <code>relationship_id</code> + <code>claim_support=supports</code> count as link support.
+        Concept-level rows never inflate coverage.{" "}
         <Link to="/evidence">Full Evidence breakdown</Link>
       </p>
     </div>
