@@ -1794,6 +1794,8 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
 .graph-explorer {
   --graph-stage-bg: var(--surface);
   --graph-stage-border: var(--border);
+  /* Workspace height shared by sticky panel + stage (see atlas.css). */
+  --graph-workspace-h: max(520px, calc(100dvh - var(--top, 80px) - 1.5rem));
 }
 .graph-view-toggle {
   display: inline-flex;
