@@ -492,8 +492,8 @@ export function restoreWorkbenchFromExportJson(jsonText: string): {
   if (obj.kind !== "scientific_workbench_export") {
     return { error: "Expected kind scientific_workbench_export." };
   }
-  if (obj.kgWrite === true) return { error: "Refusing export marked kgWrite=true." };
-  if (obj.experimentallySupported === true) {
+  if ((obj.kgWrite as unknown) === true) return { error: "Refusing export marked kgWrite=true." };
+  if ((obj.experimentallySupported as unknown) === true) {
     return { error: "Refusing export marked experimentallySupported." };
   }
   if (!obj.session || typeof obj.session !== "object") {

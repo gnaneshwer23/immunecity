@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { CONTENT } from "@/data/content";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useMemo, useState } from "react";
@@ -38,6 +39,7 @@ const LINEAGES = [
 function CellCard({ c, expanded, onToggle, focusNodes }: { c: Cell; expanded: boolean; onToggle: () => void; focusNodes?: string[] | undefined }) {
   const mapped = (focusNodes || []).filter((id) => byId[id]);
   const gene = CELL_GENE[c.id];
+  const lessons = CONTENT.lessons.filter((l) => ((l.cells || []) as string[]).includes(c.id));
   const [protein, setProtein] = useState<LiveProtein | null>(null);
   useEffect(() => {
     if (!expanded || !gene) return;
@@ -55,7 +57,12 @@ function CellCard({ c, expanded, onToggle, focusNodes }: { c: Cell; expanded: bo
           <p>{c.summary}</p>
           <span className="cell-meta">
             <span className="chip">{c.lineageLabel}</span>
-            <span className="chip">{mapped.length} graph nodes</span>
+            {mapped.length ? (
+              <span className="chip">{mapped.length} graph {mapped.length === 1 ? "node" : "nodes"}</span>
+            ) : (
+              <span className="chip chip-gap" title="No direct concept in the curated graph yet">Not yet in graph</span>
+            )}
+            {lessons.length ? <span className="chip">{lessons.length} {lessons.length === 1 ? "mechanism" : "mechanisms"}</span> : null}
           </span>
         </span>
       </button>
@@ -76,8 +83,23 @@ function CellCard({ c, expanded, onToggle, focusNodes }: { c: Cell; expanded: bo
             <p className="small muted">{c.analogyBreak}</p>
             <h4>In the knowledge graph</h4>
             <div className="row">
-              {mapped.length ? mapped.map((id) => <NodeChip key={id} id={id} />) : <span className="muted xs">No direct node mapping.</span>}
+              {mapped.length ? mapped.map((id) => <NodeChip key={id} id={id} />) : <span className="muted xs">Not yet mapped to a curated graph concept — treat this entry as teaching content only.</span>}
             </div>
+            {mapped.length ? (
+              <p className="small" style={{ marginTop: 8 }}>
+                <Link to="/graph" search={{ focus: mapped[0]! }}>Trace {c.name} in the knowledge graph →</Link>
+              </p>
+            ) : null}
+            <h4>Mechanisms featuring this cell</h4>
+            {lessons.length ? (
+              <ul>
+                {lessons.map((l) => (
+                  <li key={l.id}><Link to="/mechanism/$id" params={{ id: l.id }}>{l.title}</Link>{l.draft ? <span className="muted xs"> · draft</span> : null}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="small muted">No mechanism lesson covers this cell yet.</p>
+            )}
             {protein ? (
               <>
                 <h4>Signature protein (live from UniProt)</h4>
@@ -118,6 +140,7 @@ function Learn() {
           <button key={l.id} className={`chip${lineage === l.id ? " on" : ""}`} onClick={() => setLineage(l.id)}>{l.label}</button>
         ))}
       </div>
+      <h2 className="sr-only">Atlas entries</h2>
       <div className="cells">
         {cells.map((c) => (
           <CellCard

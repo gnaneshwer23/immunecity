@@ -259,7 +259,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
       <div className={`graph-layout${viewMode === "list" ? " graph-layout-hidden" : ""}`}>
         <aside className="graph-panel">
           <div className="card">
-            <h3>Find a concept</h3>
+            <h2 className="graph-panel-h">Find a concept</h2>
             <div className="search graph-find">
               <input
                 value={findQ}
@@ -289,7 +289,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
           </div>
           {STARTING_POINTS.length ? (
             <div className="card">
-              <h3>Starting points</h3>
+              <h2 className="graph-panel-h">Starting points</h2>
               <div className="graph-starters">
                 {STARTING_POINTS.map((s) => (
                   <button
@@ -312,7 +312,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
             </div>
           ) : null}
           <div className="card">
-            <h3>Concept types</h3>
+            <h2 className="graph-panel-h">Concept types</h2>
             <div className="type-list">
               {ALL_TYPES.map((t) => (
                 <label key={t}>
@@ -325,7 +325,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
             </div>
           </div>
           <div className="card">
-            <h3>Tissue</h3>
+            <h2 className="graph-panel-h">Tissue</h2>
             <select value={tissue} onChange={(e) => setTissue(e.target.value as Tissue | "")} aria-label="Limit links to one tissue" style={{ width: "100%" }}>
               <option value="">All tissues</option>
               {TISSUES.map((t) => <option key={t} value={t}>{t}</option>)}

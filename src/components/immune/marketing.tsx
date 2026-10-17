@@ -9,16 +9,19 @@ export function MarketingHero({
   lede,
   actions,
   foot,
+  aside,
 }: {
   eyebrow: string;
   title: ReactNode;
   lede?: ReactNode;
   actions?: ReactNode;
   foot?: ReactNode;
+  aside?: ReactNode;
 }) {
   return (
     <header className="mkt-hero">
-      <div className="mkt-hero-inner">
+      <div className={`mkt-hero-inner${aside ? " mkt-hero-split" : ""}`}>
+        <div className="mkt-hero-main">
         <div className="bio-eyebrow mkt-hero-eyebrow">
           <span className="status-dot" /> {eyebrow}
         </div>
@@ -26,6 +29,8 @@ export function MarketingHero({
         {lede ? <p className="mkt-hero-lede">{lede}</p> : null}
         {actions ? <div className="bio-actions mkt-hero-actions">{actions}</div> : null}
         {foot ? <p className="mkt-hero-foot">{foot}</p> : null}
+        </div>
+        {aside ? <aside className="mkt-hero-aside">{aside}</aside> : null}
       </div>
     </header>
   );

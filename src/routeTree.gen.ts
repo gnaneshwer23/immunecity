@@ -36,10 +36,12 @@ import { Route as ScientificAiRouteImport } from './routes/scientific-ai'
 import { Route as SimulatorRouteImport } from './routes/simulator'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TherapyRouteImport } from './routes/therapy'
+import { Route as VisionRouteImport } from './routes/vision'
 import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticated/curation'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
 import { Route as MechanismIdRouteImport } from './routes/mechanism.$id'
+import { Route as ApiPublicGithubSyncRouteImport } from './routes/api/public/github-sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -175,6 +177,11 @@ const TherapyRoute = TherapyRouteImport.update({
   path: '/therapy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VisionRoute = VisionRouteImport.update({
+  id: '/vision',
+  path: '/vision',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCurationRoute = AuthenticatedCurationRouteImport.update({
   id: '/curation',
   path: '/curation',
@@ -193,6 +200,11 @@ const MechanismIndexRoute = MechanismIndexRouteImport.update({
 const MechanismIdRoute = MechanismIdRouteImport.update({
   id: '/mechanism/$id',
   path: '/mechanism/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicGithubSyncRoute = ApiPublicGithubSyncRouteImport.update({
+  id: '/api/public/github-sync',
+  path: '/api/public/github-sync',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -223,10 +235,12 @@ export interface FileRoutesByFullPath {
   '/simulator': typeof SimulatorRoute
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
+  '/vision': typeof VisionRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/mechanism/': typeof MechanismIndexRoute
+  '/api/public/github-sync': typeof ApiPublicGithubSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -255,10 +269,12 @@ export interface FileRoutesByTo {
   '/simulator': typeof SimulatorRoute
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
+  '/vision': typeof VisionRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/mechanism': typeof MechanismIndexRoute
+  '/api/public/github-sync': typeof ApiPublicGithubSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -289,10 +305,12 @@ export interface FileRoutesById {
   '/simulator': typeof SimulatorRoute
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
+  '/vision': typeof VisionRoute
   '/_authenticated/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/mechanism/': typeof MechanismIndexRoute
+  '/api/public/github-sync': typeof ApiPublicGithubSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -323,10 +341,12 @@ export interface FileRouteTypes {
     | '/simulator'
     | '/terms'
     | '/therapy'
+    | '/vision'
     | '/curation'
     | '/api/ask'
     | '/mechanism/$id'
     | '/mechanism/'
+    | '/api/public/github-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -355,10 +375,12 @@ export interface FileRouteTypes {
     | '/simulator'
     | '/terms'
     | '/therapy'
+    | '/vision'
     | '/curation'
     | '/api/ask'
     | '/mechanism/$id'
     | '/mechanism'
+    | '/api/public/github-sync'
   id:
     | '__root__'
     | '/'
@@ -388,10 +410,12 @@ export interface FileRouteTypes {
     | '/simulator'
     | '/terms'
     | '/therapy'
+    | '/vision'
     | '/_authenticated/curation'
     | '/api/ask'
     | '/mechanism/$id'
     | '/mechanism/'
+    | '/api/public/github-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -422,9 +446,11 @@ export interface RootRouteChildren {
   SimulatorRoute: typeof SimulatorRoute
   TermsRoute: typeof TermsRoute
   TherapyRoute: typeof TherapyRoute
+  VisionRoute: typeof VisionRoute
   ApiAskRoute: typeof ApiAskRoute
   MechanismIdRoute: typeof MechanismIdRoute
   MechanismIndexRoute: typeof MechanismIndexRoute
+  ApiPublicGithubSyncRoute: typeof ApiPublicGithubSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -618,6 +644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TherapyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vision': {
+      id: '/vision'
+      path: '/vision'
+      fullPath: '/vision'
+      preLoaderRoute: typeof VisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/curation': {
       id: '/_authenticated/curation'
       path: '/curation'
@@ -644,6 +677,13 @@ declare module '@tanstack/react-router' {
       path: '/mechanism/$id'
       fullPath: '/mechanism/$id'
       preLoaderRoute: typeof MechanismIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/github-sync': {
+      id: '/api/public/github-sync'
+      path: '/api/public/github-sync'
+      fullPath: '/api/public/github-sync'
+      preLoaderRoute: typeof ApiPublicGithubSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -688,9 +728,11 @@ const rootRouteChildren: RootRouteChildren = {
   SimulatorRoute: SimulatorRoute,
   TermsRoute: TermsRoute,
   TherapyRoute: TherapyRoute,
+  VisionRoute: VisionRoute,
   ApiAskRoute: ApiAskRoute,
   MechanismIdRoute: MechanismIdRoute,
   MechanismIndexRoute: MechanismIndexRoute,
+  ApiPublicGithubSyncRoute: ApiPublicGithubSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

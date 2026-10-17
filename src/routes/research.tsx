@@ -9,6 +9,7 @@ import { PageHead, NodeChip } from "@/components/immune/ui";
 import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
+import PhoneFold from "@/components/immune/PhoneFold";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 
@@ -62,6 +63,15 @@ function Research() {
         ]}
       />
 
+      <nav className="page-jump" aria-label="On this page">
+        <a href="#workbench">Workbench</a>
+        <a href="#literature">Literature</a>
+        <a href="#model-registry">Models</a>
+        <a href="#phases">Phases</a>
+        <a href="#frontier">Frontier</a>
+        <a href="#roadmap">Roadmap</a>
+      </nav>
+
       <section className="section" id="workbench">
         <h2>Workbench</h2>
         <p className="lede">
@@ -79,7 +89,7 @@ function Research() {
         <p className="lede">
           Phase C workflow — local metadata + candidate claims. Not live bulk PubMed ingest; export candidates or send them into the workbench evidence step (still drafts).
         </p>
-        <LiteratureQueue onSendToWorkbench={setLitHandoff} />
+        <PhoneFold label="Show literature queue"><LiteratureQueue onSendToWorkbench={setLitHandoff} /></PhoneFold>
       </section>
 
       <section className="section" id="model-registry">
@@ -88,7 +98,7 @@ function Research() {
           Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters.
           Badges read <b>planned / interface-only · not live</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.
         </p>
-        <ModelRegistryPanel />
+        <PhoneFold label="Show model registry"><ModelRegistryPanel /></PhoneFold>
       </section>
 
       <section className="section" id="phases">
@@ -96,6 +106,7 @@ function Research() {
         <p className="lede">
           Status reflects shipped, testable code — not marketing claims. See also <Link to="/methods">Methods &amp; trust</Link>.
         </p>
+        <PhoneFold label="Show all phases">
         <div className="grid auto">
           {IMPLEMENTATION_PHASES.map((p) => (
             <article className="card" key={p.id}>
@@ -111,10 +122,12 @@ function Research() {
             </article>
           ))}
         </div>
+        </PhoneFold>
       </section>
 
-      <section className="section">
+      <section className="section" id="frontier">
         <h2>Frontier</h2>
+        <PhoneFold label="Show all frontier topics">
         <div className="grid auto">
           {frontier.map((f) => (
             <article className="card frontier-card" data-status={f.status} key={f.title}>
@@ -127,10 +140,12 @@ function Research() {
             </article>
           ))}
         </div>
+        </PhoneFold>
       </section>
-      <section className="section">
+      <section className="section" id="roadmap">
         <h2>Roadmap</h2>
         <p className="lede">What the atlas still needs to become a complete causal model.</p>
+        <PhoneFold label="Show full roadmap">
         <ol className="small roadmap-tl">
           {roadmap.map((r, i) => (
             <li key={r.text}>
@@ -139,6 +154,7 @@ function Research() {
             </li>
           ))}
         </ol>
+        </PhoneFold>
       </section>
     </div>
   );

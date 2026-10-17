@@ -5,6 +5,7 @@ import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 import CoveragePanel from "@/components/immune/CoveragePanel";
 import DomainCoveragePanel from "@/components/immune/DomainCoveragePanel";
+import PhoneFold from "@/components/immune/PhoneFold";
 
 export const Route = createFileRoute("/evidence")({
   head: () => ({
@@ -56,9 +57,18 @@ function Evidence() {
         <Link className="btn" to="/curation">Citation curation</Link>
         <span className="xs muted">Neon Auth curation: import a citation manifest, cross-check identifiers against PubMed and Crossref, and approve claim-linked records. Admin is provisioned explicitly.</span>
       </div>
-      <CoveragePanel />
-      <DomainCoveragePanel />
-      <section className="section">
+      <nav className="page-jump" aria-label="On this page">
+        <a href="#coverage">Coverage</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#trials">Trials</a>
+      </nav>
+      <div id="coverage">
+        <PhoneFold label="Show full coverage">
+          <CoveragePanel />
+          <DomainCoveragePanel />
+        </PhoneFold>
+      </div>
+      <section className="section" id="timeline">
         <h2>When mechanisms were tested</h2>
         <p className="lede">Bar height is the number of landmark trials in that year. Click a bar to filter.</p>
         <div className="timeline-bar">
@@ -79,7 +89,7 @@ function Evidence() {
           {year ? <button className="chip on" onClick={() => setYear(null)}>Clear {year}</button> : null}
         </div>
       </section>
-      <section className="section">
+      <section className="section" id="trials">
         <h2>{year ? `Trials in ${year}` : "All landmark trials"}</h2>
         <div className="ev-filters">
           <button className={`chip${result === null ? " on" : ""}`} onClick={() => setResult(null)}>All results · {trials.length}</button>
@@ -89,7 +99,7 @@ function Evidence() {
             </button>
           ))}
         </div>
-        <div>
+        <PhoneFold label={`Show all ${shown.length} trials`} className="phone-fold-list">
           {shown.map((t) => {
             const node = byId[t.id];
             return (
@@ -108,7 +118,7 @@ function Evidence() {
               </div>
             );
           })}
-        </div>
+        </PhoneFold>
       </section>
     </div>
   );

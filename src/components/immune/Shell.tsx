@@ -5,9 +5,9 @@ import { NAV_GROUPS } from "./nav";
 import {
   FOOTER_GROUPS,
   isMarketingPath,
-  MARKETING_NAV,
+  JOURNEY_NAV,
+  JOURNEY_SECONDARY,
   MARKETING_NAV_ACTION,
-  MARKETING_NAV_PRIMARY,
 } from "@/data/marketingNav";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -173,18 +173,38 @@ function MarketingCompactNav({
           </Button>
         </div>
         <div className="marketing-compact-links">
-          {MARKETING_NAV.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={item.path === MARKETING_NAV_ACTION.path ? "collab-action" : undefined}
-              activeOptions={{ exact: item.path === "/" }}
-              activeProps={{ className: "active" }}
-              onClick={onClose}
-            >
-              {item.label}
-            </Link>
+          {JOURNEY_NAV.map((g) => (
+            <div key={g.label} className="marketing-compact-group">
+              <span className="marketing-compact-label">{g.label}</span>
+              {g.items.map((item) => (
+                <Link key={item.path} to={item.path} activeProps={{ className: "active" }} onClick={onClose}>
+                  {item.title}
+                </Link>
+              ))}
+            </div>
           ))}
+          <details className="marketing-compact-group marketing-compact-layers">
+            <summary className="marketing-compact-label">All twelve science layers</summary>
+            {NAV_GROUPS.flatMap((g) => [...g.items] as { n: string; path: string; title: string }[]).filter((l) => l.path !== "/").map((l) => (
+              <Link key={l.path} to={l.path as "/"} activeProps={{ className: "active" }} onClick={onClose}>
+                <span className="num">{l.n}</span> {l.title}
+              </Link>
+            ))}
+          </details>
+          <div className="marketing-compact-group">
+            <span className="marketing-compact-label">Organisation</span>
+            {[...JOURNEY_SECONDARY, MARKETING_NAV_ACTION].map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={item.path === MARKETING_NAV_ACTION.path ? "collab-action" : undefined}
+                activeProps={{ className: "active" }}
+                onClick={onClose}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
         </div>
         <div className="marketing-compact-cta">
           <Button asChild className="bio-primary">
@@ -223,11 +243,8 @@ export default function Shell({ children }: { children: ReactNode }) {
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
-      <header className={`topbar${darkMarketingChrome ? " home-topbar" : ""}${marketing ? " marketing-topbar" : ""}`}>
-        {!marketing && (
-          <Button variant="ghost" size="icon" className="icon-btn nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open} title="Toggle navigation"><Menu size={20} /></Button>
-        )}
-        {marketing && (
+      <header className={`topbar${darkMarketingChrome ? " home-topbar" : ""} marketing-topbar`}>
+        {(
           <Button
             variant="ghost"
             size="icon"
@@ -245,48 +262,43 @@ export default function Shell({ children }: { children: ReactNode }) {
           <Logo />
           <span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span>
         </Link>
-        {marketing ? (
-          <>
-            <nav className="marketing-nav" aria-label="Primary">
-              {MARKETING_NAV_PRIMARY.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="marketing-nav-link"
-                  activeOptions={{ exact: item.path === "/" }}
-                  activeProps={{ className: "marketing-nav-link current" }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <Link
-                to={MARKETING_NAV_ACTION.path}
-                className="marketing-nav-link collab-action"
-                activeProps={{ className: "marketing-nav-link collab-action current" }}
-              >
-                {MARKETING_NAV_ACTION.label}
-              </Link>
-            </nav>
-            <Button asChild className="bio-primary topbar-cta">
-              <Link to={pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH}>
-                {pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA}
-              </Link>
-            </Button>
-            <MarketingCompactNav
-              open={open}
-              onClose={closeCompact}
-              pathname={pathname}
-              panelId={compactNavId}
-            />
-          </>
-        ) : (
-          <nav className="pillar-nav" aria-label="Primary">
-            {NAV_GROUPS.map((g) => (
-              <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />
-            ))}
-          </nav>
-        )}
+        <nav className="journey-nav" aria-label="Primary">
+          {JOURNEY_NAV.map((g) => (
+            <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />
+          ))}
+          <span className="journey-sep journey-secondary" aria-hidden />
+          {JOURNEY_SECONDARY.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="marketing-nav-link journey-secondary"
+              activeProps={{ className: "marketing-nav-link journey-secondary current" }}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <Link
+            to={MARKETING_NAV_ACTION.path}
+            className="marketing-nav-link collab-action journey-secondary"
+            activeProps={{ className: "marketing-nav-link collab-action journey-secondary current" }}
+          >
+            {MARKETING_NAV_ACTION.label}
+          </Link>
+        </nav>
+        <Button asChild className="bio-primary topbar-cta">
+          <Link to={pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH}>
+            {pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA}
+          </Link>
+        </Button>
       </header>
+        {(
+          <MarketingCompactNav
+            open={open}
+            onClose={closeCompact}
+            pathname={pathname}
+            panelId={compactNavId}
+          />
+        )}
       <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? "Close Ask chatbot" : "Open Ask chatbot"} title={ASK_NAME}>
         {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask</span>
       </Button>
@@ -301,33 +313,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         </DialogPortal>
       </Dialog>
       <ScientificInspector />
-      <div className={`shell${marketing || !open ? " nav-closed" : ""}${marketing ? " marketing-shell" : ""}`}>
-        {!marketing && (
-          <nav className={`sidebar${open ? " open" : ""}`} aria-label="Layers">
-            {NAV_GROUPS.map((g) => (
-              <div key={g.label}>
-                <div className="nav-label">{g.label}</div>
-                <div className="nav-group">
-                  {g.items.map((l) => (
-                    <Link key={l.path} to={l.path} activeOptions={{ exact: l.path === "/" }} activeProps={{ className: "active" }} onClick={() => setOpen(false)}>
-                      <span className="num">{l.n}</span>{l.title}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-            <div className="nav-label">Tools</div>
-            <div className="nav-group">
-              <Link to="/curation" activeProps={{ className: "active" }} onClick={() => setOpen(false)}>
-                <span className="num">EV</span>Citation curation
-              </Link>
-              <Link to="/methods" activeProps={{ className: "active" }} onClick={() => setOpen(false)}>
-                <span className="num">MT</span>Methods &amp; trust
-              </Link>
-            </div>
-            <p className="nav-foot">Educational atlas with references — not patient-specific advice.</p>
-          </nav>
-        )}
+      <div className={`shell nav-closed${marketing ? " marketing-shell" : ""}`}>
         <main id="main" tabIndex={-1}>
           {children}
           {pathname !== "/graph" && <SiteFooter />}

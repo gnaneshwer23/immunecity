@@ -76,7 +76,7 @@ function Patient() {
       <div className="g2 grid" style={{ alignItems: "start" }}>
         <div className="card">
           <div className="row" style={{ justifyContent: "space-between", marginBottom: 12 }}>
-            <h3 style={{ fontSize: "1.05rem" }}>Patient features</h3>
+            <h2 style={{ fontSize: "1.05rem" }}>Patient features</h2>
             {selected.size ? <button className="btn sm" onClick={() => setSelected(new Set())}>Clear all</button> : null}
           </div>
           {GROUPS.map((g) => (
@@ -112,7 +112,7 @@ function Patient() {
           )}
         </div>
         <div>
-          <h3 style={{ fontSize: "1.05rem", marginBottom: 10 }}>{anyInput ? `${ranked.length} therapies matched` : "Ranked therapies"}</h3>
+          <h2 style={{ fontSize: "1.05rem", marginBottom: 10 }}>{anyInput ? `${ranked.length} therapies matched` : "Ranked therapies"}</h2>
           {!anyInput ? <p className="empty card">Select at least one patient feature, or move a biomarker slider past a threshold, to rank therapies against the rule set.</p> : null}
           {anyInput && !ranked.length ? <p className="empty card">No rule in the atlas touches these features yet.</p> : null}
           {ranked.map((d) => (

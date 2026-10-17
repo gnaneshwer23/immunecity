@@ -58,11 +58,11 @@ async function parseJson<T>(res: Response): Promise<AuthResult<T>> {
     body = null;
   }
   if (!res.ok) {
-    const msg =
+    const msg: string = (
       (body && typeof body === "object" && "message" in body && String((body as { message: unknown }).message)) ||
       (body && typeof body === "object" && "error" in body && String((body as { error: unknown }).error)) ||
       res.statusText ||
-      "Auth request failed";
+      "Auth request failed") as string;
     return { data: null, error: { message: msg } };
   }
   return { data: body as T, error: null };

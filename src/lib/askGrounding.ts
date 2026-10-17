@@ -160,7 +160,7 @@ function evidenceTier(edge: KGEdge, review: ReviewStatus): EvidenceTier {
   if (st === "EMERGING") return "emerging";
   if (st === "EVIDENCE-SUPPORTED" || review === "claim-assessed" || review === "source-verified") return "evidence-supported";
   if (st === "ESTABLISHED" || review === "approved") return "established";
-  return review === "approved" ? "established" : "missing-support";
+  return "missing-support";
 }
 
 export function groundLink(edge: KGEdge, cites: CitationLike[] = []): GroundedLink {

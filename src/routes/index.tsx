@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PlatformMapVisual } from "@/components/immune/PlatformMapVisual";
+import { CausalSpine } from "@/components/immune/CausalSpine";
+import { IsiCityBand } from "@/components/immune/IsiCityBand";
+import { VISION_MOTTO } from "@/data/vision";
 import { TrustBlock } from "@/components/immune/marketing";
 import {
   BRAND_EYEBROW,
@@ -41,26 +43,10 @@ export const Route = createFileRoute("/")({
 });
 
 const HOW_IT_WORKS = [
-  {
-    n: "01",
-    title: "Start with a question",
-    copy: "Choose an immune concept, pathway, disease or research problem.",
-  },
-  {
-    n: "02",
-    title: "Trace the mechanism",
-    copy: "Follow the relationships connecting molecules, cells, tissues and outcomes.",
-  },
-  {
-    n: "03",
-    title: "Inspect the evidence",
-    copy: "Open sources, context, review status and limitations behind each relationship.",
-  },
-  {
-    n: "04",
-    title: "Form a hypothesis",
-    copy: "Use the research workbench to organise candidates — drafts until human review.",
-  },
+  { n: "01", to: "/learn", title: "Start with a concept", copy: "Pick a cell, molecule, pathway or disease." },
+  { n: "02", to: "/mechanism", title: "Trace the mechanism", copy: "Walk the steps from molecules to cells, tissues and outcomes." },
+  { n: "03", to: "/methods", title: "Inspect the evidence", copy: "See sources, review status and limits behind each link." },
+  { n: "04", to: "/research", title: "Draft a hypothesis", copy: "Organise candidates in the workbench — drafts until human review." },
 ] as const;
 
 /** Home causal preview: TNF→RA exemplar (documented maturity; live cites still load in the graph). */
@@ -73,7 +59,7 @@ function HomeCausalPathway() {
     <div className="home-pathway">
       <div className="bio-section-heading">
         <div>
-          <span className="bio-section-number">02 / LIVE GRAPH PATHWAY</span>
+          <span className="bio-section-number">LIVE GRAPH PATHWAY</span>
           <h2 id="demo-heading">{HOME_EXEMPLAR.title}</h2>
         </div>
         <p>
@@ -82,16 +68,19 @@ function HomeCausalPathway() {
         </p>
       </div>
       <ol className="home-causal-path" aria-label={`${HOME_EXEMPLAR.title} relationships`}>
-        {report.segments.flatMap((seg) =>
+        {report.segments.flatMap((seg, si) =>
           (seg.steps ?? []).map((step, i) => {
             const rid = seg.relIds[i]!;
+            // Segments can share a link; show each relationship once.
+            const firstSeen = report.segments.findIndex((s2) => s2.relIds.includes(rid));
+            if (firstSeen !== si || seg.relIds.indexOf(rid) !== i) return null;
             const review = seg.reviews[i]!;
             const label = report.edgeReviews.find((x) => x.relId === rid)?.label ?? String(review);
             const subj = byId[step.r.subject_id];
             const obj = byId[step.r.object_id];
             if (!subj || !obj) return null;
             return (
-              <li key={`${rid}-${i}`}>
+              <li key={`${si}-${rid}-${i}`}>
                 <Link
                   className="home-causal-hop"
                   to="/graph"
@@ -153,83 +142,106 @@ function Home() {
       </section>
 
       <div className="bio-content home-sections">
+        {/* B — What ISI enables */}
+        <section className="bio-section" aria-labelledby="enables-heading">
+          <div className="bio-section-heading">
+            <div>
+              <span className="bio-section-number">01 / WHAT ISI ENABLES</span>
+              <h2 id="enables-heading">Not isolated facts — connected mechanisms.</h2>
+            </div>
+            <p>A search returns a fact. ISI shows what it connects to, in which direction, and how well it is supported.</p>
+          </div>
+          <div className="home-compare">
+            <div className="home-compare-col home-compare-flat">
+              <span className="home-compare-label">A typical search</span>
+              <p className="home-compare-q">"What does TNF do?"</p>
+              <ul>
+                <li>A list of papers and definitions</li>
+                <li>No direction: cause and effect look the same</li>
+                <li>No path to disease, target or therapy</li>
+                <li>Evidence quality left for you to judge</li>
+              </ul>
+            </div>
+            <div className="home-compare-col home-compare-connected">
+              <span className="home-compare-label">In Immune City</span>
+              <HomeCausalPathway />
+            </div>
+          </div>
+        </section>
+
+        {/* C — Learn / Explore / Investigate */}
         <section className="bio-section" aria-labelledby="pillars-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">01 / LEARN · EXPLORE · INVESTIGATE</span>
+              <span className="bio-section-number">02 / LEARN · EXPLORE · INVESTIGATE</span>
               <h2 id="pillars-heading">Three ways into the same system.</h2>
             </div>
-            <p>One brand — not separate products.</p>
+            <p>Pick the journey that matches what you came to do.</p>
           </div>
           <div className="platform-pillars">
-            <Link className="platform-pillar" to={LEARN_PATH}>
+            <Link className="platform-pillar" to="/learn">
               <span className="platform-pillar-kicker">Learn</span>
-              <h3>Immunology Academy</h3>
-              <p>
-                Foundation track is primary and navigable. Intermediate and Advanced are labelled development scaffolds —
-                not a finished curriculum or certification.
-              </p>
-              <span className="platform-pillar-cta">{LEARN_CTA}</span>
+              <h3>Understand the parts</h3>
+              <p>Cells in the Cell atlas, step-by-step cascades, and the Academy foundation track. Intermediate and Advanced tracks are still in development.</p>
+              <span className="platform-pillar-cta">Open the Cell atlas</span>
             </Link>
-            <Link className="platform-pillar" to={EXPLORE_PATH}>
+            <Link className="platform-pillar" to="/graph">
               <span className="platform-pillar-kicker">Explore</span>
-              <h3>{FLAGSHIP_NAME}</h3>
-              <p>
-                Navigate immune cells, molecules, mechanisms, diseases, therapies and trials in a connected graph.
-              </p>
-              <span className="platform-pillar-cta">{EXPLORE_CTA}</span>
+              <h3>Follow the connections</h3>
+              <p>Move through the knowledge graph from molecules and cells to disease, targets, therapies and trials.</p>
+              <span className="platform-pillar-cta">Open the knowledge graph</span>
             </Link>
-            <Link className="platform-pillar" to="/scientific-ai">
+            <Link className="platform-pillar" to="/research">
               <span className="platform-pillar-kicker">Investigate</span>
-              <h3>Scientific AI</h3>
-              <p>
-                Ask and research workflows that retrieve from the graph—with clear limits on what models do today.
-              </p>
-              <span className="platform-pillar-cta">Explore Scientific AI</span>
+              <h3>Test an idea</h3>
+              <p>Check the evidence behind a link, trace paths, and draft hypotheses that stay labelled as candidates until reviewed.</p>
+              <span className="platform-pillar-cta">Open the Research workbench</span>
             </Link>
           </div>
         </section>
 
-        <section className="bio-section" aria-labelledby="demo-heading">
-          <HomeCausalPathway />
+        {/* D — The Immune City model */}
+        <section className="bio-section" aria-labelledby="home-spine-heading">
+          <div className="bio-section-heading">
+            <div>
+              <span className="bio-section-number">03 / THE IMMUNE CITY MODEL</span>
+              <h2 id="home-spine-heading">Fifteen causal stages, from trigger to discovery.</h2>
+            </div>
+            <p>
+              Every concept sits on one chain, so you always know where you are and what comes next. Click a stage
+              to see its question and examples. The twelve layers are mapped on <Link to="/overview">Platform</Link>.
+            </p>
+          </div>
+          <CausalSpine compact />
+          <IsiCityBand />
         </section>
 
+        {/* E — Workflows */}
         <section className="bio-section" id="how-it-works" aria-labelledby="how-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">03 / QUESTION → HYPOTHESIS</span>
+              <span className="bio-section-number">04 / WORKFLOWS AVAILABLE TODAY</span>
               <h2 id="how-heading">From a question to inspectable biology.</h2>
             </div>
-            <p>Mechanism, evidence and hypothesis — one clear path.</p>
+            <p>Each step opens a working page.</p>
           </div>
           <ol className="home-steps">
             {HOW_IT_WORKS.map((step) => (
               <li key={step.n} className="home-step">
-                <span className="home-step-n">{step.n}</span>
-                <h3>{step.title}</h3>
-                <p>{step.copy}</p>
+                <Link to={step.to} className="home-step-link">
+                  <span className="home-step-n">{step.n}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.copy}</p>
+                </Link>
               </li>
             ))}
           </ol>
         </section>
 
-        <section className="bio-section" aria-labelledby="atlas-map-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="bio-section-number">04 / LAYERS &amp; SPINE</span>
-              <h2 id="atlas-map-heading">Twelve layers. Fifteen causal stages.</h2>
-            </div>
-            <p>
-              The atlas structure behind {FLAGSHIP_NAME} — open any layer or the full Platform map.
-            </p>
-          </div>
-          <PlatformMapVisual />
-        </section>
-
         <section className="bio-section" aria-labelledby="trust-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">05 / EVIDENCE &amp; LIMITS</span>
+              <span className="bio-section-number">05 / EVIDENCE &amp; TRUST</span>
               <h2 id="trust-heading">Review status stays visible.</h2>
             </div>
             <p>Summarised here — Methods holds the full lifecycle.</p>
@@ -255,9 +267,10 @@ function Home() {
           </p>
         </section>
 
+
         <section className="bio-banner home-final-cta" aria-labelledby="cta-heading">
           <div>
-            <div className="bio-eyebrow">Open {FLAGSHIP_NAME}</div>
+            <div className="bio-eyebrow">{VISION_MOTTO.join(" · ")}</div>
             <h2 id="cta-heading">Explore immunology through connected mechanisms.</h2>
             <p>
               Start with a cell, pathway or scientific question—and follow the relationships that connect it to the
@@ -266,12 +279,12 @@ function Home() {
           </div>
           <div className="bio-actions">
             <Button asChild className="bio-primary">
-              <Link to={EXPLORE_PATH}>
-                {EXPLORE_CTA} <ArrowUpRight />
+              <Link to="/graph">
+                Open the knowledge graph <ArrowUpRight />
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary">
-              <Link to={LEARN_PATH}>{LEARN_CTA}</Link>
+              <Link to="/mechanism">Walk a mechanism</Link>
             </Button>
           </div>
         </section>

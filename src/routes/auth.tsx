@@ -73,7 +73,7 @@ function AuthPage() {
       <PageHead
         kicker="Curation · Access"
         title={mode === "in" ? "Sign in" : "Create an account"}
-        lede="Curation is open to signed-in readers. Admin must be provisioned explicitly in Neon (user_roles)."
+        lede="Curation is open to signed-in readers. Editing rights are granted by the team, not on sign-up."
       />
       <div className="card">
         <button className="btn" style={{ width: "100%", justifyContent: "center" }} onClick={google}>

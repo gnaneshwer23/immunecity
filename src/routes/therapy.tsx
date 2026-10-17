@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { nodesOf, out, human, byId } from "@/lib/immune/engine";
 import { CONTENT } from "@/data/content";
 import { PageHead, NodeLink, NodeChip } from "@/components/immune/ui";
+import PhoneFold from "@/components/immune/PhoneFold";
 import { getLiveTrials, type LiveTrial } from "@/lib/liveData.functions";
 
 export const Route = createFileRoute("/therapy")({
@@ -76,6 +77,8 @@ function Therapy() {
             </button>
           ))}
         </div>
+        <h2 className="sr-only">Therapies</h2>
+        <PhoneFold label={`Show all ${list.length} therapies`} className="phone-fold-list" key={`${q}|${cls}`}>
         <div className="grid auto">
           {list.map((n) => {
             const targets = out[n.id] || [];
@@ -110,6 +113,7 @@ function Therapy() {
             );
           })}
         </div>
+        </PhoneFold>
       </section>
     </div>
   );

@@ -89,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "googlebot", content: "index, follow" },
       { name: "author", content: PRODUCT_NAME },
-      { name: "theme-color", content: "#0d6e6e" },
+      { name: "theme-color", content: "#0a1220" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: CANONICAL_URL },
       { property: "og:site_name", content: PRODUCT_NAME },
@@ -122,8 +122,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "manifest", href: "/site.webmanifest" },
       { rel: "sitemap", href: "/sitemap.xml", type: "application/xml" },
       { rel: "preconnect", href: "https://api.fontshare.com" },
-      { rel: "stylesheet", href: "https://api.fontshare.com/v2/css?f[]=chillax@500,600&f[]=general-sans@400,500,600&display=swap" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" },
+      { rel: "stylesheet", href: "https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" },
     ],
     scripts: [
       {

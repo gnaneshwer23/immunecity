@@ -117,6 +117,25 @@ export function spineLabel(step: string): string {
   return SPINE_LABEL[step] ?? step;
 }
 
+/** Guiding question per spine step (ISI vision document). */
+export const SPINE_QUESTION: Record<string, string> = {
+  TRIGGER: "What initiates the process?",
+  RECOGNITION: "How is it detected?",
+  SIGNALLING: "Which molecular pathways activate?",
+  RESPONSE: "Which cells and mediators act?",
+  CONSEQUENCE: "What changes biologically?",
+  FAILURE: "How does regulation or protection break down?",
+  DISEASE: "What pathology may result?",
+  BIOMARKER: "What can be measured?",
+  TARGET: "Which mechanism might be modulated?",
+  THERAPY: "What intervention addresses it?",
+  TRIAL: "What has been tested, and how?",
+  PATIENT: "What clinical context is relevant?",
+  DATA: "What observations or datasets exist?",
+  MODEL: "What analytical methods can help?",
+  DISCOVERY: "What new question or hypothesis emerges?",
+};
+
 export const byId: Record<string, KGNode> = Object.fromEntries(nodes.map((n) => [n.id, n]));
 export const out: Record<string, KGEdge[]> = {};
 export const inn: Record<string, KGEdge[]> = {};

@@ -23,8 +23,8 @@ describe("marketing IA wiring", () => {
     expect(MARKETING_NAV_PRIMARY.find((i) => i.label === "Academy")?.path).toBe("/academy");
     expect(FOOTER_GROUPS[0].items.find((i) => i.path === "/academy")?.label).toBe("Academy");
     expect(MARKETING_NAV_MORE).toHaveLength(0);
-    expect(MARKETING_NAV_PRIMARY.some((i) => i.path === "/insights")).toBe(false);
-    expect(MARKETING_NAV.some((i) => i.path === "/insights")).toBe(false);
+    expect(MARKETING_NAV_PRIMARY.some((i) => (i.path as string) === "/insights")).toBe(false);
+    expect(MARKETING_NAV.some((i) => (i.path as string) === "/insights")).toBe(false);
     expect(FOOTER_GROUPS.some((g) => g.items.some((i) => i.path === "/insights"))).toBe(true);
     expect(MARKETING_NAV_ACTION.path).toBe("/collaborate");
     expect(isMarketingPath("/collaborate")).toBe(true);
@@ -59,10 +59,10 @@ describe("marketing IA wiring", () => {
     expect(ATLAS_CTA).toBe("Enter atlas");
     const atlasPaths = new Set(ALL_NAV.map((l) => l.path));
     for (const group of FOOTER_GROUPS) {
-      for (const item of group.items) {
+      for (const item of group.items as readonly { path: string }[]) {
         const known =
-          MARKETING_PATHS.has(item.path) ||
-          atlasPaths.has(item.path) ||
+          MARKETING_PATHS.has(item.path as never) ||
+          atlasPaths.has(item.path as never) ||
           item.path === "/mechanism" ||
           item.path === "/academy" ||
           item.path.startsWith("/mechanism/");

@@ -51,7 +51,7 @@ function rowToClient(r: typeof evidenceRecords.$inferSelect) {
     search_query: r.searchQuery,
     manifest_status: r.manifestStatus,
     check_status: r.checkStatus,
-    check_detail: r.checkDetail,
+    check_detail: r.checkDetail as Record<string, string | number | boolean | null> | null,
     checked_at: r.checkedAt?.toISOString?.() ?? r.checkedAt,
     curation: r.curation,
     notes: r.notes,

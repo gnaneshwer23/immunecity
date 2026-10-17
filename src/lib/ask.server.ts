@@ -127,10 +127,10 @@ export async function handleAsk(request: Request): Promise<Response> {
   const fromParts =
     lastUser?.parts?.filter((p) => p.type === "text").map((p) => ("text" in p ? String(p.text) : "")).join(" ") ?? "";
   const fromContent =
-    typeof (lastUser as { content?: unknown } | undefined)?.content === "string"
-      ? String((lastUser as { content: string }).content)
-      : Array.isArray((lastUser as { content?: unknown } | undefined)?.content)
-        ? ((lastUser as { content: Array<{ type?: string; text?: string }> }).content)
+    typeof (lastUser as unknown as { content?: unknown } | undefined)?.content === "string"
+      ? String((lastUser as unknown as { content: string }).content)
+      : Array.isArray((lastUser as unknown as { content?: unknown } | undefined)?.content)
+        ? ((lastUser as unknown as { content: Array<{ type?: string; text?: string }> }).content)
             .filter((p) => p?.type === "text" || typeof p?.text === "string")
             .map((p) => p.text ?? "")
             .join(" ")

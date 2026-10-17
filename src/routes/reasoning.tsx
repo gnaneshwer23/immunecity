@@ -17,15 +17,19 @@ import {
   reportExemplar,
 } from "@/lib/immune/exemplarPathways";
 import { STATUS_INFO } from "@/lib/immune/evidenceStatus";
+import PhoneFold from "@/components/immune/PhoneFold";
+import { AiPrinciples, CapabilityRegistry, ResearchWorkspace } from "@/components/immune/ScientificAiPanel";
 
 export const Route = createFileRoute("/reasoning")({
   validateSearch: zodValidator(z.object({ from: fallback(z.string(), "").default("") })),
   head: () => ({
     meta: [
-      { title: "Reasoning: mechanism workspace — Immune Super Intelligence" },
-      { name: "description", content: "Graph-retrieved Ask, case walks, path tracer, exemplar scaffolds, and illustrative start–perturbation–outcome reasoning. Educational beta — teaching with references." },
-      { property: "og:title", content: "Mechanism reasoning — Immune Super Intelligence" },
-      { property: "og:description", content: "Trace immunology from concept to perturbation to outcome. Illustrative walks; reviewed cites when available." },
+      { title: "Reasoning & Scientific AI — Immune Super Intelligence" },
+      { name: "description", content: "Ask with graph context, see exactly how the AI retrieves evidence, trace paths and run start–perturbation–outcome reasoning. Educational beta — teaching with references." },
+      { property: "og:title", content: "Reasoning & Scientific AI — Immune Super Intelligence" },
+      { property: "og:description", content: "One place for Ask, how the AI works, exemplar pathways and the path tracer. Reviewed cites when available." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Reasoning,
@@ -47,19 +51,40 @@ function Reasoning() {
   return (
     <div className="page">
       <PageHead
-        kicker="Layer 11 · Reasoning"
-        title="Mechanism reasoning"
-        lede="Ask with retrieved graph context (and reviewed relationship cites when they exist), walk published cases, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated."
+        kicker="Layer 11 · Reasoning & Scientific AI"
+        title="AI that works through the biology"
+        lede="Ask with retrieved graph context (and reviewed relationship cites when they exist), see exactly what the AI retrieves, walk published cases, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated."
         stats={[
           { v: CONTENT.cases.length, l: "CASES" },
           { v: "A→B", l: "PATH TRACER" },
           { v: "Δ", l: "PERTURBATION" },
         ]}
       />
-      <section className="section">
+      <nav className="page-jump" aria-label="On this page">
+        <a href="#ask">Ask</a>
+        <a href="#how-ai-works">How the AI works</a>
+        <a href="#exemplar-pathways-heading">Pathways</a>
+        <a href="#workspace">Workspace</a>
+        <a href="#cases">Cases</a>
+        <a href="#tracer">Path tracer</a>
+      </nav>
+      <section className="section" id="ask">
         <h2>Ask Immune Super Intelligence</h2>
         <p className="lede">Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with reviewed cites when present. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
         <AskAtlas />
+      </section>
+      <section className="section" id="how-ai-works">
+        <h2>How the AI works</h2>
+        <p className="lede">Before any answer is written, Ask runs this retrieval: question → graph context → evidence status. The demo below makes no AI call and invents no sources.</p>
+        <PhoneFold label="Show the retrieval demo">
+          <ResearchWorkspace />
+        </PhoneFold>
+        <h3 style={{ marginTop: 24 }}>How we talk about AI</h3>
+        <AiPrinciples />
+        <h3 style={{ marginTop: 24 }}>What is wired today</h3>
+        <PhoneFold label="Show all capabilities">
+          <CapabilityRegistry />
+        </PhoneFold>
       </section>
       <section className="section" aria-labelledby="exemplar-pathways-heading">
         <h2 id="exemplar-pathways-heading">Exemplar pathways</h2>
@@ -71,6 +96,7 @@ function Reasoning() {
             Partial and scaffold pathways are not evidence-grounded AI demos.
           </p>
         )}
+        <PhoneFold label="Show all pathways">
         <div className="grid auto">
           {EXEMPLAR_PATHWAYS.map((p) => {
             const report = reportExemplar(p, approvedCites);
@@ -119,13 +145,14 @@ function Reasoning() {
             );
           })}
         </div>
+        </PhoneFold>
       </section>
-      <section className="section">
+      <section className="section" id="workspace">
         <h2>Mechanism workspace</h2>
         <p className="lede">Choose a starting concept, an intervention or perturbation, and an outcome. Inspect paths, polarity, evidence status, assumptions and gaps.</p>
         <MechanismWorkspace initialStart={urlFrom && byId[urlFrom] ? urlFrom : "C003"} />
       </section>
-      <section className="section">
+      <section className="section" id="cases">
         <h2>Case reasoning</h2>
         <div className="lesson-tabs">
           {CONTENT.cases.map((x, i) => (
@@ -141,7 +168,7 @@ function Reasoning() {
           <p>{c.answer}</p>
         </div>
       </section>
-      <section className="section">
+      <section className="section" id="tracer">
         <h2>Path tracer</h2>
         <p className="lede">Pick any two concepts. The tracer finds the shortest chain of causal links between them, directed or not.</p>
         <div className="card">

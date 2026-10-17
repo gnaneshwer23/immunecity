@@ -109,7 +109,7 @@ export default function LiteratureQueue({ onSendToWorkbench }: Props) {
       </ol>
 
       <p className="xs muted">
-        Project {project.project_id} · graph v{project.graphVersion} · extensions {project.extensionsVersion} · status {project.status}
+        Project <span suppressHydrationWarning>{project.project_id}</span> · graph v{project.graphVersion} · extensions {project.extensionsVersion} · status {project.status}
         {" · "}furthest {STEP_LABEL[project.furthestStep ?? project.step]}
         {project.seededFromGapId ? ` · seeded from ${project.seededFromGapId}` : ""}
         {" · "}queue {stats.queued} / accepted {stats.accepted} / rejected {stats.rejected}

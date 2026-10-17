@@ -126,7 +126,7 @@ export default function GraphTable({ embedded = false, onFocusConcept }: Props) 
   if (embedded) {
     return (
       <div className="graph-a11y graph-a11y-embedded card">
-        <h3 className="graph-list-title">List &amp; detail</h3>
+        <h2 className="graph-list-title">List &amp; detail</h2>
         <p className="xs muted" style={{ marginBottom: 12 }}>
           Accessible alternative to the force graph. Open details for evidence status; tap a concept
           name to centre it on the graph view.

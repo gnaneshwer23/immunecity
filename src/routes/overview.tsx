@@ -78,6 +78,29 @@ function Overview() {
             </Button>
           </>
         }
+        aside={
+          <div className="spine-glance" aria-label="The 15-step causal spine at a glance">
+            <div className="spine-glance-head">
+              <span>Causal spine</span>
+              <span>{KG.core_spine.length} steps</span>
+            </div>
+            <ol>
+              {KG.core_spine.map((step, i) => (
+                <li key={step}>
+                  <Link to="/vision">
+                    <span className="sg-n">{String(i + 1).padStart(2, "0")}</span>
+                    {spineLabel(step)}
+                  </Link>
+                </li>
+              ))}
+            </ol>
+            <dl className="spine-glance-stats">
+              <div><dt>Core concepts</dt><dd>{snap.coreNodes}</dd></div>
+              <div><dt>Core links</dt><dd>{snap.coreRelationships}</dd></div>
+              <div><dt>Layers</dt><dd>{layers.length}</dd></div>
+            </dl>
+          </div>
+        }
         foot={`Release ${snap.snapshotAt} · ${snap.coreNodes} core concepts · ${snap.coreRelationships} core links · ${layers.length} atlas layers · drafts labelled`}
       />
 
@@ -114,16 +137,18 @@ function Overview() {
           lede={`Real hops from the curated graph with live review labels. Maturity: ${EXEMPLAR_MATURITY_LABEL[primaryReport.maturity]}.`}
         >
           <ol className="mkt-path" aria-label={`${primaryExemplar.title} relationships`}>
-            {primaryReport.segments.flatMap((seg) =>
+            {primaryReport.segments.flatMap((seg, si) =>
               (seg.steps ?? []).map((step, i) => {
                 const rid = seg.relIds[i]!;
+                // Segments can share a link; show each relationship once.
+                if (primaryReport.segments.findIndex((s2) => s2.relIds.includes(rid)) !== si || seg.relIds.indexOf(rid) !== i) return null;
                 const review = seg.reviews[i]!;
                 const label = primaryReport.edgeReviews.find((x) => x.relId === rid)?.label ?? String(review);
                 const subj = byId[step.r.subject_id];
                 const obj = byId[step.r.object_id];
                 if (!subj || !obj) return null;
                 return (
-                  <li key={`${rid}-${i}`}>
+                  <li key={`${si}-${rid}-${i}`}>
                     <Link className="mkt-path-hop" to="/graph" search={{ focus: step.r.subject_id }}>
                       <span className="mkt-path-names">
                         <strong>{subj.name}</strong>
@@ -243,9 +268,9 @@ function Overview() {
               <div
                 className="mkt-chain"
                 role="img"
-                aria-label={`Causal chain: ${selected.chain.map((id) => byId[id]?.name ?? id).join(" leads to ")}`}
+                aria-label={`Causal chain: ${selected.chain.map((id: string) => byId[id]?.name ?? id).join(" leads to ")}`}
               >
-                {selected.chain.map((id, i) => {
+                {selected.chain.map((id: string, i: number) => {
                   const node = byId[id];
                   if (!node) return null;
                   const t = TYPES[node.node_type];

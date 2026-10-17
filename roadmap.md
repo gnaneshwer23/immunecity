@@ -53,3 +53,13 @@ Machine-readable copy: `src/data/implementation-phases.ts`.
 - [ ] Eval scale-up: grow scientific gold set toward PRD targets (≥100 questions, ≥30 path, ≥30 unsupported, safety suite)
 - [ ] Live literature connectors with caching/backoff beyond existing curation PubMed/Crossref checks
 - [ ] Wire any advanced model adapter only after rights + evaluation gates (keep registry honest)
+
+## ISI master brief
+- [x] Stage 1: full product audit (report in Files: isi-audit.md)
+- [x] Stage 2a: navy/cyan theme, fonts, unified Learn/Explore/Investigate header
+- [x] Stage 2b: duplicate addresses redirect to one page; mechanism 404; Research error fixed
+- [x] Stage 3: homepage A–G (tagline unchanged — awaiting user)
+- [x] Stage 4 (Phase D): Evidence fits phones; Cell atlas links cells to mechanisms + graph and flags gaps; graph/science pages have no unlabelled controls
+- [x] Stage 5: end-to-end audit + fixes (report isi-audit-v2.md)
+- [x] Shortened Evidence/Therapy/Research on phones; merged Reasoning + Scientific AI; one phone menu; Platform spine panel; phone footer
+- [ ] Sign-in/curation: blocked on Neon keys or Cloud move

@@ -4,11 +4,10 @@ import path from "node:path";
 /** D-11: avoid @vitejs/plugin-react here — it hung Vitest at collection. */
 export default defineConfig({
   test: {
-    environment: "node",
+    environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
-    environmentMatchGlobs: [["**/*.{test,spec}.tsx", "jsdom"]],
     pool: "forks",
     fileParallelism: false,
     maxWorkers: 1,

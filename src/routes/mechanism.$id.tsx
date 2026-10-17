@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { CONTENT } from "@/data/content";
 import { LEGACY } from "@/data/legacy";
@@ -7,8 +7,15 @@ import { PageHead, NodeChip } from "@/components/immune/ui";
 import AcademyTrack from "@/components/immune/AcademyTrack";
 
 export const Route = createFileRoute("/mechanism/$id")({
+  loader: ({ params }) => {
+    if (!CONTENT.lessons.some((x) => x.id === params.id)) throw notFound();
+    return null;
+  },
   head: ({ params }) => {
-    const l = CONTENT.lessons.find((x) => x.id === params.id) || CONTENT.lessons[0]!;
+    const l = CONTENT.lessons.find((x) => x.id === params.id);
+    if (!l) {
+      return { meta: [{ title: "Mechanism not found — Immune Super Intelligence" }, { name: "robots", content: "noindex" }] };
+    }
     const title = `${l.title.split(":")[0]} — Mechanism — Immune Super Intelligence`;
     return {
       meta: [
@@ -20,7 +27,23 @@ export const Route = createFileRoute("/mechanism/$id")({
     };
   },
   component: Mechanism,
+  notFoundComponent: MechanismNotFound,
 });
+
+function MechanismNotFound() {
+  return (
+    <div className="page">
+      <PageHead kicker="Mechanism · not found" title="We don't have that mechanism" lede="This address doesn't match any lesson. Pick one of the available cascades below." />
+      <ul className="section">
+        {CONTENT.lessons.map((l) => (
+          <li key={l.id}>
+            <Link to="/mechanism/$id" params={{ id: l.id }}>{l.title}</Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const normStep = (s: any) => ({
@@ -122,7 +145,7 @@ function Mechanism() {
                 <span className="rail"><i>{i + 1}</i><b /></span>
                 <span className="box">
                   <span className="ty">{s.type} · {s.phase}</span>
-                  <h4>{s.name}</h4>
+                  <strong className="step-name">{s.name}</strong>
                   <p>{s.desc}</p>
                 </span>
               </button>

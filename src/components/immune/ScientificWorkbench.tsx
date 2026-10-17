@@ -236,7 +236,7 @@ export default function ScientificWorkbench({
         })}
       </ol>
       <p className="xs muted">
-        Session {session.session_id} · schema {WORKBENCH_SCHEMA_VERSION} · graph v{session.graphVersion} · extensions{" "}
+        Session <span suppressHydrationWarning>{session.session_id}</span> · schema {WORKBENCH_SCHEMA_VERSION} · graph v{session.graphVersion} · extensions{" "}
         {session.extensionsVersion} · furthest {session.furthestStep}
         {flags.allCandidates ? " · all artefacts candidate" : " · candidate flag issue"}
       </p>
