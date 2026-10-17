@@ -200,7 +200,7 @@ html[data-theme] {
 /* Homepage three experiences strip */
 .isi-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .isi-three a { padding: var(--isi-space-4); color: var(--text); text-decoration: none; border-right: 1px solid var(--border); display: grid; gap: 4px; }
-.isi-three a:last-child { border-right: 0; }
+.isi-three a:last-child { border-right: 0; padding-right: max(var(--isi-space-4), calc(var(--ask-fab-clearance, 100px) - 24px)); }
 .isi-three b { font-size: 1.05rem; }
 .isi-three span { color: var(--muted); font-size: 14px; }
 .isi-three a:hover b { color: var(--primary); text-decoration: underline; }

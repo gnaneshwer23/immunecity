@@ -69,7 +69,8 @@ html[data-theme='light'] {
 .shell.nav-closed { grid-template-columns: minmax(0,1fr); }
 .shell.nav-closed .sidebar { display: none; }
 .home-page { max-width: none; padding: 0; }
-main:has(> .home-page) { padding: 0; }
+/* Keep horizontal flush; reserve Ask FAB clearance under home content */
+main:has(> .home-page) { padding: 0 0 var(--ask-fab-clearance, 100px); }
 main:has(> .home-page) .site-footer { margin-top: 0; }
 .topbar .brand-text { display: flex; }
 .bio-hero { position: relative; isolation: isolate; min-height: 610px; background: var(--hero-bg); color: var(--hero-ink); overflow: hidden; }
@@ -1906,6 +1907,8 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
   border: 1px dashed var(--border);
 }
 .graph-explorer .graph-stage { background: var(--graph-stage-bg); border-color: var(--graph-stage-border); }
+/* Keep Ask FAB from covering stage legend / nodes in the corner */
+.graph-explorer .graph-stage .graph-legend { max-width: calc(100% - var(--ask-fab-clearance, 100px)); }
 .graph-explorer .graph-stage-loading {
   display: grid;
   place-items: center;
