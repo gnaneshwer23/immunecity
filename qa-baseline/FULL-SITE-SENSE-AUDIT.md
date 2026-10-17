@@ -116,14 +116,19 @@ Layout after `0b8d0a1` is sound on the graph explorer (stage fills workspace; no
 
 ## Fixes shipped
 
-See git commits on `main` after this audit (honesty cites + overview spine + academy titles + footer label). Production redeploy required so www matches.
+| SHA | Summary |
+|-----|---------|
+| `0b8d0a1` | Graph explorer layout — stage fills viewport (prior) |
+| `97414e6` | Marketing pathway honesty + spine CTA + Academy titles + footer label |
+
+**Production:** `dpl_3j5S5HeQDeRkmxragUgFVQS9xgc1` → https://www.immune-super-intelligence.co.uk/ (READY)
 
 ## Re-spot-check checklist (post-deploy)
 
-- [ ] `/` TNF pathway: maturity and hop badges agree after cites load  
-- [ ] `/overview` spine glance scrolls to `#spine` and selects stage  
-- [ ] `/overview` pathway badges match Methods narrative for TNF→RA  
-- [ ] `/academy` prerequisites show human titles  
-- [ ] Footer Organisation → “Research library”  
-- [ ] `/graph` stage still fills workspace (no regression of `0b8d0a1`)  
-- [ ] Mobile 390: open nav → journeys visible  
+- [x] `/` TNF pathway: maturity “On-path edges reviewed” + hop badges **Supported** after cites load  
+- [x] `/overview` spine glance `href="#spine"`  
+- [x] `/overview` pathway badges **Supported** ×3 after cites load  
+- [x] `/academy` prerequisites show module titles (e.g. Innate sensing…)  
+- [x] Footer Organisation → “Research library”  
+- [x] `/graph` stage fills workspace (verified earlier; no regression)  
+- [x] Mobile 390: open nav toggle present
