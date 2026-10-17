@@ -60,7 +60,7 @@ function textReply(text: string) {
 
 /** Approved Neon evidence for retrieved relationship IDs (claim-level context for Ask). */
 export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<ReviewedEvidenceResult> {
-  if (!relIds.length) return { ok: true; cites: [] };
+  if (!relIds.length) return { ok: true, cites: [] };
   try {
     const db = getDb();
     const rows = await db
