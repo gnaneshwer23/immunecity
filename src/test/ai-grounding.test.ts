@@ -47,6 +47,24 @@ describe("AI grounding", () => {
     const tnf = KG.nodes.find((n) => /^TNF/i.test(n.name))!;
     expect(relevantNodes("How does TNF cause inflammation?").map((n) => n.id)).toContain(tnf.id);
   });
+  it("matches synonym aliases and short forms", () => {
+    const tnf = KG.nodes.find((n) => n.id === "M001")!;
+    const ra = KG.nodes.find((n) => n.id === "D001")!;
+    expect(relevantNodes("tumour necrosis factor in joints").map((n) => n.id)).toContain(tnf.id);
+    expect(relevantNodes("What is RA?").map((n) => n.id)).toContain(ra.id);
+  });
+  it("retrieves multi-concept questions and supports follow-up classification", () => {
+    const ids = relevantNodes("How does TNF drive rheumatoid arthritis?").map((n) => n.id);
+    expect(ids).toEqual(expect.arrayContaining(["M001", "D001"]));
+    const g = graphContext("How does TNF drive rheumatoid arthritis?");
+    expect(g.coverage.matched).toBe(true);
+    expect(g.relIds.some((id) => id.includes("M001") || id.includes("D001"))).toBe(true);
+    // Missing reviewed Neon cites is disclosed in the extract (honest gap).
+    expect(g.text).toMatch(/REVIEWED_EVIDENCE/);
+    const unsupported = prepareAsk("zzqxzyxq nonontology foobarium");
+    expect(unsupported.callModel).toBe(false);
+    expect(unsupported.queryClass).toBe("unsupported");
+  });
   it("cites only real relationship IDs", () => {
     const ctx = graphContext("macrophage cytokines");
     expect(ctx.relIds.length).toBeGreaterThan(0);

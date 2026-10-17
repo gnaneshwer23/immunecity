@@ -235,12 +235,17 @@ function Curation() {
       <PageHead
         kicker="Curation · Citation layer"
         title="Evidence curation"
-        lede="Import a citation manifest, cross-check every identifier against PubMed and Crossref metadata, and decide what this atlas publishes as verified. A metadata match confirms an identifier points at the cited work; it is not a judgement on the science, and published cites support education — not treatment recommendations."
+        lede="Two separate gates: (1) identifier verification checks that a PMID/DOI resolves in PubMed or Crossref metadata; (2) claim approval maps that source to a directional relationship and assesses claim_support. Identifier verification alone never publishes a claim. Published cites support education — not treatment recommendations."
       />
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
         <span className="xs muted">Signed in as {email ?? "…"} · {isAdmin ? "admin" : "read-only"}</span>
         <button className="btn sm" onClick={async () => { await neonAuth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
       </div>
+      <p className="callout" style={{ marginBottom: 20 }} role="note">
+        <strong>ID verify ≠ claim approve.</strong>{" "}
+        “Identifier verified” / “One match found” means the bibliographic ID resolved — not that the paper supports the atlas claim.
+        Gate C coverage counts only <code>curation=approved</code> + <code>claim_support=supports</code> on a mapped <code>relationship_id</code>.
+      </p>
       {role && !isAdmin ? (
         <p className="callout" style={{ marginBottom: 20 }}>
           <strong>Read-only view.</strong> Importing manifests and approving records is limited to the atlas admin.
@@ -297,10 +302,10 @@ function Curation() {
       <div className="ev-stats">
         <div className="ev-stat"><b>{stats.total}</b><span>citation slots</span></div>
         <div className="ev-stat"><b>{stats.withSource}</b><span>name a source</span></div>
-        <div className="ev-stat"><b>{stats.verified}</b><span>matched in PubMed / Crossref</span></div>
-        <div className="ev-stat"><b>{claimMapped.length}</b><span>claim-assessed</span></div>
-        <div className="ev-stat"><b>{approvedClaimLinks}</b><span>approved claim links</span></div>
-        <div className="ev-stat"><b>{stats.approved}</b><span>approved to publish</span></div>
+        <div className="ev-stat"><b>{stats.verified}</b><span>IDs verified (metadata only)</span></div>
+        <div className="ev-stat"><b>{claimMapped.length}</b><span>claim-assessed (not yet Gate C)</span></div>
+        <div className="ev-stat"><b>{approvedClaimLinks}</b><span>approved + supports links</span></div>
+        <div className="ev-stat"><b>{stats.approved}</b><span>approved rows</span></div>
       </div>
 
       {isAdmin ? (

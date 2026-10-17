@@ -1,11 +1,30 @@
 /* Browser-safe retrieval and guardrails for Ask Immune Super Intelligence (tested in src/test/ai-grounding.test.ts). */
 import { KG, byId, human, out, inn, relId, edgeRef, edgeByRel, shortestPath, type KGNode, type KGEdge } from "@/lib/immune/engine";
+import { conceptExtras } from "@/lib/immune/concepts";
 import { citationsFor, relationshipStatus, STATUS_INFO, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v3";
+export const PROMPT_VERSION = "ask-grounding-v4";
+
+/** Fold unicode (TNF-α → tnf a) and punctuation so aliases match typed questions. */
+export function normaliseAskText(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Whole-word / whole-phrase match on normalised text — never substring ("bari" ≠ "foobarium"). */
+function hasWord(hay: string, needle: string): boolean {
+  if (!needle || !hay) return false;
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  return new RegExp(`(?:^|\\s)${escaped}(?:\\s|$)`).test(hay);
+}
 
 export type EvidenceTier = "established" | "evidence-supported" | "emerging" | "hypothesis" | "draft" | "missing-support";
 
@@ -101,22 +120,41 @@ export interface PrepareAskResult {
   replyText: string | null;
 }
 
+/**
+ * Rank graph concepts for a question using name, aliases/synonyms, description and id.
+ * Prefer phrase-level alias hits (e.g. "tumour necrosis factor", "RA") over weak desc tokens.
+ */
 export function relevantNodes(question: string, limit = 8): KGNode[] {
-  const tokens = question.toLowerCase().split(/[^a-z0-9-]+/i).filter((t) => t.length > 2);
-  if (!tokens.length) return [];
+  const qNorm = normaliseAskText(question);
+  if (!qNorm) return [];
+  const tokens = qNorm.split(" ").filter((t) => t.length > 2);
   const scored = KG.nodes.map((n) => {
-    const name = n.name.toLowerCase();
-    const desc = n.desc.toLowerCase();
+    const name = normaliseAskText(n.name);
+    const desc = normaliseAskText(n.desc);
+    const aliases = conceptExtras(n).aliases.map(normaliseAskText).filter(Boolean);
     let score = 0;
-    for (const t of tokens) {
-      if (name.includes(t)) score += 3;
-      else if (desc.includes(t)) score += 1;
-      if (n.id.toLowerCase() === t) score += 5;
+
+    if (name.length > 1 && hasWord(qNorm, name)) score += 8;
+    for (const a of aliases) {
+      if (hasWord(qNorm, a)) score += a.length <= 3 ? 6 : 7;
     }
-    if (!n.draft) score += score > 0 ? 0.5 : 0; // prefer reviewed core concepts
+
+    for (const t of tokens) {
+      if (n.id.toLowerCase() === t) score += 5;
+      else if (name === t || hasWord(name, t)) score += 5;
+      else if (aliases.some((a) => a === t || hasWord(a, t))) score += 4;
+      else if (t.length >= 4 && hasWord(desc, t)) score += 1;
+    }
+
+    if (!n.draft && score > 0) score += 0.5; // prefer reviewed core concepts
     return { n, score };
   });
   return scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score).slice(0, limit).map((s) => s.n);
+}
+
+/** Typeahead / instant lookup — same synonym field as retrieval, capped for UI. */
+export function matchConceptSuggestions(query: string, limit = 5): KGNode[] {
+  return relevantNodes(query, limit);
 }
 
 /* Personal clinical requests (dosing, "should I", my diagnosis) are refused without calling a model. */

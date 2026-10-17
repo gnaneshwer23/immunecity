@@ -13,8 +13,6 @@ import {
   HERO_HEADLINE,
   HERO_SUPPORT,
   HERO_TRUST,
-  INVESTIGATE_CTA,
-  INVESTIGATE_PATH,
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
@@ -157,13 +155,13 @@ function Home() {
           <p className="hero-description">{HERO_SUPPORT}</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary home-helix-primary">
-              <Link to={EXPLORE_PATH}>
-                {EXPLORE_CTA} <ArrowUpRight />
+              <Link to="/ask">
+                Ask ISI <ArrowUpRight />
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
-              <Link to={INVESTIGATE_PATH}>
-                {INVESTIGATE_CTA} <ArrowRight />
+              <Link to={EXPLORE_PATH}>
+                {EXPLORE_CTA} <ArrowRight />
               </Link>
             </Button>
           </div>

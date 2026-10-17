@@ -7,11 +7,10 @@ import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight, Copy, Rotat
 import type { UIMessage } from "ai";
 import { byId, out, inn, human, TYPES, edgeByRel, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
-import { prepareAsk, runExplanationAction, type AskGrounding, type ExplanationAction } from "@/lib/askGrounding";
+import { matchConceptSuggestions, prepareAsk, runExplanationAction, type AskGrounding, type ExplanationAction } from "@/lib/askGrounding";
 import EdgeReference, { NodeCitations } from "./EdgeReference";
 import GroundingPanel from "./GroundingPanel";
 import { Button } from "@/components/ui/button";
-import { KG } from "@/lib/immune/engine";
 
 const SUGGESTIONS = [
   "How does TNF drive rheumatoid arthritis?",
@@ -164,9 +163,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const matches = useMemo(() => {
-    const query = input.trim().toLowerCase();
-    if (query.length < 2) return [];
-    return KG.nodes.filter((n) => n.name.toLowerCase().includes(query) || n.id.toLowerCase() === query).slice(0, 5);
+    if (input.trim().length < 2) return [];
+    return matchConceptSuggestions(input, 5);
   }, [input]);
 
   useEffect(() => {
