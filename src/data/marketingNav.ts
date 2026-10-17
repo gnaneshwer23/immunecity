@@ -48,7 +48,7 @@ export const FOOTER_GROUPS = [
       { label: "Vision", path: "/vision" },
       { label: "About", path: "/about" },
       { label: "Collaborate", path: "/collaborate" },
-      { label: "Research workbench", path: "/research" },
+      { label: "Research library", path: "/research" },
     ],
   },
   {

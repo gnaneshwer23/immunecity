@@ -53,6 +53,9 @@ function AcademyLanding() {
 
   const foundation = ACADEMY_TRACKS.find((t) => t.level === "foundation")!;
   const incomplete = ACADEMY_TRACKS.filter((t) => t.level !== "foundation");
+  const lessonTitleById = Object.fromEntries(
+    ACADEMY_TRACKS.flatMap((t) => t.modules.map((m) => [m.lessonId, m.title] as const)),
+  );
 
   return (
     <div className="mkt-page academy-landing">
@@ -107,7 +110,9 @@ function AcademyLanding() {
                       <p className="mkt-aside">
                         {m.quiz.length} assessment question{m.quiz.length === 1 ? "" : "s"}
                         {m.prerequisiteLessonIds.length
-                          ? ` · Prerequisites: ${m.prerequisiteLessonIds.join(", ")}`
+                          ? ` · Prerequisites: ${m.prerequisiteLessonIds
+                              .map((id) => lessonTitleById[id] ?? id)
+                              .join("; ")}`
                           : " · No prerequisites"}
                       </p>
                       <div className="mkt-course-chips">

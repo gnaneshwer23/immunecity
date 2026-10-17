@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Fragment, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { KG, TYPES, SPINE_DESC, byId, human, nodesOf, spineLabel, type NodeType } from "@/lib/immune/engine";
@@ -15,6 +16,7 @@ import {
   PRODUCT_NAME,
   pageTitle,
 } from "@/lib/brand";
+import { approvedQuery } from "@/lib/citations.functions";
 import {
   EXEMPLAR_MATURITY_LABEL,
   EXEMPLAR_PATHWAYS,
@@ -58,7 +60,18 @@ function Overview() {
   const snap = graphReleaseSnapshot();
   const layers = NAV_GROUPS.flatMap((g) => g.items.filter((l) => l.path !== "/"));
   const primaryExemplar = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-tnf-ra") ?? EXEMPLAR_PATHWAYS[0]!;
-  const primaryReport = reportExemplar(primaryExemplar);
+  const { data: approvedCites = [], isPending: citesPending, isError: citesError } = useQuery(approvedQuery);
+  const primaryReport = reportExemplar(primaryExemplar, approvedCites);
+  const pathwayMaturityLine = citesPending
+    ? "Loading live review status…"
+    : citesError
+      ? "Evidence service unavailable — hop badges may not reflect approvals."
+      : EXEMPLAR_MATURITY_LABEL[primaryReport.maturity];
+
+  function selectSpineStage(step: string) {
+    setSpineStep(step);
+    document.getElementById("spine")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   return (
     <div className="mkt-page overview-page">
@@ -87,10 +100,10 @@ function Overview() {
             <ol>
               {KG.core_spine.map((step, i) => (
                 <li key={step}>
-                  <Link to="/vision">
+                  <a href="#spine" onClick={(e) => { e.preventDefault(); selectSpineStage(step); }}>
                     <span className="sg-n">{String(i + 1).padStart(2, "0")}</span>
                     {spineLabel(step)}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ol>
@@ -134,7 +147,7 @@ function Overview() {
           id="pathway"
           eyebrow="02 / LIVE PATHWAY"
           title={primaryExemplar.title}
-          lede={`Real hops from the curated graph with live review labels. Maturity: ${EXEMPLAR_MATURITY_LABEL[primaryReport.maturity]}.`}
+          lede={`Real hops from the curated graph with review labels from approved claim cites when available. Maturity: ${pathwayMaturityLine}`}
         >
           <ol className="mkt-path" aria-label={`${primaryExemplar.title} relationships`}>
             {primaryReport.segments.flatMap((seg, si) =>
@@ -169,12 +182,17 @@ function Overview() {
               <>
                 {" · "}
                 {EXEMPLAR_PATHWAYS.filter((p) => p.id !== primaryExemplar.id).map((p, i) => {
-                  const r = reportExemplar(p);
+                  const r = reportExemplar(p, approvedCites);
                   return (
                     <Fragment key={p.id}>
                       {i > 0 ? " · " : null}
                       <span>
-                        {p.title}: {EXEMPLAR_MATURITY_LABEL[r.maturity]}
+                        {p.title}:{" "}
+                        {citesPending
+                          ? "loading…"
+                          : citesError
+                            ? "status unavailable"
+                            : EXEMPLAR_MATURITY_LABEL[r.maturity]}
                       </span>
                     </Fragment>
                   );

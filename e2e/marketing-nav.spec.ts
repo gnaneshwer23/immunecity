@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const JOURNEYS = ["Learn", "Explore", "Investigate"];
-const DESTINATIONS = ["Platform", "Academy", "Cell atlas", "Knowledge graph", "Evidence", "Methods", "Reasoning & AI", "Research workbench", "Vision", "About", "Collaborate"];
+const DESTINATIONS = ["Platform", "Academy", "Cell atlas", "Knowledge graph", "Evidence", "Methods", "Reasoning & AI", "Research library", "Vision", "About", "Collaborate"];
 
 async function expectDesktopNav(page: Page) {
   const nav = page.getByRole("navigation", { name: "Primary" });

@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { graphReleaseLabel, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
+import { approvedQuery } from "@/lib/citations.functions";
 import {
   EXEMPLAR_MATURITY_LABEL,
   EXEMPLAR_PATHWAYS,
@@ -20,20 +22,23 @@ export const Route = createFileRoute("/insights")({
   component: Insights,
 });
 
-/** Source-linked mechanism explainers prepared from exemplars — unpublished until reviewed. */
-const DRAFT_EXPLAINERS = EXEMPLAR_PATHWAYS.map((pathway) => {
-  const report = reportExemplar(pathway);
-  return {
-    id: `draft-${pathway.id}`,
-    title: pathway.title,
-    purpose: pathway.purpose,
-    maturityLabel: EXEMPLAR_MATURITY_LABEL[report.maturity],
-    note: pathway.notes[0] ?? "",
-  };
-});
-
 function Insights() {
   const snap = graphReleaseSnapshot();
+  const { data: approvedCites = [], isPending, isError } = useQuery(approvedQuery);
+  const draftExplainers = EXEMPLAR_PATHWAYS.map((pathway) => {
+    const report = reportExemplar(pathway, approvedCites);
+    return {
+      id: `draft-${pathway.id}`,
+      title: pathway.title,
+      purpose: pathway.purpose,
+      maturityLabel: isPending
+        ? "Loading live review status…"
+        : isError
+          ? "Evidence service unavailable"
+          : EXEMPLAR_MATURITY_LABEL[report.maturity],
+      note: pathway.notes[0] ?? "",
+    };
+  });
   return (
     <div className="mkt-page">
       <MarketingHero
@@ -69,14 +74,14 @@ function Insights() {
           lede="Prepared from maintained exemplar pathways. Remain draft until editorial review."
         >
           <div className="insight-drafts">
-            {DRAFT_EXPLAINERS.map((d) => (
+            {draftExplainers.map((d) => (
               <article key={d.id} className="insight-draft">
                 <StatusChip label="Draft · unpublished" tone="warn" />
                 <h3>{d.title}</h3>
                 <p>{d.purpose}</p>
                 <p className="mkt-aside">
                   Exemplar maturity: {d.maturityLabel}
-                  {d.note ? ` — ${d.note}` : ""}
+                  {d.note && !isPending && !isError ? ` — ${d.note}` : ""}
                 </p>
                 <p className="mkt-aside">
                   <Link to="/overview">Platform exemplars</Link>

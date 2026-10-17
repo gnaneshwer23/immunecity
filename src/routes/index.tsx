@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ART } from "@/components/immune/explain";
 import { ArrowRight, ArrowUpRight, BookOpen, FlaskConical, Microscope, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
+import { approvedQuery } from "@/lib/citations.functions";
 import { byId, human } from "@/lib/immune/engine";
 import {
   EXEMPLAR_MATURITY_LABEL,
@@ -50,38 +52,54 @@ const HOME_EXEMPLAR = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-tnf-ra")!;
 const MECHANISM_EXEMPLAR = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-ifn-sle")!;
 
 function InteractiveMechanism() {
-  const report = reportExemplar(MECHANISM_EXEMPLAR);
+  const { data: cites = [], isPending, isError } = useQuery(approvedQuery);
+  const report = reportExemplar(MECHANISM_EXEMPLAR, cites);
   const seen = new Set<string>();
   const hops = report.segments.flatMap((seg) =>
     (seg.steps ?? []).map((step, i) => ({ step, rid: seg.relIds[i]!, review: seg.reviews[i]! })),
   ).filter((h) => (seen.has(h.rid) ? false : (seen.add(h.rid), true)));
   return (
-    <ol className="isi-mech" aria-label={`${MECHANISM_EXEMPLAR.title} — inspect each step`}>
-      {hops.map(({ step, rid, review }, i) => {
-        const subj = byId[step.r.subject_id];
-        const obj = byId[step.r.object_id];
-        if (!subj || !obj) return null;
-        const label = report.edgeReviews.find((x) => x.relId === rid)?.label ?? String(review);
-        return (
-          <li key={rid} className="isi-mech-step">
-            <span className="isi-mech-n">{String(i + 1).padStart(2, "0")}</span>
-            <div className="isi-mech-body">
-              <button type="button" className="isi-mech-node" onClick={() => inspect({ kind: "concept", id: subj.id })}>{subj.name}</button>
-              <button type="button" className="isi-mech-rel" onClick={() => inspect({ kind: "relationship", id: rid })} aria-label={`Inspect evidence: ${subj.name} ${human(step.r.relation)} ${obj.name}`}>
-                {human(step.r.relation)} →
-              </button>
-              <button type="button" className="isi-mech-node" onClick={() => inspect({ kind: "concept", id: obj.id })}>{obj.name}</button>
-            </div>
-            <span className={`badge rs rs-${review}`}>{label}</span>
-          </li>
-        );
-      })}
-    </ol>
+    <>
+      {isPending ? (
+        <p className="home-causal-note" role="status">Loading live review status for each hop…</p>
+      ) : isError ? (
+        <p className="home-causal-note" role="alert">
+          Evidence service unavailable — hop badges below cannot be recomputed from live approvals.
+        </p>
+      ) : null}
+      <ol className="isi-mech" aria-label={`${MECHANISM_EXEMPLAR.title} — inspect each step`}>
+        {hops.map(({ step, rid, review }, i) => {
+          const subj = byId[step.r.subject_id];
+          const obj = byId[step.r.object_id];
+          if (!subj || !obj) return null;
+          const label = report.edgeReviews.find((x) => x.relId === rid)?.label ?? String(review);
+          return (
+            <li key={rid} className="isi-mech-step">
+              <span className="isi-mech-n">{String(i + 1).padStart(2, "0")}</span>
+              <div className="isi-mech-body">
+                <button type="button" className="isi-mech-node" onClick={() => inspect({ kind: "concept", id: subj.id })}>{subj.name}</button>
+                <button type="button" className="isi-mech-rel" onClick={() => inspect({ kind: "relationship", id: rid })} aria-label={`Inspect evidence: ${subj.name} ${human(step.r.relation)} ${obj.name}`}>
+                  {human(step.r.relation)} →
+                </button>
+                <button type="button" className="isi-mech-node" onClick={() => inspect({ kind: "concept", id: obj.id })}>{obj.name}</button>
+              </div>
+              <span className={`badge rs rs-${review}`}>{label}</span>
+            </li>
+          );
+        })}
+      </ol>
+    </>
   );
 }
 
 function HomeCausalPathway() {
-  const report = reportExemplar(HOME_EXEMPLAR);
+  const { data: cites = [], isPending, isError } = useQuery(approvedQuery);
+  const report = reportExemplar(HOME_EXEMPLAR, cites);
+  const maturityLine = isPending
+    ? "Loading live review status…"
+    : isError
+      ? "Evidence service unavailable — hop badges may not reflect approvals (not the same as zero reviewed support)."
+      : EXEMPLAR_MATURITY_LABEL[report.maturity];
 
   return (
     <div className="home-pathway">
@@ -92,7 +110,7 @@ function HomeCausalPathway() {
         </div>
         <p>
           Real relationships from the curated graph — each hop links to a graph record with its current evidence
-          status. Maturity: {EXEMPLAR_MATURITY_LABEL[report.maturity]}.
+          status. Maturity: {maturityLine}
         </p>
       </div>
       <ol className="home-causal-path" aria-label={`${HOME_EXEMPLAR.title} relationships`}>
