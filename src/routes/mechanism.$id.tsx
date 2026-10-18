@@ -4,6 +4,7 @@ import { CONTENT } from "@/data/content";
 import { LEGACY } from "@/data/legacy";
 import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
+import { Facts, Section } from "@/components/immune/page";
 import AcademyTrack from "@/components/immune/AcademyTrack";
 import { seoHead } from "@/lib/seo";
 
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/mechanism/$id")({
 function MechanismNotFound() {
   return (
     <div className="page">
-      <PageHead kicker="Mechanism · not found" title="We don't have that mechanism" lede="This address doesn't match any lesson. Pick one of the available cascades below." />
+      <PageHead kicker="Learn · Mechanisms · not found" title="We don't have that mechanism" lede="This address doesn't match any lesson. Pick one of the available cascades below." />
       <ul className="section">
         {CONTENT.lessons.map((l) => (
           <li key={l.id}>
@@ -71,18 +72,21 @@ function Mechanism() {
   return (
     <div className="page">
       <PageHead
-        kicker={`Layer 03 · Mechanism · Module ${lesson.module}${lesson.draft ? " · draft" : ""}`}
-        title="Cascades"
-        lede="Pick a lesson, then walk its steps. Each step opens the mechanism, what fails if that component is absent, and the clinical read-out. Draft extension lessons are labelled — not curated core."
+        kicker={`Learn · Mechanisms · Module ${lesson.module}${lesson.draft ? " · draft extension" : ""}`}
+        title={lesson.title}
+        lede={lesson.question}
         stats={[
-          { v: lessons.length, l: "LESSONS" },
           { v: steps.length, l: "STEPS IN THIS CASCADE" },
           { v: perts.length, l: "PERTURBATION EXPERIMENTS" },
+          { v: lessons.length, l: "LESSONS IN THE TRACK" },
         ]}
       />
-      <AcademyTrack lessonId={lesson.id} />
-
-      <div className="lesson-tabs" role="tablist" aria-label="Mechanism lessons">
+      {lesson.draft ? (
+        <p className="isi-note" role="note">
+          <span className="badge rs rs-draft">draft extension</span> Added to close a coverage gap; not curated core until expert review.
+        </p>
+      ) : null}
+      <nav className="lesson-tabs" role="tablist" aria-label="Mechanism lessons">
         {lessons.map((l) => {
           const selected = l.id === lesson.id;
           return (
@@ -104,29 +108,16 @@ function Mechanism() {
             </button>
           );
         })}
-      </div>
+      </nav>
 
-      <div className="card" style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: "1.35rem", marginBottom: 8 }}>
-          {lesson.title}
-          {lesson.draft ? (
-            <span className="badge rs rs-draft" style={{ marginLeft: 8, verticalAlign: "middle" }}>
-              draft extension
-            </span>
-          ) : null}
-        </h2>
-        {lesson.draft ? (
-          <p className="small" role="note" style={{ marginBottom: 8 }}>
-            Draft extension lesson — added to close a coverage gap; not curated core until expert review.
-          </p>
-        ) : null}
-        <p className="muted">{lesson.question}</p>
-        <div className="row" style={{ marginTop: 12 }}>{cellNames.map((n) => <span className="chip" key={n}>{n}</span>)}</div>
-        <div className="row" style={{ marginTop: 8 }}>
-          {(lesson.nodes || []).filter((nid: string) => byId[nid]).map((nid: string) => <NodeChip key={nid} id={nid} />)}
-        </div>
-      </div>
-
+      <Section id="cascade" n={1} title="Walk the cascade"
+        lede="Select a step to open its function, what sits upstream and downstream, what fails if it is absent, and the clinical read-out."
+        aside={
+          <Facts items={[
+            ...(cellNames.length ? [{ label: "Cells involved", children: <div className="row">{cellNames.map((n) => <span className="chip" key={n}>{n}</span>)}</div> }] : []),
+            ...((lesson.nodes || []).some((nid: string) => byId[nid]) ? [{ label: "Graph concepts", children: <div className="row">{(lesson.nodes || []).filter((nid: string) => byId[nid]).map((nid: string) => <NodeChip key={nid} id={nid} />)}</div> }] : []),
+          ]} />
+        }>
       {steps.length ? (
         <div className="lesson">
           <div className="cascade">
@@ -164,11 +155,11 @@ function Mechanism() {
       ) : (
         <p className="empty">No step-by-step cascade recorded for this lesson yet. The linked graph nodes above carry its content.</p>
       )}
+      </Section>
 
       {perts.length ? (
-        <section className="section">
-          <h2>Perturbation experiments</h2>
-          <p className="lede">Break one component and follow the consequence chain to the clinical read-out.</p>
+        <Section id="perturbations" n={2} title="Perturbation experiments"
+          lede="Break one component and follow the consequence chain to the clinical read-out.">
           {perts.map((p, i) => (
             <div className={`perturb${openP === i ? " open" : ""}`} key={p.q}>
               <button onClick={() => setOpenP(openP === i ? null : i)}><span>{p.q}</span></button>
@@ -181,8 +172,13 @@ function Mechanism() {
               </div>
             </div>
           ))}
-        </section>
+        </Section>
       ) : null}
+
+      <Section id="track" n={perts.length ? 3 : 2} title="Where this fits in the track"
+        lede="This lesson's place in the Academy foundation track, with your local progress and the next lessons to open.">
+        <AcademyTrack lessonId={lesson.id} />
+      </Section>
     </div>
   );
 }

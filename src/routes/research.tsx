@@ -7,6 +7,17 @@ import { CONTENT } from "@/data/content";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
+import { PageToc, Section } from "@/components/immune/page";
+
+const TOC = [
+  { id: "library", label: "Library" },
+  { id: "literature", label: "Literature" },
+  { id: "workbench", label: "Workbench" },
+  { id: "model-registry", label: "Models" },
+  { id: "frontier", label: "Frontier" },
+  { id: "phases", label: "Phases" },
+  { id: "roadmap", label: "Roadmap" },
+];
 import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ResearchLibrary from "@/components/immune/ResearchLibrary";
@@ -58,7 +69,7 @@ function Research() {
   return (
     <div className="page">
       <PageHead art={ART.researchArt}
-        kicker="Layer 12 · Research Workbench"
+        kicker="Investigate · Research library"
         title="Turn a research question into a reviewable investigation."
         lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature is a local candidate workflow (not live PubMed bulk ingest); model adapters are planned / interface-only stubs."
         stats={[
@@ -67,36 +78,9 @@ function Research() {
           { v: phaseE?.status.replace("_", " ") ?? "partial", l: "PHASE E" },
         ]}
       />
+      <PageToc items={TOC} />
 
-      <nav className="page-jump" aria-label="On this page">
-        <a href="#workbench">Workbench</a>
-        <a href="#library">Library</a>
-        <a href="#literature">Literature</a>
-        <a href="#model-registry">Models</a>
-        <a href="#phases">Phases</a>
-        <a href="#frontier">Frontier</a>
-        <a href="#roadmap">Roadmap</a>
-      </nav>
-
-      <section className="section" id="workbench">
-        <h2>Workbench</h2>
-        <p className="lede">
-          Candidate investigations only. Export for human review; nothing is automatically published to the knowledge graph.
-        </p>
-        <ScientificWorkbench
-          pendingLitImport={litHandoff}
-          onPendingLitImportConsumed={clearLitHandoff}
-          seed={seed}
-        />
-      </section>
-
-      <section className="section" id="library">
-        <h2>Research Library · Nature Portfolio journals</h2>
-        <p className="lede">
-          Search live article metadata from five Nature Portfolio journals. Proposing an article starts an unreviewed candidate in the literature workflow
-          below — it never becomes approved evidence without curator review. Saving imports to the shared evidence store
-          is not yet available (database configuration pending).
-        </p>
+      <Section id="library" n={1} title="Research Library · Nature Portfolio journals" lede="Search live article metadata from five Nature Portfolio journals. Proposing an article starts an unreviewed candidate in the literature workflow below — it never becomes approved evidence without curator review. Saving imports to the shared evidence store is not yet available (database configuration pending).">
         <ResearchLibrary
           initialQuery={search.lib}
           onPropose={(a) => {
@@ -115,33 +99,45 @@ function Research() {
             requestAnimationFrame(() => document.getElementById("literature")?.scrollIntoView({ behavior: "smooth" }));
           }}
         />
-      </section>
+      </Section>
 
-      <section className="section" id="literature">
-        <h2>Literature intelligence</h2>
-        <p className="lede">
-          Phase C workflow — local metadata + candidate claims. Not live bulk PubMed ingest; export candidates or send them into the workbench evidence step (still drafts).
-        </p>
+      <Section id="literature" n={2} title="Literature intelligence" lede="Phase C workflow — local metadata + candidate claims. Not live bulk PubMed ingest; export candidates or send them into the workbench evidence step (still drafts).">
         {litSeed ? (
           <p className="small" role="status">Started a candidate from <b>{litSeed.seed.title}</b> (DOI {litSeed.seed.doi}). Status: unreviewed.</p>
         ) : null}
         <PhoneFold label="Show literature queue"><LiteratureQueue key={litSeed?.key ?? "blank"} seed={litSeed?.seed} onSendToWorkbench={setLitHandoff} /></PhoneFold>
-      </section>
+      </Section>
 
-      <section className="section" id="model-registry">
-        <h2>Advanced model registry</h2>
-        <p className="lede">
-          Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters.
-          Badges read <b>planned / interface-only · not live</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.
-        </p>
+      <Section id="workbench" n={3} title="Workbench" lede="Candidate investigations only. Export for human review; nothing is automatically published to the knowledge graph.">
+        <ScientificWorkbench
+          pendingLitImport={litHandoff}
+          onPendingLitImportConsumed={clearLitHandoff}
+          seed={seed}
+        />
+      </Section>
+
+      <Section id="model-registry" n={4} title="Advanced model registry" lede={<>Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters. Badges read <b>planned / interface-only · not live</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.</>}>
         <PhoneFold label="Show model registry"><ModelRegistryPanel /></PhoneFold>
-      </section>
+      </Section>
 
-      <section className="section" id="phases">
-        <h2>Implementation phases B–E</h2>
-        <p className="lede">
-          Status reflects shipped, testable code — not marketing claims. See also <Link to="/methods">Methods &amp; trust</Link>.
-        </p>
+      <Section id="frontier" n={5} title="Frontier">
+        <PhoneFold label="Show all frontier topics">
+        <div className="grid auto">
+          {frontier.map((f) => (
+            <article className="card frontier-card" data-status={f.status} key={f.title}>
+              <div className="row" style={{ justifyContent: "space-between" }}>
+                <span className="chip">{f.status}</span>
+                {byId[f.node] ? <NodeChip id={f.node} label="Graph" /> : null}
+              </div>
+              <h3 style={{ fontSize: "1.05rem", marginTop: 10 }}>{f.title}</h3>
+              <p className="small muted" style={{ marginTop: 8 }}>{f.text}</p>
+            </article>
+          ))}
+        </div>
+        </PhoneFold>
+      </Section>
+
+      <Section id="phases" n={6} title="Implementation phases B–E" lede={<>Status reflects shipped, testable code — not marketing claims. See also <Link to="/methods">Methods &amp; trust</Link>.</>}>
         <PhoneFold label="Show all phases">
         <div className="grid auto">
           {IMPLEMENTATION_PHASES.map((p) => (
@@ -159,28 +155,9 @@ function Research() {
           ))}
         </div>
         </PhoneFold>
-      </section>
+      </Section>
 
-      <section className="section" id="frontier">
-        <h2>Frontier</h2>
-        <PhoneFold label="Show all frontier topics">
-        <div className="grid auto">
-          {frontier.map((f) => (
-            <article className="card frontier-card" data-status={f.status} key={f.title}>
-              <div className="row" style={{ justifyContent: "space-between" }}>
-                <span className="chip">{f.status}</span>
-                {byId[f.node] ? <NodeChip id={f.node} label="Graph" /> : null}
-              </div>
-              <h3 style={{ fontSize: "1.05rem", marginTop: 10 }}>{f.title}</h3>
-              <p className="small muted" style={{ marginTop: 8 }}>{f.text}</p>
-            </article>
-          ))}
-        </div>
-        </PhoneFold>
-      </section>
-      <section className="section" id="roadmap">
-        <h2>Roadmap</h2>
-        <p className="lede">What the atlas still needs to become a complete causal model.</p>
+      <Section id="roadmap" n={7} title="Roadmap" lede="What the atlas still needs to become a complete causal model.">
         <PhoneFold label="Show full roadmap">
         <ol className="small roadmap-tl">
           {roadmap.map((r, i) => (
@@ -191,7 +168,7 @@ function Research() {
           ))}
         </ol>
         </PhoneFold>
-      </section>
+      </Section>
     </div>
   );
 }

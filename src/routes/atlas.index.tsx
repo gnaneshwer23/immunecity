@@ -33,7 +33,7 @@ function Atlas() {
   return (
     <div className="page">
       <PageHead
-        kicker="Knowledge Atlas"
+        kicker="Learn · Knowledge atlas"
         title="Every concept, connected."
         lede="Pick an area to explore. Every concept has its own page with a short explanation, a picture of its connections and what to learn next."
         stats={[

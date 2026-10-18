@@ -280,3 +280,122 @@ html[data-theme] {
 .home-page .home-helix-hero .home-helix-secondary { color: var(--text); border-color: var(--border-strong); }
 @media (max-width: 860px) { .home-page .home-helix-hero.home-helix-hero { grid-template-columns: 1fr; padding: 24px 20px; } .home-page .home-helix-hero .home-helix-visual { order: 0; } }
 .home-page .home-helix-hero::after { display: none; }
+
+/* ── Page anatomy (components/immune/page.tsx) ─────────────────────────────
+   head → on this page → numbered sections → continue the journey.
+   One rhythm for every journey page so readers always know where they are. */
+
+/* Numbered section header: index + title left, lede/aside right. */
+.isi-sec { margin-top: var(--isi-space-6); padding-top: var(--isi-space-5); border-top: 1px solid var(--border); scroll-margin-top: 72px; }
+.isi-sec:first-of-type { border-top: 0; padding-top: 0; }
+.isi-sec-head {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--isi-space-3) var(--isi-space-5); align-items: start; margin-bottom: var(--isi-space-4);
+}
+.isi-sec-titles { display: flex; flex-direction: column; gap: var(--isi-space-2); }
+.isi-sec-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; color: var(--primary); }
+.isi-sec-head h2 { font-family: "General Sans", var(--font-body); font-size: clamp(22px, 2.4vw, 28px); font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; margin: 0; }
+.isi-sec-side { display: flex; flex-direction: column; gap: var(--isi-space-3); padding-top: 22px; }
+.isi-sec-side .lede { margin: 0; max-width: var(--isi-measure); color: var(--muted); }
+@media (max-width: 800px) {
+  .isi-sec { margin-top: var(--isi-space-5); padding-top: var(--isi-space-4); }
+  .isi-sec-head { grid-template-columns: minmax(0, 1fr); }
+  .isi-sec-side { padding-top: 0; }
+}
+
+/* Sticky "On this page" rail with scroll-spy. */
+.isi-toc {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: var(--isi-space-4);
+  margin: 0 calc(-1 * var(--isi-space-2)) var(--isi-space-4); padding: var(--isi-space-2);
+  background: color-mix(in oklab, var(--bg) 92%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none;
+}
+.isi-toc::-webkit-scrollbar { display: none; }
+.isi-toc-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); white-space: nowrap; }
+.isi-toc ol { display: flex; gap: var(--isi-space-1); list-style: none; margin: 0; padding: 0; }
+.isi-toc a {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+  font-size: 13px; color: var(--muted); text-decoration: none; white-space: nowrap; border: 1px solid transparent;
+}
+.isi-toc a:hover { color: var(--text); border-color: var(--border); }
+.isi-toc a[aria-current] { color: var(--primary); background: var(--primary-soft); border-color: color-mix(in oklab, var(--primary) 25%, transparent); }
+.isi-toc-n { font-family: var(--font-mono); font-size: 10px; opacity: 0.7; }
+
+/* Detail panel + labelled facts. */
+.isi-detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--isi-space-3); flex-wrap: wrap; }
+.isi-detail-head h3 { font-size: 1.15rem; margin: 0; }
+.isi-detail-eyebrow { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); margin-bottom: 4px; }
+.isi-detail > p { margin-top: var(--isi-space-3); }
+.isi-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--isi-space-4); margin: var(--isi-space-4) 0 0; padding-top: var(--isi-space-4); border-top: 1px solid var(--border); }
+.isi-facts dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
+.isi-facts dd { margin: 0; font-size: 14px; line-height: 1.55; }
+.isi-facts dd .row { gap: 6px; }
+
+/* Toolbar above filterable lists. */
+.isi-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--isi-space-3); flex-wrap: wrap; margin-bottom: var(--isi-space-4); padding-bottom: var(--isi-space-3); border-bottom: 1px solid var(--border); }
+.isi-toolbar-controls { display: flex; flex-direction: column; gap: var(--isi-space-3); min-width: 0; flex: 1 1 420px; }
+.isi-toolbar-controls .input { max-width: 360px; }
+.isi-toolbar-controls > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.isi-toolbar-count { font-family: var(--font-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+/* Trial/record rows: labelled lines instead of inline mono prefixes. */
+.isi-lines { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px var(--isi-space-3); margin: var(--isi-space-2) 0 0; }
+.isi-lines dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); padding-top: 2px; }
+.isi-lines dd { margin: 0; font-size: 14px; line-height: 1.55; }
+@media (max-width: 560px) { .isi-lines { grid-template-columns: minmax(0, 1fr); gap: 2px; } .isi-lines dd { margin-bottom: 6px; } }
+
+/* Continue the journey. */
+.isi-journey {
+  display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: var(--isi-space-4);
+  max-width: var(--isi-wide); margin: var(--isi-space-6) auto 0; padding: var(--isi-space-5) 0 var(--isi-space-4);
+  border-top: 1px solid var(--border-strong);
+}
+.isi-journey-where { display: flex; flex-direction: column; gap: 4px; }
+.isi-journey-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); }
+.isi-journey-where strong { font-size: 15px; }
+.isi-journey-links { display: grid; grid-template-columns: 1fr 1fr; gap: var(--isi-space-3); }
+.isi-journey-card {
+  display: flex; flex-direction: column; gap: 4px; padding: var(--isi-space-4); border: 1px solid var(--border);
+  border-radius: var(--isi-radius); background: var(--surface); text-decoration: none; color: var(--text);
+  transition: border-color .15s, transform .15s;
+}
+.isi-journey-card.next { text-align: right; align-items: flex-end; }
+.isi-journey-card:hover { border-color: var(--primary); transform: translateY(-1px); }
+.isi-journey-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.isi-journey-dir { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.isi-journey-card strong { font-size: 16px; }
+.isi-journey-card small { color: var(--muted); font-size: 13px; line-height: 1.45; }
+@media (max-width: 800px) {
+  .isi-journey { grid-template-columns: minmax(0, 1fr); }
+  .isi-journey-links { grid-template-columns: minmax(0, 1fr); }
+  .isi-journey-card.next { text-align: left; align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .isi-journey-card { transition: none; } .isi-journey-card:hover { transform: none; } }
+.marketing-shell .isi-journey { max-width: var(--mkt-max); padding-inline: var(--mkt-gutter); box-sizing: border-box; }
+.isi-detail-nav { display: flex; justify-content: space-between; gap: var(--isi-space-2); margin-top: var(--isi-space-4); }
+.therapy-card { display: flex; flex-direction: column; gap: var(--isi-space-2); }
+.therapy-card h3 { font-size: 1.05rem; margin: 0; }
+.therapy-card .isi-lines { padding-top: var(--isi-space-3); border-top: 1px solid var(--border); }
+.isi-sec-action { display: flex; align-items: center; gap: var(--isi-space-3); flex-wrap: wrap; }
+.isi-sec-action .xs { flex: 1 1 260px; }
+
+/* Two-step workspaces (inputs → results), e.g. Patient. */
+.isi-workspace { display: grid; grid-template-columns: minmax(300px, 5fr) minmax(0, 7fr); gap: var(--isi-space-5); align-items: start; margin-top: var(--isi-space-5); }
+.isi-panel-sticky { position: sticky; top: var(--isi-space-4); max-height: calc(100dvh - 2 * var(--isi-space-4)); overflow-y: auto; }
+.isi-panel-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--isi-space-3); margin-bottom: var(--isi-space-4); }
+.isi-panel-head h2 { font-size: 1.15rem; margin: 0; }
+.isi-fieldset { border: 0; margin: 0 0 var(--isi-space-4); padding: var(--isi-space-3) 0 0; border-top: 1px solid var(--border); min-width: 0; }
+.isi-fieldset legend { padding: 0; margin-bottom: var(--isi-space-2); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); float: left; width: 100%; }
+.isi-fieldset legend + * { clear: both; }
+.isi-slider { display: block; margin-bottom: var(--isi-space-3); clear: both; }
+.isi-slider-top { display: flex; justify-content: space-between; gap: var(--isi-space-2); margin-bottom: 4px; }
+.isi-slider input { width: 100%; accent-color: var(--primary); }
+@media (max-width: 900px) {
+  .isi-workspace { grid-template-columns: minmax(0, 1fr); }
+  .isi-panel-sticky { position: static; max-height: none; overflow: visible; }
+}
+.isi-note { display: flex; align-items: center; gap: var(--isi-space-2); flex-wrap: wrap; margin: 0 0 var(--isi-space-4); padding: var(--isi-space-3) var(--isi-space-4); border: 1px solid var(--border); border-radius: var(--isi-radius); background: var(--surface); font-size: 14px; }
+.isi-sec-side .isi-facts { margin-top: 0; padding-top: 0; border-top: 0; }
+/* Beats the generic `li a:not(...)` underline rule in atlas.css. */
+nav.isi-toc a, nav.isi-toc a:hover { text-decoration: none !important; }
+a.isi-journey-card, a.isi-journey-card:hover { text-decoration: none; }

@@ -8,6 +8,16 @@ import { CONTENT } from "@/data/content";
 import { KG, byId, SEM, human, shortestPath } from "@/lib/immune/engine";
 import EdgeReference from "@/components/immune/EdgeReference";
 import { PageHead, NodeChip } from "@/components/immune/ui";
+import { PageToc, Section } from "@/components/immune/page";
+
+const TOC = [
+  { id: "ask", label: "Ask" },
+  { id: "how-ai-works", label: "How the AI works" },
+  { id: "pathways", label: "Pathways" },
+  { id: "workspace", label: "Workspace" },
+  { id: "cases", label: "Cases" },
+  { id: "tracer", label: "Path tracer" },
+];
 import AskAtlas from "@/components/immune/AskAtlas";
 import MechanismWorkspace from "@/components/immune/MechanismWorkspace";
 import { approvedQuery } from "@/lib/citations.functions";
@@ -43,7 +53,7 @@ function Reasoning() {
   return (
     <div className="page">
       <PageHead
-        kicker="Layer 11 · Reasoning & Scientific AI"
+        kicker="Investigate · Scientific reasoning"
         title="AI that works through the biology"
         lede="Ask with retrieved graph context (and reviewed relationship cites when they exist), see exactly what the AI retrieves, walk published cases, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated."
         stats={[
@@ -52,22 +62,11 @@ function Reasoning() {
           { v: "Δ", l: "PERTURBATION" },
         ]}
       />
-      <nav className="page-jump" aria-label="On this page">
-        <a href="#ask">Ask</a>
-        <a href="#how-ai-works">How the AI works</a>
-        <a href="#exemplar-pathways-heading">Pathways</a>
-        <a href="#workspace">Workspace</a>
-        <a href="#cases">Cases</a>
-        <a href="#tracer">Path tracer</a>
-      </nav>
-      <section className="section" id="ask">
-        <h2>Ask Immune</h2>
-        <p className="lede">Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with Gate C reviewed cites when present and provisional PubMed/Europe PMC hits labelled unreviewed. Sparse approved claim cites mean this is not fully evidence-grounded AI.</p>
+      <PageToc items={TOC} />
+      <Section id="ask" n={1} title="Ask Immune" lede="Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with Gate C reviewed cites when present and provisional PubMed/Europe PMC hits labelled unreviewed. Sparse approved claim cites mean this is not fully evidence-grounded AI.">
         <AskAtlas />
-      </section>
-      <section className="section" id="how-ai-works">
-        <h2>How the AI works</h2>
-        <p className="lede">Before any answer is written, Ask runs this retrieval: question → graph context → evidence status. The demo below makes no AI call and invents no sources.</p>
+      </Section>
+      <Section id="how-ai-works" n={2} title="How the AI works" lede="Before any answer is written, Ask runs this retrieval: question → graph context → evidence status. The demo below makes no AI call and invents no sources.">
         <PhoneFold label="Show the retrieval demo">
           <ResearchWorkspace />
         </PhoneFold>
@@ -77,9 +76,8 @@ function Reasoning() {
         <PhoneFold label="Show all capabilities">
           <CapabilityRegistry />
         </PhoneFold>
-      </section>
-      <section className="section" aria-labelledby="exemplar-pathways-heading">
-        <h2 id="exemplar-pathways-heading">Exemplar pathways</h2>
+      </Section>
+      <Section id="pathways" n={3} title="Exemplar pathways">
         {evidenceUnavailable ? (
           <p className="lede" role="alert">Evidence service unavailable — pathway maturity below cannot be recomputed from live approvals (not the same as zero reviewed support).</p>
         ) : (
@@ -138,14 +136,11 @@ function Reasoning() {
           })}
         </div>
         </PhoneFold>
-      </section>
-      <section className="section" id="workspace">
-        <h2>Mechanism workspace</h2>
-        <p className="lede">Choose a starting concept, an intervention or perturbation, and an outcome. Inspect paths, polarity, evidence status, assumptions and gaps.</p>
+      </Section>
+      <Section id="workspace" n={4} title="Mechanism workspace" lede="Choose a starting concept, an intervention or perturbation, and an outcome. Inspect paths, polarity, evidence status, assumptions and gaps.">
         <MechanismWorkspace initialStart={urlFrom && byId[urlFrom] ? urlFrom : "C003"} />
-      </section>
-      <section className="section" id="cases">
-        <h2>Case reasoning</h2>
+      </Section>
+      <Section id="cases" n={5} title="Case reasoning">
         <div className="lesson-tabs">
           {CONTENT.cases.map((x, i) => (
             <button key={x.role} className={i === openCase ? "on" : undefined} onClick={() => setOpenCase(i)}>
@@ -159,10 +154,8 @@ function Reasoning() {
           <div className="row" style={{ marginBottom: 14 }}>{c.path.filter((id: string) => byId[id]).map((id: string) => <NodeChip key={id} id={id} />)}</div>
           <p>{c.answer}</p>
         </div>
-      </section>
-      <section className="section" id="tracer">
-        <h2>Path tracer</h2>
-        <p className="lede">Pick any two concepts. The tracer finds the shortest chain of causal links between them, directed or not.</p>
+      </Section>
+      <Section id="tracer" n={6} title="Path tracer" lede="Pick any two concepts. The tracer finds the shortest chain of causal links between them, directed or not.">
         <div className="card">
           <div className="row" style={{ gap: 12, marginBottom: 16 }}>
             <label className="field" style={{ flex: 1, minWidth: 200 }}>
@@ -203,7 +196,7 @@ function Reasoning() {
             <p className="empty">No causal path connects these two concepts in the current graph. That gap is itself a finding — it may be a missing curation, or a genuinely absent link.</p>
           )}
         </div>
-      </section>
+      </Section>
     </div>
   );
 }

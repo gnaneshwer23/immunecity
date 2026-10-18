@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LEGACY, type Cell } from "@/data/legacy";
 import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
+import { Section, Toolbar } from "@/components/immune/page";
 import { getLiveProteins, type LiveProtein } from "@/lib/liveData.functions";
 
 /* One signature marker gene per atlas entry, used for the live UniProt lookup. */
@@ -129,7 +130,7 @@ function Learn() {
   return (
     <div className="page">
       <PageHead art={ART.cellsArt}
-        kicker="Layer 02 · Cell atlas"
+        kicker="Learn · Cell atlas"
         title="The residents"
         lede={`${LEGACY.cells.length} entries — immune cell types and the complement system beside them — each with an everyday metaphor, the mechanistic detail behind it, and where that metaphor stops being true. Expand a card for the full entry.`}
         stats={[
@@ -138,12 +139,15 @@ function Learn() {
           { v: Object.keys(LEGACY.cellKG).length, l: "GRAPH MAPPINGS" },
         ]}
       />
-      <div className="filters">
-        {LINEAGES.map((l) => (
-          <button key={l.id} className={`chip${lineage === l.id ? " on" : ""}`} onClick={() => setLineage(l.id)}>{l.label}</button>
-        ))}
-      </div>
-      <h2 className="sr-only">Atlas entries</h2>
+      <Section id="entries" n={1} title="Atlas entries"
+        lede="Filter by lineage. Each card opens the mechanism behind the metaphor, the lessons that use the cell, and its signature protein where UniProt returns one.">
+      <Toolbar count={`${cells.length} of ${LEGACY.cells.length} entries`}>
+        <div role="group" aria-label="Filter by lineage">
+          {LINEAGES.map((l) => (
+            <button key={l.id} className={`chip${lineage === l.id ? " on" : ""}`} aria-pressed={lineage === l.id} onClick={() => setLineage(l.id)}>{l.label}</button>
+          ))}
+        </div>
+      </Toolbar>
       <div className="cells">
         {cells.map((c) => (
           <CellCard
@@ -155,6 +159,7 @@ function Learn() {
           />
         ))}
       </div>
+      </Section>
     </div>
   );
 }

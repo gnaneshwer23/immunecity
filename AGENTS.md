@@ -35,3 +35,4 @@
 - Atlas domain gaps are computed from keyword coverage of real graph concepts, never filled with authored content; why: the brief forbids invented scientific records.
 - The full Ask page reuses `AskAtlas` with a single localStorage conversation key restored after hydration; the corner assistant stays unpersisted; why: one transport and guardrail path for both entries.
 - Content pages use shared explainer blocks in `src/components/immune/explain.tsx` with a closed-by-default Sources fold; why: content first, references on demand.
+- Journey pages share one anatomy from `src/components/immune/page.tsx` — `PageHead` → `PageToc` (sticky, scroll-spy) → numbered `Section`s → `JourneyNext` (rendered by `Shell`, previous/next in Learn → Explore → Investigate order from `JOURNEY_NAV`); explorers use `DetailPanel` + `Facts`, lists use `Toolbar`; why: every page reads in the same order and kickers name the journey, not legacy layer numbers.

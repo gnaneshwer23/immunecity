@@ -1,6 +1,14 @@
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
+import { PageToc, Section } from "@/components/immune/page";
+
+const TOC = [
+  { id: "what-we-process", label: "What we process" },
+  { id: "browser-storage-and-external-services", label: "Browser storage and external services" },
+  { id: "what-we-ask-you-not-to-send", label: "What we ask you not to send" },
+  { id: "contact", label: "Contact" },
+];
 import { CONTACT_EMAIL, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/privacy")({
@@ -12,12 +20,12 @@ function Privacy() {
   return (
     <div className="page marketing-page">
       <PageHead
-        kicker="Trust"
+        kicker="Trust · Privacy"
         title="Privacy"
         lede="This notice describes information handled by the public educational beta and collaboration pages. It is not legal advice."
       />
-      <section className="section">
-        <h2>What we process</h2>
+      <PageToc items={TOC} />
+      <Section id="what-we-process" n={1} title="What we process">
         <ul>
           <li>
             <b>Account and curation (admins).</b> If you sign in for citation curation, authentication and role data are
@@ -37,29 +45,26 @@ function Privacy() {
             and secure the service.
           </li>
         </ul>
-      </section>
-      <section className="section">
-        <h2>Browser storage and external services</h2>
+      </Section>
+      <Section id="browser-storage-and-external-services" n={2} title="Browser storage and external services">
         <p>Research drafts saved by you and Academy progress remain in this browser's storage until cleared.
           Fonts are requested from Fontshare and Google Fonts; those services receive standard request metadata.
           Protein and trial lookups use UniProt and ClinicalTrials.gov. Hosting and optional preview error reporting use Lovable.</p>
         <p>For details of the responsible operator, applicable data rights and retention periods, contact {CONTACT_EMAIL}.
           These operational details require confirmation by the operator before a broader production launch.</p>
-      </section>
-      <section className="section">
-        <h2>What we ask you not to send</h2>
+      </Section>
+      <Section id="what-we-ask-you-not-to-send" n={3} title="What we ask you not to send">
         <p>
           Do not upload or type patient-identifiable data, clinical notes or confidential proprietary datasets into Ask,
           the workbench or collaboration messages.
         </p>
-      </section>
-      <section className="section">
-        <h2>Contact</h2>
+      </Section>
+      <Section id="contact" n={4} title="Contact">
         <p>
           Privacy questions: {CONTACT_EMAIL}. Also see the <Link to="/disclaimer">educational disclaimer</Link> and{" "}
           <Link to="/terms">terms</Link>.
         </p>
-      </section>
+      </Section>
     </div>
   );
 }

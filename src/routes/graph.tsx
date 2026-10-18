@@ -24,7 +24,7 @@ function Fallback() {
   return (
     <div className="page graph-explorer" aria-busy="true">
       <PageHead
-        kicker="Layer 04 · Immune City · Knowledge graph"
+        kicker="Explore · Knowledge graph"
         title="The causal map"
         lede="Loading the graph…"
       />

@@ -4,6 +4,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CONTENT } from "@/data/content";
 import { PageHead } from "@/components/immune/ui";
+import { DetailPanel, Facts, PageToc, Section } from "@/components/immune/page";
+
+const TOC = [
+  { id: "hypersensitivity", label: "Hypersensitivity" },
+  { id: "cancer-cycle", label: "Cancer immunity cycle" },
+];
 
 export const Route = createFileRoute("/disease")({
   head: () => seoHead({ title: "Disease: hypersensitivity and cancer immunity — Immune Super Intelligence", description: "The four hypersensitivity types and the seven-step cancer immunity cycle, each with its therapeutic lever.", path: "/disease" }),
@@ -21,21 +27,17 @@ function Disease() {
   return (
     <div className="page">
       <PageHead art={ART.diseaseArt}
-        kicker="Layer 07 · Disease"
+        kicker="Explore · Disease explorer"
         title="When mechanism becomes pathology"
         lede="Four hypersensitivity types describe how a normal effector mechanism turns on the host. The cancer immunity cycle shows the seven steps a tumour must defeat — each one a therapeutic opportunity."
         stats={[
-          { v: 4, l: "HYPERSENSITIVITY TYPES" },
-          { v: 7, l: "CANCER CYCLE STEPS" },
+          { v: CONTENT.hypersensitivity.length, l: "HYPERSENSITIVITY TYPES" },
+          { v: CONTENT.cancerCycle.length, l: "CANCER CYCLE STEPS" },
         ]}
       />
-      <nav className="page-toc" aria-label="On this page">
-        <a href="#hypersensitivity" className="chip">Hypersensitivity</a>
-        <a href="#cancer-cycle" className="chip">Cancer immunity cycle</a>
-      </nav>
-      <section className="section" id="hypersensitivity">
-        <h2>Hypersensitivity</h2>
-        <p className="lede">Same immune machinery, four different failure modes distinguished by mechanism and timing. Switch between types to compare.</p>
+      <PageToc items={TOC} />
+      <Section id="hypersensitivity" n={1} title="Hypersensitivity"
+        lede="Same immune machinery, four different failure modes distinguished by mechanism and timing. Switch between types to compare.">
         <div className="hs-grid" role="tablist" aria-label="Hypersensitivity types">
           {CONTENT.hypersensitivity.map((h, i) => (
             <button
@@ -50,27 +52,16 @@ function Disease() {
             </button>
           ))}
         </div>
-        <div className="dyn-detail" key={hs.type}>
-          <div className="row" style={{ justifyContent: "space-between" }}>
-            <h3 style={{ fontSize: "1.15rem" }}>Type {hs.type} — {hs.name}</h3>
-            <span className="chip">{hs.test}</span>
-          </div>
-          <p className="small" style={{ marginTop: 10 }}>{hs.mechanism}</p>
-          <div className="dd-grid">
-            <div>
-              <div className="xs mono muted" style={{ marginBottom: 6, textTransform: "uppercase" }}>Examples</div>
-              <p className="small muted">{hs.examples}</p>
-            </div>
-            <div>
-              <div className="xs mono muted" style={{ marginBottom: 6, textTransform: "uppercase" }}>Targeted therapy</div>
-              <p className="small">{hs.therapy}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="section" id="cancer-cycle">
-        <h2>The cancer immunity cycle</h2>
-        <p className="lede">Seven steps from antigen release to killing. Tumours escape by breaking one; immunotherapy repairs one. Walk the cycle.</p>
+        <DetailPanel key={hs.type} eyebrow={`Type ${hs.type}`} title={hs.name} action={<span className="chip">{hs.test}</span>}>
+          <p className="small">{hs.mechanism}</p>
+          <Facts items={[
+            { label: "Examples", children: <span className="muted">{hs.examples}</span> },
+            { label: "Targeted therapy", children: hs.therapy },
+          ]} />
+        </DetailPanel>
+      </Section>
+      <Section id="cancer-cycle" n={2} title="The cancer immunity cycle"
+        lede="Seven steps from antigen release to killing. Tumours escape by breaking one; immunotherapy repairs one. Walk the cycle.">
         <div className="cycle-rail" role="tablist" aria-label="Cancer immunity cycle steps">
           {CONTENT.cancerCycle.map((s) => (
             <button
@@ -85,24 +76,17 @@ function Disease() {
             </button>
           ))}
         </div>
-        <div className="dyn-detail" key={cycleStep.step}>
-          <h3 style={{ fontSize: "1.15rem" }}>Step {cycleStep.step} — {cycleStep.name}</h3>
-          <div className="dd-grid">
-            <div>
-              <div className="xs mono muted" style={{ marginBottom: 6, textTransform: "uppercase" }}>How it fails</div>
-              <p className="small muted">{cycleStep.fail}</p>
-            </div>
-            <div>
-              <div className="xs mono muted" style={{ marginBottom: 6, textTransform: "uppercase" }}>Therapeutic lever</div>
-              <p className="small">{cycleStep.lever}</p>
-            </div>
-          </div>
-          <div className="row" style={{ marginTop: 14, justifyContent: "space-between" }}>
+        <DetailPanel key={cycleStep.step} eyebrow={`Step ${cycleStep.step} of ${CONTENT.cancerCycle.length}`} title={cycleStep.name}>
+          <Facts items={[
+            { label: "How it fails", children: <span className="muted">{cycleStep.fail}</span> },
+            { label: "Therapeutic lever", children: cycleStep.lever },
+          ]} />
+          <div className="isi-detail-nav">
             <button className="btn sm" disabled={step <= 1} onClick={() => setStep(step - 1)}>← Previous step</button>
             <button className="btn sm" disabled={step >= CONTENT.cancerCycle.length} onClick={() => setStep(step + 1)}>Next step →</button>
           </div>
-        </div>
-      </section>
+        </DetailPanel>
+      </Section>
     </div>
   );
 }

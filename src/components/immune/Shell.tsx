@@ -16,6 +16,7 @@ import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/componen
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import AskAtlas from "./AskAtlas";
 import ScientificInspector from "./ScientificInspector";
+import { JourneyNext } from "./page";
 import {
   ASK_NAME,
   ATLAS_CTA,
@@ -325,6 +326,7 @@ export default function Shell({ children }: { children: ReactNode }) {
       <div className={`shell nav-closed${marketing ? " marketing-shell" : ""}`}>
         <main id="main" tabIndex={-1}>
           {children}
+          {pathname !== "/graph" ? <JourneyNext /> : null}
           {pathname !== "/graph" && <SiteFooter />}
         </main>
       </div>

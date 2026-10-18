@@ -58,7 +58,7 @@ function Patient() {
   return (
     <div className="page">
       <PageHead
-        kicker="Layer 10 · Patient"
+        kicker="Investigate · Patient and biomarkers"
         title="Precision immunology"
         lede="Select the features this patient carries — comorbidities, biomarkers, clinical state — and see which therapies the mechanism supports, and which it cautions against. Scores are sums of explicit rules, each with its reason."
         stats={[
@@ -67,15 +67,18 @@ function Patient() {
         ]}
       />
       <EduBanner>Rule-based teaching scores built from the graph; each rule shows its reason. Educational illustration — not patient-specific advice.</EduBanner>
-      <div className="g2 grid" style={{ alignItems: "start" }}>
-        <div className="card">
-          <div className="row" style={{ justifyContent: "space-between", marginBottom: 12 }}>
-            <h2 style={{ fontSize: "1.05rem" }}>Patient features</h2>
+      <div className="isi-workspace">
+        <div className="card isi-panel isi-panel-sticky">
+          <div className="isi-panel-head">
+            <div>
+              <span className="isi-detail-eyebrow">Step 1</span>
+              <h2>Patient features</h2>
+            </div>
             {selected.size ? <button className="btn sm" onClick={() => setSelected(new Set())}>Clear all</button> : null}
           </div>
           {GROUPS.map((g) => (
-            <div key={g} style={{ marginBottom: 14 }}>
-              <div className="xs mono muted" style={{ marginBottom: 6, textTransform: "uppercase" }}>{g}</div>
+            <fieldset key={g} className="isi-fieldset">
+              <legend>{g}</legend>
               <div className="flag-grid">
                 {CONTENT.flags.filter((f) => f.group === g).map((f) => (
                   <label key={f.id}>
@@ -84,29 +87,37 @@ function Patient() {
                   </label>
                 ))}
               </div>
-            </div>
+            </fieldset>
           ))}
-          <div className="xs mono muted" style={{ marginBottom: 6, textTransform: "uppercase" }}>Measured biomarkers</div>
+          <fieldset className="isi-fieldset">
+          <legend>Measured biomarkers</legend>
           {EXT_BIOMARKERS.map((b) => {
             const v = bio[b.id] ?? b.def;
             const firing = b.thresholds.some((t) => (t.above != null && v >= t.above) || (t.below != null && v < t.below));
             return (
-            <label key={b.id} className="xs" style={{ display: "block", marginBottom: 8 }}>
-              {b.label} <span className={`mono ${firing ? "bio-active" : "muted"}`}>{v} {b.unit}{firing ? " · rule firing" : ""}</span>
-              <input type="range" min={b.min} max={b.max} step={b.step} value={bio[b.id] ?? b.def} style={{ width: "100%" }}
+            <label key={b.id} className="xs isi-slider">
+              <span className="isi-slider-top">{b.label} <span className={`mono ${firing ? "bio-active" : "muted"}`}>{v} {b.unit}{firing ? " · rule firing" : ""}</span></span>
+              <input type="range" min={b.min} max={b.max} step={b.step} value={bio[b.id] ?? b.def}
                 aria-label={b.label}
                 onChange={(e) => setBio({ ...bio, [b.id]: Number(e.target.value) })} />
             </label>
             );
           })}
+          </fieldset>
           {derived.labels.length ? (
             <p className="xs muted">Active thresholds: {derived.labels.join(" · ")}</p>
           ) : (
             <p className="xs muted">Move a slider past a threshold and the matching rules fire automatically.</p>
           )}
         </div>
-        <div>
-          <h2 style={{ fontSize: "1.05rem", marginBottom: 10 }}>{anyInput ? `${ranked.length} therapies matched` : "Ranked therapies"}</h2>
+        <div className="isi-panel-results" aria-live="polite">
+          <div className="isi-panel-head">
+            <div>
+              <span className="isi-detail-eyebrow">Step 2</span>
+              <h2>{anyInput ? `${ranked.length} therapies matched` : "Rule-ranked therapies"}</h2>
+            </div>
+            {anyInput ? <span className="isi-toolbar-count">{effective.size} feature{effective.size === 1 ? "" : "s"} active</span> : null}
+          </div>
           {!anyInput ? <p className="empty card">Select at least one patient feature, or move a biomarker slider past a threshold, to rank therapies against the rule set.</p> : null}
           {anyInput && !ranked.length ? <p className="empty card">No rule in the atlas touches these features yet.</p> : null}
           {ranked.map((d) => (
