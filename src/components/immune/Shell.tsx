@@ -308,7 +308,7 @@ export default function Shell({ children }: { children: ReactNode }) {
       {showAskFab ? (
         <>
           <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? `Close ${ASK_NAME}` : `Open ${ASK_NAME}`} title={ASK_NAME}>
-            {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask</span>
+            {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask Immune</span>
           </Button>
           <Dialog modal={false} open={askOpen} onOpenChange={setAskOpen}>
             <DialogPortal>

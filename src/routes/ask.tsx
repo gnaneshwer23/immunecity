@@ -6,6 +6,7 @@ import { PageHead } from "@/components/immune/ui";
 import { byId } from "@/lib/immune/engine";
 import { askPrefill } from "@/lib/immune/concepts";
 import { ASK_NAME, PRODUCT_NAME } from "@/lib/brand";
+import { CAPABILITY_STATUS_LABEL } from "@/data/capabilityStatus";
 import { seoHead } from "@/lib/seo";
 
 const ASK_SUGGESTIONS = [
@@ -38,17 +39,17 @@ function AskPage() {
   return (
     <div className="page isi-ask-page">
       <PageHead
-        kicker={ASK_NAME}
+        kicker={`${ASK_NAME} · ${CAPABILITY_STATUS_LABEL.partial}`}
         title="Ask about the immune system."
-        lede="Answers are built from concepts and links retrieved from the curated knowledge graph. Each matched concept opens its own page; Gate C reviewed citations appear only where they exist; provisional literature is labelled unreviewed; missing evidence is said out loud. Your conversation is kept in this browser only."
+        lede="Answers are built from concepts and links retrieved from the curated knowledge graph. Gate C reviewed citations appear only where they exist; provisional PubMed/Europe PMC hits stay labelled unreviewed; missing evidence is said out loud. Not fully evidence-grounded AI. Your conversation stays in this browser only."
       />
       {ctx ? (
         <p className="isi-ask-context" role="status">
-          Context: <Link to="/atlas/$id" params={{ id: ctx.id }}>{ctx.name}</Link>. You can still ask anything.
+          Context: <Link to="/atlas/$id" params={{ id: ctx.id }}>{ctx.name}</Link>. You can still ask anything in the graph.
         </p>
       ) : null}
       <AskAtlas persistKey="isi-ask-conversation" initialInput={askPrefill(about, q)} groupedSuggestions={ASK_SUGGESTIONS} />
-      <p className="xs muted" style={{ marginTop: 16 }}>
+      <p className="xs muted isi-ask-foot">
         For personal symptoms, diagnosis or treatment, speak to a qualified clinician. {ASK_NAME} gives general education only — not clinical decision support.{" "}
         <Link to="/methods">How answers are built</Link> · <Link to="/atlas">Browse the Knowledge Atlas</Link>
       </p>

@@ -608,6 +608,7 @@ html[data-theme][data-theme] {
 .methods .section ul { padding-left: 18px; display: grid; gap: 6px; }
 
 /* keep the Ask launcher clear of mobile controls */
+/* Icon-only FAB on narrow viewports — label stays in aria-label / title */
 @media (max-width: 640px) { .ask-launcher span { display: none; } }
 
 /* Platform pillars — interactive destinations, not card soup */
@@ -1176,7 +1177,24 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
 .ask-ai-badge { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; padding: 3px 9px; border-radius: 999px; border: 1px dashed var(--border-strong); font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: color-mix(in oklab, var(--primary) 6%, var(--surface)); }
 
 .grounding-panel { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 10px; background: var(--surface-2); display: flex; flex-direction: column; gap: 8px; }
+.grounding-panel--gap { border-left-color: color-mix(in oklab, oklch(0.7 0.14 85) 70%, var(--border)); }
 .grounding-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+.grounding-buckets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.grounding-bucket { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; line-height: 1.35; }
+.grounding-bucket b { display: block; font-size: 11px; letter-spacing: .02em; }
+.grounding-bucket span { color: var(--muted); }
+.grounding-bucket--reviewed { border-color: color-mix(in oklab, oklch(0.55 0.12 150) 40%, var(--border)); }
+.grounding-bucket--reviewed svg { color: oklch(0.42 0.09 150); flex: none; margin-top: 2px; }
+.grounding-bucket--provisional { border-color: color-mix(in oklab, oklch(0.7 0.14 85) 40%, var(--border)); }
+.grounding-bucket--provisional svg { color: oklch(0.45 0.1 85); flex: none; margin-top: 2px; }
+.grounding-bucket--missing { border-style: dashed; }
+.grounding-bucket--missing svg { color: var(--muted); flex: none; margin-top: 2px; }
+.grounding-callout { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: 8px; border: 1px dashed color-mix(in oklab, oklch(0.7 0.14 85) 50%, var(--border)); background: color-mix(in oklab, oklch(0.7 0.14 85) 8%, var(--surface)); }
+.grounding-callout p { margin: 0; font-size: 12px; line-height: 1.45; color: var(--text); }
+.grounding-callout svg { flex: none; margin-top: 2px; color: oklch(0.45 0.1 85); }
+.grounding-soft-fail { padding: 6px 0 0; border-top: 1px dashed var(--border); }
+.grounding-route { text-decoration: underline; text-underline-offset: 2px; }
+.grounding-provisional { padding: 6px 8px; border-radius: 8px; border: 1px dashed color-mix(in oklab, oklch(0.7 0.14 85) 45%, var(--border)); background: color-mix(in oklab, oklch(0.7 0.14 85) 6%, var(--surface)); }
 .grounding-metrics { display: flex; flex-wrap: wrap; gap: 10px 16px; font-size: 12px; color: var(--muted); }
 .grounding-metrics b { color: var(--text); font-variant-numeric: tabular-nums; }
 .grounding-label { font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
@@ -1186,6 +1204,9 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
 .grounding-link-btn { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
 .grounding-link-btn:hover { color: var(--primary); }
 .grounding-link-btn em { font-style: normal; color: var(--primary); margin: 0 4px; }
+@media (max-width: 720px) {
+  .grounding-buckets { grid-template-columns: 1fr; }
+}
 
 .evidence-tier { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px; font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .04em; border: 1px solid var(--border); color: var(--muted); background: var(--surface); }
 .tier-established { border-color: color-mix(in oklab, oklch(0.55 0.12 150) 50%, var(--border)); color: oklch(0.38 0.09 150); }

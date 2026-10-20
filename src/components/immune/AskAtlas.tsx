@@ -8,7 +8,15 @@ import type { UIMessage } from "ai";
 import { byId, out, inn, human, TYPES, edgeByRel, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import { ASK_NAME } from "@/lib/brand";
-import { matchConceptSuggestions, prepareAsk, runExplanationAction, type AskGrounding, type ExplanationAction } from "@/lib/askGrounding";
+import { CAPABILITY_STATUS_LABEL } from "@/data/capabilityStatus";
+import {
+  matchConceptSuggestions,
+  prepareAsk,
+  runExplanationAction,
+  shouldFetchProvisionalLit,
+  type AskGrounding,
+  type ExplanationAction,
+} from "@/lib/askGrounding";
 import EdgeReference, { NodeCitations } from "./EdgeReference";
 import GroundingPanel from "./GroundingPanel";
 import { Button } from "@/components/ui/button";
@@ -56,7 +64,6 @@ function followUps(ids: string[], asked: Set<string>): string[] {
   if (cell) qs.push(`Which signals switch ${cell.name} on and off?`);
   if (disease) qs.push(`Which therapies target ${disease.name}, and what trials tested them?`);
   if (drug) qs.push(`What are the side effects and risks of ${drug.name}?`);
-  // A neighbour not yet mentioned
   const first = nodes[0];
   if (first) {
     const nb = [...(out[first.id] || []).map((e) => e.object_id), ...(inn[first.id] || []).map((e) => e.subject_id)]
@@ -88,7 +95,10 @@ function Inspector({ pick, onClose }: { pick: Pick; onClose: () => void }) {
         </ul>
         <div className="ask-insp-label">Sources</div>
         <NodeCitations id={n.id} />
-        <Link className="btn sm primary" to="/graph" search={{ focus: n.id }}>Highlight in graph <ArrowUpRight size={14} /></Link>
+        <div className="ask-insp-actions">
+          <Link className="btn sm primary" to="/atlas/$id" params={{ id: n.id }}>Concept page <ArrowUpRight size={14} /></Link>
+          <Link className="btn sm" to="/graph" search={{ focus: n.id }}>Highlight in graph <ArrowUpRight size={14} /></Link>
+        </div>
       </>
     );
   } else {
@@ -101,7 +111,10 @@ function Inspector({ pick, onClose }: { pick: Pick; onClose: () => void }) {
         <p className="xs muted">Confidence: {e.confidence} · Evidence: {e.evidence_status}{e.location ? ` · Tissue: ${e.location}` : ""}</p>
         <div className="ask-insp-label">Sources</div>
         <EdgeReference edge={e} />
-        <Link className="btn sm primary" to="/graph" search={{ focus: e.subject_id }}>Highlight in graph <ArrowUpRight size={14} /></Link>
+        <div className="ask-insp-actions">
+          <Link className="btn sm primary" to="/atlas/$id" params={{ id: e.subject_id }}>Subject page <ArrowUpRight size={14} /></Link>
+          <Link className="btn sm" to="/graph" search={{ focus: e.subject_id }}>Highlight in graph <ArrowUpRight size={14} /></Link>
+        </div>
       </>
     ) : (
       <p className="xs muted">This connection between {s?.name ?? pick.s} and {o?.name ?? pick.o} isn't a direct link in the graph.</p>
@@ -133,7 +146,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const [input, setInput] = useState(initialInput);
   const [restored, setRestored] = useState(!persistKey);
   const [copied, setCopied] = useState<string | null>(null);
-  // Restore the saved conversation after hydration (never during SSR).
+  const [provisionalNote, setProvisionalNote] = useState<string | null>(null);
   useEffect(() => {
     if (!persistKey) return;
     try {
@@ -153,7 +166,14 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     } catch { /* storage full or blocked */ }
   }, [persistKey, restored, messages, status]);
   useEffect(() => { if (initialInput) setInput(initialInput); }, [initialInput]);
-  const newConversation = () => { setMessages([]); setGrounding(null); setLocalNote(null); setInput(""); inputRef.current?.focus(); };
+  const newConversation = () => {
+    setMessages([]);
+    setGrounding(null);
+    setLocalNote(null);
+    setProvisionalNote(null);
+    setInput("");
+    inputRef.current?.focus();
+  };
   const copyText = async (id: string, text: string) => {
     try { await navigator.clipboard.writeText(text); setCopied(id); setTimeout(() => setCopied(null), 1500); } catch { /* clipboard blocked */ }
   };
@@ -170,18 +190,21 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, status, grounding, localNote]);
+  }, [messages, status, grounding, localNote, provisionalNote]);
   useEffect(() => { inputRef.current?.focus(); }, []);
 
-  const asked = useMemo(() => new Set(messages.filter((m) => m.role === "user").flatMap((m) => m.parts.map((p) => (p.type === "text" ? p.text : "")))), [messages]);
+  const asked = useMemo(
+    () => new Set(messages.filter((m) => m.role === "user").flatMap((m) => m.parts.map((p) => (p.type === "text" ? p.text : "")))),
+    [messages],
+  );
 
   const send = (text: string) => {
     const t = text.trim();
     if (!t || busy) return;
-    // Immediate local grounding; enrich from server (Gate C + provisional lit) when available.
     const prepared = prepareAsk(t);
     setGrounding(prepared.grounding);
     setLocalNote(null);
+    setProvisionalNote(null);
     setInput("");
     void (async () => {
       try {
@@ -190,11 +213,39 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: t }),
         });
-        if (!res.ok) return;
-        const data = (await res.json()) as { grounding?: AskGrounding };
+        if (!res.ok) {
+          const want = shouldFetchProvisionalLit(prepared.grounding, prepared.queryClass);
+          if (want) {
+            setProvisionalNote(
+              "Provisional literature lookup soft-failed (service unavailable). Graph grounding above is still local — Gate C cites were not refreshed from the server.",
+            );
+          }
+          return;
+        }
+        const data = (await res.json()) as {
+          grounding?: AskGrounding;
+          provisionalError?: string | null;
+          provisionalSkipped?: string | null;
+        };
         if (data.grounding) setGrounding(data.grounding);
+        const note = data.provisionalError || data.provisionalSkipped;
+        if (note) setProvisionalNote(note);
+        else if (
+          data.grounding &&
+          shouldFetchProvisionalLit(data.grounding, data.grounding.queryClass) &&
+          !(data.grounding.provisionalLiterature?.length)
+        ) {
+          setProvisionalNote(
+            "Provisional PubMed/Europe PMC returned no hits for this question — soft-fail / empty search, not Gate C coverage.",
+          );
+        }
       } catch {
-        /* keep local grounding */
+        const want = shouldFetchProvisionalLit(prepared.grounding, prepared.queryClass);
+        if (want) {
+          setProvisionalNote(
+            "Provisional literature lookup could not be reached. Local graph grounding is shown; do not invent PMIDs.",
+          );
+        }
       }
     })();
     sendMessage({ text: t });
@@ -215,7 +266,12 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           <button type="button" className="ask-concept" onClick={() => inspect({ kind: "concept", id })} title={`Inspect ${n.name}`}>
             <span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} />{children}
           </button>
-          <Link to="/atlas/$id" params={{ id }} className="ask-concept-page" aria-label={`Open the ${n.name} concept page`}><ArrowUpRight size={11} /></Link>
+          <Link to="/atlas/$id" params={{ id }} className="ask-concept-page" aria-label={`Open ${n.name} concept page`} title="Concept page">
+            <ArrowUpRight size={11} />
+          </Link>
+          <Link to="/graph" search={{ focus: id }} className="ask-concept-page" aria-label={`Highlight ${n.name} in the graph`} title="Graph">
+            <span className="ask-route-hint">graph</span>
+          </Link>
         </span>
       );
     }
@@ -224,46 +280,76 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
       const [s = "", o = ""] = raw.split(":");
       const e = edgeByRel[raw] ?? findEdge(s, o);
       if (!e) return <span>{children}</span>;
-      return <button type="button" className="ask-edge" onClick={() => inspect({ kind: "relationship", id: relId(e) })} title="Inspect this connection">{children} →</button>;
+      const focusId = e.subject_id;
+      return (
+        <span className="ask-concept-wrap">
+          <button type="button" className="ask-edge" onClick={() => inspect({ kind: "relationship", id: relId(e) })} title="Inspect this connection">
+            {children} →
+          </button>
+          <Link to="/graph" search={{ focus: focusId }} className="ask-concept-page" aria-label="Open this pathway in the graph" title="Graph">
+            <ArrowUpRight size={11} />
+          </Link>
+        </span>
+      );
     }
     return <a href={href} target="_blank" rel="noreferrer">{children}</a>;
   };
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  const statusLabel =
+    status === "submitted" ? "Retrieving graph context…"
+      : status === "streaming" ? "Writing from retrieved graph context…"
+        : null;
 
   return (
-    <div className="ask-atlas card">
+    <div className={`ask-atlas card${showFullPageLink ? " ask-atlas--corner" : " ask-atlas--page"}`}>
       <div className="ask-head">
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
         <div>
           <div className="ask-head-row">
             <h3>{ASK_NAME}</h3>
+            <span className="ask-capability" title="capabilityStatus · ask-atlas">{CAPABILITY_STATUS_LABEL.partial}</span>
             <span className="ask-head-actions">
               {showFullPageLink ? <Link to="/ask" className="ask-mini-btn"><Maximize2 size={13} /> Open full page</Link> : null}
               {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New conversation</button> : null}
             </span>
           </div>
-          <p className="xs muted">Graph-retrieved teaching · reviewed cites when present · provisional lit labelled · not fully evidence-grounded AI</p>
-          <p className="xs muted">Answers use retrieved graph concepts, links, and Gate C reviewed relationship cites when they exist (sparse overall). PubMed/Europe PMC hits appear only as unreviewed literature. Educational — not patient-specific advice or CDS. Questions are sent to the configured AI service; see our <Link to="/privacy">privacy notice</Link>.</p>
+          <p className="xs muted ask-tagline">
+            Graph-retrieved teaching · Gate C reviewed cites when present · provisional PubMed/Europe PMC labelled unreviewed · not fully evidence-grounded AI
+          </p>
+          <p className="xs muted">
+            Educational — not patient-specific advice or CDS. Questions go to the configured AI service; see our{" "}
+            <Link to="/privacy">privacy notice</Link>.
+          </p>
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>
         {messages.length === 0 ? (
-          groupedSuggestions ? (
-            <div className="ask-suggest-groups">
-              {groupedSuggestions.map((g) => (
-                <div key={g.label} className="ask-suggest-group">
-                  <span className="ask-insp-label">{g.label}</span>
-                  {g.items.map((q) => <button key={q} type="button" className="chip" onClick={() => send(q)}>{q}</button>)}
-                </div>
-              ))}
-            </div>
-          ) : (
-          <div className="ask-suggestions">
-            {SUGGESTIONS.map((s) => (
-              <button key={s} className="chip" onClick={() => send(s)}>{s}</button>
-            ))}
-          </div>)
+          <div className="ask-empty" role="region" aria-label={`${ASK_NAME} starters`}>
+            <p className="ask-empty-lead">
+              Ask about a cell, pathway, cytokine, disease or therapy in the curated graph.
+              Answers show grounding tiers separately — reviewed cites, provisional literature, and missing support are never conflated.
+            </p>
+            {groupedSuggestions ? (
+              <div className="ask-suggest-groups">
+                {groupedSuggestions.map((g) => (
+                  <div key={g.label} className="ask-suggest-group">
+                    <span className="ask-insp-label">{g.label}</span>
+                    {g.items.map((q) => (
+                      <button key={q} type="button" className="chip" onClick={() => send(q)} disabled={busy}>{q}</button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="ask-suggestions">
+                <span className="ask-insp-label">Try a starter</span>
+                {SUGGESTIONS.map((s) => (
+                  <button key={s} type="button" className="chip" onClick={() => send(s)} disabled={busy}>{s}</button>
+                ))}
+              </div>
+            )}
+          </div>
         ) : null}
         {messages.map((m) => {
           const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
@@ -274,7 +360,9 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
               <div className="ask-body">
                 {m.role === "assistant" ? (
                   <>
-                    <div className="ask-ai-badge" role="note">AI-generated · graph-retrieved teaching · not fully evidence-grounded · not patient-specific advice</div>
+                    <div className="ask-ai-badge" role="note">
+                      AI-generated · graph-retrieved · {CAPABILITY_STATUS_LABEL.partial.toLowerCase()} · not patient-specific advice
+                    </div>
                     <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
                     {!busy || m !== lastAssistant ? (
                       <button type="button" className="ask-mini-btn" onClick={() => copyText(m.id, text)} aria-label="Copy answer">
@@ -285,7 +373,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                 ) : <p>{text}</p>}
                 {m === lastAssistant && grounding ? (
                   <>
-                    <GroundingPanel grounding={grounding} />
+                    <GroundingPanel grounding={grounding} provisionalNote={provisionalNote} />
                     {grounding.coverage.matched && !grounding.trace.abstained ? (
                       <div className="ask-followups" aria-label="Explanation actions">
                         <span className="ask-insp-label">Inspect without regenerating</span>
@@ -311,10 +399,12 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                   ) : null;
                 })() : null}
                 {fu.length > 0 && (
-                  <div className="ask-followups">
-                    <span className="ask-insp-label">Explore next</span>
+                  <div className="ask-followups" aria-label="Suggested follow-ups">
+                    <span className="ask-insp-label">Ask next</span>
                     {fu.map((q) => (
-                      <button key={q} className="chip" onClick={() => send(q)}><CornerDownRight size={12} /> {q}</button>
+                      <button key={q} type="button" className="chip" onClick={() => send(q)}>
+                        <CornerDownRight size={12} /> {q}
+                      </button>
                     ))}
                   </div>
                 )}
@@ -322,33 +412,58 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
             </div>
           );
         })}
-        {status === "submitted" ? (
-          <div className="ask-msg assistant">
+        {statusLabel ? (
+          <div className="ask-msg assistant" aria-live="polite">
             <span className="ask-role">{ASK_NAME}</span>
             <div className="ask-body">
-              <p className="muted">Retrieving graph context…</p>
-              {grounding ? <GroundingPanel grounding={grounding} /> : null}
+              <p className="muted ask-loading">{statusLabel}</p>
+              {grounding && status === "submitted" ? (
+                <GroundingPanel grounding={grounding} provisionalNote={provisionalNote} />
+              ) : null}
             </div>
           </div>
         ) : null}
-        {error ? <div className="ask-msg assistant"><span className="ask-role">{ASK_NAME}</span><div className="ask-body"><p className="muted">{/429|Too many/.test(error.message) ? "You've asked a lot of questions quickly — please wait a minute." : "Sorry — the answer could not be generated."}</p>{!/429|Too many/.test(error.message) ? <button type="button" className="ask-mini-btn" onClick={() => regenerate()}><RotateCcw size={12} /> Retry</button> : null}</div></div> : null}
+        {error ? (
+          <div className="ask-msg assistant" role="alert">
+            <span className="ask-role">{ASK_NAME}</span>
+            <div className="ask-body">
+              <p className="muted">
+                {/429|Too many/.test(error.message)
+                  ? "You've asked a lot of questions quickly — please wait a minute."
+                  : "Sorry — the answer could not be generated. Graph exploration and Methods & trust remain available."}
+              </p>
+              {!/429|Too many/.test(error.message) ? (
+                <button type="button" className="ask-mini-btn" onClick={() => regenerate()}>
+                  <RotateCcw size={12} /> Retry
+                </button>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </div>
       {matches.length > 0 && (
         <div className="ask-quick-matches" aria-label="Matching concepts">
           {matches.map((n) => (
-            <Button variant="ghost" key={n.id} onClick={() => { setPick({ kind: "concept", id: n.id }); setInput(""); }}>
-              <span>{n.name}</span><small>{TYPES[n.node_type].label}</small><ArrowUpRight size={14} />
+            <Button
+              variant="ghost"
+              key={n.id}
+              onClick={() => { setPick({ kind: "concept", id: n.id }); setInput(""); }}
+            >
+              <span>{n.name}</span>
+              <small>{TYPES[n.node_type].label}</small>
+              <ArrowUpRight size={14} />
             </Button>
           ))}
         </div>
       )}
       <form className="ask-composer" onSubmit={(e) => { e.preventDefault(); send(input); }}>
-        <textarea maxLength={500}
+        <textarea
+          maxLength={500}
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
-          placeholder="Ask about a cell, pathway, drug or connection…"
+          placeholder={`Ask ${ASK_NAME} about a cell, pathway, drug or connection…`}
           rows={2}
           aria-label={`Ask ${ASK_NAME} a question`}
         />

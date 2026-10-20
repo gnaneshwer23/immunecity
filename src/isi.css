@@ -185,17 +185,34 @@ html[data-theme] {
 .isi-rel-btn:hover, .isi-rel-btn:focus-visible { border-color: var(--primary); outline: none; }
 
 /* Ask page */
-.isi-ask-page .ask-atlas { min-height: 560px; }
+.isi-ask-page .ask-atlas { min-height: min(72dvh, 720px); display: flex; flex-direction: column; }
+.isi-ask-page .ask-scroll { flex: 1; max-height: none; min-height: 280px; }
 .isi-ask-context { padding: var(--isi-space-2) var(--isi-space-3); border-left: 3px solid var(--primary); background: var(--surface); margin-bottom: var(--isi-space-3); }
+.isi-ask-foot { margin-top: 16px; max-width: 52rem; }
 .ask-head-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ask-head-actions { display: inline-flex; gap: 6px; }
+.ask-head-actions { display: inline-flex; gap: 6px; margin-left: auto; }
+.ask-capability {
+  display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid color-mix(in oklab, oklch(0.7 0.14 85) 45%, var(--border));
+  font-family: var(--font-mono, ui-monospace); font-size: 10px; letter-spacing: .06em; text-transform: uppercase;
+  color: oklch(0.45 0.1 85); background: var(--surface);
+}
+.ask-tagline { max-width: 48rem; }
+.ask-empty { display: flex; flex-direction: column; gap: 14px; }
+.ask-empty-lead { margin: 0; font-size: var(--text-sm, 14px); line-height: 1.55; color: var(--muted); max-width: 40rem; }
+.ask-loading { font-style: italic; }
 .ask-mini-btn { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); border-radius: 999px; padding: 2px 10px; font-size: 12px; cursor: pointer; text-decoration: none; margin-top: 6px; }
 .ask-mini-btn:hover { border-color: var(--primary); color: var(--primary); }
 .ask-suggest-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--isi-space-4); }
 .ask-suggest-group { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .ask-suggest-group .chip { text-align: left; white-space: normal; }
-.ask-concept-wrap { display: inline-flex; align-items: center; gap: 1px; }
-.ask-concept-page { color: var(--primary); display: inline-grid; place-items: center; }
+.ask-suggestions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ask-concept-wrap { display: inline-flex; align-items: center; gap: 2px; flex-wrap: wrap; vertical-align: baseline; }
+.ask-concept-page { color: var(--primary); display: inline-grid; place-items: center; text-decoration: none; font-size: 10px; }
+.ask-concept-page:hover { text-decoration: underline; }
+.ask-route-hint { font-family: var(--font-mono, ui-monospace); letter-spacing: .04em; text-transform: lowercase; }
+.ask-insp-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ask-concept-link { text-decoration: none; }
 
 /* Homepage three experiences strip */
 .isi-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
