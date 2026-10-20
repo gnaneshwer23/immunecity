@@ -463,9 +463,9 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
-          placeholder={`Ask ${ASK_NAME} about a cell, pathway, drug or connection…`}
+          placeholder="Ask about a cell, pathway, drug or connection…"
           rows={2}
-          aria-label={`Ask ${ASK_NAME} a question`}
+          aria-label={`${ASK_NAME} question`}
         />
         {busy ? (
           <button type="button" className="btn sm" onClick={stop} aria-label="Stop generating"><Square size={14} /> Stop</button>
