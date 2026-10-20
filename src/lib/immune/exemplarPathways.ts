@@ -13,6 +13,13 @@ export const EXEMPLAR_MATURITY_LABEL: Record<ExemplarMaturity, string> = {
   reviewed: "On-path edges reviewed — teaching axis, not disease-complete",
 };
 
+/** Compact strip labels for landings (TNF reviewed / PD-1 partial / IFN scaffold). */
+export const EXEMPLAR_MATURITY_SHORT: Record<ExemplarMaturity, string> = {
+  scaffold: "Scaffold",
+  "partially-reviewed": "Partial",
+  reviewed: "Reviewed",
+};
+
 export interface ExemplarPathway {
   id: string;
   title: string;

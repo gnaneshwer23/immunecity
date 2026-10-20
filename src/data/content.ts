@@ -409,9 +409,10 @@ CONTENT.roadmap = [
   { text: 'Record the tissue in which each link has been shown', related: [] },
   { text: 'Use measured effect sizes as link weights in the simulator', related: [] },
   { text: 'Surface + curate draft EM layer (fibre/SCFA → Treg → IBD; barrier; sIgA)', related: ['C014', 'EM01', 'EM02', 'EM03'] },
-  { text: 'Add vaccine immunology (adjuvants, mRNA, correlates of protection)', related: [] },
-  { text: 'Add transplantation (direct/indirect allorecognition, antibody-mediated rejection)', related: ['D016'] },
-  { text: 'Add primary immunodeficiency catalogue (IUIS classification)', related: ['D008'] },
+  { text: 'Surface & curate draft vaccine immunology (adjuvants, mRNA, GC → memory, correlates)', related: ['EV01', 'EV04', 'C019', 'C018'] },
+  { text: 'Surface & curate draft transplantation (direct/indirect allorecognition, AMR)', related: ['D016', 'ET01', 'ET02'] },
+  { text: 'Surface & curate draft PID teaching (XLA, CGD, SCID live-vaccine risk) toward IUIS depth', related: ['D008', 'EP01', 'EP09'] },
+  { text: 'Surface & curate draft immunogenetics (shared epitope → ACPA → RA; HLA screens)', related: ['EG02', 'B007', 'D001'] },
   { text: 'Paediatric and ageing (immunosenescence, inflammaging) modifiers in the patient layer', related: [] }
 ];
 

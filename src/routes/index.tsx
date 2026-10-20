@@ -5,6 +5,12 @@ import { ArrowRight, ArrowUpRight, BookOpen, FlaskConical, Microscope, Network }
 import { Button } from "@/components/ui/button";
 import { CausalSpine } from "@/components/immune/CausalSpine";
 import { IsiCityBand } from "@/components/immune/IsiCityBand";
+import {
+  CapabilityChips,
+  ExemplarMaturityStrip,
+  WontClaimList,
+} from "@/components/immune/marketing";
+import { CONTENT } from "@/data/content";
 import { VISION_MOTTO } from "@/data/vision";
 import {
   BRAND_EYEBROW,
@@ -26,6 +32,31 @@ import {
 import { seoHead } from "@/lib/seo";
 import { inspect } from "@/lib/immune/inspector";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
+
+const HOME_DRAFT_TEASERS = [
+  {
+    title: "Fibre → butyrate → Treg → IBD",
+    blurb: "Fibre / microbiota → butyrate → Treg → IBD teaching chain — educational scaffold; claim-level review incomplete.",
+    lessonId: "microbiome",
+    hash: "draft-pathway",
+  },
+  {
+    title: "Vaccine → germinal centre → memory",
+    blurb: "How a vaccine leaves antibodies and memory behind — draft scaffold from the vaccines extension.",
+    lessonId: "vaccines",
+    hash: "draft-vaccine",
+  },
+  {
+    title: "Shared epitope → ACPA → RA",
+    blurb: "HLA class II shared epitope → ACPA → seropositive RA neighbourhood — association teaching, still draft.",
+    lessonId: "immunogenetics",
+    hash: "draft-hla",
+  },
+] as const;
+
+const HOME_DRAFT_ROUTES = HOME_DRAFT_TEASERS.filter((t) =>
+  CONTENT.routes.some((r) => r.title === t.title && "draft" in r && r.draft),
+);
 
 
 export const Route = createFileRoute("/")({
@@ -145,25 +176,31 @@ function HomeCausalPathway() {
         )}
       </ol>
       <p className="home-causal-note">
-        {HOME_EXEMPLAR.purpose} Teaching axis only — not disease-complete.{" "}
+        {HOME_EXEMPLAR.purpose} Teaching axis only — not disease-complete. Primary reviewed exemplar.{" "}
         <Link to="/overview">Platform exemplars</Link>
         {" · "}
         <Link to="/methods">Evidence lifecycle</Link>
       </p>
-      <aside className="home-draft-teaser" aria-label="Draft microbiome pathway teaser">
-        <span className="badge rs rs-draft">Draft</span>
-        <p>
-          Also on the atlas: fibre / microbiota → butyrate → Treg → IBD teaching chain — educational
-          scaffold; claim-level review incomplete.{" "}
-          <Link to="/overview" hash="draft-pathway">
-            Overview draft pathway
-          </Link>
-          {" · "}
-          <Link to="/mechanism/$id" params={{ id: "microbiome" }}>
-            Microbiome lesson
-          </Link>
-        </p>
-      </aside>
+      <ExemplarMaturityStrip cites={cites} pending={isPending} error={isError} />
+      {HOME_DRAFT_ROUTES.length ? (
+        <div className="home-draft-teaser-list" aria-label="Draft teaching chains">
+          {HOME_DRAFT_ROUTES.map((t) => (
+            <aside key={t.title} className="home-draft-teaser">
+              <span className="badge rs rs-draft">Draft</span>
+              <p>
+                {t.blurb}{" "}
+                <Link to="/overview" hash={t.hash}>
+                  Overview
+                </Link>
+                {" · "}
+                <Link to="/mechanism/$id" params={{ id: t.lessonId }}>
+                  Lesson
+                </Link>
+              </p>
+            </aside>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -202,7 +239,7 @@ function Home() {
 
       <div className="bio-content home-sections">
         <nav className="isi-three" aria-label="Three ways in">
-          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>Ask anything about the immune system in plain language.</span></Link>
+          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>Graph-retrieved teaching — Gate C cites when present; provisional PubMed/Europe PMC labelled unreviewed. Not fully evidence-grounded AI.</span></Link>
           <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Explore cells, molecules, diseases and therapies — one page each.</span></Link>
           <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Read recent papers from leading immunology journals.</span></Link>
         </nav>
@@ -329,13 +366,18 @@ function Home() {
             </li>
             <li>
               <strong>Unreviewed stays labelled</strong>
-              <span>Teaching edges remain visible with honest status; coverage is still sparse overall.</span>
+              <span>Teaching edges remain visible with honest status; Gate C coverage is still sparse overall.</span>
             </li>
             <li>
-              <strong>Ask retrieval</strong>
-              <span>Answers come from the curated graph and show cites when reviewed — not fully evidence-grounded AI.</span>
+              <strong>Ask Immune</strong>
+              <span>
+                Retrieves graph context and Gate C approved cites when present; may list PubMed/Europe PMC hits as
+                provisional unreviewed literature only — not fully evidence-grounded AI.
+              </span>
             </li>
           </ul>
+          <CapabilityChips className="home-cap-chips" />
+          <WontClaimList />
           <p className="home-trust-link">
             <Link to="/methods">Evidence &amp; Methods</Link>
             <Link to="/disclaimer">Educational disclaimer</Link>

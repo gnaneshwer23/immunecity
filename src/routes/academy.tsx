@@ -145,8 +145,50 @@ function AcademyLanding() {
         </MarketingSection>
 
         <MarketingSection
+          id="extra-reading"
+          eyebrow="03 / EXTRA READING · DRAFT"
+          title="Draft domain lessons outside the Foundation track."
+          lede="Deep-links into existing extension lessons — educational scaffolds only. Not certification and not Foundation modules."
+        >
+          <ul className="mkt-draft-reading">
+            {(
+              [
+                {
+                  id: "microbiome",
+                  title: "Microbiome and barrier",
+                  blurb: "Fibre / SCFA → Treg → IBD neighbourhood — claim-level review incomplete.",
+                },
+                {
+                  id: "vaccines",
+                  title: "Vaccines: building memory on purpose",
+                  blurb: "Platform → germinal centre → memory and correlates — draft teaching.",
+                },
+                {
+                  id: "immunogenetics",
+                  title: "Immunogenetics: HLA and risk alleles",
+                  blurb: "Shared epitope → ACPA → RA and related HLA associations — draft.",
+                },
+              ] as const
+            ).map((item) => (
+              <li key={item.id}>
+                <span className="badge rs rs-draft">Draft</span>
+                <Link to="/mechanism/$id" params={{ id: item.id }}>
+                  {item.title}
+                </Link>
+                <span>{item.blurb}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mkt-aside">
+            More draft domains on <Link to="/overview" hash="draft-domains">Overview</Link>
+            {" · "}
+            Foundation track above stays the primary navigable path.
+          </p>
+        </MarketingSection>
+
+        <MarketingSection
           id="connect"
-          eyebrow="03 / CONNECTED LAYERS"
+          eyebrow="04 / CONNECTED LAYERS"
           title="Lessons map into the same atlas."
           lede="Open the layer that matches your goal — Academy is not a thirteenth top-level layer."
         >

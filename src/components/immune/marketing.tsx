@@ -1,6 +1,34 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import {
+  CAPABILITY_FEATURES,
+  CAPABILITY_STATUS_LABEL,
+  type CapabilityFeature,
+} from "@/data/capabilityStatus";
 import { TRUST_STATEMENT } from "@/lib/brand";
+import {
+  EXEMPLAR_MATURITY_SHORT,
+  EXEMPLAR_PATHWAYS,
+  reportExemplar,
+  type ExemplarMaturity,
+} from "@/lib/immune/exemplarPathways";
+import type { CitationLike } from "@/lib/immune/evidenceStatus";
+
+/** Key public capabilities surfaced on home/overview honesty strips. */
+const LANDING_CAPABILITY_IDS = [
+  "knowledge-graph",
+  "ask-atlas",
+  "evidence-curation",
+  "academy-curriculum",
+  "omics-adapters",
+] as const;
+
+const WONT_CLAIM_ITEMS = [
+  "Not clinical decision support — educational teaching only.",
+  "Gate C claim-linked cites remain sparse across the graph.",
+  "Academy is a learning overlay — not certification.",
+  "Omics / molecular AI adapters stay planned stubs.",
+] as const;
 
 /** Midnight marketing hero — brand-forward, lean first viewport. */
 export function MarketingHero({
@@ -130,4 +158,72 @@ export function TrustBlock({ className = "" }: { className?: string }) {
 /** Compact capability status chip from capabilityStatus labels. */
 export function StatusChip({ label, tone = "muted" }: { label: string; tone?: "muted" | "primary" | "warn" }) {
   return <span className={`mkt-status-chip mkt-status-${tone}`}>{label}</span>;
+}
+
+function chipTone(status: CapabilityFeature["status"]): "muted" | "primary" | "warn" {
+  if (status === "beta") return "primary";
+  if (status === "partial" || status === "in_development") return "warn";
+  return "muted";
+}
+
+/** Compact capability chips from capabilityStatus (home / overview). */
+export function CapabilityChips({ className = "" }: { className?: string }) {
+  const features = LANDING_CAPABILITY_IDS.map((id) =>
+    CAPABILITY_FEATURES.find((f) => f.id === id),
+  ).filter((f): f is CapabilityFeature => Boolean(f));
+  return (
+    <ul className={`mkt-cap-chips ${className}`.trim()} aria-label="Capability status">
+      {features.map((f) => (
+        <li key={f.id}>
+          <StatusChip label={`${f.name.split(" (")[0]} · ${CAPABILITY_STATUS_LABEL[f.status]}`} tone={chipTone(f.status)} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Concise honesty limits — not CDS, sparse Gate C, Academy not cert, omics planned. */
+export function WontClaimList({ className = "" }: { className?: string }) {
+  return (
+    <div className={`mkt-wont-claim ${className}`.trim()}>
+      <h3>What we won&apos;t claim</h3>
+      <ul>
+        {WONT_CLAIM_ITEMS.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** TNF / PD-1 / IFN maturity strip from exemplarPathways (+ live cites when provided). */
+export function ExemplarMaturityStrip({
+  cites = [],
+  pending,
+  error,
+  className = "",
+}: {
+  cites?: CitationLike[];
+  pending?: boolean;
+  error?: boolean;
+  className?: string;
+}) {
+  return (
+    <ul className={`mkt-exemplar-strip ${className}`.trim()} aria-label="Platform exemplar maturity">
+      {EXEMPLAR_PATHWAYS.map((p) => {
+        const maturity: ExemplarMaturity = pending
+          ? p.maturity
+          : error
+            ? p.maturity
+            : reportExemplar(p, cites).maturity;
+        const short = pending ? "…" : error ? EXEMPLAR_MATURITY_SHORT[p.maturity] : EXEMPLAR_MATURITY_SHORT[maturity];
+        return (
+          <li key={p.id}>
+            <span className="mkt-exemplar-title">{p.title}</span>
+            <StatusChip label={short} tone={maturity === "reviewed" ? "primary" : "warn"} />
+          </li>
+        );
+      })}
+    </ul>
+  );
 }

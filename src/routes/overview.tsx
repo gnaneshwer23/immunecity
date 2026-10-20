@@ -7,7 +7,14 @@ import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { CONTENT } from "@/data/content";
 import { NAV_GROUPS } from "@/components/immune/nav";
 import { Button } from "@/components/ui/button";
-import { MarketingBody, MarketingCta, MarketingHero, MarketingSection } from "@/components/immune/marketing";
+import {
+  CapabilityChips,
+  MarketingBody,
+  MarketingCta,
+  MarketingHero,
+  MarketingSection,
+  WontClaimList,
+} from "@/components/immune/marketing";
 import {
   ATLAS_CTA,
   ATLAS_PATH,
@@ -22,11 +29,51 @@ import {
   EXEMPLAR_PATHWAYS,
   reportExemplar,
 } from "@/lib/immune/exemplarPathways";
+import { KNOWLEDGE_DOMAINS } from "@/lib/immune/domainCoverage";
 import { seoHead } from "@/lib/seo";
 
-/** Draft educational scaffold — not a reviewed exemplar; claim-level Gate C incomplete. */
-const DRAFT_MICROBIOME_ROUTE =
-  CONTENT.routes.find((r) => r.title === "Fibre → butyrate → Treg → IBD") ?? null;
+type DraftRoute = {
+  title: string;
+  chain: string[];
+  desc: string;
+  draft?: boolean;
+};
+
+function draftRoute(title: string): DraftRoute | null {
+  const r = CONTENT.routes.find((x) => x.title === title);
+  if (!r || !("draft" in r) || !r.draft) return null;
+  return r as DraftRoute;
+}
+
+/** Draft educational scaffolds — not reviewed exemplars; claim-level Gate C incomplete. */
+const DRAFT_TEACHING_CHAINS = (
+  [
+    {
+      id: "draft-pathway",
+      title: "Fibre → butyrate → Treg → IBD",
+      lessonId: "microbiome",
+      lessonLabel: "Microbiome mechanism lesson",
+      lede: "Educational scaffold from draft microbiome extensions — claim-level review incomplete. Not a reviewed exemplar.",
+    },
+    {
+      id: "draft-vaccine",
+      title: "Vaccine → germinal centre → memory",
+      lessonId: "vaccines",
+      lessonLabel: "Vaccines mechanism lesson",
+      lede: "Draft vaccine teaching chain — germinal centre affinity maturation to memory and titre. Not a finished Academy course.",
+    },
+    {
+      id: "draft-hla",
+      title: "Shared epitope → ACPA → RA",
+      lessonId: "immunogenetics",
+      lessonLabel: "Immunogenetics mechanism lesson",
+      lede: "Draft immunogenetics bridge into the RA neighbourhood — association teaching, not mechanism-complete. TNF→RA remains the primary reviewed exemplar.",
+    },
+  ] as const
+).flatMap((def) => {
+  const route = draftRoute(def.title);
+  return route ? [{ ...def, route }] : [];
+});
 
 const SPINE_TYPE: Record<string, NodeType> = {
   TRIGGER: "PATHOGEN",
@@ -55,6 +102,61 @@ export const Route = createFileRoute("/overview")({
     }),
   component: Overview,
 });
+
+function DraftChainBlock({
+  route,
+  lessonId,
+  lessonLabel,
+}: {
+  route: DraftRoute;
+  lessonId: string;
+  lessonLabel: string;
+}) {
+  return (
+    <>
+      <div className="mkt-draft-teaser">
+        <span className="badge rs rs-draft">Draft</span>
+        <p>{route.desc}</p>
+      </div>
+      <div
+        className="mkt-chain"
+        role="group"
+        aria-label={`Draft chain: ${route.chain.map((id) => byId[id]?.name ?? id).join(" leads to ")}`}
+      >
+        {route.chain.map((id, i) => {
+          const node = byId[id];
+          if (!node) return null;
+          const t = TYPES[node.node_type];
+          return (
+            <Fragment key={id}>
+              {i > 0 ? <span className="mkt-chain-arrow" aria-hidden="true" /> : null}
+              <Link className="mkt-chain-node" to="/graph" search={{ focus: id }}>
+                <span className="mkt-chain-meta">
+                  {String(i + 1).padStart(2, "0")} · {t.label}
+                  {node.draft ? " · draft" : ""}
+                </span>
+                <span className="mkt-chain-name">
+                  <span className="dot" style={{ background: `var(${t.c})` }} />
+                  {node.name}
+                </span>
+              </Link>
+            </Fragment>
+          );
+        })}
+      </div>
+      <p className="mkt-aside">
+        Teaching only — not clinical decision support.{" "}
+        <Link to="/mechanism/$id" params={{ id: lessonId }}>
+          {lessonLabel}
+        </Link>
+        {" · "}
+        <Link to="/graph" search={{ focus: route.chain[0] ?? "" }}>
+          Open atlas chain
+        </Link>
+      </p>
+    </>
+  );
+}
 
 function Overview() {
   const [activeRoute, setActiveRoute] = useState(0);
@@ -151,7 +253,7 @@ function Overview() {
           id="pathway"
           eyebrow="02 / LIVE PATHWAY"
           title={primaryExemplar.title}
-          lede={`Real hops from the curated graph with review labels from approved claim cites when available. Maturity: ${pathwayMaturityLine}`}
+          lede={`Primary reviewed exemplar. Real hops from the curated graph with review labels from approved claim cites when available. Maturity: ${pathwayMaturityLine}`}
         >
           <ol className="mkt-path" aria-label={`${primaryExemplar.title} relationships`}>
             {primaryReport.segments.flatMap((seg, si) =>
@@ -206,62 +308,48 @@ function Overview() {
           </p>
         </MarketingSection>
 
-        {DRAFT_MICROBIOME_ROUTE ? (
+        {DRAFT_TEACHING_CHAINS.map((chain, idx) => (
           <MarketingSection
-            id="draft-pathway"
-            eyebrow="03 / DRAFT PATHWAY"
-            title={DRAFT_MICROBIOME_ROUTE.title}
-            lede="Educational scaffold from draft microbiome extensions — claim-level review incomplete. Not a reviewed exemplar."
+            key={chain.id}
+            id={chain.id}
+            eyebrow={`0${3 + idx} / DRAFT PATHWAY`}
+            title={chain.route.title}
+            lede={chain.lede}
           >
-            <div className="mkt-draft-teaser">
-              <span className="badge rs rs-draft">Draft</span>
-              <p>
-                {DRAFT_MICROBIOME_ROUTE.desc} Fibre fermentation → butyrate → colonic Treg programmes → IBD
-                teaching context. Labels stay draft until Gate C cites land on the EM spine.
-              </p>
-            </div>
-            <div
-              className="mkt-chain"
-              role="group"
-              aria-label={`Draft chain: ${DRAFT_MICROBIOME_ROUTE.chain.map((id) => byId[id]?.name ?? id).join(" leads to ")}`}
-            >
-              {DRAFT_MICROBIOME_ROUTE.chain.map((id, i) => {
-                const node = byId[id];
-                if (!node) return null;
-                const t = TYPES[node.node_type];
-                return (
-                  <Fragment key={id}>
-                    {i > 0 ? <span className="mkt-chain-arrow" aria-hidden="true" /> : null}
-                    <Link className="mkt-chain-node" to="/graph" search={{ focus: id }}>
-                      <span className="mkt-chain-meta">
-                        {String(i + 1).padStart(2, "0")} · {t.label}
-                        {node.draft ? " · draft" : ""}
-                      </span>
-                      <span className="mkt-chain-name">
-                        <span className="dot" style={{ background: `var(${t.c})` }} />
-                        {node.name}
-                      </span>
-                    </Link>
-                  </Fragment>
-                );
-              })}
-            </div>
-            <p className="mkt-aside">
-              Teaching only — not clinical decision support.{" "}
-              <Link to="/mechanism/$id" params={{ id: "microbiome" }}>
-                Microbiome mechanism lesson
-              </Link>
-              {" · "}
-              <Link to="/graph" search={{ focus: DRAFT_MICROBIOME_ROUTE.chain[0] ?? "EM01" }}>
-                Open atlas chain
-              </Link>
-            </p>
+            <DraftChainBlock
+              route={chain.route}
+              lessonId={chain.lessonId}
+              lessonLabel={chain.lessonLabel}
+            />
           </MarketingSection>
-        ) : null}
+        ))}
+
+        <MarketingSection
+          id="draft-domains"
+          eyebrow="06 / DRAFT DOMAINS"
+          title="Extension domains awaiting claim-level curation."
+          lede="Phase B teaching scaffolds already in the atlas — each badge stays Draft until Gate C cites land. Not finished Academy courses."
+        >
+          <ul className="mkt-domain-strip" aria-label="Draft knowledge domains">
+            {KNOWLEDGE_DOMAINS.map((d) => (
+              <li key={d.id}>
+                <Link to="/mechanism/$id" params={{ id: d.lessonId }}>
+                  <span className="badge rs rs-draft">Draft</span>
+                  <strong>{d.label}</strong>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="mkt-aside">
+            Density and gaps: <Link to="/evidence">Evidence coverage</Link>
+            {" · "}
+            Extra reading on <Link to={LEARN_PATH} hash="extra-reading">Academy</Link>
+          </p>
+        </MarketingSection>
 
         <MarketingSection
           id="spine"
-          eyebrow="04 / CAUSAL SPINE"
+          eyebrow="07 / CAUSAL SPINE"
           title="Fifteen stages from trigger to discovery."
           lede="Select a stage to preview curated example concepts (drafts excluded)."
         >
@@ -317,7 +405,7 @@ function Overview() {
 
         <MarketingSection
           id="chain"
-          eyebrow="05 / SIGNAL CHAIN"
+          eyebrow="08 / SIGNAL CHAIN"
           title="One signal. A chain of consequences."
           lede="Trace a teaching route from trigger toward treatment context."
         >
@@ -384,7 +472,7 @@ function Overview() {
 
         <MarketingSection
           id="layers"
-          eyebrow="06 / TWELVE LAYERS"
+          eyebrow="09 / TWELVE LAYERS"
           title="Different lenses. One immune system."
           lede="Academy overlays learning — not a thirteenth top-level layer."
         >
@@ -401,6 +489,23 @@ function Overview() {
               </li>
             ))}
           </ul>
+        </MarketingSection>
+
+        <MarketingSection
+          id="honesty"
+          eyebrow="10 / HONEST LIMITS"
+          title="Capability status, in plain sight."
+          lede="Labels match shipped behaviour in capabilityStatus — not roadmap aspiration."
+        >
+          <CapabilityChips />
+          <WontClaimList />
+          <p className="mkt-aside">
+            <Link to="/methods">Evidence &amp; Methods</Link>
+            {" · "}
+            <Link to="/disclaimer">Educational disclaimer</Link>
+            {" · "}
+            <Link to="/ask">Ask Immune</Link>
+          </p>
         </MarketingSection>
 
         <MarketingCta
