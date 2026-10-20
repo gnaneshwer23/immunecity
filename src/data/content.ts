@@ -408,7 +408,7 @@ CONTENT.roadmap = [
   { text: 'Attach a PMID or DOI to every mechanism link', related: [] },
   { text: 'Record the tissue in which each link has been shown', related: [] },
   { text: 'Use measured effect sizes as link weights in the simulator', related: [] },
-  { text: 'Add microbiome nodes (SFB, Bacteroides, short-chain fatty acids → Treg)', related: ['C014'] },
+  { text: 'Surface + curate draft EM layer (fibre/SCFA → Treg → IBD; barrier; sIgA)', related: ['C014', 'EM01', 'EM02', 'EM03'] },
   { text: 'Add vaccine immunology (adjuvants, mRNA, correlates of protection)', related: [] },
   { text: 'Add transplantation (direct/indirect allorecognition, antibody-mediated rejection)', related: ['D016'] },
   { text: 'Add primary immunodeficiency catalogue (IUIS classification)', related: ['D008'] },

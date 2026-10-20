@@ -7880,7 +7880,7 @@
    "reference": "",
    "confidence": "high",
    "spine_step": "PATIENT",
-   "notes": "",
+   "notes": "CURATOR HYGIENE: object_id M022 is TSLP (epithelial alarmin), but mechanism/consequence describe microbiota → SCFA → Treg / Routy ICI microbiome claims — object–claim mismatch. Do not market this edge or approve Gate C against it until retargeted (likely toward draft EM01 Gut microbiota or a future curated microbiota node). Teaching spine for fibre/butyrate/Treg lives on draft EXT edges (REL-EM02-promotes-EM03 etc.), not REL121.",
    "source_refs": [
     "Routy 2018 Science"
    ],

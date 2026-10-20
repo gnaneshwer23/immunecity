@@ -24,6 +24,10 @@ import {
 } from "@/lib/immune/exemplarPathways";
 import { seoHead } from "@/lib/seo";
 
+/** Draft educational scaffold — not a reviewed exemplar; claim-level Gate C incomplete. */
+const DRAFT_MICROBIOME_ROUTE =
+  CONTENT.routes.find((r) => r.title === "Fibre → butyrate → Treg → IBD") ?? null;
+
 const SPINE_TYPE: Record<string, NodeType> = {
   TRIGGER: "PATHOGEN",
   RECOGNITION: "RECEPTOR",
@@ -202,9 +206,62 @@ function Overview() {
           </p>
         </MarketingSection>
 
+        {DRAFT_MICROBIOME_ROUTE ? (
+          <MarketingSection
+            id="draft-pathway"
+            eyebrow="03 / DRAFT PATHWAY"
+            title={DRAFT_MICROBIOME_ROUTE.title}
+            lede="Educational scaffold from draft microbiome extensions — claim-level review incomplete. Not a reviewed exemplar."
+          >
+            <div className="mkt-draft-teaser">
+              <span className="badge rs rs-draft">Draft</span>
+              <p>
+                {DRAFT_MICROBIOME_ROUTE.desc} Fibre fermentation → butyrate → colonic Treg programmes → IBD
+                teaching context. Labels stay draft until Gate C cites land on the EM spine.
+              </p>
+            </div>
+            <div
+              className="mkt-chain"
+              role="group"
+              aria-label={`Draft chain: ${DRAFT_MICROBIOME_ROUTE.chain.map((id) => byId[id]?.name ?? id).join(" leads to ")}`}
+            >
+              {DRAFT_MICROBIOME_ROUTE.chain.map((id, i) => {
+                const node = byId[id];
+                if (!node) return null;
+                const t = TYPES[node.node_type];
+                return (
+                  <Fragment key={id}>
+                    {i > 0 ? <span className="mkt-chain-arrow" aria-hidden="true" /> : null}
+                    <Link className="mkt-chain-node" to="/graph" search={{ focus: id }}>
+                      <span className="mkt-chain-meta">
+                        {String(i + 1).padStart(2, "0")} · {t.label}
+                        {node.draft ? " · draft" : ""}
+                      </span>
+                      <span className="mkt-chain-name">
+                        <span className="dot" style={{ background: `var(${t.c})` }} />
+                        {node.name}
+                      </span>
+                    </Link>
+                  </Fragment>
+                );
+              })}
+            </div>
+            <p className="mkt-aside">
+              Teaching only — not clinical decision support.{" "}
+              <Link to="/mechanism/$id" params={{ id: "microbiome" }}>
+                Microbiome mechanism lesson
+              </Link>
+              {" · "}
+              <Link to="/graph" search={{ focus: DRAFT_MICROBIOME_ROUTE.chain[0] ?? "EM01" }}>
+                Open atlas chain
+              </Link>
+            </p>
+          </MarketingSection>
+        ) : null}
+
         <MarketingSection
           id="spine"
-          eyebrow="03 / CAUSAL SPINE"
+          eyebrow="04 / CAUSAL SPINE"
           title="Fifteen stages from trigger to discovery."
           lede="Select a stage to preview curated example concepts (drafts excluded)."
         >
@@ -260,7 +317,7 @@ function Overview() {
 
         <MarketingSection
           id="chain"
-          eyebrow="04 / SIGNAL CHAIN"
+          eyebrow="05 / SIGNAL CHAIN"
           title="One signal. A chain of consequences."
           lede="Trace a teaching route from trigger toward treatment context."
         >
@@ -309,7 +366,14 @@ function Overview() {
                 })}
               </div>
               <p className="mkt-aside">
-                {selected.chain.length} concepts · evidence status shown in the graph ·{" "}
+                {selected.chain.length} concepts · evidence status shown in the graph
+                {"draft" in selected && selected.draft ? (
+                  <>
+                    {" · "}
+                    <span className="badge rs rs-draft">Draft</span>
+                  </>
+                ) : null}
+                {" · "}
                 <Link to="/graph" search={{ focus: selected.chain[0] ?? "" }}>
                   Trace this pathway
                 </Link>
@@ -320,7 +384,7 @@ function Overview() {
 
         <MarketingSection
           id="layers"
-          eyebrow="05 / TWELVE LAYERS"
+          eyebrow="06 / TWELVE LAYERS"
           title="Different lenses. One immune system."
           lede="Academy overlays learning — not a thirteenth top-level layer."
         >

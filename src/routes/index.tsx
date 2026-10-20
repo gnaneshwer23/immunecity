@@ -150,6 +150,20 @@ function HomeCausalPathway() {
         {" · "}
         <Link to="/methods">Evidence lifecycle</Link>
       </p>
+      <aside className="home-draft-teaser" aria-label="Draft microbiome pathway teaser">
+        <span className="badge rs rs-draft">Draft</span>
+        <p>
+          Also on the atlas: fibre / microbiota → butyrate → Treg → IBD teaching chain — educational
+          scaffold; claim-level review incomplete.{" "}
+          <Link to="/overview" hash="draft-pathway">
+            Overview draft pathway
+          </Link>
+          {" · "}
+          <Link to="/mechanism/$id" params={{ id: "microbiome" }}>
+            Microbiome lesson
+          </Link>
+        </p>
+      </aside>
     </div>
   );
 }

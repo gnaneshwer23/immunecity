@@ -94,3 +94,32 @@ Use `EXEMPLAR_CURATOR_TARGETS` / curation UI callout for the same hints. Maturit
 - Remaining without a KG bibliographic cite: **~499** (need literature workflow / SME)
 - Approved claim links (prod): **9** (not 549 — do not overclaim)
 - Exemplar unique on-path edges: **14**; P0 open targets listed above: **7**
+
+---
+
+## REL121 hygiene (do not market)
+
+| Item | Detail |
+|------|--------|
+| Edge | `REL121` / runtime id `REL-T003-harbours-M022` |
+| Subject | `T003` Gut mucosa |
+| Object | `M022` **TSLP** (epithelial alarmin — wrong for this claim) |
+| Written claim | Microbiota / SCFA → Treg; Routy 2018 ICI microbiome consequence |
+| Decision | **Document + exclude from marketing.** Object–claim mismatch; do not invent a retarget PMID. Teaching fibre → butyrate → Treg → IBD uses draft `EM*` edges / `EXT_ROUTES`, not REL121. |
+| Queue slot | `RELQ-REL-T003-harbours-M022-C1` carries Routy PMID **29097494** — that paper supports microbiome–ICI biology, **not** “gut mucosa harbours TSLP”. Do **not** approve this slot against the current object. |
+
+---
+
+## Draft microbiome (EM) Gate C targets — PubMed queries only
+
+Educational scaffold in `src/data/extensions.ts` (`draft-ext-4`). Marketing may **surface** the draft pathway with a Draft badge; claim-level review is incomplete. Queries are search starting points — **never invent PMIDs**; verify before approve.
+
+| Priority | relId | Soft claim (teaching) | PubMed query |
+|----------|-------|----------------------|--------------|
+| 1 | `REL-EM02-promotes-EM03` | Butyrate / SCFA promotes colonic peripheral Treg induction (HDAC / Foxp3 axis) | `butyrate HDAC Foxp3 colonic Treg induction` |
+| 2 | `REL-EM03-expands-C014` | Peripheral Treg induction expands Treg (FOXP3+) populations in gut mucosa | `RORgt FOXP3 colonic Treg microbiota induced` |
+| 3 | `REL-EM01-produces-EM02` | Gut microbiota / fibre fermentation produces SCFA (butyrate) | `dietary fibre fermentation butyrate Clostridia Bacteroides` |
+| 4 | `REL-EM04-contributes_to-D004` | Epithelial barrier breach contributes to IBD (soft; causality nuanced) | `intestinal epithelial barrier defect inflammatory bowel disease tight junction` |
+| 5 | `REL-C018-produces-EM06` | Lamina propria plasma cells produce secretory IgA (dimeric IgA) | `plasma cell secretory IgA polymeric Ig receptor gut mucosa` |
+
+Optional follow-ups (same rules): `REL-EM05-contributes_to-D004` (dysbiosis–IBD association), `REL-EM06-contains-EM01` (sIgA coats commensals). Keep evidence_status / draft labels honest; do not promote EM edges as reviewed exemplars until Gate C lands.

@@ -1362,6 +1362,46 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
 .mkt-path-names strong { font-weight: 550; }
 .mkt-path-rel { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--primary); text-transform: lowercase; }
 
+.mkt-draft-teaser {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px 14px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px dashed color-mix(in oklab, var(--border-strong) 80%, var(--muted));
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--surface) 88%, var(--bg));
+}
+.mkt-draft-teaser p {
+  margin: 0;
+  flex: 1 1 16rem;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 48rem;
+}
+
+.home-draft-teaser {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 12px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px dashed color-mix(in oklab, var(--border-strong) 80%, var(--muted));
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--surface) 90%, var(--bg));
+}
+.home-draft-teaser p {
+  margin: 0;
+  flex: 1 1 14rem;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.home-draft-teaser a { color: var(--primary); font-weight: 500; }
+
 .mkt-spine {
   display: flex;
   flex-wrap: wrap;
