@@ -2,11 +2,11 @@
 
 **Date:** 2026-10-20  
 **Canonical:** https://www.immune-super-intelligence.co.uk/  
-**Git SHA:** `8730326` (+ composer placeholder fix in follow-up commit)  
-**Production deploy:** `dpl_2ZieUEc347pBuVQYTJm13R96bCaP`  
-**Prod URL:** https://immunecity-3v54rfp69-gnaneshwerjadav-gmailcoms-projects.vercel.app  
+**Git SHA:** `df9bcb1` (UX `8730326` + audit/label fix)  
+**Production deploy (current www):** `dpl_GBPbgPFA7pFYhu8kJAem9CGyqWEm`  
+**Browser audit ran against:** `dpl_2ZieUEc347pBuVQYTJm13R96bCaP` (UX commit; label fix is copy-only)  
 **Aliased:** https://www.immune-super-intelligence.co.uk  
-**Method:** Browser MCP spot-check on www after `vercel --prod` (no vitest/tsc — SIGTERM hang risk).
+**Method:** Browser MCP spot-check on www after prod deploy (no vitest/tsc — SIGTERM hang risk).
 
 ## Verdict
 
