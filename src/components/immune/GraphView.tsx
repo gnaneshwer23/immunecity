@@ -129,7 +129,18 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
         .on("drag", (e: any, d: any) => { d.fx = e.x; d.fy = e.y; })
         .on("end", (e: any, d: any) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }),
     );
-    return () => { sim.stop(); };
+    // Detail slot shrinks the stage — keep viewBox + force center in sync without a full rebuild.
+    const onResize = () => {
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      if (w < 1 || h < 1) return;
+      sel.attr("viewBox", `0 0 ${w} ${h}`);
+      sim.force("center", d3.forceCenter(w / 2, h / 2));
+      sim.alpha(0.15).restart();
+    };
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(onResize) : null;
+    ro?.observe(stage);
+    return () => { ro?.disconnect(); sim.stop(); };
   }, [nodes, links, focusId, togglePick]);
 
   useEffect(() => {
@@ -390,11 +401,15 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
             ))}
           </div>
         </div>
-        {pick.detail && byId[pick.detail] ? (
-          <div className="graph-detail"><GraphNodeDetail id={pick.detail} onClose={hideDetail} /></div>
-        ) : null}
-        {edgePick ? (
-          <div className="graph-detail graph-edge-detail"><GraphEdgeDetail edge={edgePick} onClose={() => setEdgePick(null)} /></div>
+        {(pick.detail && byId[pick.detail]) || edgePick ? (
+          <div className="graph-detail-slot">
+            {pick.detail && byId[pick.detail] ? (
+              <div className="graph-detail"><GraphNodeDetail id={pick.detail} onClose={hideDetail} /></div>
+            ) : null}
+            {edgePick ? (
+              <div className="graph-detail graph-edge-detail"><GraphEdgeDetail edge={edgePick} onClose={() => setEdgePick(null)} /></div>
+            ) : null}
+          </div>
         ) : null}
       </div>
       {viewMode === "graph" ? (

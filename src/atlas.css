@@ -244,25 +244,32 @@ th { font-weight: 600; color: var(--muted); font-size: var(--text-xs); text-tran
 .pchain li::before { content: counter(c); position: absolute; left: 0; top: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--up-soft); color: var(--up); font-family: var(--font-mono); font-size: 10px; display: grid; place-items: center; }
 
 /* --- graph ---
-   Two-column explorer: shared viewport height (--graph-workspace-h on
-   .graph-explorer in biotech.css) so a tall filter panel cannot stretch the
-   row and leave empty space under a fixed-height stage. Panel scrolls
-   independently; stage fills the workspace. Detail rows still span full
-   width below because the layout itself is not height-locked. */
+   Height-locked workspace (--graph-workspace-h on .graph-explorer):
+   sidebar | stage on row 1; detail slot under the stage only on row 2.
+   Opening detail shrinks the stage instead of painting over it or the
+   sticky sidebar (the prior full-width detail + sticky panel overlap).
+   Tall filter lists scroll inside the sidebar cell — no empty void under
+   a fixed-height canvas. */
 .graph-layout {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
+  height: var(--graph-workspace-h, max(520px, calc(100dvh - var(--top) - 1.5rem)));
+  min-height: 0;
+  max-height: var(--graph-workspace-h, max(520px, calc(100dvh - var(--top) - 1.5rem)));
 }
 .graph-panel {
+  grid-column: 1;
+  grid-row: 1 / -1;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  position: sticky;
-  top: calc(var(--top) + 12px);
-  max-height: var(--graph-workspace-h, max(520px, calc(100dvh - var(--top) - 1.5rem)));
+  position: relative;
+  z-index: 1;
   min-height: 0;
+  max-height: none;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -275,13 +282,26 @@ th { font-weight: 600; color: var(--muted); font-size: var(--text-xs); text-tran
 .type-list input { accent-color: var(--primary); }
 .type-list .cnt { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
 .graph-stage {
+  grid-column: 2;
+  grid-row: 1;
   position: relative;
+  z-index: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  height: var(--graph-workspace-h, max(520px, calc(100dvh - var(--top) - 1.5rem)));
+  height: auto;
   min-height: 0;
   overflow: hidden;
+}
+.graph-detail-slot {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  max-height: min(42%, 340px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 1;
 }
 .graph-stage svg { width: 100%; height: 100%; display: block; cursor: grab; }
 .graph-stage svg:active { cursor: grabbing; }
@@ -375,14 +395,30 @@ th { font-weight: 600; color: var(--muted); font-size: var(--text-xs); text-tran
   .layer-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .audit-item { grid-template-columns: 1fr; gap: 6px; }
   .brand-text small { display: none; }
-  /* Stacked mobile: panel flows with the page; stage keeps a fixed canvas. */
+  /* Stacked mobile: unlock workspace height; panel → stage → detail in flow. */
+  .graph-layout {
+    height: auto;
+    max-height: none;
+    grid-template-rows: auto;
+  }
   .graph-panel {
+    grid-column: auto;
+    grid-row: auto;
     position: static;
     max-height: none;
     overflow: visible;
     padding-right: 0;
   }
-  .graph-stage { height: 520px; }
+  .graph-stage {
+    grid-column: auto;
+    grid-row: auto;
+    height: 520px;
+  }
+  .graph-detail-slot {
+    grid-column: auto;
+    grid-row: auto;
+    max-height: min(50dvh, 360px);
+  }
 }
 @media (max-width: 520px) {
   .brand-text { display: none; }
@@ -435,7 +471,9 @@ ol.card li { line-height: 1.5; }
 .id-list li { margin-bottom: 5px; }
 .id-refs { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
 .inline-detail .conn-list { margin-top: 0; }
-.rank-detail, .graph-detail { grid-column: 1 / -1; }
+.rank-detail { grid-column: 1 / -1; }
+/* Detail lives in .graph-detail-slot (stage column). List mode keeps block flow. */
+.graph-list-mode .graph-detail { grid-column: auto; }
 .span-all { grid-column: 1 / -1; }
 .roadmap-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .roadmap-item > span { flex: 1; min-width: 0; }

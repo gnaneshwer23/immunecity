@@ -2102,8 +2102,29 @@ main:has(> .mkt-page) .site-footer { margin-top: 0; }
   border: 1px dashed var(--border);
 }
 .graph-explorer .graph-stage { background: var(--graph-stage-bg); border-color: var(--graph-stage-border); }
+/* Opaque sidebar cards so the canvas never reads as “under” the filters. */
+.graph-explorer .graph-panel .card {
+  background: var(--surface);
+  backdrop-filter: none;
+}
 /* Keep Ask FAB from covering stage legend / nodes in the corner */
 .graph-explorer .graph-stage .graph-legend { max-width: calc(100% - var(--ask-fab-clearance, 100px)); }
+/* Detail slot sits above the fixed Ask FAB — clear CTAs on the right/bottom. */
+.graph-explorer .graph-detail-slot {
+  padding-right: max(8px, calc(var(--ask-fab-clearance, 100px) - 48px));
+  padding-bottom: 4px;
+}
+.graph-explorer .graph-detail .inline-detail {
+  margin-top: 0;
+  background: var(--surface);
+  border-color: var(--border-strong);
+}
+.graph-explorer .graph-detail .row {
+  padding-right: max(0px, calc(var(--ask-fab-clearance, 100px) - 56px));
+  padding-bottom: 4px;
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
 .graph-explorer .graph-stage-loading {
   display: grid;
   place-items: center;
