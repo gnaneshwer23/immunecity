@@ -60,8 +60,8 @@ import {
 
 describe("Phase B knowledge extensions", () => {
   it("bumps extensions version and provenance", () => {
-    expect(GRAPH_EXTENSIONS_VERSION).toBe("draft-ext-4");
-    expect(EXT_PROVENANCE.version).toBe("draft-ext-4");
+    expect(GRAPH_EXTENSIONS_VERSION).toBe("draft-ext-5");
+    expect(EXT_PROVENANCE.version).toBe("draft-ext-5");
   });
 
   it("adds immunogenetics and thin-domain concepts as draft with stable IDs", () => {
@@ -87,7 +87,7 @@ describe("Phase B knowledge extensions", () => {
     expect(drafts.length).toBe(EXT_NODES.length);
     expect(drafts.every((n) => n.draft)).toBe(true);
     const snap = graphReleaseSnapshot();
-    expect(snap.extensionsVersion).toBe("draft-ext-4");
+    expect(snap.extensionsVersion).toBe("draft-ext-5");
     expect(snap.coreNodes + snap.draftNodes).toBe(snap.runtimeNodes);
   });
 
@@ -100,7 +100,7 @@ describe("Phase B knowledge extensions", () => {
 
   it("reports domain coverage and a gap queue without inventing approvals", () => {
     const report = domainCoverageReport();
-    expect(report.extensionsVersion).toBe("draft-ext-4");
+    expect(report.extensionsVersion).toBe("draft-ext-5");
     expect(report.domains.length).toBe(7);
     expect(report.summary.lessonsPresent).toBe(7);
     expect(report.summary.isolatedConcepts).toBe(0);

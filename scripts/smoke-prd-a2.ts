@@ -118,7 +118,7 @@ check("registry request shapes", MODEL_REGISTRY.every((m) => m.requestFields.len
   );
   check("registry promote blocked", adapterPromotionGate("peptide-mhc").canPromote === false);
 }
-check("ext version", GRAPH_EXTENSIONS_VERSION === "draft-ext-4" && EXT_PROVENANCE.version === "draft-ext-4");
+check("ext version", GRAPH_EXTENSIONS_VERSION === "draft-ext-5" && EXT_PROVENANCE.version === "draft-ext-5");
 check("immuno B node", !!byId["EG01"]?.draft && !!byId["EG13"]?.draft && !!byId["EI01"]?.draft && !!byId["EP10"]?.draft && !!byId["EP15"]?.draft && !!byId["EG17"]?.draft);
 {
   const cov = domainCoverageReport();
