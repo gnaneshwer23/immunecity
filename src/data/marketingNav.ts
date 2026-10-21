@@ -103,7 +103,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
   {
     label: "Learn",
     items: [
-      { n: "L1", path: "/ask", title: "Ask Immune", desc: "Ask immunology questions answered from the graph." },
+      { n: "L1", path: "/ask", title: "Ask Immune", desc: "Graph-retrieved teaching; Gate C cites when present; provisional lit labelled." },
       { n: "L2", path: "/atlas", title: "Knowledge atlas", desc: "Every concept across eight domains, with its own page." },
       { n: "L3", path: "/overview", title: "Overview", desc: "The 15-step causal spine and twelve layers in one view." },
       { n: "L4", path: "/learn", title: "Cell atlas", desc: "Immune cells, what they do, and their limits." },
@@ -125,17 +125,17 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
     items: [
       { n: "I1", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
       { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Ask, how the AI works, and the path tracer." },
-      { n: "I3", path: "/research", title: "Research library", desc: "Nature Immunology metadata, candidates and workbench." },
-      { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Trials as experiments and claim coverage." },
+      { n: "I3", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench spine." },
+      { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Trials as experiments and live Gate C coverage." },
       { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Educational, rule-based — not medical advice." },
     ],
   },
   {
     label: "Trust",
     items: [
-      { n: "T1", path: "/methods", title: "Methods", desc: "Data model and how the platform is built." },
-      { n: "T2", path: "/methods", hash: "statuses", title: "Evidence standards", desc: "What each evidence status means." },
-      { n: "T3", path: "/methods", hash: "lifecycle", title: "Scientific review", desc: "How a claim moves from candidate to approved." },
+      { n: "T1", path: "/methods", title: "Methods", desc: "Evidence lifecycle, live coverage and model limits." },
+      { n: "T2", path: "/methods", hash: "live-ev-heading", title: "Live coverage", desc: "Gate C density and exemplar maturity from Neon." },
+      { n: "T3", path: "/methods", hash: "statuses", title: "Evidence standards", desc: "What each evidence status means." },
       { n: "T4", path: "/methods", hash: "limitations", title: "Data sources and limitations", desc: "Where the evidence stops." },
     ],
   },

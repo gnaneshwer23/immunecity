@@ -1,5 +1,5 @@
 import { seoHead } from "@/lib/seo";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
@@ -33,7 +33,13 @@ import { AiPrinciples, CapabilityRegistry, ResearchWorkspace } from "@/component
 
 export const Route = createFileRoute("/reasoning")({
   validateSearch: zodValidator(z.object({ from: fallback(z.string(), "").default("") })),
-  head: () => seoHead({ title: "Reasoning & Scientific AI — Immune Super Intelligence", description: "Ask with graph context, see exactly how the AI retrieves evidence, trace paths and run start–perturbation–outcome reasoning. Educational beta — teaching with references.", path: "/reasoning" }),
+  head: () =>
+    seoHead({
+      title: "Reasoning & Scientific AI — Immune Super Intelligence",
+      description:
+        "Ask Immune with graph context and Gate C cites when present, see fail-closed retrieval, trace paths and run start–perturbation–outcome reasoning. Educational beta — not fully evidence-grounded AI.",
+      path: "/reasoning",
+    }),
   component: Reasoning,
 });
 
@@ -55,7 +61,7 @@ function Reasoning() {
       <PageHead
         kicker="Investigate · Scientific reasoning"
         title="AI that works through the biology"
-        lede="Ask with retrieved graph context (and reviewed relationship cites when they exist), see exactly what the AI retrieves, walk published cases, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated."
+        lede="Ask with retrieved graph context (and Gate C cites when they exist), inspect fail-closed grounding, walk exemplar pathways, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated — not fully evidence-grounded AI."
         stats={[
           { v: CONTENT.cases.length, l: "CASES" },
           { v: "A→B", l: "PATH TRACER" },
@@ -63,10 +69,32 @@ function Reasoning() {
         ]}
       />
       <PageToc items={TOC} />
-      <Section id="ask" n={1} title="Ask Immune" lede="Graph-retrieved teaching — answers are restricted to retrieved concepts, causal links and relationship-level review status, with Gate C reviewed cites when present and provisional PubMed/Europe PMC hits labelled unreviewed. Sparse approved claim cites mean this is not fully evidence-grounded AI.">
+      <Section
+        id="ask"
+        n={1}
+        title="Ask Immune"
+        lede={
+          <>
+            Graph-retrieved teaching — answers use retrieved concepts, causal links and relationship-level review status.
+            Gate C reviewed cites appear when present; provisional PubMed/Europe PMC hits stay labelled unreviewed;
+            counterevidence (contradicts/partial) is a separate bucket (empty when Neon has none); citation checks
+            fail-closed. Sparse Gate C means this is not fully evidence-grounded AI.{" "}
+            <Link to="/ask">Full Ask page</Link>
+            {" · "}
+            <Link to="/methods" hash="live-ev-heading">
+              Live coverage
+            </Link>
+          </>
+        }
+      >
         <AskAtlas />
       </Section>
-      <Section id="how-ai-works" n={2} title="How the AI works" lede="Before any answer is written, Ask runs this retrieval: question → graph context → evidence status. The demo below makes no AI call and invents no sources.">
+      <Section
+        id="how-ai-works"
+        n={2}
+        title="How the AI works"
+        lede="Before any answer is written, Ask runs this retrieval: question → graph context → Gate C / counterevidence / provisional lit status. The demo below makes no AI call and invents no sources."
+      >
         <PhoneFold label="Show the retrieval demo">
           <ResearchWorkspace />
         </PhoneFold>

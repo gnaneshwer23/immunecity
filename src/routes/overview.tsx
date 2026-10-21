@@ -193,6 +193,9 @@ function Overview() {
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary">
+              <Link to="/ask">Ask Immune</Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
               <Link to={LEARN_PATH}>Explore the Academy</Link>
             </Button>
           </>
@@ -241,10 +244,13 @@ function Overview() {
               <strong>Causal knowledge graph</strong>
               <span>Filter typed concepts and follow directional relationships.</span>
             </Link>
-            <Link className="mkt-enter" to="/reasoning" role="listitem">
+            <Link className="mkt-enter" to="/ask" role="listitem">
               <span className="mkt-enter-kicker">Investigate</span>
-              <strong>Ask (partial)</strong>
-              <span>Graph-retrieved teaching — not fully evidence-grounded AI.</span>
+              <strong>Ask Immune (partial)</strong>
+              <span>
+                Graph + Gate C when present; provisional lit labelled; fail-closed citation checks — not fully
+                evidence-grounded AI.
+              </span>
             </Link>
           </div>
         </MarketingSection>
@@ -341,7 +347,9 @@ function Overview() {
             ))}
           </ul>
           <p className="mkt-aside">
-            Density and gaps: <Link to="/evidence">Evidence coverage</Link>
+            Density and gaps: <Link to="/methods" hash="live-ev-heading">Live Methods coverage</Link>
+            {" · "}
+            <Link to="/evidence" hash="coverage">Evidence breakdown</Link>
             {" · "}
             Extra reading on <Link to={LEARN_PATH} hash="extra-reading">Academy</Link>
           </p>
@@ -500,7 +508,11 @@ function Overview() {
           <CapabilityChips />
           <WontClaimList />
           <p className="mkt-aside">
-            <Link to="/methods">Evidence &amp; Methods</Link>
+            <Link to="/methods" hash="live-ev-heading">Live coverage</Link>
+            {" · "}
+            <Link to="/research" hash="workbench">Research workbench</Link>
+            {" · "}
+            <Link to="/curation">Curation (admin)</Link>
             {" · "}
             <Link to="/disclaimer">Educational disclaimer</Link>
             {" · "}
@@ -510,7 +522,7 @@ function Overview() {
 
         <MarketingCta
           title="Open the live atlas."
-          lede="Start in the graph, or run a simplified infection model to see dynamics over time."
+          lede="Start in the graph, ask a graph-grounded question, or inspect live Gate C density on Methods."
         >
           <Button asChild className="bio-primary">
             <Link to={ATLAS_PATH}>
@@ -518,10 +530,10 @@ function Overview() {
             </Link>
           </Button>
           <Button asChild variant="ghost" className="bio-secondary">
-            <Link to="/simulator">Open simulator</Link>
+            <Link to="/ask">Ask Immune</Link>
           </Button>
           <Button asChild variant="ghost" className="bio-secondary">
-            <Link to="/methods">Evidence &amp; Methods</Link>
+            <Link to="/methods" hash="live-ev-heading">Live coverage</Link>
           </Button>
         </MarketingCta>
       </MarketingBody>

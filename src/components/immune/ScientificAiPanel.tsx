@@ -103,7 +103,10 @@ export function ResearchWorkspace() {
             <li>
               Prompt <code>{grounding.trace.promptVersion}</code>
             </li>
-            <li>Ask Immune remains graph-retrieved teaching with provisional lit labelled — not fully evidence-grounded AI.</li>
+            <li>
+              Ask Immune remains graph-retrieved teaching with provisional lit labelled, fail-closed citation checks,
+              and a separate counterevidence bucket — not fully evidence-grounded AI.
+            </li>
             <li>Omics / molecular model adapters remain planned stubs and never invent scores.</li>
           </ul>
         </section>
@@ -117,8 +120,15 @@ export function AiPrinciples() {
   return (
     <ul className="mkt-principle-list">
       <li>Prefer <b>AI-assisted scientific exploration</b> over “superintelligent discovery.”</li>
-      <li>Model-generated ideas are <b>candidate hypotheses</b> — show alternatives and disconfirming evidence where available.</li>
+      <li>
+        Model-generated ideas are <b>candidate hypotheses</b> — show alternatives and disconfirming evidence where
+        curated; never invent counterevidence when Neon has none.
+      </li>
       <li>Show graph release, retrieved relationships, source IDs and tool versions where available.</li>
+      <li>
+        Fail closed on invented citation IDs, Gate C overclaims and unlabelled provisional literature — do not pad
+        support gaps.
+      </li>
       <li>We do not claim clinical validation, experimental confirmation or superior discovery performance without measured evidence.</li>
     </ul>
   );

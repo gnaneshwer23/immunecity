@@ -22,7 +22,7 @@ import {
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
-import { approvedQuery } from "@/lib/citations.functions";
+import { approvedQuery, evidenceCoverageQuery } from "@/lib/citations.functions";
 import { byId, human } from "@/lib/immune/engine";
 import {
   EXEMPLAR_MATURITY_LABEL,
@@ -64,7 +64,7 @@ export const Route = createFileRoute("/")({
     seoHead({
       title: `${PRODUCT_NAME} | ${TAGLINE}`,
       description:
-        "Immune Super Intelligence — see the immune system as a connected system. Explore mechanisms, a curated causal knowledge graph and Ask that educates with references. Educational beta; not clinical advice.",
+        "Immune Super Intelligence — explore mechanisms and a curated causal graph. Ask Immune retrieves graph context and Gate C cites when present; provisional literature stays labelled. Educational beta — not fully evidence-grounded AI; not clinical advice.",
       path: "/",
     }),
   component: Home,
@@ -72,7 +72,7 @@ export const Route = createFileRoute("/")({
 
 const INVESTIGATE_TOOLS = [
   { to: "/simulator", icon: FlaskConical, title: "System simulator", can: "Run a 30-day infection and add treatments to see which outcome follows.", limit: "Hand-set teaching parameters — not calibrated to patients or a prediction." },
-  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths between concepts and ask questions answered from the graph.", limit: "Cites graph links; shows when evidence is missing instead of filling the gap." },
+  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect Ask retrieval, and walk exemplar pathways with live maturity.", limit: "Graph-retrieved teaching; fail-closes unsupported citation claims — not fully evidence-grounded AI." },
   { to: "/patient", icon: Microscope, title: "Patient and biomarkers", can: "See how biomarker thresholds map to educational rule flags.", limit: "Draft rules for teaching — no individual medical assessment." },
 ] as const;
 
@@ -207,6 +207,44 @@ function HomeCausalPathway() {
 
 const SNAP = graphReleaseSnapshot();
 
+function HomeCoverageGlance() {
+  const { data, isError, isPending, isFetching, error } = useQuery(evidenceCoverageQuery);
+  const loading = isPending || (isFetching && !data);
+  if (isError) {
+    return (
+      <p className="home-causal-note" role="alert">
+        Live coverage unavailable
+        {error instanceof Error ? ` (${error.message})` : ""}. That is a service error, not proof of zero reviewed
+        cites.{" "}
+        <Link to="/methods" hash="live-ev-heading">
+          Methods coverage
+        </Link>
+      </p>
+    );
+  }
+  return (
+    <p className="home-causal-note" role="status">
+      {loading ? (
+        "Loading live Gate C coverage…"
+      ) : (
+        <>
+          Live Gate C: <b>{data?.distinctGateCRels ?? 0}</b> / {data?.runtimeRelationships ?? "…"} distinct
+          relationship claims with approved+supports
+          {data != null ? ` · contradicts ${data.contradicts} / partial ${data.partial}` : null}. Coverage stays
+          sparse on purpose until curators map claims.{" "}
+        </>
+      )}
+      <Link to="/methods" hash="live-ev-heading">
+        Methods dashboard
+      </Link>
+      {" · "}
+      <Link to="/evidence" hash="coverage">
+        Evidence breakdown
+      </Link>
+    </p>
+  );
+}
+
 function Home() {
   return (
     <div className="home-page home-page-helix">
@@ -239,9 +277,9 @@ function Home() {
 
       <div className="bio-content home-sections">
         <nav className="isi-three" aria-label="Three ways in">
-          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>Graph-retrieved teaching — Gate C cites when present; provisional PubMed/Europe PMC labelled unreviewed. Not fully evidence-grounded AI.</span></Link>
+          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>Graph + Gate C cites when present; provisional PubMed/Europe PMC labelled unreviewed; fail-closes unsupported citation claims. Not fully evidence-grounded AI.</span></Link>
           <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Explore cells, molecules, diseases and therapies — one page each.</span></Link>
-          <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Read recent papers from leading immunology journals.</span></Link>
+          <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Journal metadata, candidate claims and a partial workbench spine — nothing auto-approved.</span></Link>
         </nav>
         {/* B — What ISI enables */}
         <section className="bio-section" aria-labelledby="enables-heading">
@@ -312,18 +350,24 @@ function Home() {
             <h2 id="research-heading">From a paper to a reviewable claim.</h2>
             <p className="lede">
               The Research Library searches live Crossref metadata across Nature Portfolio immunology journals
-              (no affiliation implied). An article can start a candidate claim, which is mapped to graph concepts and
-              stays unreviewed until a curator approves it.
+              (no affiliation implied). Proposing an article starts a local candidate — never Gate C. Ask Immune may
+              also surface provisional PubMed/Europe PMC hits as unreviewed. The workbench spine
+              (Question→…→Export) is partial; claim-ledger candidates do not write the curated graph.
             </p>
-            <Button asChild className="bio-primary">
-              <Link to="/research" hash="library"><BookOpen /> Browse the Research Library</Link>
-            </Button>
+            <div className="bio-actions">
+              <Button asChild className="bio-primary">
+                <Link to="/research" hash="library"><BookOpen /> Browse the Research Library</Link>
+              </Button>
+              <Button asChild variant="ghost" className="bio-secondary">
+                <Link to="/research" hash="workbench">Open workbench</Link>
+              </Button>
+            </div>
           </div>
           <ol className="isi-ladder" aria-label="How research material is labelled">
-            <li><b>Source material</b><span>Article metadata and abstracts as deposited by the publisher.</span></li>
-            <li><b>Extracted claim</b><span>A statement a person drafts from the source — a candidate.</span></li>
-            <li><b>AI interpretation</b><span>Explanations generated from graph links, labelled as such.</span></li>
-            <li><b>Hypothesis</b><span>A draft idea in the workbench — never shown as established fact.</span></li>
+            <li><b>Source material</b><span>Journal metadata (Crossref) or provisional PubMed/Europe PMC hits — identity only until reviewed.</span></li>
+            <li><b>Candidate claim</b><span>A person-drafted statement mapped to a relationship ID — still unreviewed.</span></li>
+            <li><b>Counterevidence path</b><span>Contradicts / partial assessments stay separate from Gate C support (Neon may still have none).</span></li>
+            <li><b>Hypothesis / export</b><span>Workbench drafts and curation handoff — never auto-promoted to the curated graph.</span></li>
           </ol>
         </section>
 
@@ -359,6 +403,7 @@ function Home() {
               {SNAP.draftNodes} draft concepts and {SNAP.draftRelationships} draft links awaiting review.
             </p>
           </div>
+          <HomeCoverageGlance />
           <ul className="home-limit-list">
             <li>
               <strong>Reviewed when mapped</strong>
@@ -369,17 +414,25 @@ function Home() {
               <span>Teaching edges remain visible with honest status; Gate C coverage is still sparse overall.</span>
             </li>
             <li>
-              <strong>Ask Immune</strong>
+              <strong>Ask Immune (partial)</strong>
               <span>
-                Retrieves graph context and Gate C approved cites when present; may list PubMed/Europe PMC hits as
-                provisional unreviewed literature only — not fully evidence-grounded AI.
+                Graph context + Gate C approved cites when present; provisional PubMed/Europe PMC labelled unreviewed;
+                citation checks fail-closed; counterevidence bucket stays empty when Neon has no contradicts — not fully
+                evidence-grounded AI.
               </span>
+            </li>
+            <li>
+              <strong>Rate limit</strong>
+              <span>Neon-backed Ask rate buckets are live (in-memory fallback only if Neon is unreachable).</span>
             </li>
           </ul>
           <CapabilityChips className="home-cap-chips" />
           <WontClaimList />
           <p className="home-trust-link">
-            <Link to="/methods">Evidence &amp; Methods</Link>
+            <Link to="/methods" hash="live-ev-heading">Live coverage</Link>
+            <Link to="/ask">Ask Immune</Link>
+            <Link to="/research" hash="workbench">Research workbench</Link>
+            <Link to="/curation">Curation (admin)</Link>
             <Link to="/disclaimer">Educational disclaimer</Link>
           </p>
         </section>
@@ -395,9 +448,10 @@ function Home() {
             </p>
           </div>
           <nav className="isi-final-links" aria-label="Start exploring">
-            <Link to="/learn">Explore the Cell atlas <ArrowRight size={16} /></Link>
+            <Link to="/ask">Ask Immune <ArrowRight size={16} /></Link>
             <Link to="/mechanism">Investigate a mechanism <ArrowRight size={16} /></Link>
             <Link to="/graph">Open the knowledge graph <ArrowRight size={16} /></Link>
+            <Link to="/methods" hash="live-ev-heading">See live coverage <ArrowRight size={16} /></Link>
             <Link to="/research" hash="library">Browse research <ArrowRight size={16} /></Link>
           </nav>
         </section>

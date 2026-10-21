@@ -41,7 +41,7 @@ export const Route = createFileRoute("/research")({
     seoHead({
       title: `Research Library & Workbench | ${PRODUCT_NAME}`,
       description:
-        "Search Nature Immunology article metadata, start reviewable evidence candidates and organise hypotheses. Nothing is auto-approved or auto-published.",
+        "Search Nature Portfolio immunology journal metadata, start reviewable evidence candidates and organise hypotheses on a partial workbench spine. Nothing is auto-approved or auto-published.",
       path: "/research",
     }),
   component: Research,
@@ -71,7 +71,7 @@ function Research() {
       <PageHead art={ART.researchArt}
         kicker="Investigate · Research library"
         title="Turn a research question into a reviewable investigation."
-        lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature is a local candidate workflow (not live PubMed bulk ingest); model adapters are planned / interface-only stubs."
+        lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature candidates stay local until a curator imports them at /curation; Ask may separately list provisional PubMed/Europe PMC hits as unreviewed. Model adapters are planned / interface-only stubs."
         stats={[
           { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },
@@ -80,7 +80,20 @@ function Research() {
       />
       <PageToc items={TOC} />
 
-      <Section id="library" n={1} title="Research Library · Nature Portfolio journals" lede="Search live article metadata from five Nature Portfolio journals. Proposing an article starts an unreviewed candidate in the literature workflow below — it never becomes approved evidence without curator review. Saving imports to the shared evidence store is not yet available (database configuration pending).">
+      <Section
+        id="library"
+        n={1}
+        title="Research Library · Nature Portfolio journals"
+        lede={
+          <>
+            Search live article metadata from five Nature Portfolio journals (no affiliation implied). Proposing an
+            article starts an unreviewed local candidate in the literature workflow below — it never becomes Gate C
+            without curator review. Export a curation manifest and import at{" "}
+            <Link to="/curation">/curation</Link> (admin); Research Library propose does not auto-write Neon evidence.
+            Ask Immune may also fetch provisional PubMed/Europe PMC hits that stay labelled unreviewed.
+          </>
+        }
+      >
         <ResearchLibrary
           initialQuery={search.lib}
           onPropose={(a) => {
@@ -108,7 +121,22 @@ function Research() {
         <PhoneFold label="Show literature queue"><LiteratureQueue key={litSeed?.key ?? "blank"} seed={litSeed?.seed} onSendToWorkbench={setLitHandoff} /></PhoneFold>
       </Section>
 
-      <Section id="workbench" n={3} title="Workbench" lede="Candidate investigations only. Export for human review; nothing is automatically published to the knowledge graph.">
+      <Section
+        id="workbench"
+        n={3}
+        title="Workbench"
+        lede={
+          <>
+            Partial spine: Question→Search→Screen→Extract→Assess→Hypothesis→Export with claim-ledger candidates and
+            counterevidence hints when present. Export for human review at{" "}
+            <Link to="/curation">/curation</Link>; nothing is automatically published to the knowledge graph. See also{" "}
+            <Link to="/methods" hash="models">
+              Methods § models
+            </Link>
+            .
+          </>
+        }
+      >
         <ScientificWorkbench
           pendingLitImport={litHandoff}
           onPendingLitImportConsumed={clearLitHandoff}

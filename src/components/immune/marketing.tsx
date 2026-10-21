@@ -25,7 +25,8 @@ const LANDING_CAPABILITY_IDS = [
 
 const WONT_CLAIM_ITEMS = [
   "Not clinical decision support — educational teaching only.",
-  "Gate C claim-linked cites remain sparse across the graph.",
+  "Gate C claim-linked cites remain sparse (~few reviewed relationship claims vs hundreds of runtime links).",
+  "Ask Immune is graph-retrieved teaching — not fully evidence-grounded AI.",
   "Academy is a learning overlay — not certification.",
   "Omics / molecular AI adapters stay planned stubs.",
 ] as const;

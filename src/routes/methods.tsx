@@ -10,13 +10,15 @@ import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { evidenceCoverageQuery } from "@/lib/citations.functions";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
+import { Button } from "@/components/ui/button";
 import { MarketingBody, MarketingHero, MarketingSection } from "@/components/immune/marketing";
+import { ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/methods")({
   head: () =>
     seoHead({
       title: pageTitle("Evidence & Methods"),
-      description: `Understand the ${FLAGSHIP_NAME} graph, source curation, evidence statuses, model assumptions and scientific limitations.`,
+      description: `Understand the ${FLAGSHIP_NAME} graph, live Gate C coverage, Ask fail-closed behaviour, model assumptions and scientific limitations. Educational beta — most relationship claims are not yet claim-approved.`,
       path: "/methods",
       type: "article",
     }),
@@ -127,7 +129,22 @@ function Methods() {
       <MarketingHero
         eyebrow="Evidence & Methods"
         title="See what supports a claim—and where the evidence stops."
-        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation counts as support only when mapped to that directional claim and reviewed. Educational teaching with references — not clinical decision support.`}
+        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation counts as support only when mapped to that directional claim and reviewed. Live Neon coverage below is Gate C density — still sparse versus runtime links. Educational teaching with references — not clinical decision support.`}
+        actions={
+          <>
+            <Button asChild className="bio-primary">
+              <a href="#live-ev-heading">
+                Live coverage <ArrowUpRight />
+              </a>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
+              <Link to="/ask">Ask Immune</Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
+              <Link to="/curation">Curation (admin)</Link>
+            </Button>
+          </>
+        }
         foot={`Core ${snap.coreNodes} concepts / ${snap.coreRelationships} links · ${snap.draftNodes} draft concepts labelled · snapshot ${snap.snapshotAt}`}
       />
 
@@ -244,18 +261,29 @@ function Methods() {
             </li>
             <li>
               <b>Ask Immune:</b> classify → retrieve graph context → attach Gate C reviewed relationship cites when
-              present → optionally fetch provisional PubMed/Europe PMC hits (never auto-approved) → optional synthesis
-              from that extract only (prompt {PROMPT_VERSION}). Sparse cites mean Ask Immune is graph-retrieved, not
-              fully evidence-grounded. Answers can still be wrong.
+              present → optionally fetch provisional PubMed/Europe PMC hits (never auto-approved) → surface
+              counterevidence (contradicts/partial) in a separate bucket when curated → optional synthesis from that
+              extract only (prompt {PROMPT_VERSION}). Citation-to-claim checks fail-closed on invented IDs, Gate C
+              overclaims and unlabelled provisional lit. Sparse cites mean Ask Immune is graph-retrieved, not fully
+              evidence-grounded. Answers can still be wrong.{" "}
+              <Link to="/ask">Open Ask</Link>
+              {" · "}
+              <Link to="/reasoning" hash="how-ai-works">
+                How the AI works
+              </Link>
             </li>
             <li>
-              <b>Ask rate limit:</b> prefers Neon <code>{ASK_RATE_LIMIT_STATUS.table}</code> ({ASK_RATE_LIMIT_STATUS.limit};
+              <b>Ask rate limit:</b> Neon <code>{ASK_RATE_LIMIT_STATUS.table}</code> is live ({ASK_RATE_LIMIT_STATUS.limit};
               verified {ASK_RATE_LIMIT_STATUS.verifiedAt}). {ASK_RATE_LIMIT_STATUS.residual}
             </li>
             <li>
-              <b>Research / literature / adapters:</b> candidate workflows on <Link to="/research">Research</Link> —
-              never auto-promoted into the curated graph. Advanced adapters are planned interfaces; dry-runs report not
-              available.
+              <b>Research / claim ledger / adapters:</b> candidate workflows and a partial workbench spine
+              (Question→Search→Screen→Extract→Assess→Hypothesis→Export) on{" "}
+              <Link to="/research" hash="workbench">
+                Research
+              </Link>{" "}
+              — never auto-promoted into the curated graph. Claim-ledger candidates are drafts only. Advanced adapters
+              are planned interfaces; dry-runs report not available.
             </li>
           </ul>
           <ModelRegistryPanel compact />
@@ -277,11 +305,15 @@ function Methods() {
           <ul className="mkt-principle-list">
             <li>
               Most links have not yet been claim-checked; approved relationship claims remain sparse versus runtime link
-              count and do not imply clinical validation.
+              count (see live coverage above) and do not imply clinical validation.
             </li>
             <li>
               Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially
               reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.
+            </li>
+            <li>
+              Neon may still have zero <code>contradicts</code> rows — the counterevidence / skeptic path is wired, but
+              an empty bucket is honest, not proof of scientific agreement.
             </li>
             <li>
               The Academy ships a navigable foundation scaffold plus in-development intermediate and advanced scaffolds —
@@ -294,8 +326,8 @@ function Methods() {
             </li>
           </ul>
           <p className="mkt-aside">
-            Accessibility: the knowledge graph has a <Link to="/graph">text table view</Link>; keyboard focus is always
-            visible; detail drawers close with Escape.
+            Curators: <Link to="/curation">Citation curation</Link> (admin). Accessibility: the knowledge graph has a{" "}
+            <Link to="/graph">text table view</Link>; keyboard focus is always visible; detail drawers close with Escape.
           </p>
         </MarketingSection>
       </MarketingBody>

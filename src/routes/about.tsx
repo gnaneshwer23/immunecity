@@ -74,7 +74,11 @@ function About() {
               <div>
                 <strong>Ask &amp; research workbench</strong>
                 <p>
-                  Graph-retrieved teaching and guided research workflows; candidates stay drafts until human review.
+                  Graph-retrieved teaching (partial — Gate C when present, provisional lit labelled, fail-closed
+                  citation checks) and guided research workflows; candidates stay drafts until human review.{" "}
+                  <Link to="/ask">Ask Immune</Link>
+                  {" · "}
+                  <Link to="/research" hash="workbench">Workbench</Link>
                 </p>
               </div>
             </li>
@@ -93,9 +97,11 @@ function About() {
         <MarketingSection id="roadmap" eyebrow="04 / ROADMAP HONESTY" title="Beta where it works. Labels where it does not.">
           <p className="mkt-prose">
             Graph exploration, cell atlas content, mechanism walks and several teaching tools are available in beta.
-            Evidence curation, fully evidence-grounded AI and the research workbench are still evolving. Omics and
-            molecular prediction integrations remain planned until implemented and tested. Details live on{" "}
-            <Link to="/methods">Evidence &amp; Methods</Link>.
+            Ask Immune is partial (not fully evidence-grounded); Gate C claim coverage remains sparse; the research
+            workbench and claim ledger are partial spines. Live Neon rate limiting and a Methods/Evidence coverage
+            dashboard are shipped. Fully evidence-grounded AI, dense counterevidence curation and omics/molecular
+            prediction integrations remain incomplete or planned. Details live on{" "}
+            <Link to="/methods" hash="live-ev-heading">Evidence &amp; Methods</Link>.
           </p>
         </MarketingSection>
 

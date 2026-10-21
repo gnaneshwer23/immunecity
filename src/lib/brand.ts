@@ -38,10 +38,10 @@ export const INVESTIGATE_PATH = "/mechanism" as const;
 export const INVESTIGATE_CTA = "Investigate a Mechanism";
 /** Hero trust line — educational beta framing for the first viewport. */
 export const HERO_TRUST =
-  "Educational beta · curated graph · not clinical decision support";
+  "Educational beta · Gate C cites still sparse · not clinical decision support";
 /** Single public trust line — reuse; avoid repeating “educational beta” on every section. */
 export const TRUST_STATEMENT =
-  "Educational immunology model with curated references. Ask Immune retrieves from the graph (and may show unreviewed literature as provisional) — not fully evidence-grounded AI. Not clinical decision support.";
+  "Educational immunology model with curated references. Ask Immune retrieves graph context and Gate C cites when present, may list provisional PubMed/Europe PMC hits as unreviewed, and fail-closes unsupported citation claims — not fully evidence-grounded AI. Not clinical decision support.";
 
 export function pageTitle(section?: string): string {
   return section ? `${section} — ${PRODUCT_NAME}` : PRODUCT_LINE;

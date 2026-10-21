@@ -62,15 +62,20 @@ function AcademyLanding() {
       <MarketingHero
         eyebrow="Immunology Academy"
         title="Learn mechanisms as connected systems."
-        lede="Academy is the learning overlay under Immune Super Intelligence — connected to Cell Atlas, Mechanism, Knowledge Graph, Disease, Therapy and Evidence. Progress stays in this browser. Not certification."
+        lede="Academy is the learning overlay under Immune Super Intelligence — connected to Cell Atlas, Mechanism, Knowledge Graph, Disease, Therapy and Evidence. Finishing a module is teaching progress, not Gate C claim review. Progress stays in this browser. Not certification."
         actions={
-          <Button asChild className="bio-primary">
-            <Link to="/mechanism/$id" params={{ id: "tlr4" }}>
-              Start Foundation module 1 <ArrowUpRight />
-            </Link>
-          </Button>
+          <>
+            <Button asChild className="bio-primary">
+              <Link to="/mechanism/$id" params={{ id: "tlr4" }}>
+                Start Foundation module 1 <ArrowUpRight />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
+              <Link to="/ask">Ask Immune</Link>
+            </Button>
+          </>
         }
-        foot="Foundation navigable · Intermediate scaffold · Advanced empty scaffold · Not certification"
+        foot="Foundation navigable · Intermediate scaffold · Advanced empty · Not Gate C coverage · Not certification"
       />
 
       <MarketingBody>
@@ -181,6 +186,8 @@ function AcademyLanding() {
           </ul>
           <p className="mkt-aside">
             More draft domains on <Link to="/overview" hash="draft-domains">Overview</Link>
+            {" · "}
+            Claim-level density on <Link to="/methods" hash="live-ev-heading">Methods coverage</Link>
             {" · "}
             Foundation track above stays the primary navigable path.
           </p>
