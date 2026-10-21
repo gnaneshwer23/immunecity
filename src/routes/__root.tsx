@@ -14,7 +14,13 @@ import appCss from "../styles.css?url";
 import Shell from "../components/immune/Shell";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CANONICAL_URL, PRODUCT_NAME, TAGLINE } from "../lib/brand";
-import { siteJsonLd } from "../lib/seo";
+import {
+  OG_IMAGE_ALT,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_URL,
+  OG_IMAGE_WIDTH,
+  siteJsonLd,
+} from "../lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -99,7 +105,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Educational immunology platform: mechanisms, curated evidence and scientific AI that teaches with references.",
       },
+      { property: "og:image", content: OG_IMAGE_URL },
+      { property: "og:image:width", content: OG_IMAGE_WIDTH },
+      { property: "og:image:height", content: OG_IMAGE_HEIGHT },
+      { property: "og:image:alt", content: OG_IMAGE_ALT },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE_URL },
       { name: "twitter:title", content: `${PRODUCT_NAME} — ${TAGLINE}` },
       {
         name: "twitter:description",

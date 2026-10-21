@@ -2,6 +2,9 @@ import { CANONICAL_ORIGIN, CANONICAL_URL, PRODUCT_NAME, TAGLINE } from "./brand"
 
 /** Stable social preview image (served from /public). */
 export const OG_IMAGE_URL = `${CANONICAL_ORIGIN}/og-image.jpg`;
+export const OG_IMAGE_WIDTH = "1200";
+export const OG_IMAGE_HEIGHT = "630";
+export const OG_IMAGE_ALT = `${PRODUCT_NAME} — the immune system as a connected, investigable system`;
 
 export function absoluteUrl(path = "/"): string {
   if (!path || path === "/") return CANONICAL_URL;
@@ -23,7 +26,7 @@ export function seoHead({
   title,
   description,
   path = "/",
-  image,
+  image = OG_IMAGE_URL,
   type = "website",
   noIndex = false,
 }: SeoInput) {
@@ -44,11 +47,26 @@ export function seoHead({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:url", content: url },
-      ...(image?.startsWith("https://") ? [
-        { property: "og:image", content: image },
-        { property: "og:image:alt", content: `${PRODUCT_NAME} — ${TAGLINE}` },
-        { name: "twitter:image", content: image },
-      ] : []),
+      ...(image?.startsWith("https://")
+        ? [
+            { property: "og:image", content: image },
+            ...(image === OG_IMAGE_URL
+              ? [
+                  { property: "og:image:width", content: OG_IMAGE_WIDTH },
+                  { property: "og:image:height", content: OG_IMAGE_HEIGHT },
+                ]
+              : []),
+            {
+              property: "og:image:alt",
+              content: image === OG_IMAGE_URL ? OG_IMAGE_ALT : `${PRODUCT_NAME} — ${TAGLINE}`,
+            },
+            { name: "twitter:image", content: image },
+            {
+              name: "twitter:image:alt",
+              content: image === OG_IMAGE_URL ? OG_IMAGE_ALT : `${PRODUCT_NAME} — ${TAGLINE}`,
+            },
+          ]
+        : []),
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
@@ -91,5 +109,38 @@ export function siteJsonLd(): Record<string, unknown> {
         },
       },
     ],
+  };
+}
+
+/** Schema.org DefinedTerm for one Atlas concept page (curated graph entry, not medical advice). */
+export function conceptJsonLd(c: {
+  id: string;
+  name: string;
+  description: string;
+  aliases: string[];
+  graphVersion: string;
+  sameAs?: string[];
+}): Record<string, unknown> {
+  const url = absoluteUrl(`/atlas/${c.id}`);
+  return {
+    "@context": "https://schema.org",
+    "@type": "DefinedTerm",
+    "@id": `${url}#term`,
+    name: c.name,
+    termCode: c.id,
+    description: c.description,
+    ...(c.aliases.length ? { alternateName: c.aliases } : {}),
+    ...(c.sameAs?.length ? { sameAs: c.sameAs } : {}),
+    url,
+    inDefinedTermSet: {
+      "@type": "DefinedTermSet",
+      "@id": `${CANONICAL_ORIGIN}/atlas#termset`,
+      name: `${PRODUCT_NAME} Knowledge Atlas`,
+      url: absoluteUrl("/atlas"),
+      version: c.graphVersion,
+      publisher: { "@id": `${CANONICAL_ORIGIN}/#organization` },
+    },
+    mainEntityOfPage: url,
+    inLanguage: "en-GB",
   };
 }
