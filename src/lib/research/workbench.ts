@@ -36,6 +36,10 @@ export interface ResearchQuestion {
   question_id: string;
   text: string;
   searchStrategy: string;
+  /** Inclusion criteria for screening stage (scaffold — Screen spine step is planned/partial). */
+  inclusionCriteria?: string;
+  /** Exclusion / screening notes (honest scaffold). */
+  exclusionNotes?: string;
   /** Graph concept IDs suggested from Ask retrieval (candidate inputs only). */
   relatedConceptIds: string[];
   /** Graph relationship IDs suggested from Ask retrieval (candidate inputs only). */
@@ -257,7 +261,7 @@ export function retreatWorkbench(session: WorkbenchSession): WorkbenchSession {
 
 export function updateQuestion(
   session: WorkbenchSession,
-  patch: Partial<Pick<ResearchQuestion, "text" | "searchStrategy">>,
+  patch: Partial<Pick<ResearchQuestion, "text" | "searchStrategy" | "inclusionCriteria" | "exclusionNotes">>,
 ): WorkbenchSession {
   return touch({
     ...session,

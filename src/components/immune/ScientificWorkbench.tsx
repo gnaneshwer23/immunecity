@@ -40,6 +40,7 @@ import {
 } from "@/lib/research/workbench";
 import { claimLifecycleLabel, summariseClaimTable } from "@/lib/research/claimLedger";
 import { hypothesisCompleteness } from "@/lib/research/hypothesisDraft";
+import { spineProvenance, spineStatusLabel, workbenchSpine } from "@/lib/research/workbenchSpine";
 
 const STEP_LABEL: Record<WorkbenchStep, string> = {
   question: "Question",
@@ -132,6 +133,8 @@ export default function ScientificWorkbench({
   const flags = sessionCandidateFlags(session);
   const progress = workbenchProgress(session);
   const claimSummary = summariseClaimTable(session.claims ?? []);
+  const spine = workbenchSpine(session);
+  const provenance = spineProvenance(session);
 
   const applyImportJson = () => {
     const text = importJson.trim();
@@ -196,9 +199,28 @@ export default function ScientificWorkbench({
   return (
     <div className="scientific-workbench">
       <p className="lede">
-        Research investigation: question → evidence → mechanism → hypothesis → experiment → review.
-        Every artefact is labelled <CandidateBadge />. Nothing auto-promotes into the curated graph or marks a claim
-        experimentally supported.
+        E2E spine: Question → Search → Screen → Extract → Assess → Hypothesis → Export (with provenance).
+        Mapped onto question → evidence → mechanism → hypothesis → experiment → review.
+        Every artefact is labelled <CandidateBadge />. Nothing auto-promotes into the curated graph.
+      </p>
+
+      <ol className="row" style={{ listStyle: "none", padding: 0, gap: 6, flexWrap: "wrap", marginTop: 10 }} aria-label="E2E research spine">
+        {spine.map((st) => (
+          <li key={st.id}>
+            <span
+              className={`chip ${st.ready ? "on" : "muted"}`}
+              title={`${st.note} · ${st.detail}`}
+            >
+              {st.ready ? "●" : "○"} {st.title}
+              <span className="xs muted"> ({spineStatusLabel(st.status)})</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="xs muted" style={{ marginTop: 4 }}>
+        Provenance: session {provenance.sessionId.slice(0, 18)} · claims {provenance.claimCount} · notes{" "}
+        {provenance.evidenceNoteCount} · counterhints {provenance.counterevidenceCount} · kgWrite false ·
+        autoPromote false
       </p>
 
       <p className="small muted" style={{ marginTop: 8 }}>
@@ -293,7 +315,25 @@ export default function ScientificWorkbench({
               rows={2}
               value={session.question.searchStrategy}
               onChange={(e) => setSession(updateQuestion(session, { searchStrategy: e.target.value }))}
-              placeholder="Keywords, databases, inclusion rules — no fabricated PMIDs"
+              placeholder="Keywords, databases — no fabricated PMIDs"
+            />
+          </label>
+          <label className="field">
+            Inclusion criteria <span className="chip muted">Screen · planned/partial</span>
+            <textarea
+              rows={2}
+              value={session.question.inclusionCriteria ?? ""}
+              onChange={(e) => setSession(updateQuestion(session, { inclusionCriteria: e.target.value }))}
+              placeholder="What must a paper include to proceed? (screening scaffold)"
+            />
+          </label>
+          <label className="field">
+            Exclusion notes <span className="chip muted">Screen · planned/partial</span>
+            <textarea
+              rows={2}
+              value={session.question.exclusionNotes ?? ""}
+              onChange={(e) => setSession(updateQuestion(session, { exclusionNotes: e.target.value }))}
+              placeholder="Why sources are excluded — transparent reasons"
             />
           </label>
           <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>

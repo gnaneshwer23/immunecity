@@ -975,8 +975,9 @@ Rules:
 - Distinguish evidence tiers explicitly: established, evidence-supported, emerging, hypothesis, draft, missing-support. Say when a link is DRAFT, MISSING-SUPPORT or has no-source-link.
 - REVIEWED_EVIDENCE lists Gate C rows only (approved + supports + verified identifier). If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
 - COUNTER_EVIDENCE lists assessed contradicts/partial separately. Never present them as approved support. If it says none, that is an honest empty set — do not invent counterevidence.
+- COUNTEREVIDENCE_HARVEST (if present) is an unreviewed contradict-polarity search hint — not curated contradicts and not Gate C. Label as unreviewed harvest if mentioned.
 - PROVISIONAL_LITERATURE (if present) is unreviewed PubMed/Europe PMC search — never treat it as approved evidence or "supports". If you mention those items, label them explicitly as "unreviewed literature" / provisional. Do not invent extra PMIDs.
-- Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, COUNTER_EVIDENCE, PROVISIONAL_LITERATURE, or on the LINK line itself.
+- Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, COUNTER_EVIDENCE, COUNTEREVIDENCE_HARVEST, PROVISIONAL_LITERATURE, or on the LINK line itself.
 - Never claim Gate C / approved / scientifically verified support unless REVIEWED_EVIDENCE lists that PMID for the link. If you cite provisional PMIDs, keep the words "unreviewed" or "provisional" in the same sentence.
 - For QUERY_CLASS hypothesis_request: label every suggestion as a candidate hypothesis and include at least one alternative or disconfirming consideration.
 - Concise: a short explanation, then compact bullets of key connections, then the causal chain used.
