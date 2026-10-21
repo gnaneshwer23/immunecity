@@ -9,17 +9,23 @@ import {
   attachProvisionalLiterature,
   isAskEmergencyDisabled,
   prepareAsk,
-  rateLimited,
   validateAnswerCitations,
   type AskGrounding,
   type PrepareAskResult,
 } from "@/lib/askGrounding";
+import { askRateLimited } from "@/lib/askRateLimit.server";
 import { EvidenceServiceError } from "@/lib/citations.functions";
 import { getDb } from "@/lib/db.server";
 import { evidenceRecords } from "@/lib/db/schema.server";
 import { APPROVAL_ELIGIBLE_CHECK, isCounterEvidenceAssessment, isGateCSupportingEvidence } from "@/lib/immune/evidenceInvariants";
 import type { CitationLike } from "@/lib/immune/evidenceStatus";
 import { fetchProvisionalLiterature } from "@/lib/provisionalLit.server";
+import {
+  attachRetrievalToTrace,
+  createInvestigatePlan,
+  summariseTrace,
+  type ResearchRunTrace,
+} from "@/lib/research/researchPlanner";
 
 export type ReviewedEvidenceResult =
   | { ok: true; cites: CitationLike[] }
@@ -193,7 +199,16 @@ const CITATION_REJECT =
   "I drafted an answer but citation-to-claim validation failed (invented or unretrieved IDs, Gate C overclaim, or provisional literature without an unreviewed label), so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods & trust.";
 
 export type PrepareAskServerResult =
-  | { ok: true; prepared: PrepareAskResult; grounding: AskGrounding; provisionalError?: string; provisionalSkipped?: string }
+  | {
+      ok: true;
+      prepared: PrepareAskResult;
+      grounding: AskGrounding;
+      provisionalError?: string;
+      provisionalSkipped?: string;
+      /** Bounded planner scaffold for investigate / hypothesis classes (partial). */
+      researchTrace?: ResearchRunTrace;
+      researchTraceText?: string;
+    }
   | { ok: false; error: "evidence_unavailable"; message: string };
 
 /**
@@ -229,12 +244,28 @@ export async function prepareAskServer(
   });
   grounding = attachProvisionalLiterature(grounding, lit.items);
   prepared = { ...prepared, grounding };
+
+  let researchTrace: ResearchRunTrace | undefined;
+  let researchTraceText: string | undefined;
+  if (prepared.queryClass === "hypothesis_request" || prepared.queryClass === "comparison") {
+    researchTrace = attachRetrievalToTrace(createInvestigatePlan(question), {
+      nodeIds: grounding.nodeIds,
+      relIds: grounding.relIds,
+      reviewedEvidenceCount: grounding.coverage.reviewedEvidenceCount,
+      counterEvidenceCount: grounding.coverage.counterEvidenceCount,
+      queryClass: prepared.queryClass,
+    });
+    researchTraceText = summariseTrace(researchTrace);
+  }
+
   return {
     ok: true,
     prepared,
     grounding,
     provisionalError: lit.error,
     provisionalSkipped: lit.skipped,
+    researchTrace,
+    researchTraceText,
   };
 }
 
@@ -244,8 +275,12 @@ export async function handleAsk(request: Request): Promise<Response> {
   }
 
   const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
-  if (rateLimited(ip)) {
-    return Response.json({ error: "Too many questions in a short time. Please wait a minute." }, { status: 429, headers: { "Retry-After": "60" } });
+  const rate = await askRateLimited(ip);
+  if (rate.limited) {
+    return Response.json(
+      { error: "Too many questions in a short time. Please wait a minute.", rateLimitBackend: rate.backend },
+      { status: 429, headers: { "Retry-After": "60" } },
+    );
   }
   let messages: UIMessage[];
   try {
@@ -301,6 +336,7 @@ export async function handleAsk(request: Request): Promise<Response> {
   const system =
     SYSTEM +
     prepared.grounding.text +
+    (serverPrep.researchTraceText ? `\n\n${serverPrep.researchTraceText}` : "") +
     `\n\nRESPONSE_TRACE prompt=${prepared.grounding.trace.promptVersion} graph=${prepared.grounding.trace.graphVersion} class=${prepared.queryClass}`;
   const modelMessages = await convertToModelMessages(messages);
 

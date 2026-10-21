@@ -102,6 +102,16 @@ CREATE TABLE IF NOT EXISTS public.evidence_audit_events (
 CREATE INDEX IF NOT EXISTS evidence_audit_events_record_idx
   ON public.evidence_audit_events (evidence_record_id, created_at DESC);
 
+-- Optional shared Ask rate-limit buckets (ISI-003). App falls back to in-memory until present.
+CREATE TABLE IF NOT EXISTS public.ask_rate_buckets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  rate_key TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS ask_rate_buckets_key_created_idx
+  ON public.ask_rate_buckets (rate_key, created_at DESC);
+
 CREATE OR REPLACE FUNCTION public.touch_updated_at()
 RETURNS TRIGGER
 LANGUAGE plpgsql

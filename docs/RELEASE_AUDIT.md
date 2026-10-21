@@ -92,7 +92,7 @@
 | IC-06 Exemplars | **PARTIAL** | TNF→RA on-path **done**; PD-1 partial; IFN→SLE scaffold-ish |
 | IC-08 Graph snapshot | **DONE** | Shared snapshot on trust surfaces |
 | IC-11 Gap queue | **DONE (candidates)** | No auto-approve |
-| IC-15 Rate limits | **RESIDUAL** | In-memory 8/min/IP (`ASK_RATE_LIMIT_BACKEND`); no KV/Upstash/Redis env — shared limiter deferred |
+| IC-15 Rate limits | **PARTIAL** | Neon `ask_rate_buckets` preferred when migrated; else in-memory 8/min/IP — no KV/Upstash/Redis |
 | IC-16 A11y/perf | **PARTIAL** | Automated available; **human sign-off open** |
 
 ---
@@ -164,7 +164,7 @@ Do **not** mass-approve or invent PMIDs.
 - Approve invariants + identifier gate; audit events table on production.
 - ISI-001: public/Ask Gate C reads require approved+supports+verified; counterevidence is a separate path; audit FK tightened to `ON DELETE RESTRICT` (apply `drizzle/migrations/0005_audit_events_restrict_delete.sql` on Neon — residual until applied).
 - Ask clinical abstain; emergency disable env; citation validation before return.
-- Rate limit: in-memory soft limit per isolate (`ASK_RATE_LIMIT_BACKEND=in-memory`) — accepted beta residual (IC-15). No Vercel KV / Upstash / Redis env present; do not invent infra. Map prune hardened (drop idle keys before wipe).
+- Rate limit: `askRateLimited` prefers Neon `ask_rate_buckets` (migration `0006_ask_rate_buckets.sql`) when the table exists; otherwise per-isolate in-memory fallback (IC-15 / ISI-003 residual). No Vercel KV / Upstash / Redis env present.
 - Dual public URL (Lovable) remains an ops honesty issue (D-06).
 
 ---
@@ -175,7 +175,7 @@ Do **not** mass-approve or invent PMIDs.
 |----|-----|-------------|--------|
 | D-05 | P0 science | Sparse Gate C (9/549) | **Open** — TNF on-path reviewed; PD-1 1/4 + Chemnitz partial; IFN scaffold (BAFF detour approved); see `docs/CURATOR_EVIDENCE_QUEUE.md` P0 matrix |
 | D-06 | P1 | Dual public URLs (Vercel + Lovable) | **Open** |
-| D-08 | P1 | In-memory rate limit | Accepted for beta (IC-15 residual; no shared store env) |
+| D-08 | P1 | Shared Ask rate limit | **Partial** — Neon table + server helper shipped; residual until `0006` applied on Neon |
 | D-11 | P2 | Vitest hang risk | **Mitigated** — removed `@vitejs/plugin-react` from `vitest.config.ts` (was hanging at collection); node env + forks; jsdom only for `.tsx` |
 | D-16 | P0 | Prod SHA lag | **Closed at b8030fb**; watch after this push |
 | D-18 | P1 | Local smoke defaults to vercel-dev | **Open** (ops hygiene) |
