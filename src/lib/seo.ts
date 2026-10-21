@@ -110,6 +110,7 @@ export function conceptJsonLd(c: {
   typeLabel: string;
   aliases: string[];
   graphVersion: string;
+  sameAs?: string[];
 }): Record<string, unknown> {
   const url = absoluteUrl(`/atlas/${c.id}`);
   return {
@@ -121,6 +122,7 @@ export function conceptJsonLd(c: {
     description: c.description,
     ...(c.aliases.length ? { alternateName: c.aliases } : {}),
     additionalType: c.typeLabel,
+    ...(c.sameAs?.length ? { sameAs: c.sameAs } : {}),
     url,
     inDefinedTermSet: {
       "@type": "DefinedTermSet",

@@ -16,6 +16,7 @@ import { StatusBadge } from "@/components/immune/ScientificInspector";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { absoluteUrl, conceptJsonLd, seoHead } from "@/lib/seo";
 import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
+import { XREF_SOURCES, conceptSameAs, conceptXrefs } from "@/data/xrefs";
 import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
 
 export const Route = createFileRoute("/atlas/$id")({
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/atlas/$id")({
       typeLabel: TYPES[n.node_type].label,
       aliases: conceptExtras(n).aliases,
       graphVersion: GRAPH_CORE_VERSION,
+      sameAs: conceptSameAs(n.id),
     });
     return { ...head, scripts: [{ type: "application/ld+json", children: JSON.stringify(ld) }] };
   },
@@ -90,6 +92,29 @@ function pluralType(t: NodeType, count: number): string {
 
 function withArticle(word: string): string {
   return /^[aeiou]/i.test(word) ? `an ${word}` : `a ${word}`;
+}
+
+function Identifiers({ id }: { id: string }) {
+  const xrefs = conceptXrefs(id);
+  if (!xrefs.length) return null;
+  return (
+    <section aria-labelledby="xref-heading">
+      <h2 id="xref-heading">Identifiers</h2>
+      <dl className="isi-xrefs">
+        {xrefs.map((x) => (
+          <div key={x.source + x.id}>
+            <dt>{XREF_SOURCES[x.source].name}</dt>
+            <dd>
+              <a href={XREF_SOURCES[x.source].href(x.id)} target="_blank" rel="noopener noreferrer" title={x.label}>
+                <span className="mono">{x.id}</span>
+              </a>
+              {x.match === "close" ? <span className="xs muted"> · related term</span> : null}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
 }
 
 function CiteThisPage({ name, id, typeLabel }: { name: string; id: string; typeLabel: string }) {
@@ -244,6 +269,7 @@ function ConceptPage() {
             <p className="small">Find publications mentioning {n.name}.</p>
             <Link to="/research" search={{ lib: n.name }} hash="library"><BookOpen size={13} /> Search publications →</Link>
           </section>
+          <Identifiers id={n.id} />
           <CiteThisPage name={n.name} id={n.id} typeLabel={typeLabel} />
           {doms.length ? (
             <section>
