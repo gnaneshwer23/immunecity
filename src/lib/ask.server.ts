@@ -1,10 +1,11 @@
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, type UIMessage } from "ai";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import { createOpenAIDirectCall, createResponsesCall } from "@/lib/ai/responses.server.ts";
 import {
   ASK_DISABLED_MESSAGE,
   MAX_QUESTION_CHARS,
   SYSTEM,
+  attachCounterEvidence,
   attachProvisionalLiterature,
   isAskEmergencyDisabled,
   prepareAsk,
@@ -16,6 +17,7 @@ import {
 import { EvidenceServiceError } from "@/lib/citations.functions";
 import { getDb } from "@/lib/db.server";
 import { evidenceRecords } from "@/lib/db/schema.server";
+import { APPROVAL_ELIGIBLE_CHECK, isCounterEvidenceAssessment, isGateCSupportingEvidence } from "@/lib/immune/evidenceInvariants";
 import type { CitationLike } from "@/lib/immune/evidenceStatus";
 import { fetchProvisionalLiterature } from "@/lib/provisionalLit.server";
 
@@ -58,7 +60,37 @@ function textReply(text: string) {
   return createUIMessageStreamResponse({ stream });
 }
 
-/** Approved Neon evidence for retrieved relationship IDs (claim-level context for Ask). */
+function rowToCitationLike(r: {
+  evidenceId: string;
+  sourceRef: string | null;
+  pmid: string | null;
+  doi: string | null;
+  relationshipId: string | null;
+  claimSupport: string | null;
+  reviewedAt: Date | string | null;
+  curation: string;
+}): CitationLike {
+  return {
+    evidence_id: r.evidenceId,
+    relationship_id: r.relationshipId ?? null,
+    claim_support: r.claimSupport ?? "unassessed",
+    reviewed_at: r.reviewedAt?.toISOString?.() ?? (r.reviewedAt as string | null) ?? null,
+    curation: r.curation,
+    pmid: r.pmid,
+    doi: r.doi,
+    label: r.pmid ? `PMID ${r.pmid}` : r.doi ? `DOI ${r.doi}` : (r.sourceRef ?? r.evidenceId),
+    url: r.pmid
+      ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`
+      : r.doi
+        ? `https://doi.org/${r.doi}`
+        : `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(r.sourceRef ?? "")}`,
+  };
+}
+
+/**
+ * Gate C supporting evidence only: approved + supports + verified/matched.
+ * Fail-closed — never mixes contradicts/partial into the answer-support path.
+ */
 export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<ReviewedEvidenceResult> {
   if (!relIds.length) return { ok: true, cites: [] };
   try {
@@ -73,34 +105,86 @@ export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<Rev
         claimSupport: evidenceRecords.claimSupport,
         reviewedAt: evidenceRecords.reviewedAt,
         curation: evidenceRecords.curation,
+        checkStatus: evidenceRecords.checkStatus,
       })
       .from(evidenceRecords)
-      .where(and(eq(evidenceRecords.curation, "approved"), inArray(evidenceRecords.relationshipId, relIds)));
+      .where(
+        and(
+          eq(evidenceRecords.curation, "approved"),
+          eq(evidenceRecords.claimSupport, "supports"),
+          inArray(evidenceRecords.checkStatus, [...APPROVAL_ELIGIBLE_CHECK]),
+          inArray(evidenceRecords.relationshipId, relIds),
+        ),
+      );
     return {
       ok: true,
-      cites: rows.map(
-        (r): CitationLike => ({
-          evidence_id: r.evidenceId,
-          relationship_id: r.relationshipId ?? null,
-          claim_support: r.claimSupport ?? "unassessed",
-          reviewed_at: r.reviewedAt?.toISOString?.() ?? (r.reviewedAt as string | null) ?? null,
-          curation: r.curation,
-          pmid: r.pmid,
-          doi: r.doi,
-          label: r.pmid ? `PMID ${r.pmid}` : r.doi ? `DOI ${r.doi}` : (r.sourceRef ?? r.evidenceId),
-          url: r.pmid
-            ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`
-            : r.doi
-              ? `https://doi.org/${r.doi}`
-              : `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(r.sourceRef ?? "")}`,
-        }),
-      ),
+      cites: rows
+        .filter((r) =>
+          isGateCSupportingEvidence({
+            curation: r.curation,
+            claimSupport: r.claimSupport,
+            relationshipId: r.relationshipId,
+            checkStatus: r.checkStatus,
+          }),
+        )
+        .map(rowToCitationLike),
     };
   } catch (err) {
     const message =
       err instanceof EvidenceServiceError
         ? err.message
         : "Evidence database query failed while loading reviewed relationship citations.";
+    return { ok: false, error: "unavailable", message };
+  }
+}
+
+/**
+ * Separate counterevidence path for retrieved relationships (contradicts / partial).
+ * Empty Neon is an honest empty set, not an outage.
+ */
+export async function loadCounterEvidenceForRels(relIds: string[]): Promise<ReviewedEvidenceResult> {
+  if (!relIds.length) return { ok: true, cites: [] };
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({
+        evidenceId: evidenceRecords.evidenceId,
+        sourceRef: evidenceRecords.sourceRef,
+        pmid: evidenceRecords.pmid,
+        doi: evidenceRecords.doi,
+        relationshipId: evidenceRecords.relationshipId,
+        claimSupport: evidenceRecords.claimSupport,
+        reviewedAt: evidenceRecords.reviewedAt,
+        curation: evidenceRecords.curation,
+        checkStatus: evidenceRecords.checkStatus,
+      })
+      .from(evidenceRecords)
+      .where(
+        and(
+          inArray(evidenceRecords.claimSupport, ["contradicts", "partial"]),
+          inArray(evidenceRecords.checkStatus, [...APPROVAL_ELIGIBLE_CHECK]),
+          ne(evidenceRecords.curation, "rejected"),
+          inArray(evidenceRecords.relationshipId, relIds),
+        ),
+      );
+    return {
+      ok: true,
+      cites: rows
+        .filter((r) =>
+          isCounterEvidenceAssessment({
+            curation: r.curation,
+            claimSupport: r.claimSupport,
+            relationshipId: r.relationshipId,
+            checkStatus: r.checkStatus,
+          }),
+        )
+        .map(rowToCitationLike),
+    };
+  } catch (err) {
+    const message =
+      err instanceof EvidenceServiceError
+        ? err.message
+        : "Evidence database query failed while loading counterevidence.";
     return { ok: false, error: "unavailable", message };
   }
 }
@@ -125,19 +209,25 @@ export async function prepareAskServer(
     return { ok: true, prepared: preliminary, grounding: preliminary.grounding };
   }
 
-  const evidence = await loadReviewedEvidenceForRels(preliminary.grounding.relIds);
+  const [evidence, counter] = await Promise.all([
+    loadReviewedEvidenceForRels(preliminary.grounding.relIds),
+    loadCounterEvidenceForRels(preliminary.grounding.relIds),
+  ]);
   if (!evidence.ok) {
     return { ok: false, error: "evidence_unavailable", message: evidence.message };
   }
+  // Counter path soft-fails to empty (honest empty state) so Gate C support still flows.
+  const counterCites = counter.ok ? counter.cites : [];
 
-  let prepared = prepareAsk(question, evidence.cites);
+  let prepared = prepareAsk(question, [...evidence.cites, ...counterCites]);
+  let grounding = attachCounterEvidence(prepared.grounding, counterCites);
   const lit = await fetchProvisionalLiterature({
-    grounding: prepared.grounding,
+    grounding,
     question,
     queryClass: prepared.queryClass,
     rateKey,
   });
-  const grounding = attachProvisionalLiterature(prepared.grounding, lit.items);
+  grounding = attachProvisionalLiterature(grounding, lit.items);
   prepared = { ...prepared, grounding };
   return {
     ok: true,

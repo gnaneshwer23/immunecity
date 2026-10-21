@@ -30,6 +30,14 @@ describe("evidence status", () => {
     expect(relationshipStatus(e, [c("supports")])).toBe("approved");
     expect(relationshipStatus(e, [c("supports"), { ...c("contradicts"), evidence_id: "E2" }])).toBe("conflicting");
   });
+  it("contradicts/partial without curation=approved still surface as conflict/partial", () => {
+    expect(
+      relationshipStatus(e, [{ ...c("contradicts"), curation: "unreviewed", evidence_id: "E3" }]),
+    ).toBe("conflicting");
+    expect(
+      relationshipStatus(e, [{ ...c("partial"), curation: "unreviewed", evidence_id: "E4" }]),
+    ).toBe("claim-assessed");
+  });
 });
 
 describe("graph release", () => {
@@ -61,6 +69,7 @@ describe("AI grounding", () => {
     expect(g.relIds.some((id) => id.includes("M001") || id.includes("D001"))).toBe(true);
     // Missing reviewed Neon cites is disclosed in the extract (honest gap).
     expect(g.text).toMatch(/REVIEWED_EVIDENCE/);
+    expect(g.text).toMatch(/COUNTER_EVIDENCE none/);
     const unsupported = prepareAsk("zzqxzyxq nonontology foobarium");
     expect(unsupported.callModel).toBe(false);
     expect(unsupported.queryClass).toBe("unsupported");

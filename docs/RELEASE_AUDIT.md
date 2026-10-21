@@ -162,6 +162,7 @@ Do **not** mass-approve or invent PMIDs.
 
 - Neon Auth + JWKS; curation admin-gated; signup gets `user` only; admin explicit.
 - Approve invariants + identifier gate; audit events table on production.
+- ISI-001: public/Ask Gate C reads require approved+supports+verified; counterevidence is a separate path; audit FK tightened to `ON DELETE RESTRICT` (apply `drizzle/migrations/0005_audit_events_restrict_delete.sql` on Neon — residual until applied).
 - Ask clinical abstain; emergency disable env; citation validation before return.
 - Rate limit: in-memory soft limit per isolate (`ASK_RATE_LIMIT_BACKEND=in-memory`) — accepted beta residual (IC-15). No Vercel KV / Upstash / Redis env present; do not invent infra. Map prune hardened (drop idle keys before wipe).
 - Dual public URL (Lovable) remains an ops honesty issue (D-06).

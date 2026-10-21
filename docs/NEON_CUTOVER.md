@@ -7,8 +7,9 @@
 | Sign-in / sign-up / Google | Supabase Auth (+ Lovable OAuth) | Neon Managed Better Auth (`src/integrations/neon/auth-client.ts`) |
 | Server fn auth | `requireSupabaseAuth` | `requireNeonAuth` (JWKS via `jose`) |
 | Evidence CRUD / roles | PostgREST + RLS | drizzle + `public.has_role` on Neon |
-| Curation audit history | (none) | `evidence_audit_events` append-only (IC-02) |
-| Approved citations | anon Supabase select | `getApprovedCitations` SQL filter |
+| Curation audit history | (none) | `evidence_audit_events` append-only (IC-02); FK `ON DELETE RESTRICT` (migration `0005_audit_events_restrict_delete.sql`) so deleting a record cannot wipe history |
+| Approved citations | anon Supabase select | `getApprovedCitations` fail-closed: approved + supports + verified/matched |
+| Counterevidence | (none) | `getCounterEvidenceCitations` / Ask `loadCounterEvidenceForRels` — contradicts/partial, separate from Gate C |
 
 ## Owner clicks
 

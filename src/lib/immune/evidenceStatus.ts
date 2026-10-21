@@ -39,17 +39,37 @@ export function citationsFor(edge: KGEdge, cites: CitationLike[]) {
   });
 }
 
+/** Gate C support cites only (approved + supports). Counterevidence uses counterCitationsFor. */
+export function supportingCitationsFor(edge: KGEdge, cites: CitationLike[]) {
+  return citationsFor(edge, cites).filter((c) => c.claim_support === "supports");
+}
+
+/**
+ * Counterevidence on an edge: contradicts / partial.
+ * Unlike citationsFor, allows non-approved curation (write path forbids approving non-supports).
+ */
+export function counterCitationsFor(edge: KGEdge, cites: CitationLike[]) {
+  const id = relId(edge);
+  return cites.filter((c) => {
+    if (c.relationship_id !== id) return false;
+    if (c.curation === "rejected") return false;
+    return c.claim_support === "contradicts" || c.claim_support === "partial";
+  });
+}
+
 /** A relationship is Supported only when mapped, assessed as supporting, and approved. */
 export function relationshipStatus(edge: KGEdge, cites: CitationLike[]): ReviewStatus {
-  const mine = citationsFor(edge, cites);
-  const sup = mine.some((c) => c.claim_support === "supports");
-  const part = mine.some((c) => c.claim_support === "partial");
-  const contra = mine.some((c) => c.claim_support === "contradicts");
+  const supporting = supportingCitationsFor(edge, cites);
+  const counter = counterCitationsFor(edge, cites);
+  const approvedMine = citationsFor(edge, cites);
+  const sup = supporting.some((c) => c.claim_support === "supports");
+  const part = counter.some((c) => c.claim_support === "partial");
+  const contra = counter.some((c) => c.claim_support === "contradicts");
   if (contra && (sup || part)) return "conflicting";
   if (contra) return "conflicting";
   if (sup) return "approved";
   if (part) return "claim-assessed";
-  if (mine.length && mine.every((c) => c.claim_support === "unrelated")) return "rejected";
+  if (approvedMine.length && approvedMine.every((c) => c.claim_support === "unrelated")) return "rejected";
   const ref = edgeRef(edge);
   if (ref && ref.kind !== "citation") return "source-verified";
   return edge.draft ? "draft" : "unreviewed";

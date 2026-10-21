@@ -1,12 +1,20 @@
 /* Browser-safe retrieval and guardrails for Ask Immune (tested in src/test/ai-grounding.test.ts). */
 import { KG, byId, human, out, inn, relId, edgeRef, edgeByRel, shortestPath, type KGNode, type KGEdge } from "@/lib/immune/engine";
 import { conceptExtras } from "@/lib/immune/concepts";
-import { citationsFor, relationshipStatus, STATUS_INFO, type CitationLike, type ReviewStatus } from "@/lib/immune/evidenceStatus";
+import { partitionEvidencePolarity } from "@/lib/immune/evidenceInvariants";
+import {
+  counterCitationsFor,
+  relationshipStatus,
+  STATUS_INFO,
+  supportingCitationsFor,
+  type CitationLike,
+  type ReviewStatus,
+} from "@/lib/immune/evidenceStatus";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v5";
+export const PROMPT_VERSION = "ask-grounding-v6";
 
 /** Unreviewed literature hits (PubMed / Europe PMC). Never Gate C approved. */
 export interface ProvisionalLitItem {
@@ -71,10 +79,12 @@ export interface GroundedLink {
   draft?: boolean;
   hasSourceLink: boolean;
   location?: string;
-  /** Approved Neon evidence rows mapped to this exact relationship. */
+  /** Gate C approved+supports Neon rows mapped to this exact relationship. */
   reviewedEvidenceCount: number;
   reviewedPmids: string[];
   hasClaimSupport: boolean;
+  /** Assessed contradicts/partial on this edge (separate from Gate C support). */
+  counterEvidenceCount: number;
 }
 
 export interface CausalChainHop {
@@ -114,11 +124,15 @@ export interface AskGrounding {
     emergingCount: number;
     establishedCount: number;
     evidenceSupportedCount: number;
-    /** Sum of approved Neon rows on retrieved links. */
+    /** Sum of Gate C approved+supports rows on retrieved links. */
     reviewedEvidenceCount: number;
+    /** Assessed contradicts/partial rows (never counted as Gate C support). */
+    counterEvidenceCount: number;
     /** Provisional (unreviewed) literature hits attached server-side. */
     provisionalLiteratureCount: number;
   };
+  /** Server-attached counterevidence; empty when Neon has none (honest empty). */
+  counterEvidence: CitationLike[];
   /** Server-attached unreviewed literature; empty on pure client prepareAsk. */
   provisionalLiterature: ProvisionalLitItem[];
 }
@@ -131,6 +145,7 @@ const EMPTY_COVERAGE: AskGrounding["coverage"] = {
   establishedCount: 0,
   evidenceSupportedCount: 0,
   reviewedEvidenceCount: 0,
+  counterEvidenceCount: 0,
   provisionalLiteratureCount: 0,
 };
 
@@ -265,9 +280,10 @@ function evidenceTier(edge: KGEdge, review: ReviewStatus): EvidenceTier {
 
 export function groundLink(edge: KGEdge, cites: CitationLike[] = []): GroundedLink {
   const review = relationshipStatus(edge, cites);
-  const mine = citationsFor(edge, cites);
+  const supporting = supportingCitationsFor(edge, cites);
+  const counter = counterCitationsFor(edge, cites);
   const reviewedPmids = [
-    ...new Set(mine.map((c) => c.pmid).filter((p): p is string => !!p && /^\d+$/.test(p))),
+    ...new Set(supporting.map((c) => c.pmid).filter((p): p is string => !!p && /^\d+$/.test(p))),
   ];
   return {
     relId: relId(edge),
@@ -283,9 +299,10 @@ export function groundLink(edge: KGEdge, cites: CitationLike[] = []): GroundedLi
     draft: edge.draft,
     hasSourceLink: !!edgeRef(edge),
     location: edge.location,
-    reviewedEvidenceCount: mine.length,
+    reviewedEvidenceCount: supporting.length,
     reviewedPmids,
-    hasClaimSupport: mine.some((c) => c.claim_support === "supports"),
+    hasClaimSupport: supporting.some((c) => c.claim_support === "supports"),
+    counterEvidenceCount: counter.length,
   };
 }
 
@@ -352,6 +369,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
         links: [],
         chains: [],
         coverage: { ...EMPTY_COVERAGE },
+        counterEvidence: [],
         provisionalLiterature: [],
       },
       cls,
@@ -404,9 +422,12 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
     lines.push("CAUSAL_CHAINS none among top matched concepts — explain via individual LINKs; do not invent a path.");
   }
 
-  const reviewedForLinks = cites.filter((c) => c.relationship_id && seen.has(c.relationship_id));
+  const forLinks = cites.filter((c) => c.relationship_id && seen.has(c.relationship_id));
+  const { supporting: reviewedForLinks, counter: counterForLinks } = partitionEvidencePolarity(forLinks);
   if (reviewedForLinks.length) {
-    lines.push("REVIEWED_EVIDENCE (approved Neon / Gate C records for retrieved links — cite only these PMIDs/DOIs as reviewed):");
+    lines.push(
+      "REVIEWED_EVIDENCE (Gate C: approved + supports + verified identifier — cite only these PMIDs/DOIs as reviewed support):",
+    );
     for (const c of reviewedForLinks.slice(0, 40)) {
       lines.push(
         `EVIDENCE ${c.evidence_id} edge:${c.relationship_id} claim:${c.claim_support} ${c.label}` +
@@ -418,8 +439,24 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
       "REVIEWED_EVIDENCE none for retrieved links — do not imply claim-level verification or invent PMIDs; state missing-support / unreviewed honestly.",
     );
   }
+  if (counterForLinks.length) {
+    lines.push(
+      "COUNTER_EVIDENCE (assessed contradicts/partial — NOT Gate C support; surface as counterevidence / conflict, never as approved support):",
+    );
+    for (const c of counterForLinks.slice(0, 40)) {
+      lines.push(
+        `COUNTER ${c.evidence_id} edge:${c.relationship_id} claim:${c.claim_support} ${c.label}` +
+          `${c.reviewed_at ? ` reviewed:${c.reviewed_at}` : ""}`,
+      );
+    }
+  } else {
+    lines.push(
+      "COUNTER_EVIDENCE none for retrieved links — honest empty set (Neon may have zero contradicts/partial rows); do not invent counterevidence.",
+    );
+  }
 
   const reviewedEvidenceCount = links.reduce((n, l) => n + l.reviewedEvidenceCount, 0);
+  const counterEvidenceCount = links.reduce((n, l) => n + l.counterEvidenceCount, 0);
   const coverage: AskGrounding["coverage"] = {
     matched: true,
     draftCount: links.filter((l) => l.tier === "draft").length + nodes.filter((n) => n.draft).length,
@@ -428,6 +465,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
     establishedCount: links.filter((l) => l.tier === "established").length,
     evidenceSupportedCount: links.filter((l) => l.tier === "evidence-supported").length,
     reviewedEvidenceCount,
+    counterEvidenceCount,
     provisionalLiteratureCount: 0,
   };
 
@@ -435,7 +473,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
     `COVERAGE_SUMMARY matched=${coverage.matched} established=${coverage.establishedCount}` +
       ` evidence-supported=${coverage.evidenceSupportedCount} emerging/hypothesis=${coverage.emergingCount}` +
       ` draft=${coverage.draftCount} missing-support=${coverage.missingSupportCount}` +
-      ` reviewed-evidence-rows=${reviewedEvidenceCount} provisional-lit=0`,
+      ` reviewed-evidence-rows=${reviewedEvidenceCount} counter-evidence-rows=${counterEvidenceCount} provisional-lit=0`,
   );
   lines.push(`TRACE prompt=${PROMPT_VERSION} graph=${GRAPH_CORE_VERSION} extensions=${GRAPH_EXTENSIONS_VERSION}`);
 
@@ -448,6 +486,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
       links,
       chains,
       coverage,
+      counterEvidence: counterForLinks,
       provisionalLiterature: [],
     },
     cls,
@@ -466,6 +505,48 @@ export function shouldFetchProvisionalLit(grounding: AskGrounding, queryClass: A
 /** UI / SYSTEM copy for provisional hits — never Gate C. */
 export function provisionalLitLabel(): string {
   return "Unreviewed literature (provisional)";
+}
+
+/** Attach counterevidence without mixing it into Gate C reviewed counts. */
+export function attachCounterEvidence(grounding: AskGrounding, items: CitationLike[]): AskGrounding {
+  const { counter } = partitionEvidencePolarity(items);
+  if (!counter.length && grounding.counterEvidence.length === 0) {
+    return {
+      ...grounding,
+      coverage: { ...grounding.coverage, counterEvidenceCount: grounding.coverage.counterEvidenceCount ?? 0 },
+    };
+  }
+  const merged = [...grounding.counterEvidence];
+  const seen = new Set(merged.map((c) => c.evidence_id));
+  for (const c of counter) {
+    if (seen.has(c.evidence_id)) continue;
+    seen.add(c.evidence_id);
+    merged.push(c);
+  }
+  // Ensure extract has COUNTER_EVIDENCE block reflecting attached rows.
+  let text = grounding.text;
+  if (!/COUNTER_EVIDENCE/.test(text) && merged.length) {
+    const lines = [
+      "COUNTER_EVIDENCE (assessed contradicts/partial — NOT Gate C support; surface as counterevidence / conflict, never as approved support):",
+      ...merged.slice(0, 40).map(
+        (c) =>
+          `COUNTER ${c.evidence_id} edge:${c.relationship_id} claim:${c.claim_support} ${c.label}` +
+          `${c.reviewed_at ? ` reviewed:${c.reviewed_at}` : ""}`,
+      ),
+    ];
+    text = text.replace(
+      /counter-evidence-rows=\d+/,
+      `counter-evidence-rows=${merged.length}`,
+    ).concat("\n", lines.join("\n"));
+  } else {
+    text = text.replace(/counter-evidence-rows=\d+/, `counter-evidence-rows=${merged.length}`);
+  }
+  return {
+    ...grounding,
+    text,
+    counterEvidence: merged,
+    coverage: { ...grounding.coverage, counterEvidenceCount: merged.length },
+  };
 }
 
 /** Attach server-fetched provisional literature and rewrite extract lines (never upgrades Gate C). */
@@ -507,6 +588,7 @@ export function prepareAsk(question: string, cites: CitationLike[] = []): Prepar
         links: [],
         chains: [],
         coverage: { ...EMPTY_COVERAGE },
+        counterEvidence: [],
         provisionalLiterature: [],
       },
       queryClass,
@@ -579,7 +661,10 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   const provisionalPmids = new Set(
     grounding.provisionalLiterature.map((p) => p.pmid).filter((p): p is string => !!p),
   );
-  // Fabricated PMIDs outside reviewed OR provisional extract are rejected.
+  const counterPmids = new Set(
+    grounding.counterEvidence.map((c) => c.pmid).filter((p): p is string => !!p && /^\d+$/.test(p)),
+  );
+  // Fabricated PMIDs outside reviewed, counter, or provisional extract are rejected.
   for (const m of text.matchAll(/\bPMID[:\s]*(\d{6,9})\b/gi)) {
     const pmid = m[1]!;
     const linked = grounding.links.some((l) => {
@@ -587,7 +672,7 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
       const e = edgeByRel[l.relId];
       return !!e && (e.pmid === pmid || e.reference === pmid || (e.source_refs || []).includes(pmid));
     });
-    if (!linked && !provisionalPmids.has(pmid)) inventedRelIds.push(`PMID:${pmid}`);
+    if (!linked && !provisionalPmids.has(pmid) && !counterPmids.has(pmid)) inventedRelIds.push(`PMID:${pmid}`);
   }
 
   return {
@@ -657,9 +742,10 @@ Rules:
 - Ground every claim in the CONCEPT/LINK lines. If the extract says NO_MATCH or does not cover the question, say plainly "The Immune Super Intelligence graph does not cover this yet" and suggest a related covered concept if any. Never fill gaps from general knowledge. Never invent citations, PMIDs, DOIs or LINK IDs.
 - Prefer CAUSAL_CHAINS when explaining how two concepts connect. End with a short "Causal chain used:" section that lists the chain hops with [phrase](edge:REL_ID) links, or state that no chain was available.
 - Distinguish evidence tiers explicitly: established, evidence-supported, emerging, hypothesis, draft, missing-support. Say when a link is DRAFT, MISSING-SUPPORT or has no-source-link.
-- REVIEWED_EVIDENCE lists approved Neon (Gate C) claim assessments. If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
+- REVIEWED_EVIDENCE lists Gate C rows only (approved + supports + verified identifier). If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
+- COUNTER_EVIDENCE lists assessed contradicts/partial separately. Never present them as approved support. If it says none, that is an honest empty set — do not invent counterevidence.
 - PROVISIONAL_LITERATURE (if present) is unreviewed PubMed/Europe PMC search — never treat it as approved evidence or "supports". If you mention those items, label them explicitly as "unreviewed literature" / provisional. Do not invent extra PMIDs.
-- Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, PROVISIONAL_LITERATURE, or on the LINK line itself.
+- Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, COUNTER_EVIDENCE, PROVISIONAL_LITERATURE, or on the LINK line itself.
 - For QUERY_CLASS hypothesis_request: label every suggestion as a candidate hypothesis and include at least one alternative or disconfirming consideration.
 - Concise: a short explanation, then compact bullets of key connections, then the causal chain used.
 - Educational only. Never give diagnosis, dosing or treatment recommendations for a real person. Not clinical decision support. Not fully evidence-grounded AI.

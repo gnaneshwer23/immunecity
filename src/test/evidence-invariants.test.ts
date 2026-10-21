@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { canApproveClaim, canApproveIdentifier, computeEvidenceUpdate } from "@/lib/immune/evidenceInvariants";
+import {
+  canApproveClaim,
+  canApproveIdentifier,
+  computeEvidenceUpdate,
+  isCounterEvidenceAssessment,
+  isGateCSupportingEvidence,
+  partitionEvidencePolarity,
+} from "@/lib/immune/evidenceInvariants";
 
 const base = {
   curation: "approved" as const,
@@ -82,5 +89,88 @@ describe("evidence approval invariants", () => {
     const r = computeEvidenceUpdate(base, { relationship_id: null }, "curator@example.com");
     expect(r.set.claimSupport).toBe("unassessed");
     expect(r.set.curation).toBe("unreviewed");
+  });
+});
+
+describe("ISI-001 fail-closed evidence read predicates", () => {
+  it("Gate C support requires approved + supports + verified identifier", () => {
+    expect(
+      isGateCSupportingEvidence({
+        curation: "approved",
+        claimSupport: "supports",
+        relationshipId: "REL-x",
+        checkStatus: "verified",
+      }),
+    ).toBe(true);
+    expect(
+      isGateCSupportingEvidence({
+        curation: "approved",
+        claimSupport: "contradicts",
+        relationshipId: "REL-x",
+        checkStatus: "verified",
+      }),
+    ).toBe(false);
+    expect(
+      isGateCSupportingEvidence({
+        curation: "approved",
+        claimSupport: "supports",
+        relationshipId: "REL-x",
+        checkStatus: "pending",
+      }),
+    ).toBe(false);
+    expect(
+      isGateCSupportingEvidence({
+        curation: "unreviewed",
+        claimSupport: "supports",
+        relationshipId: "REL-x",
+        checkStatus: "verified",
+      }),
+    ).toBe(false);
+  });
+
+  it("counterevidence allows contradicts/partial without curation=approved", () => {
+    expect(
+      isCounterEvidenceAssessment({
+        curation: "unreviewed",
+        claimSupport: "contradicts",
+        relationshipId: "REL-x",
+        checkStatus: "matched",
+      }),
+    ).toBe(true);
+    expect(
+      isCounterEvidenceAssessment({
+        curation: "unreviewed",
+        claimSupport: "partial",
+        relationshipId: "REL-x",
+        checkStatus: "verified",
+      }),
+    ).toBe(true);
+    expect(
+      isCounterEvidenceAssessment({
+        curation: "rejected",
+        claimSupport: "contradicts",
+        relationshipId: "REL-x",
+        checkStatus: "verified",
+      }),
+    ).toBe(false);
+    expect(
+      isCounterEvidenceAssessment({
+        curation: "unreviewed",
+        claimSupport: "supports",
+        relationshipId: "REL-x",
+        checkStatus: "verified",
+      }),
+    ).toBe(false);
+  });
+
+  it("partitions support vs counter without conflating Gate C", () => {
+    const { supporting, counter } = partitionEvidencePolarity([
+      { claim_support: "supports", curation: "approved", evidence_id: "E1" },
+      { claim_support: "contradicts", curation: "unreviewed", evidence_id: "E2" },
+      { claim_support: "partial", curation: "unreviewed", evidence_id: "E3" },
+      { claim_support: "supports", curation: "unreviewed", evidence_id: "E4" },
+    ]);
+    expect(supporting.map((c) => c.evidence_id)).toEqual(["E1"]);
+    expect(counter.map((c) => c.evidence_id)).toEqual(["E2", "E3"]);
   });
 });

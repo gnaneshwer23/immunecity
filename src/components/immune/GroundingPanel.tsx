@@ -74,7 +74,9 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
   const chain = grounding.chains[0];
   const topLinks = grounding.links.slice(0, 6);
   const provisional = grounding.provisionalLiterature ?? [];
+  const counter = grounding.counterEvidence ?? [];
   const reviewed = grounding.coverage.reviewedEvidenceCount ?? 0;
+  const counterCount = grounding.coverage.counterEvidenceCount ?? counter.length;
   const missing = grounding.coverage.missingSupportCount ?? 0;
   const wantProvisional = shouldFetchProvisionalLit(grounding, grounding.queryClass);
   const showProvisionalSoft =
@@ -92,7 +94,18 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
           <BookOpenCheck size={14} aria-hidden />
           <div>
             <b>Reviewed (Gate C)</b>
-            <span>{reviewed} approved relationship cite{reviewed === 1 ? "" : "s"}</span>
+            <span>{reviewed} approved+supports cite{reviewed === 1 ? "" : "s"}</span>
+          </div>
+        </div>
+        <div className="grounding-bucket grounding-bucket--counter">
+          <AlertTriangle size={14} aria-hidden />
+          <div>
+            <b>Counterevidence</b>
+            <span>
+              {counterCount > 0
+                ? `${counterCount} contradicts/partial`
+                : "none curated yet (honest empty)"}
+            </span>
           </div>
         </div>
         <div className="grounding-bucket grounding-bucket--provisional">
@@ -132,8 +145,8 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         <span><b>{grounding.coverage.draftCount}</b> draft</span>
       </div>
       <p className="xs muted">
-        Reviewed = Gate C approved Neon rows on exact relationships. Provisional = unreviewed search hits — never auto-approved.
-        Ask Immune is partial capability — not fully evidence-grounded AI.
+        Reviewed = Gate C approved+supports with verified identifiers. Counterevidence = assessed contradicts/partial (separate path; empty when Neon has none).
+        Provisional = unreviewed search hits — never auto-approved. Ask Immune is partial — not fully evidence-grounded AI.
       </p>
       <p className="xs muted">Trace · prompt {grounding.trace.promptVersion} · graph {grounding.trace.graphVersion} · {grounding.trace.graphSnapshot}</p>
 
@@ -209,6 +222,23 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
           );
         })}
       </ul>
+
+      <div className="grounding-label">Counterevidence (contradicts / partial)</div>
+      {counter.length > 0 ? (
+        <ul className="grounding-links grounding-counter" aria-label="Counterevidence assessments">
+          {counter.map((c) => (
+            <li key={c.evidence_id}>
+              <a href={c.url} target="_blank" rel="noreferrer">{c.label}</a>
+              <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>{c.claim_support}</span>
+              <span className="xs muted">not Gate C support · {c.relationship_id ?? "unmapped"}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="xs muted grounding-soft-fail" role="status">
+          No curated contradicts/partial rows on these links yet — honest empty set, not a claim that the literature agrees.
+        </p>
+      )}
 
       {provisional.length > 0 ? (
         <>

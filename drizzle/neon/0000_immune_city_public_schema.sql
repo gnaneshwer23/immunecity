@@ -87,10 +87,10 @@ CREATE TABLE IF NOT EXISTS public.evidence_records (
 CREATE INDEX IF NOT EXISTS evidence_records_relationship_idx
   ON public.evidence_records (relationship_id);
 
--- Append-only curation audit (IC-02). No UPDATE/DELETE policy from app code.
+-- Append-only curation audit (IC-02 / ISI-002). No app DELETE; FK RESTRICT retains history.
 CREATE TABLE IF NOT EXISTS public.evidence_audit_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  evidence_record_id UUID NOT NULL REFERENCES public.evidence_records(id) ON DELETE CASCADE,
+  evidence_record_id UUID NOT NULL REFERENCES public.evidence_records(id) ON DELETE RESTRICT,
   evidence_id TEXT NOT NULL,
   actor TEXT NOT NULL,
   reason TEXT NOT NULL,

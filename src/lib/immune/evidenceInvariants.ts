@@ -61,6 +61,65 @@ export function canApproveIdentifier(checkStatus: string | null | undefined): bo
   return !!checkStatus && APPROVAL_ELIGIBLE_CHECK.has(checkStatus);
 }
 
+/** Claim polarities that may appear in the Ask support path (Gate C). */
+export const GATE_C_SUPPORT_CLAIMS = new Set(["supports"]);
+
+/** Claim polarities for the separate counterevidence / skeptic path — never inflate Gate C. */
+export const COUNTER_EVIDENCE_CLAIMS = new Set(["contradicts", "partial"]);
+
+export interface EvidenceReadPredicates {
+  curation: string | null | undefined;
+  claimSupport: string | null | undefined;
+  relationshipId: string | null | undefined;
+  checkStatus?: string | null | undefined;
+}
+
+/**
+ * Fail-closed Gate C supporting cite for answer support / coverage inflation paths.
+ * Requires approved + supports + mapped relationship + verified/matched identifier when checkStatus is known.
+ * When checkStatus is omitted (legacy callers), identifier gate is skipped — prefer passing it.
+ */
+export function isGateCSupportingEvidence(row: EvidenceReadPredicates): boolean {
+  if (row.curation !== "approved") return false;
+  if (!row.relationshipId) return false;
+  if (!GATE_C_SUPPORT_CLAIMS.has(row.claimSupport ?? "")) return false;
+  if (row.checkStatus !== undefined && row.checkStatus !== null) {
+    if (!canApproveIdentifier(row.checkStatus)) return false;
+  }
+  return true;
+}
+
+/**
+ * Counterevidence / skeptic path: assessed contradicts or partial on a mapped edge.
+ * Must not require curation=approved (write path forbids approving non-supports).
+ * Rejects rejected rows; requires verified/matched identifier when checkStatus is present.
+ */
+export function isCounterEvidenceAssessment(row: EvidenceReadPredicates): boolean {
+  if (row.curation === "rejected") return false;
+  if (!row.relationshipId) return false;
+  if (!COUNTER_EVIDENCE_CLAIMS.has(row.claimSupport ?? "")) return false;
+  if (row.checkStatus !== undefined && row.checkStatus !== null) {
+    if (!canApproveIdentifier(row.checkStatus)) return false;
+  }
+  return true;
+}
+
+/** Split cites for support vs counter display without conflating Gate C coverage. */
+export function partitionEvidencePolarity<T extends { claim_support: string; curation?: string }>(
+  cites: T[],
+): { supporting: T[]; counter: T[] } {
+  const supporting: T[] = [];
+  const counter: T[] = [];
+  for (const c of cites) {
+    if (GATE_C_SUPPORT_CLAIMS.has(c.claim_support) && (c.curation === undefined || c.curation === "approved")) {
+      supporting.push(c);
+    } else if (COUNTER_EVIDENCE_CLAIMS.has(c.claim_support)) {
+      counter.push(c);
+    }
+  }
+  return { supporting, counter };
+}
+
 /**
  * Compute the DB patch for an evidence update.
  * Source edits invalidate prior approval and claim assessment.
