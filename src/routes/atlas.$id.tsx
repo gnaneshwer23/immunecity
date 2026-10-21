@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { BookOpen, MessageSquare, Network } from "lucide-react";
+import { useState } from "react";
+import { BookOpen, Check, Copy, MessageSquare, Network } from "lucide-react";
 import { TYPES, byId, human, relId, spineLabel, type NodeType } from "@/lib/immune/engine";
 import {
   askShortcuts,
@@ -13,7 +14,8 @@ import {
 import { inspect } from "@/lib/immune/inspector";
 import { StatusBadge } from "@/components/immune/ScientificInspector";
 import { PRODUCT_NAME } from "@/lib/brand";
-import { seoHead } from "@/lib/seo";
+import { absoluteUrl, conceptJsonLd, seoHead } from "@/lib/seo";
+import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
 import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
 
 export const Route = createFileRoute("/atlas/$id")({
@@ -25,13 +27,25 @@ export const Route = createFileRoute("/atlas/$id")({
   head: ({ loaderData, params }) => {
     const n = loaderData ? byId[loaderData.id] : undefined;
     if (!n) return seoHead({ title: `Concept unavailable | ${PRODUCT_NAME}`, description: "This concept is not in the knowledge atlas.", path: `/atlas/${params.id}`, noIndex: true });
-    return seoHead({
+    const noIndex = Boolean(n.draft) || isSparse(n.id);
+    const description = (n.desc || `${n.name} in the immunology knowledge graph`).slice(0, 155);
+    const head = seoHead({
       title: `${n.name} — ${TYPES[n.node_type].label} | ${PRODUCT_NAME} Atlas`,
-      description: (n.desc || `${n.name} in the immunology knowledge graph`).slice(0, 155),
+      description,
       path: `/atlas/${n.id}`,
       type: "article",
-      noIndex: Boolean(n.draft) || isSparse(n.id),
+      noIndex,
     });
+    if (noIndex) return head;
+    const ld = conceptJsonLd({
+      id: n.id,
+      name: n.name,
+      description,
+      typeLabel: TYPES[n.node_type].label,
+      aliases: conceptExtras(n).aliases,
+      graphVersion: GRAPH_CORE_VERSION,
+    });
+    return { ...head, scripts: [{ type: "application/ld+json", children: JSON.stringify(ld) }] };
   },
   notFoundComponent: () => (
     <div className="page">
@@ -52,7 +66,8 @@ function MiniDiagram({ id }: { id: string }) {
     <svg className="isi-mini" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${n.name} and ${ns.length} directly linked concepts`}>
       {ns.map((x, i) => {
         const a = (i / Math.max(ns.length, 1)) * Math.PI * 2 - Math.PI / 2;
-        const px = cx + Math.cos(a) * R * 1.7, py = cy + Math.sin(a) * R;
+        // Round so server and browser trig results serialise identically (avoids hydration mismatch).
+        const px = Math.round((cx + Math.cos(a) * R * 1.7) * 100) / 100, py = Math.round((cy + Math.sin(a) * R) * 100) / 100;
         return (
           <g key={relId(x.edge) + x.dir}>
             <line x1={cx} y1={cy} x2={px} y2={py} className="isi-mini-edge" />
@@ -64,6 +79,40 @@ function MiniDiagram({ id }: { id: string }) {
       <circle cx={cx} cy={cy} r={11} style={{ fill: `var(${TYPES[n.node_type].c})` }} />
       <text x={cx} y={cy + 28} textAnchor="middle" className="isi-mini-center">{n.name}</text>
     </svg>
+  );
+}
+
+function pluralType(t: NodeType, count: number): string {
+  const label = TYPES[t].label.toLowerCase();
+  if (count === 1 || label === "data") return label;
+  return /[^aeiou]y$/.test(label) ? `${label.slice(0, -1)}ies` : `${label}s`;
+}
+
+function withArticle(word: string): string {
+  return /^[aeiou]/i.test(word) ? `an ${word}` : `a ${word}`;
+}
+
+function CiteThisPage({ name, id, typeLabel }: { name: string; id: string; typeLabel: string }) {
+  const [copied, setCopied] = useState(false);
+  const citation = `${PRODUCT_NAME}. “${name}” (${typeLabel.toLowerCase()}). ${PRODUCT_NAME} Knowledge Atlas, graph release ${GRAPH_CORE_VERSION}. ${absoluteUrl(`/atlas/${id}`)}`;
+  const copy = () => {
+    navigator.clipboard?.writeText(citation).then(
+      () => {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2000);
+      },
+      () => setCopied(false),
+    );
+  };
+  return (
+    <section className="isi-cite" aria-labelledby="cite-heading">
+      <h2 id="cite-heading">Cite this page</h2>
+      <p className="isi-cite-text">{citation}</p>
+      <button type="button" className="btn sm" onClick={copy} aria-live="polite">
+        {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy citation</>}
+      </button>
+      <p className="xs muted">Add the date you accessed it. Cite primary literature for scientific claims — see Sources below.</p>
+    </section>
   );
 }
 
@@ -86,12 +135,16 @@ function ConceptPage() {
   const art = DOMAIN_ART[doms[0]?.id ?? "foundations"];
   const src = useSources([id], all.map((r) => relId(r.edge)));
   const desc = n.desc || "No definition is recorded for this concept yet.";
-  const topTypes = GROUP_ORDER.filter((t) => groups[t]?.length).slice(0, 3).map((t) => `${groups[t]!.length} ${TYPES[t].label.toLowerCase()}`);
+  const topTypes = GROUP_ORDER.filter((t) => groups[t]?.length)
+    .sort((a, b) => groups[b]!.length - groups[a]!.length)
+    .slice(0, 3)
+    .map((t) => `${groups[t]!.length} ${pluralType(t, groups[t]!.length)}`);
+  const typeLabel = TYPES[n.node_type].label;
 
   const takeaways = [
-    <><b>What it is:</b> a {TYPES[n.node_type].label.toLowerCase()}{doms[0] ? <> in {doms[0].title.toLowerCase()}</> : null}.</>,
+    <><b>What it is:</b> {withArticle(typeLabel.toLowerCase())}{doms[0] ? <>, filed under <Link to="/atlas" hash={doms[0].id}>{doms[0].title}</Link></> : null}.</>,
     total
-      ? <><b>How it connects:</b> acts on {outN} and is affected by {inN} concepts{topTypes.length ? <> — mostly {topTypes.join(", ")}</> : null}.</>
+      ? <><b>How it connects:</b> {total} direct link{total === 1 ? "" : "s"} — it acts on {outN} and is acted on by {inN}{topTypes.length ? <>, chiefly {topTypes.join(", ")}</> : null}.</>
       : <><b>How it connects:</b> no links recorded yet.</>,
     x.spineSteps.length
       ? <><b>Where it sits:</b> {x.spineSteps.map((s) => spineLabel(s)).join(", ").toLowerCase()} on the 15-step immune chain.</>
@@ -191,6 +244,7 @@ function ConceptPage() {
             <p className="small">Find publications mentioning {n.name}.</p>
             <Link to="/research" search={{ lib: n.name }} hash="library"><BookOpen size={13} /> Search publications →</Link>
           </section>
+          <CiteThisPage name={n.name} id={n.id} typeLabel={typeLabel} />
           {doms.length ? (
             <section>
               <h2>Part of</h2>
