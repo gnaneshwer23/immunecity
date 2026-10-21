@@ -25,10 +25,11 @@ Ask Immune can surface **provisional** PubMed / Europe PMC hits when graph match
 
 1. Sign in → `/curation` (Neon Auth; default role is `user` until admin is granted via SQL).
 2. Click **Load relationship queue**.
-3. **Check** identifiers for slots that have PMIDs/DOIs.
-4. Open **Details** → confirm the mapped relationship → set **claim support** (`supports` / `partial` / …).
-5. **Approve** only when the source truly supports that directional claim (server rejects approve without `relationship_id` + `claim_support=supports`).
-6. Public pages only see `curation=approved` (`citations.functions.ts` SQL filter on Neon).
+3. Use **P0 page filter** / per-edge **Filter** chips (PD-1 Chemnitz, PD-1 biomarkers, IFN spine) — chips copy the PubMed search start and filter the loaded page by `relId`.
+4. **Check** identifiers for slots that have PMIDs/DOIs.
+5. Open **Details** → confirm the mapped relationship → set **claim support** (`supports` / `partial` / …).
+6. **Approve** only when the source truly supports that directional claim (server rejects approve without `relationship_id` + `claim_support=supports`).
+7. Public Gate C reads require approved + supports + verified identifier (`citations.functions.ts`). Counterevidence (contradicts/partial) is a separate path — never invent PMIDs or auto-approve.
 
 ## P0 exemplar Gate C matrix (production, 2026-10-16)
 
@@ -73,9 +74,9 @@ Also approved off-exemplar-path (counts toward Gate C numerator, not these waypo
 
 ## Exact next human actions (ordered)
 
-1. **PD-1 Chemnitz reassessment** — open `RELQ-REL-R012-suppresses-C015-C1` on `/curation`; decide `supports` vs leave `partial`.
+1. **PD-1 Chemnitz reassessment** — on `/curation`, use the P0 filter chip for `REL-R012-suppresses-C015` (or search that `relId`); decide `supports` vs leave `partial`.
 2. **PD-1 biomarker edges** — literature workflow / PubMed for `REL-B011-measures-R012` and `REL-B011-predicts_response_to-I008`; Check → claim_support → Approve.
-3. **IFN scaffold spine** — same for `REL-C005-produces-P004`, `REL-R018-signals_through-P004`, `REL-M018-binds-R018`, `REL-I015-treats-D007`.
+3. **IFN scaffold spine** — same for `REL-C005-produces-P004`, `REL-R018-signals_through-P004`, `REL-M018-binds-R018`, `REL-I015-treats-D007` (filter chips on `/curation` help jump to each `relId`).
 4. Do **not** invent PMIDs, mass-approve, or mark Ask Immune “evidence-grounded” / fully evidence-backed until these land (and SME gold-set is signed). Provisional lit in Ask does **not** substitute for Gate C.
 
 Use `EXEMPLAR_CURATOR_TARGETS` / curation UI callout for the same hints. Maturity stays `scaffold` / `partially-reviewed` until live approved+supports cover unique on-path edges.

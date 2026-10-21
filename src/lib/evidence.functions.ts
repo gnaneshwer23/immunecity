@@ -84,7 +84,14 @@ export const listEvidenceRecords = createServerFn({ method: "GET" })
       data.status !== "all" ? eq(evidenceRecords.checkStatus, data.status) : undefined,
       data.type !== "all" ? eq(evidenceRecords.nodeType, data.type) : undefined,
       data.curation !== "all" ? eq(evidenceRecords.curation, data.curation) : undefined,
-      data.q ? or(ilike(evidenceRecords.nodeName, term), ilike(evidenceRecords.evidenceId, term), ilike(evidenceRecords.sourceRef, term)) : undefined,
+      data.q
+        ? or(
+            ilike(evidenceRecords.nodeName, term),
+            ilike(evidenceRecords.evidenceId, term),
+            ilike(evidenceRecords.sourceRef, term),
+            ilike(evidenceRecords.relationshipId, term),
+          )
+        : undefined,
     )).orderBy(evidenceRecords.evidenceId).limit(data.limit + 1);
     const page = evidencePage(rows, data.limit);
     return { items: page.items.map(rowToClient), nextCursor: page.nextCursor };

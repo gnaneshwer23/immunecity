@@ -67,8 +67,10 @@ function Curation() {
   const [msg, setMsg] = useState("");
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [filter, setFilter] = useState({ q: "", status: "all", type: "all", curation: "all" });
+  const [p0Only, setP0Only] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const isAdmin = role === "admin";
+  const p0RelIds = useMemo(() => new Set(EXEMPLAR_CURATOR_TARGETS.map((t) => t.relId)), []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -275,7 +277,41 @@ function Curation() {
           <div style={{ marginTop: 14 }}>
             <p className="small" style={{ marginBottom: 8 }}>
               <strong>P0 exemplar Gate C gaps</strong> ({EXEMPLAR_CURATOR_TARGETS.length} targets) — PubMed queries are search starts; verify identifiers before approve.
+              Do <strong>not</strong> invent PMIDs or auto-approve. Ordered human steps live in{" "}
+              <code>docs/CURATOR_EVIDENCE_QUEUE.md</code>.
             </p>
+            <p className="xs muted" style={{ marginBottom: 8 }}>
+              Focus filter: paste a <code>relId</code> from the list below into Search (e.g.{" "}
+              <code>REL-R012-suppresses-C015</code> Chemnitz reassessment, or IFN spine{" "}
+              <code>REL-C005-produces-P004</code>). Check → claim_support → Approve only when the source truly supports that directional edge.
+            </p>
+            <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+              <button
+                type="button"
+                className={`chip${p0Only ? " on" : ""}`}
+                onClick={() => setP0Only((v) => !v)}
+                title="Show only rows on this page whose relationship_id is a P0 PD-1/IFN exemplar target"
+              >
+                {p0Only ? "P0 page filter on" : "P0 page filter off"}
+              </button>
+              {EXEMPLAR_CURATOR_TARGETS.slice(0, 8).map((t) => (
+                <button
+                  key={t.relId}
+                  type="button"
+                  className="chip"
+                  title={t.pubmedQuery}
+                  onClick={() => {
+                    changeFilter({ ...filter, q: t.relId });
+                    void navigator.clipboard?.writeText(t.pubmedQuery).then(
+                      () => setMsg(`Filtered to ${t.relId}; PubMed query copied — verify before approve; never invent PMIDs.`),
+                      () => setMsg(`Filtered to ${t.relId}.`),
+                    );
+                  }}
+                >
+                  Filter {t.relId.replace(/^REL-/, "").slice(0, 28)}
+                </button>
+              ))}
+            </div>
             <ul className="xs muted" style={{ paddingLeft: 18, margin: 0 }}>
               {EXEMPLAR_PATHWAYS.map((p) => (
                 <li key={p.id} style={{ marginBottom: 6 }}>
