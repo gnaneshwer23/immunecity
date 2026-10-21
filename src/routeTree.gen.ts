@@ -35,6 +35,7 @@ import { Route as ResearchRouteImport } from './routes/research'
 import { Route as ResearchWorkbenchRouteImport } from './routes/research-workbench'
 import { Route as ScientificAiRouteImport } from './routes/scientific-ai'
 import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TherapyRouteImport } from './routes/therapy'
 import { Route as VisionRouteImport } from './routes/vision'
@@ -177,6 +178,11 @@ const SimulatorRoute = SimulatorRouteImport.update({
   path: '/simulator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -264,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/research-workbench': typeof ResearchWorkbenchRoute
   '/scientific-ai': typeof ScientificAiRoute
   '/simulator': typeof SimulatorRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/research-workbench': typeof ResearchWorkbenchRoute
   '/scientific-ai': typeof ScientificAiRoute
   '/simulator': typeof SimulatorRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
@@ -344,6 +352,7 @@ export interface FileRoutesById {
   '/research-workbench': typeof ResearchWorkbenchRoute
   '/scientific-ai': typeof ScientificAiRoute
   '/simulator': typeof SimulatorRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
@@ -385,6 +394,7 @@ export interface FileRouteTypes {
     | '/research-workbench'
     | '/scientific-ai'
     | '/simulator'
+    | '/sitemap.xml'
     | '/terms'
     | '/therapy'
     | '/vision'
@@ -424,6 +434,7 @@ export interface FileRouteTypes {
     | '/research-workbench'
     | '/scientific-ai'
     | '/simulator'
+    | '/sitemap.xml'
     | '/terms'
     | '/therapy'
     | '/vision'
@@ -464,6 +475,7 @@ export interface FileRouteTypes {
     | '/research-workbench'
     | '/scientific-ai'
     | '/simulator'
+    | '/sitemap.xml'
     | '/terms'
     | '/therapy'
     | '/vision'
@@ -505,6 +517,7 @@ export interface RootRouteChildren {
   ResearchWorkbenchRoute: typeof ResearchWorkbenchRoute
   ScientificAiRoute: typeof ScientificAiRoute
   SimulatorRoute: typeof SimulatorRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   TherapyRoute: typeof TherapyRoute
   VisionRoute: typeof VisionRoute
@@ -701,6 +714,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimulatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -837,6 +857,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResearchWorkbenchRoute: ResearchWorkbenchRoute,
   ScientificAiRoute: ScientificAiRoute,
   SimulatorRoute: SimulatorRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   TherapyRoute: TherapyRoute,
   VisionRoute: VisionRoute,

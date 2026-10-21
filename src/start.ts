@@ -1,7 +1,6 @@
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
-import { attachNeonAuth } from "@/integrations/neon/auth-attacher";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -25,7 +24,8 @@ const csrfMiddleware = createCsrfMiddleware({
   filter: (ctx) => ctx.handlerType === "serverFn",
 });
 
+// The Neon Auth token is attached only by functions that use requireNeonAuth; public
+// functions (citations, trials, pipelines) no longer call Neon Auth for anonymous visitors.
 export const startInstance = createStart(() => ({
-  functionMiddleware: [attachNeonAuth],
   requestMiddleware: [errorMiddleware, csrfMiddleware],
 }));

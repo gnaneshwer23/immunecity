@@ -16,6 +16,7 @@ import {
   type PrepareAskResult,
 } from "@/lib/askGrounding";
 import { askRateLimited } from "@/lib/askRateLimit.server";
+import { clientIp } from "@/lib/clientIp";
 import { EvidenceServiceError } from "@/lib/citations.functions";
 import { getDb } from "@/lib/db.server";
 import { evidenceRecords } from "@/lib/db/schema.server";
@@ -91,7 +92,7 @@ function rowToCitationLike(r: {
     evidence_id: r.evidenceId,
     relationship_id: r.relationshipId ?? null,
     claim_support: r.claimSupport ?? "unassessed",
-    reviewed_at: r.reviewedAt?.toISOString?.() ?? (r.reviewedAt as string | null) ?? null,
+    reviewed_at: r.reviewedAt instanceof Date ? r.reviewedAt.toISOString() : (r.reviewedAt ?? null),
     curation: r.curation,
     pmid: r.pmid,
     doi: r.doi,
@@ -335,7 +336,7 @@ export async function handleAsk(request: Request): Promise<Response> {
     return Response.json({ error: ASK_DISABLED_MESSAGE }, { status: 503, headers: { "Retry-After": "300" } });
   }
 
-  const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
+  const ip = clientIp(request.headers);
   const rate = await askRateLimited(ip);
   if (rate.limited) {
     return Response.json(

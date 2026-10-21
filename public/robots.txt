@@ -1,19 +1,7 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
+# One group for all crawlers: a crawler obeys only its most specific group, so
+# per-bot groups with just "Allow: /" silently dropped these Disallow rules.
 User-agent: *
 Allow: /
-
-# Private / app surfaces — no need to rank
 Disallow: /auth
 Disallow: /curation
 Disallow: /api/

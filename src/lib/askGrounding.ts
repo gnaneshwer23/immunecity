@@ -1023,8 +1023,8 @@ function pruneRateLimitMap(now: number, windowMs: number) {
 
 export function rateLimited(
   key: string,
-  limit = ASK_RATE_LIMIT_DEFAULT.limit,
-  windowMs = ASK_RATE_LIMIT_DEFAULT.windowMs,
+  limit: number = ASK_RATE_LIMIT_DEFAULT.limit,
+  windowMs: number = ASK_RATE_LIMIT_DEFAULT.windowMs,
   now = Date.now(),
 ): boolean {
   const arr = (hits.get(key) || []).filter((t) => now - t < windowMs);
