@@ -384,7 +384,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                 {m.role === "assistant" ? (
                   <>
                     <div className="ask-ai-badge" role="note">
-                      AI-generated · graph-retrieved · {CAPABILITY_STATUS_LABEL.partial.toLowerCase()} · not patient-specific advice
+                      AI-written from the knowledge graph · evidence {CAPABILITY_STATUS_LABEL.partial.toLowerCase()} · not medical advice
                     </div>
                     <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
                     {!busy || m !== lastAssistant ? (

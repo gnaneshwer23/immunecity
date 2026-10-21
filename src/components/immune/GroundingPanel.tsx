@@ -1,13 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, AlertTriangle, BookOpenCheck, BookMarked, CircleOff } from "lucide-react";
+import { ArrowRight, AlertTriangle, BookOpenCheck, BookMarked } from "lucide-react";
 import { byId, TYPES, human } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import type { AskGrounding, EvidenceTier } from "@/lib/askGrounding";
-import {
-  counterEvidenceBucketLabel,
-  provisionalLitLabel,
-  shouldFetchProvisionalLit,
-} from "@/lib/askGrounding";
+import { provisionalLitLabel, shouldFetchProvisionalLit } from "@/lib/askGrounding";
 import EdgeReference from "./EdgeReference";
 import { edgeByRel } from "@/lib/immune/engine";
 
@@ -26,18 +22,18 @@ const TIER_LABEL: Record<EvidenceTier, string> = {
   emerging: "Emerging",
   hypothesis: "Hypothesis",
   draft: "Draft",
-  "missing-support": "Missing support",
+  "missing-support": "No reviewed source",
 };
 
 const CLASS_LABEL: Record<string, string> = {
-  graph_explanation: "Graph explanation",
-  source_lookup: "Source lookup",
+  graph_explanation: "Explanation",
+  source_lookup: "Source request",
   comparison: "Comparison",
   hypothesis_request: "Hypothesis (candidate)",
-  omics_request: "Omics (not wired)",
-  mechanism_perturbation: "Perturbation",
-  unsupported: "Unsupported",
-  clinical_personal: "Clinical (refused)",
+  omics_request: "Omics data (not available yet)",
+  mechanism_perturbation: "What-if question",
+  unsupported: "Outside the graph",
+  clinical_personal: "Personal medical question",
 };
 
 export type GroundingPanelProps = {
@@ -50,27 +46,26 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
   const classLabel = CLASS_LABEL[grounding.queryClass] ?? grounding.queryClass;
   if (!grounding.coverage.matched || grounding.trace.abstained) {
     return (
-      <aside className="grounding-panel grounding-panel--gap" aria-label="Graph grounding">
+      <aside className="grounding-panel grounding-panel--gap" aria-label="Why there is no graph-based answer">
         <div className="grounding-head">
-          <strong>Graph grounding</strong>
-          <span className={`evidence-tier ${TIER_CLASS["missing-support"]}`}>
-            {grounding.trace.abstained ? "Abstained" : "No match"}
-          </span>
+          <strong>{grounding.trace.abstained ? "Not answered from the graph" : "No matching concepts"}</strong>
         </div>
         <div className="grounding-callout grounding-callout--warn" role="status">
           <AlertTriangle size={14} aria-hidden />
           <p>
             {grounding.trace.abstained
-              ? `Query class: ${classLabel}. No model synthesis was run — Ask Immune will not invent graph evidence or citations.`
-              : "No Immune Super Intelligence concepts matched this question. Ask Immune must not invent pathways, concepts, or PMIDs."}
+              ? `This looks like a ${classLabel.toLowerCase()}, which Ask Immune does not answer from the graph — so nothing was generated and no sources were invented.`
+              : "Nothing in the knowledge graph matched this question, so Ask Immune did not write an answer rather than guess."}
           </p>
         </div>
         <p className="xs muted">
-          Try a named cell, cytokine, receptor, disease or therapy from the{" "}
-          <Link to="/atlas">Knowledge Atlas</Link>, or read{" "}
-          <Link to="/methods">Methods &amp; trust</Link> for what is curated.
+          Try naming a cell, cytokine, receptor, disease or therapy — browse the{" "}
+          <Link to="/atlas">Knowledge Atlas</Link> for ideas, or see <Link to="/methods">Methods</Link> for what is covered.
         </p>
-        <p className="xs muted">Trace · prompt {grounding.trace.promptVersion} · graph {grounding.trace.graphVersion}</p>
+        <details className="grounding-details">
+          <summary>Technical trace</summary>
+          <p className="xs muted">Prompt {grounding.trace.promptVersion} · graph {grounding.trace.graphVersion}</p>
+        </details>
       </aside>
     );
   }
@@ -81,76 +76,46 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
   const counter = grounding.counterEvidence ?? [];
   const reviewed = grounding.coverage.reviewedEvidenceCount ?? 0;
   const counterCount = grounding.coverage.counterEvidenceCount ?? counter.length;
-  const missing = grounding.coverage.missingSupportCount ?? 0;
+  const totalLinks = grounding.links.length;
+  const reviewedLinks = grounding.links.filter((l) => l.reviewedEvidenceCount > 0).length;
+  const provisionalCount = grounding.coverage.provisionalLiteratureCount ?? provisional.length;
   const wantProvisional = shouldFetchProvisionalLit(grounding, grounding.queryClass);
   const showProvisionalSoft =
     wantProvisional && provisional.length === 0 && (provisionalNote || reviewed === 0);
 
   return (
-    <aside className="grounding-panel" aria-label="Graph grounding used for this answer">
+    <aside className="grounding-panel" aria-label="How well this answer is supported">
       <div className="grounding-head">
-        <strong>Graph grounding</strong>
-        <span className="xs muted">Retrieved before the AI answer · not model memory</span>
+        <strong>How well supported is this answer?</strong>
       </div>
-
-      <div className="grounding-buckets" aria-label="Evidence tiers — do not conflate">
-        <div className="grounding-bucket grounding-bucket--reviewed">
-          <BookOpenCheck size={14} aria-hidden />
-          <div>
-            <b>Reviewed (Gate C)</b>
-            <span>{reviewed} approved+supports cite{reviewed === 1 ? "" : "s"}</span>
-          </div>
-        </div>
-        <div className="grounding-bucket grounding-bucket--counter">
-          <AlertTriangle size={14} aria-hidden />
-          <div>
-            <b>Counterevidence</b>
-            <span>{counterEvidenceBucketLabel(counterCount)}</span>
-          </div>
-        </div>
-        <div className="grounding-bucket grounding-bucket--provisional">
-          <BookMarked size={14} aria-hidden />
-          <div>
-            <b>Provisional lit</b>
-            <span>
-              {grounding.coverage.provisionalLiteratureCount ?? provisional.length} unreviewed PubMed/Europe PMC
-            </span>
-          </div>
-        </div>
-        <div className="grounding-bucket grounding-bucket--missing">
-          <CircleOff size={14} aria-hidden />
-          <div>
-            <b>Missing graph support</b>
-            <span>{missing} retrieved link{missing === 1 ? "" : "s"} without reviewed cites</span>
-          </div>
-        </div>
+      <p className="grounding-summary">
+        <b>{reviewedLinks} of {totalLinks}</b> graph link{totalLinks === 1 ? "" : "s"} used here {reviewedLinks === 1 ? "has" : "have"} an expert-reviewed source.
+      </p>
+      <div
+        className="grounding-meter"
+        role="meter"
+        aria-label="Share of links with a reviewed source"
+        aria-valuemin={0}
+        aria-valuemax={totalLinks}
+        aria-valuenow={reviewedLinks}
+      >
+        <span style={{ width: `${totalLinks ? Math.max((reviewedLinks / totalLinks) * 100, reviewedLinks ? 3 : 0) : 0}%` }} />
       </div>
-
-      {missing > 0 || reviewed === 0 ? (
+      <ul className="grounding-chips" aria-label="Evidence counts">
+        <li><BookOpenCheck size={13} aria-hidden /> {reviewed} reviewed source{reviewed === 1 ? "" : "s"}</li>
+        <li><AlertTriangle size={13} aria-hidden /> {counterCount} conflicting finding{counterCount === 1 ? "" : "s"} on record</li>
+        <li><BookMarked size={13} aria-hidden /> {provisionalCount} unreviewed paper{provisionalCount === 1 ? "" : "s"}</li>
+      </ul>
+      {reviewedLinks === 0 ? (
         <div className="grounding-callout grounding-callout--warn" role="status">
           <AlertTriangle size={14} aria-hidden />
-          <p>
-            {reviewed === 0
-              ? "No Gate C reviewed cites on the retrieved links. Teaching uses graph structure only — do not treat this answer as fully evidence-grounded."
-              : `${missing} retrieved relationship${missing === 1 ? "" : "s"} lack reviewed cites. Gaps are labelled below; Ask Immune will not invent PMIDs.`}
-          </p>
+          <p>None of these links has been checked against a source yet. Read this as a teaching explanation, not verified evidence.</p>
         </div>
+      ) : reviewedLinks < totalLinks ? (
+        <p className="xs muted">The rest are teaching links still awaiting expert review. No sources were invented for them.</p>
       ) : null}
 
-      <div className="grounding-metrics" aria-label="Evidence coverage detail">
-        <span><b>{classLabel}</b> class</span>
-        <span><b>{grounding.coverage.establishedCount}</b> established</span>
-        <span><b>{grounding.coverage.evidenceSupportedCount ?? 0}</b> evidence-supported</span>
-        <span><b>{grounding.coverage.emergingCount}</b> emerging</span>
-        <span><b>{grounding.coverage.draftCount}</b> draft</span>
-      </div>
-      <p className="xs muted">
-        Reviewed = Gate C approved+supports with verified identifiers. Counterevidence = assessed contradicts/partial (separate path; empty when Neon has none).
-        Provisional = unreviewed search hits — never auto-approved. Ask Immune is partial — not fully evidence-grounded AI.
-      </p>
-      <p className="xs muted">Trace · prompt {grounding.trace.promptVersion} · graph {grounding.trace.graphVersion} · {grounding.trace.graphSnapshot}</p>
-
-      <div className="grounding-label">Concepts</div>
+      <div className="grounding-label">Concepts used</div>
       <ul className="grounding-concepts">
         {grounding.nodes.map((n) => (
           <li key={n.id}>
@@ -168,7 +133,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
 
       {chain ? (
         <>
-          <div className="grounding-label">Causal chain used</div>
+          <div className="grounding-label">Causal chain</div>
           <ol className="grounding-chain">
             <li>
               <Link className="ask-concept ask-concept-link" to="/atlas/$id" params={{ id: chain.fromId }}>
@@ -195,8 +160,11 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
           </ol>
         </>
       ) : (
-        <p className="xs muted"><AlertTriangle size={12} /> No shortest causal chain among the top matched concepts.</p>
+        <p className="xs muted">No single causal chain links the main concepts in this answer.</p>
       )}
+
+      <details className="grounding-details">
+        <summary>Evidence details</summary>
 
       <div className="grounding-label">Key relationships</div>
       <ul className="grounding-links">
@@ -211,9 +179,9 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
               </button>
               <span className={`evidence-tier ${TIER_CLASS[l.tier]}`}>{TIER_LABEL[l.tier]}</span>
               {l.reviewedEvidenceCount > 0 ? (
-                <span className={`evidence-tier ${TIER_CLASS.established}`}>{l.reviewedEvidenceCount} Gate C</span>
+                <span className={`evidence-tier ${TIER_CLASS.established}`}>{l.reviewedEvidenceCount} reviewed</span>
               ) : (
-                <span className={`evidence-tier ${TIER_CLASS["missing-support"]}`}>No reviewed cite</span>
+                <span className={`evidence-tier ${TIER_CLASS["missing-support"]}`}>No reviewed source</span>
               )}
               {s ? <Link className="xs grounding-route" to="/atlas/$id" params={{ id: s.id }}>{s.name}</Link> : null}
               {o ? <Link className="xs grounding-route" to="/atlas/$id" params={{ id: o.id }}>{o.name}</Link> : null}
@@ -223,24 +191,24 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         })}
       </ul>
 
-      <div className="grounding-label">Counterevidence (contradicts / partial)</div>
+      <div className="grounding-label">Conflicting findings (reviewed)</div>
       {counter.length > 0 ? (
         <ul className="grounding-links grounding-counter" aria-label="Counterevidence assessments">
           {counter.map((c) => (
             <li key={c.evidence_id}>
               <a href={c.url} target="_blank" rel="noreferrer">{c.label}</a>
               <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>{c.claim_support}</span>
-              <span className="xs muted">not Gate C support · {c.relationship_id ?? "unmapped"}</span>
+              <span className="xs muted">reviewed as {c.claim_support === "partial" ? "partly supporting" : "contradicting"} this link — not support · {c.relationship_id ?? "unmapped"}</span>
             </li>
           ))}
         </ul>
       ) : (
         <p className="xs muted grounding-soft-fail" role="status">
-          No curated contradicts/partial rows on these links yet — honest empty set, not a claim that the literature agrees.
+          No conflicting findings have been reviewed for these links yet. That does not mean the literature agrees.
         </p>
       )}
 
-      <div className="grounding-label">Counterevidence harvest (unreviewed search)</div>
+      <div className="grounding-label">Possible conflicts (unreviewed search)</div>
       {(grounding.counterEvidenceHarvest ?? []).length > 0 ? (
         <ul className="grounding-links grounding-counter-harvest" aria-label="Unreviewed contradict-polarity harvest">
           {(grounding.counterEvidenceHarvest ?? []).map((p) => (
@@ -248,9 +216,9 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
               <a href={p.url} target="_blank" rel="noreferrer">
                 {p.pmid ? `PMID ${p.pmid}` : p.doi ? `DOI ${p.doi}` : p.title.slice(0, 60)}
               </a>
-              <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>Harvest</span>
+              <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>Unreviewed</span>
               <span className="xs muted">
-                {p.source}{p.year ? ` · ${p.year}` : ""} — unreviewed skeptic hint, not curated contradicts
+                {p.source}{p.year ? ` · ${p.year}` : ""} — search hint only, not reviewed
               </span>
               <span className="xs muted">{p.title.slice(0, 120)}</span>
             </li>
@@ -258,7 +226,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         </ul>
       ) : (
         <p className="xs muted grounding-soft-fail" role="status">
-          No contradict-polarity harvest hits (or skipped when no Gate C cites / rate-limited) — honest empty, not proof of agreement.
+          No possible conflicts found by search (the search runs only when a link has a reviewed source). That is not proof of agreement.
         </p>
       )}
 
@@ -271,8 +239,8 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
                 <a href={p.url} target="_blank" rel="noreferrer">
                   {p.pmid ? `PMID ${p.pmid}` : p.doi ? `DOI ${p.doi}` : p.title.slice(0, 60)}
                 </a>
-                <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>Provisional</span>
-                <span className="xs muted">{p.source}{p.year ? ` · ${p.year}` : ""} — not Gate C approved</span>
+                <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>Unreviewed</span>
+                <span className="xs muted">{p.source}{p.year ? ` · ${p.year}` : ""} — not reviewed for this claim</span>
                 <span className="xs muted">{p.title.slice(0, 120)}</span>
               </li>
             ))}
@@ -281,9 +249,26 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
       ) : showProvisionalSoft ? (
         <p className="xs muted grounding-soft-fail" role="status">
           {provisionalNote
-            ?? "Provisional PubMed/Europe PMC lookup returned no hits or soft-failed — that is not Gate C coverage, and not a claim that no literature exists."}
+            ?? "The literature search found nothing to show here. That is not a claim that no research exists."}
         </p>
       ) : null}
+
+      <div className="grounding-label">Link status across this answer</div>
+      <div className="grounding-metrics" aria-label="Link status counts">
+        <span><b>{grounding.coverage.establishedCount}</b> established</span>
+        <span><b>{grounding.coverage.evidenceSupportedCount ?? 0}</b> supported</span>
+        <span><b>{grounding.coverage.emergingCount}</b> emerging</span>
+        <span><b>{grounding.coverage.draftCount}</b> draft</span>
+      </div>
+      <dl className="grounding-glossary">
+        <dt>Reviewed source</dt><dd>A paper an expert has checked supports this exact link, with a verified PubMed or DOI identifier.</dd>
+        <dt>Conflicting finding</dt><dd>A reviewed paper that contradicts or only partly supports a link. Never counted as support.</dd>
+        <dt>Unreviewed paper</dt><dd>A literature search result shown for further reading. Not checked and never treated as support.</dd>
+      </dl>
+      <p className="xs muted">
+        Question type: {classLabel} · prompt {grounding.trace.promptVersion} · graph {grounding.trace.graphVersion} · {grounding.trace.graphSnapshot}
+      </p>
+      </details>
     </aside>
   );
 }
