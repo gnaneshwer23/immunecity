@@ -1,6 +1,7 @@
 import { ART } from "@/components/immune/explain";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CONTENT } from "@/data/content";
 import { byId } from "@/lib/immune/engine";
@@ -9,12 +10,47 @@ import CoveragePanel from "@/components/immune/CoveragePanel";
 import DomainCoveragePanel from "@/components/immune/DomainCoveragePanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { PageToc, Section, Toolbar } from "@/components/immune/page";
+import { evidenceCoverageQuery } from "@/lib/citations.functions";
 
 const TOC = [
+  { id: "live-neon", label: "Live Neon" },
   { id: "coverage", label: "Coverage" },
   { id: "timeline", label: "Timeline" },
   { id: "trials", label: "Landmark trials" },
 ];
+
+function LiveNeonCoverage() {
+  const { data, isError, isPending, isFetching, error } = useQuery(evidenceCoverageQuery);
+  const loading = isPending || (isFetching && !data);
+  if (isError) {
+    return (
+      <p className="callout" role="alert">
+        Evidence database unavailable{error instanceof Error ? ` (${error.message})` : ""}.
+        This is a service error — not a finding that coverage is zero.
+      </p>
+    );
+  }
+  return (
+    <div className="card" aria-labelledby="live-neon-heading">
+      <h3 id="live-neon-heading" style={{ fontSize: "1.05rem", marginBottom: 8 }}>Live Neon coverage</h3>
+      <dl className="grid g3" style={{ marginBottom: 8 }}>
+        <div><dt className="xs muted">Gate C distinct / links</dt><dd><b>{loading ? "…" : `${data?.distinctGateCRels ?? 0} / ${data?.runtimeRelationships ?? "…"}`}</b></dd></div>
+        <div><dt className="xs muted">Contradicts / partial</dt><dd><b>{loading ? "…" : `${data?.contradicts ?? 0} / ${data?.partial ?? 0}`}</b></dd></div>
+        <div><dt className="xs muted">Open P0 targets</dt><dd><b>{loading ? "…" : (data?.openP0Targets ?? 0)}</b></dd></div>
+      </dl>
+      {!loading && data ? (
+        <ul className="small" style={{ paddingLeft: 18, margin: "8px 0" }}>
+          {data.exemplar.map((e) => (
+            <li key={e.pathwayId}>{e.title}: {e.approvedEdges}/{e.uniqueEdges} approved on-path · {e.maturity}</li>
+          ))}
+        </ul>
+      ) : null}
+      <p className="xs muted">
+        {loading ? "Fetching…" : <>Fetched <code>{data?.fetchedAt}</code></>} · unreviewed rows {loading ? "…" : data?.unreviewed} · total evidence slots {loading ? "…" : data?.totalEvidenceRows}
+      </p>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/evidence")({
   head: () => seoHead({ title: "Evidence: trials as experiments — Immune Super Intelligence", description: "Landmark immunology trials as hypothesis tests, plus honest claim-level evidence coverage. Educational beta — most runtime links are not yet claim-approved.", path: "/evidence" }),
@@ -55,7 +91,11 @@ function Evidence() {
         ]}
       />
       <PageToc items={TOC} />
-      <Section id="coverage" n={1} title="How much of the graph is reviewed"
+      <Section id="live-neon" n={1} title="Live Neon Gate C dashboard"
+        lede="Counts come from the production evidence database at fetch time. If the database is down, you will see an error — not a fake zero.">
+        <LiveNeonCoverage />
+      </Section>
+      <Section id="coverage" n={2} title="How much of the graph is reviewed"
         lede="Claim-level approved support for graph links is still sparse. These panels are the honest source of truth for what has been reviewed."
         aside={
           <div className="isi-sec-action">
@@ -68,7 +108,7 @@ function Evidence() {
           <DomainCoveragePanel />
         </PhoneFold>
       </Section>
-      <Section id="timeline" n={2} title="When mechanisms were tested"
+      <Section id="timeline" n={3} title="When mechanisms were tested"
         lede="Bar height is the number of landmark trials in that year. Select a bar to filter the trial list below.">
         <div className="timeline-bar">
           {years.map(({ y, c }) => (
@@ -85,7 +125,7 @@ function Evidence() {
           ))}
         </div>
       </Section>
-      <Section id="trials" n={3} title={year ? `Trials in ${year}` : "Landmark trials"}
+      <Section id="trials" n={4} title={year ? `Trials in ${year}` : "Landmark trials"}
         lede="Each trial is written as hypothesis, outcome and lesson, so the result reads as evidence for or against a mechanism.">
         <Toolbar count={`${shown.length} of ${trials.length} trials`}>
           <div role="group" aria-label="Filter by result">

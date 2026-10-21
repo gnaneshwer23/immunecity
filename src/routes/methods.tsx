@@ -7,7 +7,7 @@ import { ASK_RATE_LIMIT_STATUS } from "@/lib/askRateLimitStatus";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
-import { approvedQuery } from "@/lib/citations.functions";
+import { evidenceCoverageQuery } from "@/lib/citations.functions";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 import { MarketingBody, MarketingHero, MarketingSection } from "@/components/immune/marketing";
@@ -24,23 +24,18 @@ export const Route = createFileRoute("/methods")({
 });
 
 function LiveEvidencePanel() {
-  const { data, isError, isPending, isFetching, dataUpdatedAt, error } = useQuery(approvedQuery);
-  const approvedClaim = (data ?? []).filter(
-    (c) => c.relationship_id && c.claim_support === "supports",
-  ).length;
-  const withId = (data ?? []).filter((c) => c.pmid || c.doi).length;
-  const fetchedAt = dataUpdatedAt ? new Date(dataUpdatedAt).toISOString() : null;
+  const { data, isError, isPending, isFetching, error } = useQuery(evidenceCoverageQuery);
+  const fetchedAt = data?.fetchedAt ?? null;
 
   if (isError) {
     return (
       <div className="mkt-ev-panel" role="alert">
-        <h3 id="live-ev-heading">Live evidence service</h3>
+        <h3 id="live-ev-heading">Live evidence coverage</h3>
         <p>
-          Evidence service unavailable
+          Evidence database unavailable
           {error instanceof Error ? ` (${error.message})` : ""}. This is a service error, not a finding that the graph
           has zero reviewed citations.
         </p>
-        {fetchedAt ? <p className="mkt-aside">Last successful fetch: {fetchedAt}</p> : null}
       </div>
     );
   }
@@ -49,26 +44,40 @@ function LiveEvidencePanel() {
 
   return (
     <div className="mkt-ev-panel" aria-labelledby="live-ev-heading">
-      <h3 id="live-ev-heading">Live evidence service</h3>
+      <h3 id="live-ev-heading">Live evidence coverage</h3>
       <dl className="mkt-ev-metrics">
         <div>
-          <dt>Approved rows</dt>
-          <dd>{loading ? "…" : (data?.length ?? 0)}</dd>
+          <dt>Gate C (distinct rels)</dt>
+          <dd>{loading ? "…" : `${data?.distinctGateCRels ?? 0} / ${data?.runtimeRelationships ?? "…"}`}</dd>
         </div>
         <div>
-          <dt>With PMID/DOI</dt>
-          <dd>{loading ? "…" : withId}</dd>
+          <dt>Approved+supports rows</dt>
+          <dd>{loading ? "…" : (data?.approvedSupportsRows ?? 0)}</dd>
         </div>
         <div>
-          <dt>Claim-supporting</dt>
-          <dd>{loading ? "…" : approvedClaim}</dd>
+          <dt>Contradicts / partial</dt>
+          <dd>{loading ? "…" : `${data?.contradicts ?? 0} / ${data?.partial ?? 0}`}</dd>
+        </div>
+        <div>
+          <dt>Open P0 exemplar targets</dt>
+          <dd>{loading ? "…" : (data?.openP0Targets ?? 0)}</dd>
         </div>
       </dl>
+      {!loading && data?.exemplar?.length ? (
+        <ul className="mkt-aside" style={{ marginTop: 8, paddingLeft: 18 }}>
+          {data.exemplar.map((e) => (
+            <li key={e.pathwayId}>
+              {e.title}: {e.approvedEdges}/{e.uniqueEdges} on-path approved · {e.maturity}
+              {e.openP0Targets ? ` · ${e.openP0Targets} P0 open` : ""}
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <p className="mkt-aside">
         {loading
-          ? "Fetching approved citations…"
+          ? "Fetching live Neon coverage…"
           : <>Fetched at <code>{fetchedAt ?? "unavailable"}</code>.</>}{" "}
-        Only rows with <code>relationship_id</code> + <code>claim_support=supports</code> count as link support.
+        Gate C = distinct <code>relationship_id</code> with approved+supports. Counterevidence is separate.
         Concept-level rows never inflate coverage.{" "}
         <Link to="/evidence">Full Evidence breakdown</Link>
       </p>
