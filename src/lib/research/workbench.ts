@@ -299,6 +299,30 @@ export function seedQuestionFromAsk(session: WorkbenchSession, questionText?: st
   });
 }
 
+/**
+ * Surface counterevidence candidates already in the session (claims with contradicts/partial).
+ * Honest empty array when none — does not invent literature.
+ */
+export function listWorkbenchCounterevidence(session: WorkbenchSession): Array<{
+  kind: "claim" | "note";
+  id: string;
+  text: string;
+  polarity: string;
+}> {
+  const out: Array<{ kind: "claim" | "note"; id: string; text: string; polarity: string }> = [];
+  for (const c of session.claims ?? []) {
+    if (c.polarity === "contradicts" || c.polarity === "partial") {
+      out.push({ kind: "claim", id: c.claim_id, text: c.assertion, polarity: c.polarity });
+    }
+  }
+  for (const n of session.evidence) {
+    if (/\b(contradict|conflict|refut|not associated|disconfirm)/i.test(`${n.summary} ${n.sourceLabel}`)) {
+      out.push({ kind: "note", id: n.note_id, text: n.summary, polarity: "hint" });
+    }
+  }
+  return out;
+}
+
 /** Add a claim-ledger candidate (never Gate C / never KG write). */
 export function addWorkbenchClaim(
   session: WorkbenchSession,

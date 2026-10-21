@@ -240,6 +240,28 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         </p>
       )}
 
+      <div className="grounding-label">Counterevidence harvest (unreviewed search)</div>
+      {(grounding.counterEvidenceHarvest ?? []).length > 0 ? (
+        <ul className="grounding-links grounding-counter-harvest" aria-label="Unreviewed contradict-polarity harvest">
+          {(grounding.counterEvidenceHarvest ?? []).map((p) => (
+            <li key={`h-${p.pmid ?? p.doi ?? p.title}`}>
+              <a href={p.url} target="_blank" rel="noreferrer">
+                {p.pmid ? `PMID ${p.pmid}` : p.doi ? `DOI ${p.doi}` : p.title.slice(0, 60)}
+              </a>
+              <span className={`evidence-tier ${TIER_CLASS.hypothesis}`}>Harvest</span>
+              <span className="xs muted">
+                {p.source}{p.year ? ` · ${p.year}` : ""} — unreviewed skeptic hint, not curated contradicts
+              </span>
+              <span className="xs muted">{p.title.slice(0, 120)}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="xs muted grounding-soft-fail" role="status">
+          No contradict-polarity harvest hits (or skipped when no Gate C cites / rate-limited) — honest empty, not proof of agreement.
+        </p>
+      )}
+
       {provisional.length > 0 ? (
         <>
           <div className="grounding-label">{provisionalLitLabel()}</div>

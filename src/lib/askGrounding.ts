@@ -31,6 +31,11 @@ export interface ProvisionalLitItem {
   year: string;
   source: "PubMed" | "EuropePMC";
   url: string;
+  /**
+   * `counterevidence_harvest` = optional contradict-polarity search hint (still unreviewed).
+   * Never counts as Neon Gate C or curated contradicts.
+   */
+  role?: "provisional" | "counterevidence_harvest";
 }
 
 /** Fold unicode (TNF-α → tnf a) and punctuation so aliases match typed questions. */
@@ -144,6 +149,11 @@ export interface AskGrounding {
   reviewedCites: CitationLike[];
   /** Server-attached unreviewed literature; empty on pure client prepareAsk. */
   provisionalLiterature: ProvisionalLitItem[];
+  /**
+   * Optional unreviewed contradict-polarity search hits (honest empty when skipped/none).
+   * Separate from Neon curated counterEvidence.
+   */
+  counterEvidenceHarvest: ProvisionalLitItem[];
 }
 
 const EMPTY_COVERAGE: AskGrounding["coverage"] = {
@@ -395,6 +405,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
         counterEvidence: [],
         reviewedCites: [],
         provisionalLiterature: [],
+        counterEvidenceHarvest: [],
       },
       cls,
       true,
@@ -513,6 +524,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
       counterEvidence: counterForLinks,
       reviewedCites: supportingCitationsFrom(cites),
       provisionalLiterature: [],
+      counterEvidenceHarvest: [],
     },
     cls,
     false,
@@ -535,6 +547,29 @@ export function shouldFetchProvisionalLit(grounding: AskGrounding, queryClass: A
 /** UI / SYSTEM copy for provisional hits — never Gate C. */
 export function provisionalLitLabel(): string {
   return "Unreviewed literature (provisional)";
+}
+
+/** Attach optional contradict-polarity harvest hits (unreviewed — never Gate C / never Neon counter). */
+export function attachCounterEvidenceHarvest(
+  grounding: AskGrounding,
+  items: ProvisionalLitItem[],
+): AskGrounding {
+  const tagged = items.map((it) => ({ ...it, role: "counterevidence_harvest" as const }));
+  if (!tagged.length) {
+    return { ...grounding, counterEvidenceHarvest: grounding.counterEvidenceHarvest ?? [] };
+  }
+  const lines = [
+    "COUNTEREVIDENCE_HARVEST (unreviewed PubMed/Europe PMC contradict-polarity search — NOT curated contradicts, NOT Gate C; surface as skeptic hints only):",
+    ...tagged.slice(0, 8).map(
+      (p) =>
+        `HARVEST ${p.source} ${p.pmid ? `PMID ${p.pmid}` : p.doi ? `DOI ${p.doi}` : "no-id"} ${p.year} ${p.title}`,
+    ),
+  ];
+  let text = grounding.text;
+  if (!/COUNTEREVIDENCE_HARVEST/.test(text)) {
+    text = text.concat("\n", lines.join("\n"));
+  }
+  return { ...grounding, text, counterEvidenceHarvest: tagged };
 }
 
 /** Attach Gate C supporting cites (with optional claim_text/notes) for passage checks. */
@@ -637,6 +672,7 @@ export function prepareAsk(question: string, cites: CitationLike[] = []): Prepar
         counterEvidence: [],
         reviewedCites: [],
         provisionalLiterature: [],
+        counterEvidenceHarvest: [],
       },
       queryClass,
       true,
@@ -732,7 +768,10 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     if (c.pmid && /^\d+$/.test(c.pmid)) gateCByPmid.set(c.pmid, c);
   }
   const provisionalPmids = new Set(
-    grounding.provisionalLiterature.map((p) => p.pmid).filter((p): p is string => !!p),
+    [
+      ...grounding.provisionalLiterature.map((p) => p.pmid),
+      ...(grounding.counterEvidenceHarvest ?? []).map((p) => p.pmid),
+    ].filter((p): p is string => !!p),
   );
   const counterPmids = new Set(
     grounding.counterEvidence.map((c) => c.pmid).filter((p): p is string => !!p && /^\d+$/.test(p)),

@@ -6,6 +6,7 @@ import {
   MAX_QUESTION_CHARS,
   SYSTEM,
   attachCounterEvidence,
+  attachCounterEvidenceHarvest,
   attachProvisionalLiterature,
   attachReviewedCites,
   isAskEmergencyDisabled,
@@ -20,11 +21,12 @@ import { getDb } from "@/lib/db.server";
 import { evidenceRecords } from "@/lib/db/schema.server";
 import { APPROVAL_ELIGIBLE_CHECK, isCounterEvidenceAssessment, isGateCSupportingEvidence } from "@/lib/immune/evidenceInvariants";
 import type { CitationLike } from "@/lib/immune/evidenceStatus";
-import { fetchProvisionalLiterature } from "@/lib/provisionalLit.server";
+import { fetchCounterevidenceHarvest, fetchProvisionalLiterature } from "@/lib/provisionalLit.server";
 import {
   attachRetrievalToTrace,
   createInvestigatePlan,
   summariseTrace,
+  withStepStatus,
   type ResearchRunTrace,
 } from "@/lib/research/researchPlanner";
 
@@ -210,6 +212,8 @@ export type PrepareAskServerResult =
       grounding: AskGrounding;
       provisionalError?: string;
       provisionalSkipped?: string;
+      counterHarvestSkipped?: string;
+      counterHarvestError?: string;
       /** Bounded planner scaffold for investigate / hypothesis classes (partial). */
       researchTrace?: ResearchRunTrace;
       researchTraceText?: string;
@@ -249,6 +253,8 @@ export async function prepareAskServer(
     rateKey,
   });
   grounding = attachProvisionalLiterature(grounding, lit.items);
+  const harvest = await fetchCounterevidenceHarvest({ grounding, question, rateKey });
+  grounding = attachCounterEvidenceHarvest(grounding, harvest.items);
   prepared = { ...prepared, grounding };
 
   let researchTrace: ResearchRunTrace | undefined;
@@ -261,6 +267,13 @@ export async function prepareAskServer(
       counterEvidenceCount: grounding.coverage.counterEvidenceCount,
       queryClass: prepared.queryClass,
     });
+    researchTrace = withStepStatus(researchTrace, "s5", "done", {
+      neonCounterEvidenceCount: grounding.coverage.counterEvidenceCount,
+      harvestCount: grounding.counterEvidenceHarvest.length,
+      harvestSkipped: harvest.skipped ?? null,
+      emptyHonest:
+        grounding.coverage.counterEvidenceCount === 0 && grounding.counterEvidenceHarvest.length === 0,
+    });
     researchTraceText = summariseTrace(researchTrace);
   }
 
@@ -270,6 +283,8 @@ export async function prepareAskServer(
     grounding,
     provisionalError: lit.error,
     provisionalSkipped: lit.skipped,
+    counterHarvestSkipped: harvest.skipped,
+    counterHarvestError: harvest.error,
     researchTrace,
     researchTraceText,
   };

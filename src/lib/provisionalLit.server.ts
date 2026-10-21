@@ -116,6 +116,64 @@ function dedupe(items: ProvisionalLitItem[]): ProvisionalLitItem[] {
 }
 
 /**
+ * Optional contradict-polarity literature search when Gate C / retrieved cites exist.
+ * Soft-fail; never invents PMIDs; results stay unreviewed harvest hints (not Neon contradicts).
+ */
+export async function fetchCounterevidenceHarvest(opts: {
+  grounding: AskGrounding;
+  question: string;
+  rateKey?: string;
+}): Promise<{ items: ProvisionalLitItem[]; skipped?: string; error?: string }> {
+  const { grounding, question, rateKey = "anon" } = opts;
+  const hasCites =
+    grounding.coverage.reviewedEvidenceCount > 0 ||
+    grounding.links.some((l) => l.hasClaimSupport || l.reviewedEvidenceCount > 0);
+  if (!grounding.coverage.matched || grounding.trace.abstained) {
+    return { items: [], skipped: "no_match" };
+  }
+  if (!hasCites) {
+    // Honest empty: do not invent counterevidence when there is nothing to contradict.
+    return { items: [], skipped: "no_reviewed_cites" };
+  }
+  if (rateLimited(`counter-harvest:${rateKey}`, 4, 60_000)) {
+    return { items: [], skipped: "rate_limited" };
+  }
+
+  const names = grounding.nodes
+    .slice(0, 2)
+    .map((n) => byId[n.id]?.name ?? n.name)
+    .filter(Boolean);
+  const core = names.length ? names.map((n) => `"${n}"`).join(" AND ") : question.slice(0, 60);
+  // Polarity cue only — results remain unreviewed; curator must assess claim_support.
+  const term = `${core} AND (immunology OR immune) AND (contradict OR controversy OR conflicting OR "not associated" OR refut*)`;
+
+  try {
+    const ids = await pubmedSearch(term, 3);
+    await sleep(300);
+    const pubmed = (await pubmedSummary(ids.slice(0, 3))).map((p) => ({
+      ...p,
+      role: "counterevidence_harvest" as const,
+    }));
+    await sleep(300);
+    let europe: ProvisionalLitItem[] = [];
+    try {
+      europe = (await europePmcSearch(term, 2)).map((p) => ({
+        ...p,
+        role: "counterevidence_harvest" as const,
+      }));
+    } catch {
+      europe = [];
+    }
+    return { items: dedupe([...pubmed, ...europe]).slice(0, 4) };
+  } catch (e) {
+    return {
+      items: [],
+      error: e instanceof Error ? e.message : "Counterevidence harvest APIs unreachable",
+    };
+  }
+}
+
+/**
  * Soft-fail provisional literature for Ask Immune.
  * Rate-limited per IP key; empty array on any API / network error.
  */

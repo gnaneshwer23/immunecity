@@ -8,6 +8,7 @@ import {
   addMechanismGap,
   addMechanismPath,
   addWorkbenchClaim,
+  listWorkbenchCounterevidence,
   advanceWorkbench,
   canAdvance,
   canVisitStep,
@@ -472,6 +473,28 @@ export default function ScientificWorkbench({
           ) : (
             <p className="xs muted">No claim candidates yet — add assertions above.</p>
           )}
+
+          <h4 style={{ fontSize: "0.95rem", marginTop: 8 }}>Counterevidence in this session</h4>
+          {(() => {
+            const contra = listWorkbenchCounterevidence(session);
+            if (!contra.length) {
+              return (
+                <p className="xs muted" role="status">
+                  No contradicts/partial claims or conflict-hint notes yet — honest empty set. Mark claim polarity
+                  or note conflicting literature when you have a verified source.
+                </p>
+              );
+            }
+            return (
+              <ul className="small">
+                {contra.map((c) => (
+                  <li key={c.id}>
+                    <CandidateBadge label={`${c.kind} · ${c.polarity}`} /> {c.text}
+                  </li>
+                ))}
+              </ul>
+            );
+          })()}
         </section>
       )}
 
