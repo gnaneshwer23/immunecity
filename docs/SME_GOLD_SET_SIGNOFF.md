@@ -2,9 +2,10 @@
 
 **Status:** ⏳ **Awaiting SME** (cannot be completed by AI or engineering alone)  
 **Scope:** Public educational beta — teaching with references; not clinician CDS  
-**Automated starter set:** `src/test/eval/scientific-eval-set.ts` (50 cases)  
-**Harness:** `bun scripts/sme-gold-set-status.ts`  
-**Estimated SME time:** 60–90 minutes for the checklist below
+**Automated starter set:** `src/test/eval/scientific-eval-set.ts` (graph-true scaffolding; count via harness — not yet SME-signed 100+)  
+**Harness:** `bun scripts/sme-gold-set-status.ts` · retrieval baseline `bun scripts/benchmark-retrieval-baseline.ts`  
+**Estimated SME time:** 60–90 minutes for the checklist below  
+**Status unchanged:** still **awaiting named SME** — engineering expansions do not constitute sign-off.
 
 ---
 
@@ -61,7 +62,11 @@ Open `src/test/eval/scientific-eval-set.ts` and verify endpoints / retrieval IDs
 | `mech-tnf-block-ra` | Mechanism workspace expectation still educational, not CDS |
 | `mech-ifn-anifrolumab-sle` | Anifrolumab teaching link not overclaimed |
 | `exemplar-tnf-ra` / `exemplar-pd1` / `exemplar-ifn-sle` | Maturity labels may be scaffold/partial — do not require Gate C complete |
+| `pd1-biomarker-neighbourhood` / `ifn-sle-neighbourhood` | Graph-true multi-concept scaffolds (no invented PMIDs) |
+| `cite-gate-c-overclaim-rejected` | Fail-closed when answer implies Gate C without reviewed cites |
 | Plus ≥2 more path cases of your choice from the file | Endpoints still in the live graph |
+
+**Status reminder:** this sign-off stays ⏳ awaiting a named human SME — engineering expansion of the automated set does not complete Gate SME.
 
 ☐ Path spot-check complete · Defects filed: ________
 

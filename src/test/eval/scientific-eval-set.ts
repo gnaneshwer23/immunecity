@@ -459,4 +459,33 @@ export const SCIENTIFIC_EVAL_SET: EvalCase[] = [
     answerText: "Proven by PMID 88888888.",
     expectOk: false,
   },
+  // Graph-true scaffolding toward PRD 100+ — expectations only where atlas IDs are stable.
+  // Do not invent PMIDs or therapeutic conclusions. SME must sign docs/SME_GOLD_SET_SIGNOFF.md.
+  {
+    id: "pd1-biomarker-neighbourhood",
+    kind: "multi-concept",
+    question: "How does PD-L1 expression relate to pembrolizumab in the atlas?",
+    mustRetrieveNodeIds: ["R012", "I008"],
+    expectChainsOrLinks: true,
+  },
+  {
+    id: "ifn-sle-neighbourhood",
+    kind: "multi-concept",
+    question: "How do type I interferons relate to SLE in the atlas?",
+    mustRetrieveNodeIds: ["M018", "D007"],
+    expectChainsOrLinks: true,
+  },
+  {
+    id: "cite-gate-c-overclaim-rejected",
+    kind: "citation-validation",
+    question: "How does TNF drive rheumatoid arthritis?",
+    answerText: "This has Gate C approved support for every TNF pathway claim.",
+    expectOk: false,
+  },
+  {
+    id: "hypothesis-class-alternative",
+    kind: "classification",
+    question: "Could blocking IL-6 fully reverse RA synovitis as a candidate hypothesis?",
+    expectClass: "hypothesis_request",
+  },
 ];

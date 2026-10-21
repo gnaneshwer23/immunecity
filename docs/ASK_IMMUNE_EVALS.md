@@ -31,3 +31,6 @@ Do **not** rely on live PubMed/Europe PMC in CI — provisional fetch is soft-fa
 - Status stays **partial** in `capabilityStatus` — never claim fully evidence-grounded.
 - Provisional hits are **unreviewed literature** only; never auto-upgrade to Gate C `approved` / `supports`.
 - Humans unlock “evidence-backed” via curator Gate C on P0 edges — see `docs/CURATOR_EVIDENCE_QUEUE.md`.
+- SME gold-set sign-off remains **awaiting human** (`docs/SME_GOLD_SET_SIGNOFF.md`) — engineering must not forge acceptance.
+- Expand toward PRD 100+ only with graph-true `mustRetrieveNodeIds` / refusal expectations — never invent PMIDs or therapeutic claims to pad the set.
+- Hybrid retrieval baseline: `bun scripts/benchmark-retrieval-baseline.ts` (no vector DB until measured need).
