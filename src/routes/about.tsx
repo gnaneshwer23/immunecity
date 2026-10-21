@@ -101,6 +101,16 @@ function About() {
           </ul>
         </MarketingSection>
 
+        <MarketingSection id="editorial" eyebrow="Editorial responsibility" title="Who stands behind the content.">
+          <p className="mkt-prose">
+            {PRODUCT_NAME} is created and edited by Dr Gnaneshwer Jadav (PhD, Immunology). The editor is responsible
+            for the curated knowledge graph, the review status shown on each relationship and the guardrails Ask
+            Immune works within. A relationship is marked as supported only after a cited source has been mapped
+            to that specific claim and reviewed; everything else stays labelled as unreviewed or draft. Corrections
+            and source suggestions are welcome via <Link to="/collaborate">Collaborate</Link>.
+          </p>
+        </MarketingSection>
+
         <MarketingSection id="roadmap" eyebrow="Status" title="Shipped where it works. Labelled where it does not.">
           <p className="mkt-prose">
             Graph exploration, cell atlas content, mechanism walks and several teaching tools are available today.
