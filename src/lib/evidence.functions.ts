@@ -302,3 +302,24 @@ export const suggestSources = createServerFn({ method: "POST" })
     }
     return { found, total: recs.length };
   });
+
+/** Admin: PubMed preview for P0 PD-1 / IFN exemplar gaps — no writes. */
+export const previewP0ExemplarDrafts = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.userId);
+    const { previewP0ExemplarPubmedDrafts } = await import("@/lib/p0ExemplarDrafts.server");
+    return previewP0ExemplarPubmedDrafts();
+  });
+
+/**
+ * Admin: insert unreviewed drafts only when PubMed returns a real PMID whose title
+ * passes a conservative heuristic. Never approves; claim_support stays unassessed.
+ */
+export const seedP0ExemplarDrafts = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.userId);
+    const { seedP0ExemplarPubmedDrafts } = await import("@/lib/p0ExemplarDrafts.server");
+    return seedP0ExemplarPubmedDrafts();
+  });

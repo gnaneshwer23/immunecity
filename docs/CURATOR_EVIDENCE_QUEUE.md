@@ -1,6 +1,6 @@
 # Curator evidence queue
 
-**Honest status (2026-10-17 Ask Immune refresh):** Production Neon still has sparse approved+supports claim links vs ~549 runtime edges. Wrong-PMID Stohl/Groom mappings remain rejected/unrelated. Queue pack itself only creates unreviewed candidates — approvals are human-only.
+**Honest status (2026-10-21 science-first refresh):** Production Neon (MCP) still shows **9** approved+supports distinct relationship claims vs **~549** runtime edges; **0** `contradicts`; **3** `partial` (incl. Chemnitz on `REL-R012-suppresses-C015`). Wrong-PMID Stohl/Groom mappings remain rejected/unrelated. Queue pack and P0 PubMed seed create **unreviewed** candidates only — approvals are human-only.
 
 Gate C is **not** done. Do not market Ask Immune or exemplars as fully evidence-grounded until broader claim-linked coverage lands and SME gold-set is signed.
 
@@ -19,6 +19,8 @@ Ask Immune can surface **provisional** PubMed / Europe PMC hits when graph match
 | `src/lib/immune/exemplarPathways.ts` | Exemplar waypoints + `EXEMPLAR_CURATOR_TARGETS` PubMed search hints |
 | `bun run evidence:queue` / `evidence:queue:resolve` | Rebuild queue; optional PubMed PMID resolve |
 | `/curation` → **Load relationship queue** | Admin import into `evidence_records` (`curation=unreviewed`, `claim_support=unassessed`) |
+| `/curation` → **Preview P0 PubMed** / **Seed P0 unreviewed drafts** | Live E-utilities search for `EXEMPLAR_CURATOR_TARGETS`; inserts only when title heuristic matches a real PMID — still unreviewed/unassessed |
+| `src/lib/immune/p0ExemplarPubmed.ts` + `p0ExemplarDrafts.server.ts` | Title heuristics + server preview/seed (never auto-approve) |
 | `/reasoning` Exemplar cards | Live maturity + per-edge review badges from approved cites |
 
 ## Curator steps (admin)
@@ -26,12 +28,13 @@ Ask Immune can surface **provisional** PubMed / Europe PMC hits when graph match
 1. Sign in → `/curation` (Neon Auth; default role is `user` until admin is granted via SQL).
 2. Click **Load relationship queue**.
 3. Use **P0 page filter** / per-edge **Filter** chips (PD-1 Chemnitz, PD-1 biomarkers, IFN spine) — chips copy the PubMed search start and filter the loaded page by `relId`.
-4. **Check** identifiers for slots that have PMIDs/DOIs.
-5. Open **Details** → confirm the mapped relationship → set **claim support** (`supports` / `partial` / …).
-6. **Approve** only when the source truly supports that directional claim (server rejects approve without `relationship_id` + `claim_support=supports`).
-7. Public Gate C reads require approved + supports + verified identifier (`citations.functions.ts`). Counterevidence (contradicts/partial) is a separate path — never invent PMIDs or auto-approve.
+4. Optional eng assist: **Preview P0 PubMed** (read-only), then **Seed P0 unreviewed drafts** only if you accept the heuristic matches. Prefer skip when titles look off-claim.
+5. **Check** identifiers for slots that have PMIDs/DOIs.
+6. Open **Details** → confirm the mapped relationship → set **claim support** (`supports` / `partial` / `contradicts` / …).
+7. **Approve** only when the source truly supports that directional claim (server rejects approve without `relationship_id` + `claim_support=supports`).
+8. Public Gate C reads require approved + supports + verified identifier (`citations.functions.ts`). Counterevidence (contradicts/partial) is a separate path — never invent PMIDs or auto-approve.
 
-## P0 exemplar Gate C matrix (production, 2026-10-16)
+## P0 exemplar Gate C matrix (production, 2026-10-21 Neon MCP)
 
 Approval requires: identifier **verified or matched**, mapped `relationship_id`, and assessed `claim_support=supports`. Source edits clear approval. Each successful update appends an `evidence_audit_events` row.
 
@@ -52,9 +55,9 @@ Teaching caveat remains: whole RA biology is not evidence-complete. No further P
 | relId | Live Gate C | Next curator action |
 |-------|-------------|---------------------|
 | `REL-C015-expresses-R011` | **approved+supports** | Barber 2006 (PMID 16382236) — done |
-| `REL-R012-suppresses-C015` | verified, `claim_support=partial` (Chemnitz 2004) | **Re-read** Chemnitz; set `supports` only if the paper supports this directional claim, else keep partial / find a better cite. PubMed: `PD-L1 PD-1 CD8 T cell suppression OR Chemnitz PD-L1 2004` |
-| `REL-B011-measures-R012` | **none** | Import/map a verified assay/companion-diagnostic cite. PubMed: `PD-L1 immunohistochemistry companion diagnostic assay measures expression` |
-| `REL-B011-predicts_response_to-I008` | **none** | Map a biomarker–response cite to **this** relId (KEYNOTE-006 is already approved on `REL-I008-blocks-R011`, which is **off** this shortest path). PubMed: `PD-L1 expression predicts pembrolizumab response KEYNOTE biomarker` |
+| `REL-R012-suppresses-C015` | verified, `claim_support=partial` (Chemnitz PMID 15240681) | **Re-read** Chemnitz; set `supports` only if the paper supports this directional claim, else keep partial. PubMed: `Chemnitz PD-L1 PD-1 CD8 T cell 2004` |
+| `REL-B011-measures-R012` | **none** | Manual pick — auto-seed blocked (noisy ranking). PubMed: `PD-L1 immunohistochemistry companion diagnostic 22C3 OR SP263 assay` |
+| `REL-B011-predicts_response_to-I008` | **none** | Map a biomarker–response cite to **this** relId (KEYNOTE-006 is on `REL-I008-blocks-R011`, off this path). PubMed: `pembrolizumab PD-L1 biomarker KEYNOTE-001 Garon` |
 
 ### 3. Type-I interferon → SLE (`ex-ifn-sle`) — **scaffold**
 
@@ -62,13 +65,13 @@ Shortest path Type-I IFN → SLE currently detours via BAFF / belimumab. Those d
 
 | relId | Live Gate C | Next curator action |
 |-------|-------------|---------------------|
-| `REL-C005-produces-P004` | **none** | PubMed: `plasmacytoid dendritic cell type I interferon production TLR7 TLR9` |
-| `REL-R018-signals_through-P004` | **none** | PubMed: `IFNAR1 type I interferon receptor signalling pathway` |
-| `REL-M018-binds-R018` | **none** | PubMed: `type I interferon IFN-alpha IFNAR1 binding receptor` |
+| `REL-C005-produces-P004` | **none** | PubMed: `plasmacytoid dendritic cells natural interferon-producing cells Siegal` (Siegal 1999 often ranks; seed heuristic may offer unreviewed draft) |
+| `REL-R018-signals_through-P004` | **none** | PubMed: `IFNAR1 interferon receptor signalling JAK STAT pathway review` — usually needs manual pick |
+| `REL-M018-binds-R018` | **none** | PubMed: `IFNAR1 interferon-beta binding hot spot receptor interaction` |
 | `REL-M018-induces-M016` | **approved+supports** | Lopez 2014 — on detour; done |
 | `REL-I018-neutralises-M016` | **approved+supports** | Shin 2018 — on detour; Stohl wrong-map remains rejected |
 | `REL-I018-treats-D007` | **approved+supports** | Navarra 2011 BLISS-52 — on detour; done |
-| `REL-I015-treats-D007` | **none** | PubMed: `anifrolumab systemic lupus erythematosus TULIP randomised trial` |
+| `REL-I015-treats-D007` | **none** | PubMed: `anifrolumab TULIP-2 Morand NEJM` (Morand 2020 often ranks; seed heuristic may offer unreviewed draft) |
 
 Also approved off-exemplar-path (counts toward Gate C numerator, not these waypoint stitches): `REL-I008-blocks-R011` (KEYNOTE-006), `REL-T008-requires-M001` (Keane 2001).
 
@@ -93,8 +96,9 @@ Use `EXEMPLAR_CURATOR_TARGETS` / curation UI callout for the same hints. Maturit
 - Runtime links: **~549**
 - Queue mapped (candidates): **37** (~6.9%)
 - Remaining without a KG bibliographic cite: **~499** (need literature workflow / SME)
-- Approved claim links (prod): **9** (not 549 — do not overclaim)
-- Exemplar unique on-path edges: **14**; P0 open targets listed above: **7**
+- Approved claim links (prod): **9** distinct rels (not 549 — do not overclaim)
+- Exemplar unique on-path edges: **14**; P0 open targets listed above: **7** (1 partial Chemnitz; 6 none)
+- Eng assist: P0 PubMed preview/seed may add unreviewed rows — **does not** raise Gate C numerator until human approve+supports
 
 ---
 

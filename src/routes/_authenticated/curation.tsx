@@ -9,7 +9,9 @@ import {
   getMyRole,
   importManifest,
   listEvidenceRecords,
+  previewP0ExemplarDrafts,
   runChecks,
+  seedP0ExemplarDrafts,
   suggestSources,
   updateRecord,
 } from "@/lib/evidence.functions";
@@ -55,6 +57,8 @@ function Curation() {
   const checkFn = useServerFn(runChecks);
   const updateFn = useServerFn(updateRecord);
   const suggestFn = useServerFn(suggestSources);
+  const previewP0Fn = useServerFn(previewP0ExemplarDrafts);
+  const seedP0Fn = useServerFn(seedP0ExemplarDrafts);
 
   const [role, setRole] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
@@ -185,6 +189,48 @@ function Curation() {
     }
   };
 
+  const previewP0 = async () => {
+    setMsg("Querying PubMed for P0 exemplar gaps…");
+    setProgress({ done: 0, total: EXEMPLAR_CURATOR_TARGETS.length });
+    try {
+      const r = await previewP0Fn();
+      const seedable = r.rows.filter((row) => row.seedCandidate).length;
+      const lines = r.rows.map((row) => {
+        const hit = row.seedCandidate
+          ? `seed PMID ${row.seedCandidate.pmid}`
+          : row.hits[0]
+            ? `top hit PMID ${row.hits[0].pmid} (not auto-seedable)`
+            : "no hits";
+        return `${row.relId}: ${row.skipReason ?? hit}`;
+      });
+      setMsg(
+        `P0 PubMed preview (${r.fetchedAt}): ${seedable} title-heuristic seed candidate(s). ` +
+          `Nothing inserted. ${lines.join(" · ")}`,
+      );
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "P0 PubMed preview failed");
+    }
+    setProgress(null);
+  };
+
+  const seedP0 = async () => {
+    if (!window.confirm(
+      "Insert unreviewed drafts only for P0 edges whose PubMed title passes a conservative heuristic? " +
+        "Rows stay curation=unreviewed and claim_support=unassessed. Never invents PMIDs. Continue?",
+    )) return;
+    setMsg("Seeding P0 unreviewed drafts from PubMed…");
+    try {
+      const r = await seedP0Fn();
+      setMsg(
+        `P0 seed: added ${r.added} unreviewed draft(s) (${r.attempted} open targets). ` +
+          `${r.notes.join(" · ")} — Check identifiers, assess claim_support, then Approve only if the paper supports the directional claim.`,
+      );
+      await load();
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "P0 seed failed");
+    }
+  };
+
   const verifiedUnapproved = rows.filter((r) => (r.check_status === "verified" || r.check_status === "matched") && r.curation === "unreviewed");
   /** Server rejects approval without relationship_id + assessed claim_support. */
   const readyToApprove = verifiedUnapproved.filter(
@@ -263,9 +309,20 @@ function Curation() {
             the commercial-priority concept manifest (60 concepts), or upload another manifest JSON.
             New slots are added; existing ones keep their decisions. Nothing is auto-approved.
           </p>
-          <div className="row" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <button className="btn primary" disabled={!!progress} onClick={importRelationshipQueue}>Load relationship queue</button>
             <button className="btn" disabled={!!progress} onClick={importBundled}>Load priority manifest</button>
+            <button className="btn" disabled={!!progress} onClick={previewP0} title="PubMed E-utilities preview only — no writes">
+              Preview P0 PubMed
+            </button>
+            <button
+              className="btn"
+              disabled={!!progress}
+              onClick={seedP0}
+              title="Insert unreviewed drafts only when PubMed title heuristic matches — never auto-approve"
+            >
+              Seed P0 unreviewed drafts
+            </button>
             <input type="file" accept="application/json,.json" aria-label="Upload a manifest file" onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
           </div>
           <ol className="small muted" style={{ marginTop: 12, paddingLeft: 18 }}>
