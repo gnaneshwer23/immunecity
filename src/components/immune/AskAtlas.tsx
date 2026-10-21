@@ -32,6 +32,7 @@ const EXPLAIN_ACTIONS: { id: ExplanationAction; label: string }[] = [
   { id: "show_path", label: "Show path" },
   { id: "what_evidence_missing", label: "What evidence is missing?" },
   { id: "what_would_change", label: "What would change this?" },
+  { id: "show_counterevidence", label: "Show counterevidence" },
 ];
 
 type Pick = { kind: "concept"; id: string } | { kind: "edge"; s: string; o: string };
@@ -147,6 +148,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const [restored, setRestored] = useState(!persistKey);
   const [copied, setCopied] = useState<string | null>(null);
   const [provisionalNote, setProvisionalNote] = useState<string | null>(null);
+  const [researchTraceText, setResearchTraceText] = useState<string | null>(null);
   useEffect(() => {
     if (!persistKey) return;
     try {
@@ -171,6 +173,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     setGrounding(null);
     setLocalNote(null);
     setProvisionalNote(null);
+    setResearchTraceText(null);
     setInput("");
     inputRef.current?.focus();
   };
@@ -203,6 +206,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     if (!t || busy) return;
     const prepared = prepareAsk(t);
     setGrounding(prepared.grounding);
+    setResearchTraceText(null);
     setLocalNote(null);
     setProvisionalNote(null);
     setInput("");
@@ -226,8 +230,10 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           grounding?: AskGrounding;
           provisionalError?: string | null;
           provisionalSkipped?: string | null;
+          researchTraceText?: string | null;
         };
         if (data.grounding) setGrounding(data.grounding);
+        if (data.researchTraceText) setResearchTraceText(data.researchTraceText);
         const note = data.provisionalError || data.provisionalSkipped;
         if (note) setProvisionalNote(note);
         else if (
@@ -328,7 +334,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           <div className="ask-empty" role="region" aria-label={`${ASK_NAME} starters`}>
             <p className="ask-empty-lead">
               Ask about a cell, pathway, cytokine, disease or therapy in the curated graph.
-              Answers show grounding tiers separately — reviewed cites, provisional literature, and missing support are never conflated.
+              Answers show grounding tiers separately — Gate C support, counterevidence (contradicts/partial; empty when none curated), provisional literature, and missing support are never conflated.
             </p>
             {groupedSuggestions ? (
               <div className="ask-suggest-groups">
@@ -374,6 +380,12 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                 {m === lastAssistant && grounding ? (
                   <>
                     <GroundingPanel grounding={grounding} provisionalNote={provisionalNote} />
+                    {researchTraceText ? (
+                      <details className="ask-research-trace">
+                        <summary className="xs">Investigate plan trace (partial scaffold — not a multi-agent swarm)</summary>
+                        <pre className="ask-local-note xs">{researchTraceText}</pre>
+                      </details>
+                    ) : null}
                     {grounding.coverage.matched && !grounding.trace.abstained ? (
                       <div className="ask-followups" aria-label="Explanation actions">
                         <span className="ask-insp-label">Inspect without regenerating</span>
