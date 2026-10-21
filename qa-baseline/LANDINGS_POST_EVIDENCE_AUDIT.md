@@ -3,8 +3,10 @@
 **Date (UTC):** 2026-10-21  
 **Canonical:** https://www.immune-super-intelligence.co.uk/  
 **Pre-ship HEAD baseline:** `0893f6d`  
+**Shipped SHA:** `76ab645` (`76ab645a9988ce5006eb38d66c8b326262ec04b9`)  
+**Vercel prod:** `dpl_9K1G8CfJbHsZup42g3kcFsjAFwET` → READY; aliased https://www.immune-super-intelligence.co.uk  
 **Scope:** Educational beta production readiness after evidence-first landings copy refresh (Home, Overview, Reasoning/Scientific AI, Methods, Academy light, About, Research stale-copy fix).  
-**Skipped:** Full vitest suite (hang risk); ai-gateway skill (Ask providers untouched).
+**Skipped:** Full vitest/tsc (hang risk); ai-gateway skill (Ask providers untouched). ReadLints clean on edited files.
 
 ---
 
@@ -90,8 +92,8 @@ Post-deploy: re-check Home trust CTAs (`/ask`, Methods `#live-ev-heading`, `/res
 - [x] Remove Research “database configuration pending”  
 - [x] Reflect live coverage where server fn exists  
 - [x] Keep Gate C sparse / educational beta framing  
-- [ ] Push `main` + `vercel --prod` + www alias (follow this file)  
-- [ ] Post-deploy browser confirm new CTAs + Methods live numbers resolve  
+- [x] Push `main` + `vercel --prod` + www alias (`76ab645` / `dpl_9K1G8CfJbHsZup42g3kcFsjAFwET`)  
+- [ ] Post-deploy: confirm Home trust CTAs + Methods live numbers resolve (follow-up if still “Loading…”)  
 
 ---
 
