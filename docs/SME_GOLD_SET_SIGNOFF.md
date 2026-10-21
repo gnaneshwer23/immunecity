@@ -24,7 +24,7 @@ A fixed scientific evaluation set used to catch regressions in Ask grounding, pa
 
 | Item | Owner | Status |
 |------|-------|--------|
-| Run `bun scripts/smoke-prd-a2.ts` (50 eval cases) | Engineering | Runnable locally |
+| Run `bun scripts/smoke-prd-a2.ts` (expanded graph-true eval set; count in harness output) | Engineering | Runnable locally |
 | Attach smoke output / note SHA | Engineering | ☐ before SME review |
 | Expand toward PRD 100+ expert items | SME + eng | Open — only with graph-true expectations |
 | Confirm path/endpoint expectations are graph-true | SME | ☐ Awaiting SME |

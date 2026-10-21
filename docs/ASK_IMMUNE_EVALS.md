@@ -4,15 +4,22 @@ Targeted Vitest cases for Ask Immune retrieval, refusals, citation validation, a
 
 ## Run (fast)
 
-```bash
-# Core grounding + scientific eval set (includes Ask Immune cases)
-bunx vitest run src/test/ai-grounding.test.ts src/test/mechanism-reasoning.test.ts
+Prefer the PRD smoke harness (avoids hanging full Vitest / D-11):
 
-# Optional PRD smoke (same eval set + a few unit checks)
+```bash
+# Scientific eval set + Ask unit checks (preferred)
 bun scripts/smoke-prd-a2.ts
+
+# SME sign-off status (unsigned until a human SME signs)
+bun scripts/sme-gold-set-status.ts
+
+# Optional targeted Vitest (may hang in some environments — skip if stuck)
+# bunx vitest run src/test/ai-grounding.test.ts src/test/mechanism-reasoning.test.ts
 ```
 
 Do **not** rely on live PubMed/Europe PMC in CI — provisional fetch is soft-fail and rate-limited. Unit tests use `attachProvisionalLiterature` fixtures only.
+
+**SME:** `docs/SME_GOLD_SET_SIGNOFF.md` remains awaiting a named human expert. Engineering expansion of graph-true cases does **not** constitute sign-off.
 
 ## What the suite covers
 
