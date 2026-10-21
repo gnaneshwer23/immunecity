@@ -49,5 +49,28 @@ export const evidenceAuditEvents = pgTable("evidence_audit_events", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Optional durable claim-ledger candidates (migration 0007). Never auto Gate C. */
+export const claimCandidates = pgTable("claim_candidates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  claimId: text("claim_id").notNull().unique(),
+  assertion: text("assertion").notNull(),
+  subjectId: text("subject_id"),
+  predicate: text("predicate"),
+  objectId: text("object_id"),
+  polarity: text("polarity").notNull().default("unassessed"),
+  evidenceType: text("evidence_type").notNull().default("unspecified"),
+  contextJson: jsonb("context_json").notNull().default({}),
+  passageSpan: text("passage_span"),
+  sourcePmid: text("source_pmid"),
+  sourceDoi: text("source_doi"),
+  lifecycle: text("lifecycle").notNull().default("candidate"),
+  mappedRelationshipId: text("mapped_relationship_id"),
+  extractionMeta: jsonb("extraction_meta").notNull().default({}),
+  reviewNotes: text("review_notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type EvidenceRecordRow = typeof evidenceRecords.$inferSelect;
 export type EvidenceAuditEventRow = typeof evidenceAuditEvents.$inferSelect;
+export type ClaimCandidateRow = typeof claimCandidates.$inferSelect;

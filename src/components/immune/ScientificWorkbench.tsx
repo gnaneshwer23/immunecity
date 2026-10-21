@@ -7,6 +7,7 @@ import {
   addEvidenceNote,
   addMechanismGap,
   addMechanismPath,
+  addWorkbenchClaim,
   advanceWorkbench,
   canAdvance,
   canVisitStep,
@@ -27,6 +28,7 @@ import {
   updateExperiment,
   updateHypothesis,
   updateQuestion,
+  updateWorkbenchClaimLifecycle,
   WORKBENCH_LOCAL_DRAFT_KEY,
   WORKBENCH_SCHEMA_VERSION,
   workbenchProgress,
@@ -35,6 +37,7 @@ import {
   type WorkbenchSession,
   type WorkbenchStep,
 } from "@/lib/research/workbench";
+import { claimLifecycleLabel, summariseClaimTable } from "@/lib/research/claimLedger";
 import { hypothesisCompleteness } from "@/lib/research/hypothesisDraft";
 
 const STEP_LABEL: Record<WorkbenchStep, string> = {
@@ -76,6 +79,9 @@ export default function ScientificWorkbench({
   const [evSummary, setEvSummary] = useState("");
   const [evSource, setEvSource] = useState("");
   const [evIds, setEvIds] = useState("");
+  const [claimAssertion, setClaimAssertion] = useState("");
+  const [claimSpan, setClaimSpan] = useState("");
+  const [claimRel, setClaimRel] = useState("");
   const [pathText, setPathText] = useState("");
   const [importJson, setImportJson] = useState("");
   const [importMsg, setImportMsg] = useState<string | null>(null);
@@ -124,6 +130,7 @@ export default function ScientificWorkbench({
   const steps = workbenchSteps();
   const flags = sessionCandidateFlags(session);
   const progress = workbenchProgress(session);
+  const claimSummary = summariseClaimTable(session.claims ?? []);
 
   const applyImportJson = () => {
     const text = importJson.trim();
@@ -359,6 +366,112 @@ export default function ScientificWorkbench({
               </li>
             ))}
           </ul>
+
+          <h4 style={{ fontSize: "0.95rem", marginTop: 8 }}>Claim ledger (candidates) <CandidateBadge /></h4>
+          <p className="xs muted">
+            Layer B scaffold: assertion + optional span + mapped relationship. Lifecycle stays local —
+            &quot;Ready for curator&quot; is not Gate C approval and never writes the KG.
+          </p>
+          <label className="field">Assertion
+            <textarea rows={2} value={claimAssertion} onChange={(e) => setClaimAssertion(e.target.value)} />
+          </label>
+          <label className="field">Passage span (exact quote you verified — do not invent)
+            <input value={claimSpan} onChange={(e) => setClaimSpan(e.target.value)} />
+          </label>
+          <label className="field">Mapped relationship ID (optional)
+            <input value={claimRel} onChange={(e) => setClaimRel(e.target.value)} placeholder="REL-…" />
+          </label>
+          <button
+            type="button"
+            className="btn sm"
+            disabled={!claimAssertion.trim()}
+            onClick={() => {
+              setSession(
+                addWorkbenchClaim(session, {
+                  assertion: claimAssertion,
+                  passageSpan: claimSpan,
+                  mappedRelationshipId: claimRel.startsWith("REL-") ? claimRel.trim() : null,
+                }),
+              );
+              setClaimAssertion("");
+              setClaimSpan("");
+              setClaimRel("");
+            }}
+          >
+            Add claim candidate
+          </button>
+          <p className="xs muted">
+            {claimSummary.total} claim(s) · mapped {claimSummary.mapped} · with span {claimSummary.withPassage}
+          </p>
+          {(session.claims ?? []).length > 0 ? (
+            <div className="table-wrap" style={{ overflowX: "auto" }}>
+              <table className="small" aria-label="Claim ledger candidates">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Assertion</th>
+                    <th scope="col">Polarity</th>
+                    <th scope="col">Lifecycle</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(session.claims ?? []).map((c) => (
+                    <tr key={c.claim_id}>
+                      <td className="muted">{c.claim_id.slice(0, 18)}</td>
+                      <td>
+                        {c.assertion}
+                        {c.passageSpan ? <div className="xs muted">span: {c.passageSpan}</div> : null}
+                        {c.mappedRelationshipId ? (
+                          <div className="xs muted">{c.mappedRelationshipId}</div>
+                        ) : null}
+                      </td>
+                      <td>{c.polarity}</td>
+                      <td>{claimLifecycleLabel(c.lifecycle)}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn sm"
+                          onClick={() =>
+                            setSession(updateWorkbenchClaimLifecycle(session, c.claim_id, "claim_assessed"))
+                          }
+                        >
+                          Assess
+                        </button>{" "}
+                        <button
+                          type="button"
+                          className="btn sm"
+                          onClick={() =>
+                            setSession(
+                              updateWorkbenchClaimLifecycle(
+                                session,
+                                c.claim_id,
+                                "approved",
+                                "Ready for curator handoff — not Gate C",
+                              ),
+                            )
+                          }
+                        >
+                          Curator queue
+                        </button>{" "}
+                        <button
+                          type="button"
+                          className="btn sm"
+                          onClick={() =>
+                            setSession(updateWorkbenchClaimLifecycle(session, c.claim_id, "rejected"))
+                          }
+                        >
+                          Reject
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="xs muted">No claim candidates yet — add assertions above.</p>
+          )}
         </section>
       )}
 

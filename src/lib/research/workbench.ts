@@ -6,6 +6,13 @@
 import { graphContext } from "@/lib/askGrounding";
 import { byId } from "@/lib/immune/engine";
 import { hopPhrase, type MechanismResult } from "@/lib/immune/mechanismReasoning";
+import {
+  createLedgerClaim,
+  isKgPromotable,
+  type ClaimLifecycle,
+  type ClaimPolarity,
+  type LedgerClaim,
+} from "./claimLedger";
 import { createHypothesisDraft, type HypothesisDraft } from "./hypothesisDraft";
 import type { CandidateClaim, CurationManifestExport, LiteratureProject } from "./literatureWorkflow";
 
@@ -81,6 +88,8 @@ export interface WorkbenchSession {
   furthestStep: WorkbenchStep;
   question: ResearchQuestion;
   evidence: EvidenceNote[];
+  /** Claim ledger rows (Layer B scaffold) — candidates only; never auto KG. */
+  claims: LedgerClaim[];
   mechanism: MechanismNote;
   hypothesis: HypothesisDraft;
   experiment: ExperimentProposal;
@@ -127,6 +136,7 @@ export function createWorkbenchSession(graphVersion: string, extensionsVersion: 
       kind: "candidate",
     },
     evidence: [],
+    claims: [],
     mechanism: {
       paths: [],
       assumptions: [...DEFAULT_MECH_ASSUMPTIONS],
@@ -286,6 +296,67 @@ export function seedQuestionFromAsk(session: WorkbenchSession, questionText?: st
       kind: "candidate",
     },
     importLog: [...session.importLog, `ask_seed:${conceptIds.length}c/${relIds.length}r`],
+  });
+}
+
+/** Add a claim-ledger candidate (never Gate C / never KG write). */
+export function addWorkbenchClaim(
+  session: WorkbenchSession,
+  input: {
+    assertion: string;
+    subjectId?: string | null;
+    predicate?: string | null;
+    objectId?: string | null;
+    polarity?: ClaimPolarity;
+    passageSpan?: string | null;
+    sourcePmid?: string | null;
+    sourceDoi?: string | null;
+    mappedRelationshipId?: string | null;
+  },
+): WorkbenchSession {
+  const assertion = input.assertion.trim();
+  if (!assertion) return session;
+  const claim = createLedgerClaim({
+    assertion,
+    subjectId: input.subjectId ?? null,
+    predicate: input.predicate ?? null,
+    objectId: input.objectId ?? null,
+    polarity: input.polarity ?? "unassessed",
+    passageSpan: input.passageSpan?.trim() || null,
+    sourcePmid: input.sourcePmid?.trim() || null,
+    sourceDoi: input.sourceDoi?.trim() || null,
+    mappedRelationshipId: input.mappedRelationshipId?.trim() || null,
+    extractionMeta: { source: "workbench", confidence: null, importedAt: new Date().toISOString() },
+  });
+  // Hard rule: scaffolding cannot promote to KG.
+  if (isKgPromotable(claim)) return session;
+  return touch({
+    ...session,
+    claims: [...(session.claims ?? []), claim],
+    importLog: [...session.importLog, `claim:${claim.claim_id}`],
+  });
+}
+
+export function updateWorkbenchClaimLifecycle(
+  session: WorkbenchSession,
+  claimId: string,
+  lifecycle: ClaimLifecycle,
+  reviewNotes?: string,
+): WorkbenchSession {
+  return touch({
+    ...session,
+    claims: (session.claims ?? []).map((c) =>
+      c.claim_id === claimId
+        ? {
+            ...c,
+            lifecycle,
+            // "approved" here = ready for curator handoff only
+            reviewNotes: reviewNotes ?? c.reviewNotes,
+            kind: "candidate" as const,
+            updatedAt: new Date().toISOString(),
+          }
+        : c,
+    ),
   });
 }
 
@@ -508,6 +579,7 @@ export function restoreWorkbenchFromExportJson(jsonText: string): {
     schemaVersion: WORKBENCH_SCHEMA_VERSION,
     question: { ...s.question, kind: "candidate" },
     evidence: (s.evidence ?? []).map((e) => ({ ...e, kind: "candidate" as const })),
+    claims: (s.claims ?? []).map((c) => ({ ...c, kind: "candidate" as const })),
     mechanism: { ...s.mechanism, kind: "candidate", illustrative: true },
     hypothesis: {
       ...s.hypothesis,
@@ -755,9 +827,11 @@ export function sessionCandidateFlags(session: WorkbenchSession): {
   allCandidates: boolean;
   flags: Record<string, string>;
 } {
+  const claims = session.claims ?? [];
   const flags: Record<string, string> = {
     question: session.question.kind,
     evidence: session.evidence.every((e) => e.kind === "candidate") ? "candidate" : "mixed",
+    claims: claims.every((c) => c.kind === "candidate") ? "candidate" : "mixed",
     mechanism: session.mechanism.kind,
     hypothesis: session.hypothesis.status,
     experiment: `${session.experiment.kind}/${session.experiment.status}`,
@@ -766,6 +840,7 @@ export function sessionCandidateFlags(session: WorkbenchSession): {
   const allCandidates =
     session.question.kind === "candidate" &&
     session.evidence.every((e) => e.kind === "candidate") &&
+    claims.every((c) => c.kind === "candidate") &&
     session.mechanism.kind === "candidate" &&
     session.mechanism.illustrative === true &&
     (session.hypothesis.status === "candidate" || session.hypothesis.status === "under_review") &&
