@@ -25,7 +25,7 @@ async function handlePrepare(request: Request): Promise<Response> {
     return Response.json({ error: result.message, code: "evidence_unavailable" }, { status: 503 });
   }
 
-  const { grounding, prepared, provisionalError, provisionalSkipped } = result;
+  const { grounding, prepared, provisionalError, provisionalSkipped, researchTrace, researchTraceText } = result;
   return Response.json({
     queryClass: prepared.queryClass,
     callModel: prepared.callModel,
@@ -39,11 +39,14 @@ async function handlePrepare(request: Request): Promise<Response> {
       queryClass: grounding.queryClass,
       trace: grounding.trace,
       coverage: grounding.coverage,
+      counterEvidence: grounding.counterEvidence,
       provisionalLiterature: grounding.provisionalLiterature,
       text: grounding.text,
     },
     provisionalError: provisionalError ?? null,
     provisionalSkipped: provisionalSkipped ?? null,
+    researchTrace: researchTrace ?? null,
+    researchTraceText: researchTraceText ?? null,
   });
 }
 

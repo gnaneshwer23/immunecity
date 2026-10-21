@@ -84,15 +84,26 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     sourceOfTruth: "src/lib/askGrounding.ts + provisionalLit.server.ts",
   },
   {
+    id: "research-planner",
+    name: "Bounded research planner",
+    page: "research",
+    description:
+      "Typed plan steps + run trace scaffold for hypothesis/comparison Ask modes — not a multi-agent swarm; most tool stages remain planned.",
+    status: "partial",
+    statusAsOf: "2026-10",
+    relatedAppRoute: "/ask",
+    sourceOfTruth: "src/lib/research/researchPlanner.ts",
+  },
+  {
     id: "research-workbench",
     name: "Scientific research workbench",
     page: "research",
     description:
-      "Guided question → evidence → mechanism → hypothesis → experiment → review; candidates only. No KG write-back — curation queue handoff is human-gated export, not auto-promote.",
+      "Guided question → evidence → mechanism → hypothesis → experiment → review; candidates only. Bounded investigate plan trace on Ask (hypothesis/comparison) is a partial scaffold — not a multi-agent swarm. No KG write-back.",
     status: "partial",
     statusAsOf: "2026-10",
     relatedAppRoute: "/research",
-    sourceOfTruth: "src/data/implementation-phases.ts phase E",
+    sourceOfTruth: "src/lib/research/workbench.ts + researchPlanner.ts",
   },
   {
     id: "literature-intelligence",
