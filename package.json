@@ -16,6 +16,7 @@
     "test:e2e:nav": "playwright test e2e/marketing-nav.spec.ts",
     "a11y": "bun scripts/a11y-suite.ts",
     "sme:status": "bun scripts/sme-gold-set-status.ts",
+    "benchmark:retrieval": "bun scripts/benchmark-retrieval-baseline.ts",
     "evidence:queue": "bun scripts/build-relationship-evidence-queue.ts",
     "evidence:queue:resolve": "bun scripts/build-relationship-evidence-queue.ts --resolve-pmids",
     "db:neon-schema": "bun scripts/apply-neon-schema.ts",
