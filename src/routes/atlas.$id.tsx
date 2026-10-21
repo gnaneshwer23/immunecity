@@ -17,6 +17,7 @@ import { PRODUCT_NAME } from "@/lib/brand";
 import { absoluteUrl, conceptJsonLd, seoHead } from "@/lib/seo";
 import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
 import { XREF_SOURCES, conceptSameAs, conceptXrefs } from "@/data/xrefs";
+import TranslationalPath from "@/components/immune/TranslationalPath";
 import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
 
 export const Route = createFileRoute("/atlas/$id")({
@@ -236,6 +237,8 @@ function ConceptPage() {
               </div>
             ))}
           </ExplainerSection>
+
+          <TranslationalPath id={id} />
 
           {(steps.prereq.length || steps.next.length) ? (
             <section className="ex-section">

@@ -49,8 +49,8 @@ export function KeyTakeaways({ items, title = "In short" }: { items: ReactNode[]
   );
 }
 
-export function ExplainerSection({ title, summary, visual, children, id }: { title: ReactNode; summary?: ReactNode; visual?: ReactNode; children?: ReactNode; id?: string }) {
-  const [open, setOpen] = useState(false);
+export function ExplainerSection({ title, summary, visual, children, id, defaultOpen = false }: { title: ReactNode; summary?: ReactNode; visual?: ReactNode; children?: ReactNode; id?: string; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <section className="ex-section" id={id}>
       <div className="ex-section-text">

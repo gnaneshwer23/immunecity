@@ -7,7 +7,7 @@ import { CONTENT } from "@/data/content";
 import { PageHead, NodeLink, NodeChip } from "@/components/immune/ui";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { Section, Toolbar } from "@/components/immune/page";
-import { getLiveTrials, type LiveTrial } from "@/lib/liveData.functions";
+import { getLiveTrials, type LiveStudy, type LiveTrial } from "@/lib/liveData.functions";
 
 export const Route = createFileRoute("/therapy")({
   head: () => seoHead({ title: "Therapy: interventions and their targets — Immune Super Intelligence", description: "Every intervention in the causal graph, what it targets and which trials tested it.", path: "/therapy" }),
@@ -47,16 +47,16 @@ function Therapy() {
   const [liveState, setLiveState] = useState<"loading" | "ready" | "partial" | "unavailable">("loading");
   useEffect(() => {
     let on = true;
-    const names = nodesOf("TRIAL").map((t) => t.name);
-    getLiveTrials({ data: { names } }).then((r) => {
+    const ids = nodesOf("TRIAL").map((t) => t.id);
+    getLiveTrials({ data: { ids } }).then((r) => {
       if (!on) return;
       setLive(r);
-      const values = Object.values(r);
-      setLiveState(values.every((t) => t.unavailable) ? "unavailable" : values.some((t) => t.unavailable) ? "partial" : "ready");
+      const studies = Object.values(r).flatMap((t) => t.studies);
+      setLiveState(studies.length && studies.every((s) => s.unavailable) ? "unavailable" : studies.some((s) => s.unavailable) ? "partial" : "ready");
     }).catch(() => { if (on) setLiveState("unavailable"); });
     return () => { on = false; };
   }, []);
-  const status = (lt: LiveTrial) => lt.status!.replace(/_/g, " ").toLowerCase() + (lt.phase ? ` · ph ${lt.phase.replace(/[^0-9/]/g, "")}` : "");
+  const status = (st: LiveStudy) => st.status!.replace(/_/g, " ").toLowerCase() + (st.phase ? ` · ph ${st.phase}` : "");
   return (
     <div className="page">
       <PageHead art={ART.therapyArt}
@@ -70,7 +70,7 @@ function Therapy() {
         ]}
       />
       <Section id="therapies" n={1} title="Interventions and their targets"
-        lede="Each card names what the intervention acts on in the graph and the landmark trials that tested it, with registry status where ClinicalTrials.gov returns one.">
+        lede="Each card names what the intervention acts on in the graph and the landmark trials that tested it, with live registry status fetched by each trial’s verified NCT number.">
         <Toolbar count={`${list.length} of ${all.length} shown`}>
           <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter therapies by name…" aria-label="Filter therapies" />
           <div className="therapy-filters" role="group" aria-label="Filter by target type">
@@ -108,13 +108,16 @@ function Therapy() {
                       <dt>Trials</dt>
                       <dd>{trials.map((tid) => {
                         const t = CONTENT.trialLessons[tid];
-                        const lt = live[byId[tid]?.name ?? ""];
+                        const lt = live[tid];
                         return (
                           <div key={tid}>
                             <NodeLink id={tid} />{t ? <span className="muted"> · {t.year}</span> : null}
-                            {lt?.status ? (
-                              lt.url ? <a className="live-badge" href={lt.url} target="_blank" rel="noreferrer">● {status(lt)}</a> : <span className="live-badge">● {status(lt)}</span>
-                            ) : lt?.unavailable ? <span className="muted"> · status unavailable</span> : lt ? <span className="muted"> · no registry match</span> : null}
+                            {lt?.studies.map((st) => (
+                              <a key={st.nctId} className="live-badge" href={st.url} target="_blank" rel="noreferrer" title={`${st.label} on ClinicalTrials.gov`}>
+                                {st.nctId}{st.status ? <> · {status(st)}</> : st.unavailable ? " · status unavailable" : null}
+                              </a>
+                            ))}
+                            {lt?.unregisteredReason ? <span className="muted" title={lt.unregisteredReason}> · pre-registry trial</span> : null}
                           </div>
                         );
                       })}</dd>

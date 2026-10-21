@@ -44,6 +44,8 @@ import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
 import { Route as AtlasIdRouteImport } from './routes/atlas.$id'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
 import { Route as MechanismIdRouteImport } from './routes/mechanism.$id'
+import { Route as PipelineIndexRouteImport } from './routes/pipeline.index'
+import { Route as PipelineDiseaseRouteImport } from './routes/pipeline.$disease'
 import { Route as ApiAskPrepareRouteImport } from './routes/api/ask.prepare'
 
 const IndexRoute = IndexRouteImport.update({
@@ -220,6 +222,16 @@ const MechanismIdRoute = MechanismIdRouteImport.update({
   path: '/mechanism/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PipelineIndexRoute = PipelineIndexRouteImport.update({
+  id: '/pipeline/',
+  path: '/pipeline/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PipelineDiseaseRoute = PipelineDiseaseRouteImport.update({
+  id: '/pipeline/$disease',
+  path: '/pipeline/$disease',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAskPrepareRoute = ApiAskPrepareRouteImport.update({
   id: '/prepare',
   path: '/prepare',
@@ -259,8 +271,10 @@ export interface FileRoutesByFullPath {
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
+  '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas/': typeof AtlasIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
+  '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
 }
 export interface FileRoutesByTo {
@@ -296,8 +310,10 @@ export interface FileRoutesByTo {
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
+  '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas': typeof AtlasIndexRoute
   '/mechanism': typeof MechanismIndexRoute
+  '/pipeline': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
 }
 export interface FileRoutesById {
@@ -335,8 +351,10 @@ export interface FileRoutesById {
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/mechanism/$id': typeof MechanismIdRoute
+  '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas/': typeof AtlasIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
+  '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
 }
 export interface FileRouteTypes {
@@ -374,8 +392,10 @@ export interface FileRouteTypes {
     | '/api/ask'
     | '/atlas/$id'
     | '/mechanism/$id'
+    | '/pipeline/$disease'
     | '/atlas/'
     | '/mechanism/'
+    | '/pipeline/'
     | '/api/ask/prepare'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -411,8 +431,10 @@ export interface FileRouteTypes {
     | '/api/ask'
     | '/atlas/$id'
     | '/mechanism/$id'
+    | '/pipeline/$disease'
     | '/atlas'
     | '/mechanism'
+    | '/pipeline'
     | '/api/ask/prepare'
   id:
     | '__root__'
@@ -449,8 +471,10 @@ export interface FileRouteTypes {
     | '/api/ask'
     | '/atlas/$id'
     | '/mechanism/$id'
+    | '/pipeline/$disease'
     | '/atlas/'
     | '/mechanism/'
+    | '/pipeline/'
     | '/api/ask/prepare'
   fileRoutesById: FileRoutesById
 }
@@ -487,8 +511,10 @@ export interface RootRouteChildren {
   ApiAskRoute: typeof ApiAskRouteWithChildren
   AtlasIdRoute: typeof AtlasIdRoute
   MechanismIdRoute: typeof MechanismIdRoute
+  PipelineDiseaseRoute: typeof PipelineDiseaseRoute
   AtlasIndexRoute: typeof AtlasIndexRoute
   MechanismIndexRoute: typeof MechanismIndexRoute
+  PipelineIndexRoute: typeof PipelineIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -738,6 +764,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MechanismIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pipeline/': {
+      id: '/pipeline/'
+      path: '/pipeline'
+      fullPath: '/pipeline/'
+      preLoaderRoute: typeof PipelineIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pipeline/$disease': {
+      id: '/pipeline/$disease'
+      path: '/pipeline/$disease'
+      fullPath: '/pipeline/$disease'
+      preLoaderRoute: typeof PipelineDiseaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ask/prepare': {
       id: '/api/ask/prepare'
       path: '/prepare'
@@ -803,8 +843,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAskRoute: ApiAskRouteWithChildren,
   AtlasIdRoute: AtlasIdRoute,
   MechanismIdRoute: MechanismIdRoute,
+  PipelineDiseaseRoute: PipelineDiseaseRoute,
   AtlasIndexRoute: AtlasIndexRoute,
   MechanismIndexRoute: MechanismIndexRoute,
+  PipelineIndexRoute: PipelineIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

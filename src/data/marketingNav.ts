@@ -133,6 +133,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
       { n: "I3", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench." },
       { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
       { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Rule-based teaching — not medical advice." },
+      { n: "I6", path: "/pipeline", title: "Disease pipelines", desc: "Therapies by mechanism, landmark and active trials." },
     ],
   },
   {
