@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
-import { ZoomIn, ZoomOut, Maximize2, Download, List, Network } from "lucide-react";
+import { ZoomIn, ZoomOut, Scan, List, Network } from "lucide-react";
 import { KG, TYPES, byId, SEM, deg, out, inn, propagate, human, TISSUES, edgeTissues, type NodeType, type Tissue, type KGEdge } from "@/lib/immune/engine";
-import { download, graphToCytoscape, graphToGraphML, graphToCSV } from "@/lib/immune/export";
 import { PageHead, NodeLink } from "./ui";
 import GraphNodeDetail from "./GraphNodeDetail";
 import GraphEdgeDetail from "./GraphEdgeDetail";
@@ -89,7 +88,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
     sel.selectAll("*").remove();
     sel.attr("viewBox", `0 0 ${width} ${height}`);
     const root = sel.append("g");
-    const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.25, 3]).on("zoom", (e) => root.attr("transform", e.transform));
+    const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.1, 3]).on("zoom", (e) => root.attr("transform", e.transform));
     zoomRef.current = zoom;
     sel.call(zoom);
 
@@ -190,7 +189,20 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
 
   const toggle = (t: NodeType) => setActive((prev) => { const n = new Set(prev); if (n.has(t)) n.delete(t); else n.add(t); return n; });
   const zoomBy = (k: number) => { if (svgRef.current && zoomRef.current) (d3.select(svgRef.current).transition().duration(220) as any).call(zoomRef.current.scaleBy, k); };
-  const zoomReset = () => { if (svgRef.current && zoomRef.current) (d3.select(svgRef.current).transition().duration(220) as any).call(zoomRef.current.transform, d3.zoomIdentity); };
+  /** Frame every drawn concept in the stage (the old "reset zoom" did nothing visible unless you had zoomed). */
+  const zoomFit = () => {
+    const stage = stageRef.current, svgEl = svgRef.current, zoom = zoomRef.current;
+    const pts = (nodeSel.current?.data() as { x?: number; y?: number }[] | undefined)?.filter(
+      (d) => Number.isFinite(d.x) && Number.isFinite(d.y),
+    );
+    if (!stage || !svgEl || !zoom || !pts?.length) return;
+    const xs = pts.map((d) => d.x!), ys = pts.map((d) => d.y!);
+    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+    const pad = 40, w = stage.clientWidth, h = stage.clientHeight;
+    const k = Math.max(0.1, Math.min(3, Math.min((w - pad * 2) / Math.max(x1 - x0, 1), (h - pad * 2) / Math.max(y1 - y0, 1))));
+    const t = d3.zoomIdentity.translate(w / 2 - ((x0 + x1) / 2) * k, h / 2 - ((y0 + y1) / 2) * k).scale(k);
+    (d3.select(svgEl).transition().duration(300) as any).call(zoom.transform, t);
+  };
 
   const [findQ, setFindQ] = useState("");
   const [viewMode, setViewMode] = useState<"graph" | "list">("graph");
@@ -378,16 +390,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
           <div className="graph-tools">
             <button className="icon-btn" onClick={() => zoomBy(1.4)} aria-label="Zoom in" title="Zoom in"><ZoomIn size={16} /></button>
             <button className="icon-btn" onClick={() => zoomBy(1 / 1.4)} aria-label="Zoom out" title="Zoom out"><ZoomOut size={16} /></button>
-            <button className="icon-btn" onClick={zoomReset} aria-label="Reset zoom" title="Reset zoom"><Maximize2 size={16} /></button>
-            <button className="icon-btn" aria-label="Export the current view" title="Export the current view (filtered)"
-              onClick={() => {
-                const stamp = "immune-city-graph";
-                download(`${stamp}.json`, graphToCytoscape(nodes, links), "application/json");
-                download(`${stamp}.graphml`, graphToGraphML(nodes, links), "application/graphml+xml");
-                const { nodes: nc, links: lc } = graphToCSV(nodes, links);
-                download(`${stamp}-nodes.csv`, nc, "text/csv");
-                download(`${stamp}-links.csv`, lc, "text/csv");
-              }}><Download size={16} /></button>
+            <button className="icon-btn" onClick={zoomFit} aria-label="Fit graph to view" title="Fit graph to view"><Scan size={16} /></button>
             {pick.ids.size ? <button className="chip on" onClick={clearPick}>{pick.ids.size} selected · clear</button> : null}
           </div>
           {!nodes.length ? (
