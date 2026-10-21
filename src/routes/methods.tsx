@@ -18,7 +18,7 @@ export const Route = createFileRoute("/methods")({
   head: () =>
     seoHead({
       title: pageTitle("Evidence & Methods"),
-      description: `Understand the ${FLAGSHIP_NAME} graph, live Gate C coverage, Ask fail-closed behaviour, model assumptions and scientific limitations. Educational beta — most relationship claims are not yet claim-approved.`,
+      description: `How the ${FLAGSHIP_NAME} graph, claim review, Ask grounding, model assumptions and scientific limits work. Educational resource — most relationship claims are not yet approved.`,
       path: "/methods",
       type: "article",
     }),
@@ -34,8 +34,8 @@ function LiveEvidencePanel() {
         <h3 id="live-ev-heading">Live evidence coverage</h3>
         <p>
           Evidence database unavailable
-          {coverageError ? ` (${coverageError})` : ""}. This is a service error, not a finding that the graph
-          has zero reviewed citations.
+          {coverageError ? ` (${coverageError})` : ""}. This is a service error, not a finding of zero reviewed
+          citations.
         </p>
       </div>
     );
@@ -46,11 +46,11 @@ function LiveEvidencePanel() {
       <h3 id="live-ev-heading">Live evidence coverage</h3>
       <dl className="mkt-ev-metrics">
         <div>
-          <dt>Gate C (distinct rels)</dt>
+          <dt>Reviewed relationship claims</dt>
           <dd>{`${data.distinctGateCRels} / ${data.runtimeRelationships}`}</dd>
         </div>
         <div>
-          <dt>Approved+supports rows</dt>
+          <dt>Approved supporting rows</dt>
           <dd>{data.approvedSupportsRows}</dd>
         </div>
         <div>
@@ -58,7 +58,7 @@ function LiveEvidencePanel() {
           <dd>{`${data.contradicts} / ${data.partial}`}</dd>
         </div>
         <div>
-          <dt>Open P0 exemplar targets</dt>
+          <dt>Open priority pathway targets</dt>
           <dd>{data.openP0Targets}</dd>
         </div>
       </dl>
@@ -67,15 +67,15 @@ function LiveEvidencePanel() {
           {data.exemplar.map((e) => (
             <li key={e.pathwayId}>
               {e.title}: {e.approvedEdges}/{e.uniqueEdges} on-path approved · {e.maturity}
-              {e.openP0Targets ? ` · ${e.openP0Targets} P0 open` : ""}
+              {e.openP0Targets ? ` · ${e.openP0Targets} priority open` : ""}
             </li>
           ))}
         </ul>
       ) : null}
       <p className="mkt-aside">
-        Fetched at <code>{data.fetchedAt}</code>. Gate C = distinct <code>relationship_id</code> with
-        approved+supports. Counterevidence is separate. Concept-level rows never inflate coverage.{" "}
-        <Link to="/evidence">Full Evidence breakdown</Link>
+        Fetched at <code>{data.fetchedAt}</code>. A reviewed claim is a distinct relationship with approved
+        supporting evidence. Counterevidence is counted separately. Concept-level rows never inflate coverage.{" "}
+        <Link to="/evidence">Evidence explorer</Link>
       </p>
     </div>
   );
@@ -94,22 +94,22 @@ const LIFECYCLE = [
   {
     n: "01",
     title: "Claim",
-    copy: "A directional relationship ID: REL-subject-relation-object.",
+    copy: "A directional relationship: subject, predicate, object.",
   },
   {
     n: "02",
     title: "Citation",
-    copy: "PMID/DOI linked and metadata-checked — identity only, not claim approval.",
+    copy: "PMID or DOI linked and metadata-checked — identity only, not claim approval.",
   },
   {
     n: "03",
     title: "Review",
-    copy: "Human maps the source to the exact claim and sets claim_support.",
+    copy: "A human maps the source to that exact claim and records support or conflict.",
   },
   {
     n: "04",
     title: "Limits",
-    copy: "Unreviewed stays labelled; sparse approval never implies clinical validation.",
+    copy: "Unreviewed stays labelled. Sparse approval never implies clinical validation.",
   },
 ] as const;
 
@@ -122,8 +122,8 @@ function Methods() {
     <div className="mkt-page methods">
       <MarketingHero
         eyebrow="Evidence & Methods"
-        title="See what supports a claim—and where the evidence stops."
-        lede={`${FLAGSHIP_NAME} distinguishes a source identifier, metadata verification and scientific assessment of a specific relationship. A citation counts as support only when mapped to that directional claim and reviewed. Live Neon coverage below is Gate C density — still sparse versus runtime links. Educational teaching with references — not clinical decision support.`}
+        title="What supports a claim — and where the evidence stops."
+        lede={`${FLAGSHIP_NAME} separates source identity, metadata checks and scientific assessment of a specific relationship. A citation counts as support only when mapped to that claim and reviewed. Live coverage below shows how many relationship claims are approved — still a small share of runtime links.`}
         actions={
           <>
             <Button asChild className="bio-primary">
@@ -156,9 +156,9 @@ function Methods() {
 
         <MarketingSection
           id="lifecycle"
-          eyebrow="01 / LIFECYCLE"
+          eyebrow="Lifecycle"
           title="Claims, citations, review, limits."
-          lede="Trust comes from inspectable process — not decorative badges."
+          lede="Trust comes from an inspectable process — not decorative badges."
         >
           <ol className="mkt-lifecycle">
             {LIFECYCLE.map((step) => (
@@ -171,15 +171,15 @@ function Methods() {
           </ol>
           <div className="mkt-split">
             <div>
-              <h3>Identifier verification ≠ claim approval</h3>
+              <h3>Identifier verification is not claim approval</h3>
               <ul className="mkt-principle-list">
                 <li>
-                  <b>ID verification</b> — PubMed / Crossref confirms a PMID or DOI resolves → “Source linked,” not
-                  Supported.
+                  <b>ID verification</b> — PubMed or Crossref confirms a PMID or DOI resolves. That is “source linked,”
+                  not “supported.”
                 </li>
                 <li>
-                  <b>Claim approval</b> — a human maps the source to <code>REL-…</code>, sets{" "}
-                  <code>claim_support = supports</code>, and marks curation approved.
+                  <b>Claim approval</b> — a human maps the source to the relationship, records support or conflict, and
+                  marks curation approved.
                 </li>
                 <li>No mass-approve path. Concept-level cites never inflate relationship coverage.</li>
               </ul>
@@ -190,8 +190,8 @@ function Methods() {
 
         <MarketingSection
           id="statuses"
-          eyebrow="02 / REVIEW STATUSES"
-          title="Every relationship carries an honest label."
+          eyebrow="Review statuses"
+          title="Every relationship carries a clear label."
         >
           <ul className="mkt-status-panels">
             {statuses.map((s) => (
@@ -205,19 +205,17 @@ function Methods() {
 
         <MarketingSection
           id="ontology"
-          eyebrow="03 / GRAPH"
+          eyebrow="Graph"
           title="Typed concepts. Directional claims."
         >
           <p>
             Every concept is a typed node with a stable ID. Every link is one directional claim — subject, predicate,
-            object — with relationship ID <code>REL-subject-predicate-object</code>, a mechanism, a confidence and,
-            where known, a tissue.
+            object — with a mechanism note, a confidence value and, where known, a tissue.
           </p>
           <p className="mkt-aside">
             Release <code>{snap.snapshotAt}</code>: core v{snap.coreVersion} · {snap.coreNodes}/{snap.coreRelationships}{" "}
             core · extensions {snap.extensionsVersion} add {snap.draftNodes}/{snap.draftRelationships} drafts · runtime{" "}
-            {snap.runtimeNodes}/{snap.runtimeRelationships}. Drafts are always labelled and never counted as approved
-            evidence.
+            {snap.runtimeNodes}/{snap.runtimeRelationships}. Drafts are labelled and never counted as approved evidence.
           </p>
           {snap.versionNotes ? <p className="mkt-aside">{snap.versionNotes}</p> : null}
           <h3 className="mkt-subhead">Relationship signs</h3>
@@ -238,28 +236,27 @@ function Methods() {
 
         <MarketingSection
           id="models"
-          eyebrow="04 / MODELS"
+          eyebrow="Models"
           title="Assumptions stay explicit."
         >
           <ul className="mkt-principle-list">
             <li>
               <b>Perturbation (graph):</b> signed spread along + / − / r+ links, decaying 28% per hop, weighted by
-              confidence, up to 4 hops. Direction, not real-world magnitude.
+              confidence, up to 4 hops. Direction only — not real-world magnitude.
             </li>
             <li>
               <b>System simulator:</b> coupled equations in normalised units with hand-set parameters — not fitted to
               patient data.
             </li>
             <li>
-              <b>Patient layer:</b> transparent additive rules. Educational illustration — not patient-specific advice.
+              <b>Patient layer:</b> transparent additive rules for teaching — not patient-specific advice.
             </li>
             <li>
-              <b>Ask Immune:</b> classify → retrieve graph context → attach Gate C reviewed relationship cites when
-              present → optionally fetch provisional PubMed/Europe PMC hits (never auto-approved) → surface
-              counterevidence (contradicts/partial) in a separate bucket when curated → optional synthesis from that
-              extract only (prompt {PROMPT_VERSION}). Citation-to-claim checks fail-closed on invented IDs, Gate C
-              overclaims and unlabelled provisional lit. Sparse cites mean Ask Immune is graph-retrieved, not fully
-              evidence-grounded. Answers can still be wrong.{" "}
+              <b>Ask Immune:</b> classifies the question, retrieves graph context, attaches reviewed relationship cites
+              when present, may list provisional PubMed/Europe PMC hits as unreviewed, and surfaces curated
+              counterevidence separately. Optional synthesis uses that extract only (prompt {PROMPT_VERSION}). Invented
+              citation IDs and overclaims are rejected. Sparse reviewed cites mean Ask is graph-based teaching, not
+              fully evidence-grounded AI. Answers can still be wrong.{" "}
               <Link to="/ask">Open Ask</Link>
               {" · "}
               <Link to="/reasoning" hash="how-ai-works">
@@ -271,13 +268,12 @@ function Methods() {
               verified {ASK_RATE_LIMIT_STATUS.verifiedAt}). {ASK_RATE_LIMIT_STATUS.residual}
             </li>
             <li>
-              <b>Research / claim ledger / adapters:</b> candidate workflows and a partial workbench spine
-              (Question→Search→Screen→Extract→Assess→Hypothesis→Export) on{" "}
+              <b>Research workbench:</b> candidate workflows on{" "}
               <Link to="/research" hash="workbench">
                 Research
               </Link>{" "}
-              — never auto-promoted into the curated graph. Claim-ledger candidates are drafts only. Advanced adapters
-              are planned interfaces; dry-runs report not available.
+              — never auto-promoted into the curated graph. Omics and molecular AI adapters are planned interfaces;
+              dry-runs report not available.
             </li>
           </ul>
           <ModelRegistryPanel compact />
@@ -295,27 +291,26 @@ function Methods() {
           </ul>
         </MarketingSection>
 
-        <MarketingSection id="limitations" eyebrow="05 / LIMITS" title="Where the evidence stops.">
+        <MarketingSection id="limitations" eyebrow="Limits" title="Where the evidence stops.">
           <ul className="mkt-principle-list">
             <li>
-              Most links have not yet been claim-checked; approved relationship claims remain sparse versus runtime link
-              count (see live coverage above) and do not imply clinical validation.
+              Most links have not yet been claim-checked. Approved relationship claims remain a small share of runtime
+              links (see live coverage above) and do not imply clinical validation.
             </li>
             <li>
               Exemplar progress is uneven: TNF→RA on-path edges have approved claim support; PD-1 / PD-L1 is partially
-              reviewed; type-I IFN→SLE remains largely scaffold-ish outside a few reviewed edges.
+              reviewed; type-I IFN→SLE remains largely early outside a few reviewed edges.
             </li>
             <li>
-              Neon may still have zero <code>contradicts</code> rows — the counterevidence / skeptic path is wired, but
-              an empty bucket is honest, not proof of scientific agreement.
+              Counterevidence may still be empty in the database — an empty set is not proof of scientific agreement.
             </li>
             <li>
-              The Academy ships a navigable foundation scaffold plus in-development intermediate and advanced scaffolds —
-              not a finished curriculum or Gate C coverage claim.
+              Academy offers a foundation track plus intermediate and advanced tracks in development — not a finished
+              curriculum, and not a claim that evidence coverage is complete.
             </li>
-            <li>Links simplify dose, timing, species and individual variation; tissue context is sparse.</li>
+            <li>Links simplify dose, timing, species and individual variation; tissue context is limited.</li>
             <li>
-              This product educates with references; it is not medical advice, clinician decision support, or
+              This product educates with references. It is not medical advice, clinical decision support or
               patient-specific guidance. See the <Link to="/disclaimer">educational disclaimer</Link>.
             </li>
           </ul>

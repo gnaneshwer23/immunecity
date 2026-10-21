@@ -45,8 +45,8 @@ export function CausalSpine({ compact = false }: { compact?: boolean }) {
       </ol>
 
       <div className="spine-detail" aria-live="polite">
-        <span className="bio-section-number">
-          {String(activeNum).padStart(2, "0")} / {spineLabel(active)}
+        <span className="mkt-section-label">
+          Stage {activeNum} · {spineLabel(active)}
         </span>
         <h3>{SPINE_QUESTION[active] ?? spineLabel(active)}</h3>
         {members.length > 0 ? (

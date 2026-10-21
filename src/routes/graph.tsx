@@ -15,7 +15,7 @@ export const Route = createFileRoute("/graph")({
       mode: fallback(z.string(), "").default(""),
     }),
   ),
-  head: () => seoHead({ title: "Knowledge graph: the causal map — Immune Super Intelligence", description: "Explore every immune concept and typed causal link, and simulate blocking or activating any node.", path: "/graph" }),
+  head: () => seoHead({ title: "Knowledge graph: the causal map — Immune Super Intelligence", description: "Explore typed immune concepts and directional causal links, and simulate blocking or activating a node.", path: "/graph" }),
   component: GraphPage,
 });
 
@@ -37,7 +37,7 @@ function Fallback() {
         </aside>
         <div className="graph-stage graph-stage-loading">
           <p className="empty" role="status">
-            Preparing the explorer — typed concepts and directional links from the curated graph.
+            Preparing the explorer — typed concepts and directional links.
           </p>
         </div>
       </div>
@@ -53,9 +53,9 @@ function GraphGuide() {
   return (
     <aside className="ex-guide page" aria-label="How to use the graph">
       <ol>
-        <li><span className="ex-num">1</span><span><b>Search or click</b> a concept to focus on it.</span></li>
-        <li><span className="ex-num">2</span><span><b>Follow the arrows</b> — they show what causes what.</span></li>
-        <li><span className="ex-num">3</span><span><b>Select a link</b> to see how well it is supported.</span></li>
+        <li><span className="ex-num">1</span><span><b>Search or select</b> a concept to focus on it.</span></li>
+        <li><span className="ex-num">2</span><span><b>Follow the arrows</b> — they show directional relationships.</span></li>
+        <li><span className="ex-num">3</span><span><b>Select a link</b> to inspect its evidence status.</span></li>
       </ol>
       <button type="button" className="btn sm" onClick={() => { localStorage.setItem(GUIDE_KEY, "1"); setShow(false); }}>Got it</button>
     </aside>

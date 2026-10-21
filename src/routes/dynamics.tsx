@@ -40,7 +40,7 @@ function Dynamics() {
       />
       <PageToc items={TOC} />
       <Section id="tissues" n={1} title="Tissue immunology"
-        lede={`${CONTENT.tissues.length} compartments, what they do for immunity, and the disease that follows when they fail. Select one to open its dossier.`}>
+        lede={`${CONTENT.tissues.length} compartments — what they do for immunity, and the disease that follows when they fail. Select one to open its detail.`}>
         <div className="dyn-grid" role="group" aria-label="Tissue compartments">
           {CONTENT.tissues.map((t) => (
             <button

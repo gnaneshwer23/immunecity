@@ -24,11 +24,11 @@ const LANDING_CAPABILITY_IDS = [
 ] as const;
 
 const WONT_CLAIM_ITEMS = [
-  "Not clinical decision support — educational teaching only.",
-  "Gate C claim-linked cites remain sparse (~few reviewed relationship claims vs hundreds of runtime links).",
-  "Ask Immune is graph-retrieved teaching — not fully evidence-grounded AI.",
-  "Academy is a learning overlay — not certification.",
-  "Omics / molecular AI adapters stay planned stubs.",
+  "Not clinical decision support — for learning and exploration only.",
+  "Ask Immune draws on the curated graph and labelled sources; it is not fully evidence-grounded AI.",
+  "Most graph relationships are not yet claim-reviewed — see Methods for live coverage.",
+  "Academy tracks learning progress; it is not a certification programme.",
+  "Omics and molecular AI adapters are planned, not available today.",
 ] as const;
 
 /** Midnight marketing hero — brand-forward, lean first viewport. */
@@ -108,7 +108,7 @@ export function MarketingSection({
   return (
     <section className={`mkt-section ${className}`.trim()} id={id} aria-labelledby={headingId}>
       <div className="mkt-section-head">
-        {eyebrow ? <span className="bio-section-number">{eyebrow}</span> : null}
+        {eyebrow ? <span className="mkt-section-label">{eyebrow}</span> : null}
         <h2 id={headingId}>{title}</h2>
         {lede ? <p className="mkt-section-lede">{lede}</p> : null}
       </div>
@@ -197,11 +197,11 @@ export function CapabilityChips({ className = "" }: { className?: string }) {
   );
 }
 
-/** Concise honesty limits — not CDS, sparse Gate C, Academy not cert, omics planned. */
+/** Concise product limits — one place for public honesty, without engineering jargon. */
 export function WontClaimList({ className = "" }: { className?: string }) {
   return (
     <div className={`mkt-wont-claim ${className}`.trim()}>
-      <h3>What we won&apos;t claim</h3>
+      <h3>What this is not</h3>
       <ul>
         {WONT_CLAIM_ITEMS.map((item) => (
           <li key={item}>{item}</li>

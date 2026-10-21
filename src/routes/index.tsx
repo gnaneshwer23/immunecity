@@ -5,14 +5,11 @@ import { ArrowRight, ArrowUpRight, BookOpen, FlaskConical, Microscope, Network }
 import { Button } from "@/components/ui/button";
 import { CausalSpine } from "@/components/immune/CausalSpine";
 import { IsiCityBand } from "@/components/immune/IsiCityBand";
-import {
-  CapabilityChips,
-  ExemplarMaturityStrip,
-  WontClaimList,
-} from "@/components/immune/marketing";
+import { WontClaimList } from "@/components/immune/marketing";
 import { CONTENT } from "@/data/content";
 import { VISION_MOTTO } from "@/data/vision";
 import {
+  ASK_PUBLIC_LINE,
   BRAND_EYEBROW,
   EXPLORE_CTA,
   EXPLORE_PATH,
@@ -36,19 +33,19 @@ import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 const HOME_DRAFT_TEASERS = [
   {
     title: "Fibre → butyrate → Treg → IBD",
-    blurb: "Fibre / microbiota → butyrate → Treg → IBD teaching chain — educational scaffold; claim-level review incomplete.",
+    blurb: "Microbiota–butyrate–Treg teaching chain toward IBD context — draft, review incomplete.",
     lessonId: "microbiome",
     hash: "draft-pathway",
   },
   {
     title: "Vaccine → germinal centre → memory",
-    blurb: "How a vaccine leaves antibodies and memory behind — draft scaffold from the vaccines extension.",
+    blurb: "How vaccination builds germinal-centre affinity and lasting memory — draft lesson.",
     lessonId: "vaccines",
     hash: "draft-vaccine",
   },
   {
     title: "Shared epitope → ACPA → RA",
-    blurb: "HLA class II shared epitope → ACPA → seropositive RA neighbourhood — association teaching, still draft.",
+    blurb: "HLA shared-epitope associations into the RA neighbourhood — draft teaching path.",
     lessonId: "immunogenetics",
     hash: "draft-hla",
   },
@@ -65,16 +62,16 @@ export const Route = createFileRoute("/")({
     seoHead({
       title: `${PRODUCT_NAME} | ${TAGLINE}`,
       description:
-        "Immune Super Intelligence — explore mechanisms and a curated causal graph. Ask Immune retrieves graph context and Gate C cites when present; provisional literature stays labelled. Educational beta — not fully evidence-grounded AI; not clinical advice.",
+        "Immune Super Intelligence — explore mechanisms through a curated causal graph. Ask Immune answers from graph context with labelled sources. Educational resource — not clinical decision support.",
       path: "/",
     }),
   component: Home,
 });
 
 const INVESTIGATE_TOOLS = [
-  { to: "/simulator", icon: FlaskConical, title: "System simulator", can: "Run a 30-day infection and add treatments to see which outcome follows.", limit: "Hand-set teaching parameters — not calibrated to patients or a prediction." },
-  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect Ask retrieval, and walk exemplar pathways with live maturity.", limit: "Graph-retrieved teaching; fail-closes unsupported citation claims — not fully evidence-grounded AI." },
-  { to: "/patient", icon: Microscope, title: "Patient and biomarkers", can: "See how biomarker thresholds map to educational rule flags.", limit: "Draft rules for teaching — no individual medical assessment." },
+  { to: "/simulator", icon: FlaskConical, title: "System simulator", can: "Run a 30-day infection and add treatments to see which outcome follows.", limit: "Teaching parameters only — not calibrated to patients." },
+  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect Ask retrieval and walk curated pathways.", limit: "Illustrative walks with labelled sources — not fully evidence-grounded AI." },
+  { to: "/patient", icon: Microscope, title: "Patient and biomarkers", can: "See how biomarker thresholds map to educational rule flags.", limit: "Teaching rules only — not an individual assessment." },
 ] as const;
 
 /** Home causal preview: TNF→RA exemplar (documented maturity; live cites still load in the graph). */
@@ -92,10 +89,10 @@ function InteractiveMechanism() {
   return (
     <>
       {isPending ? (
-        <p className="home-causal-note" role="status">Loading live review status for each hop…</p>
+        <p className="home-causal-note" role="status">Loading review status…</p>
       ) : isError ? (
         <p className="home-causal-note" role="alert">
-          Evidence service unavailable — hop badges below cannot be recomputed from live approvals.
+          Evidence service unavailable — review badges may be stale.
         </p>
       ) : null}
       <ol className="isi-mech" aria-label={`${MECHANISM_EXEMPLAR.title} — inspect each step`}>
@@ -127,21 +124,21 @@ function HomeCausalPathway() {
   const { data: cites = [], isPending, isError } = useQuery(approvedQuery);
   const report = reportExemplar(HOME_EXEMPLAR, cites);
   const maturityLine = isPending
-    ? "Loading live review status…"
+    ? "Loading review status…"
     : isError
-      ? "Evidence service unavailable — hop badges may not reflect approvals (not the same as zero reviewed support)."
+      ? "Evidence service unavailable — status may be stale."
       : EXEMPLAR_MATURITY_LABEL[report.maturity];
 
   return (
     <div className="home-pathway">
       <div className="bio-section-heading">
         <div>
-          <span className="bio-section-number">CURATED GRAPH PATHWAY</span>
+          <span className="mkt-section-label">Curated pathway</span>
           <h2 id="demo-heading">{HOME_EXEMPLAR.title}</h2>
         </div>
         <p>
-          Real relationships from the curated graph — each hop links to a graph record with its current evidence
-          status. Maturity: {maturityLine}
+          Relationships from the curated graph — each hop opens its record and current review status.{" "}
+          {maturityLine}
         </p>
       </div>
       <ol className="home-causal-path" aria-label={`${HOME_EXEMPLAR.title} relationships`}>
@@ -177,12 +174,11 @@ function HomeCausalPathway() {
         )}
       </ol>
       <p className="home-causal-note">
-        {HOME_EXEMPLAR.purpose} Teaching axis only — not disease-complete. Primary reviewed exemplar.{" "}
-        <Link to="/overview">Platform exemplars</Link>
+        {HOME_EXEMPLAR.purpose} Teaching axis — not a complete disease model.{" "}
+        <Link to="/overview">More pathways</Link>
         {" · "}
-        <Link to="/methods">Evidence lifecycle</Link>
+        <Link to="/methods">Evidence methods</Link>
       </p>
-      <ExemplarMaturityStrip cites={cites} pending={isPending} error={isError} />
       {HOME_DRAFT_ROUTES.length ? (
         <div className="home-draft-teaser-list" aria-label="Draft teaching chains">
           {HOME_DRAFT_ROUTES.map((t) => (
@@ -214,8 +210,8 @@ function HomeCoverageGlance() {
     return (
       <p className="home-causal-note" role="alert">
         Live coverage unavailable
-        {coverageError ? ` (${coverageError})` : ""}. That is a service error, not proof of zero reviewed
-        cites.{" "}
+        {coverageError ? ` (${coverageError})` : ""}. That is a service error, not a finding of zero
+        reviewed claims.{" "}
         <Link to="/methods" hash="live-ev-heading">
           Methods coverage
         </Link>
@@ -224,16 +220,14 @@ function HomeCoverageGlance() {
   }
   return (
     <p className="home-causal-note" role="status">
-      Live Gate C: <b>{data.distinctGateCRels}</b> / {data.runtimeRelationships} distinct
-      relationship claims with approved+supports
-      {` · contradicts ${data.contradicts} / partial ${data.partial}`}. Coverage stays
-      sparse on purpose until curators map claims.{" "}
+      Reviewed relationship claims: <b>{data.distinctGateCRels}</b> of {data.runtimeRelationships}.
+      Most links still await claim review.{" "}
       <Link to="/methods" hash="live-ev-heading">
-        Methods dashboard
+        Methods
       </Link>
       {" · "}
       <Link to="/evidence" hash="coverage">
-        Evidence breakdown
+        Evidence explorer
       </Link>
     </p>
   );
@@ -271,27 +265,30 @@ function Home() {
 
       <div className="bio-content home-sections">
         <nav className="isi-three" aria-label="Three ways in">
-          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>Graph + Gate C cites when present; provisional PubMed/Europe PMC labelled unreviewed; fail-closes unsupported citation claims. Not fully evidence-grounded AI.</span></Link>
-          <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Explore cells, molecules, diseases and therapies — one page each.</span></Link>
-          <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Journal metadata, candidate claims and a partial workbench spine — nothing auto-approved.</span></Link>
+          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>{ASK_PUBLIC_LINE}</span></Link>
+          <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Cells, molecules, diseases and therapies — one page per concept.</span></Link>
+          <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Journal metadata and candidate claims — reviewed before they enter the curated graph.</span></Link>
         </nav>
         {/* B — What ISI enables */}
         <section className="bio-section" aria-labelledby="enables-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">01 / SCIENTIFIC EXPLORATION</span>
-              <h2 id="enables-heading">Not isolated facts — connected mechanisms.</h2>
+              <span className="mkt-section-label">Exploration</span>
+              <h2 id="enables-heading">From isolated facts to connected mechanisms.</h2>
             </div>
-            <p>A search returns a fact. ISI shows what it connects to, in which direction, and how well it is supported.</p>
+            <p>
+              A typical search returns definitions and papers. ISI shows what a concept connects to, in which direction,
+              and how far claim review has progressed.
+            </p>
           </div>
           <div className="home-compare">
             <div className="home-compare-col home-compare-flat">
               <span className="home-compare-label">A typical search</span>
               <p className="home-compare-q">"What does TNF do?"</p>
               <ul>
-                <li>A list of papers and definitions</li>
-                <li>No direction: cause and effect look the same</li>
-                <li>No path to disease, target or therapy</li>
+                <li>Lists of papers and definitions</li>
+                <li>Cause and effect look the same</li>
+                <li>No clear path to disease, target or therapy</li>
                 <li>Evidence quality left for you to judge</li>
               </ul>
             </div>
@@ -306,13 +303,13 @@ function Home() {
         <section className="bio-section" aria-labelledby="home-spine-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">02 / THE IMMUNE SYSTEM ARCHITECTURE</span>
-              <h2 id="home-spine-heading">Fifteen causal stages, from trigger to discovery.</h2>
+              <span className="mkt-section-label">Architecture</span>
+              <h2 id="home-spine-heading">Fifteen stages from trigger to discovery.</h2>
             </div>
             <p>
-              Twelve layers organise the parts (cells, molecules, tissues, disease, therapy); fifteen stages order the
-              reasoning from trigger to discovery. The chain is an educational model — individual links carry their own
-              evidence status. See all twelve layers on <Link to="/overview">Overview</Link>.
+              Twelve layers organise the parts — cells, molecules, tissues, disease, therapy. Fifteen stages order
+              reasoning from trigger to discovery. Each link carries its own review status.{" "}
+              <Link to="/overview">See all twelve layers</Link>.
             </p>
           </div>
           <CausalSpine compact />
@@ -323,30 +320,29 @@ function Home() {
         <section className="bio-section" aria-labelledby="mech-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">03 / EXPLORE A MECHANISM</span>
+              <span className="mkt-section-label">Mechanism</span>
               <h2 id="mech-heading">{MECHANISM_EXEMPLAR.title}</h2>
             </div>
             <p>
-              Real graph links, in order. Select a concept to open its details, or an arrow to inspect the evidence for
-              that link. Status badges show what has and has not been reviewed.
+              Graph links in order. Open a concept for detail, or an arrow for the evidence on that relationship.
+              Badges show what has been reviewed.
             </p>
           </div>
           <InteractiveMechanism />
           <p className="home-causal-note">
-            <Link to="/mechanism">Walk more mechanisms</Link>{" · "}<Link to="/graph">Open the full graph</Link>
+            <Link to="/mechanism">More mechanisms</Link>{" · "}<Link to="/graph">Full knowledge graph</Link>
           </p>
         </section>
 
         {/* E — Research intelligence */}
         <section className="bio-section isi-split" aria-labelledby="research-heading">
           <div>
-            <span className="bio-section-number">04 / RESEARCH INTELLIGENCE</span>
+            <span className="mkt-section-label">Research</span>
             <h2 id="research-heading">From a paper to a reviewable claim.</h2>
             <p className="lede">
-              The Research Library searches live Crossref metadata across Nature Portfolio immunology journals
-              (no affiliation implied). Proposing an article starts a local candidate — never Gate C. Ask Immune may
-              also surface provisional PubMed/Europe PMC hits as unreviewed. The workbench spine
-              (Question→…→Export) is partial; claim-ledger candidates do not write the curated graph.
+              The Research Library searches Crossref metadata across Nature Portfolio immunology journals
+              (no affiliation implied). Proposing an article creates a local candidate only. Nothing enters the
+              curated graph until a human reviews the claim.
             </p>
             <div className="bio-actions">
               <Button asChild className="bio-primary">
@@ -358,10 +354,10 @@ function Home() {
             </div>
           </div>
           <ol className="isi-ladder" aria-label="How research material is labelled">
-            <li><b>Source material</b><span>Journal metadata (Crossref) or provisional PubMed/Europe PMC hits — identity only until reviewed.</span></li>
-            <li><b>Candidate claim</b><span>A person-drafted statement mapped to a relationship ID — still unreviewed.</span></li>
-            <li><b>Counterevidence path</b><span>Contradicts / partial assessments stay separate from Gate C support (Neon may still have none).</span></li>
-            <li><b>Hypothesis / export</b><span>Workbench drafts and curation handoff — never auto-promoted to the curated graph.</span></li>
+            <li><b>Source material</b><span>Journal metadata or provisional literature hits — identity only until reviewed.</span></li>
+            <li><b>Candidate claim</b><span>A drafted statement mapped to a relationship — still unreviewed.</span></li>
+            <li><b>Counterevidence</b><span>Contradicts and partial assessments stay separate from approved support.</span></li>
+            <li><b>Hypothesis / export</b><span>Workbench drafts for curation — never auto-promoted to the curated graph.</span></li>
           </ol>
         </section>
 
@@ -369,10 +365,10 @@ function Home() {
         <section className="bio-section" aria-labelledby="investigate-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">05 / INVESTIGATE AND SIMULATE</span>
-              <h2 id="investigate-heading">Test ideas — with the limits in plain sight.</h2>
+              <span className="mkt-section-label">Investigate</span>
+              <h2 id="investigate-heading">Test ideas with limits in view.</h2>
             </div>
-            <p>Each tool says what it can do and what it is not.</p>
+            <p>Each tool states what it can do — and what it is not.</p>
           </div>
           <div className="isi-tools">
             {INVESTIGATE_TOOLS.map((t) => (
@@ -389,7 +385,7 @@ function Home() {
         <section className="bio-section" aria-labelledby="trust-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">06 / EVIDENCE &amp; TRUST</span>
+              <span className="mkt-section-label">Evidence</span>
               <h2 id="trust-heading">Review status stays visible.</h2>
             </div>
             <p>
@@ -400,45 +396,32 @@ function Home() {
           <HomeCoverageGlance />
           <ul className="home-limit-list">
             <li>
-              <strong>Reviewed when mapped</strong>
-              <span>Citations support a relationship only after claim-level review — not concept-level padding.</span>
+              <strong>Claim-linked cites</strong>
+              <span>A citation supports a relationship only after it is mapped and reviewed for that claim.</span>
             </li>
             <li>
               <strong>Unreviewed stays labelled</strong>
-              <span>Teaching edges remain visible with honest status; Gate C coverage is still sparse overall.</span>
+              <span>Teaching links remain visible with clear status while review continues.</span>
             </li>
             <li>
-              <strong>Ask Immune (partial)</strong>
-              <span>
-                Graph context + Gate C approved cites when present; provisional PubMed/Europe PMC labelled unreviewed;
-                citation checks fail-closed; counterevidence bucket stays empty when Neon has no contradicts — not fully
-                evidence-grounded AI.
-              </span>
-            </li>
-            <li>
-              <strong>Rate limit</strong>
-              <span>Neon-backed Ask rate buckets are live (in-memory fallback only if Neon is unreachable).</span>
+              <strong>Ask Immune</strong>
+              <span>{ASK_PUBLIC_LINE} Unsupported citation claims are rejected.</span>
             </li>
           </ul>
-          <CapabilityChips className="home-cap-chips" />
           <WontClaimList />
           <p className="home-trust-link">
             <Link to="/methods" hash="live-ev-heading">Live coverage</Link>
-            <Link to="/ask">Ask Immune</Link>
-            <Link to="/research" hash="workbench">Research workbench</Link>
-            <Link to="/curation">Curation (admin)</Link>
             <Link to="/disclaimer">Educational disclaimer</Link>
+            <Link to="/ask">Ask Immune</Link>
           </p>
         </section>
-
 
         <section className="bio-banner home-final-cta" aria-labelledby="cta-heading">
           <div>
             <div className="bio-eyebrow">{VISION_MOTTO.join(" · ")}</div>
-            <h2 id="cta-heading">Explore immunology through connected mechanisms.</h2>
+            <h2 id="cta-heading">Start from a concept, pathway or question.</h2>
             <p>
-              Start with a cell, pathway or scientific question—and follow the relationships that connect it to the
-              wider immune system.
+              Follow the relationships that connect it to the wider immune system — with review status in view.
             </p>
           </div>
           <nav className="isi-final-links" aria-label="Start exploring">

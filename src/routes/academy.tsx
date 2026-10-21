@@ -24,7 +24,7 @@ export const Route = createFileRoute("/academy")({
   head: () =>
     seoHead({
       title: pageTitle("Immunology Academy"),
-      description: `Structured immunology learning tracks on ${PRODUCT_NAME} — foundation navigable, intermediate and advanced labelled scaffolds. Not certification.`,
+      description: `Structured immunology learning tracks on ${PRODUCT_NAME} — foundation available now; intermediate and advanced in development. Not a certification programme.`,
       path: LEARN_PATH,
     }),
   component: AcademyLanding,
@@ -69,7 +69,7 @@ function AcademyLanding() {
       <MarketingHero
         eyebrow="Immunology Academy"
         title="Learn mechanisms as connected systems."
-        lede="Academy is the learning overlay under Immune Super Intelligence — connected to Cell Atlas, Mechanism, Knowledge Graph, Disease, Therapy and Evidence. Finishing a module is teaching progress, not Gate C claim review. Progress stays in this browser. Not certification."
+        lede="Academy is the learning overlay for Immune Super Intelligence — linked to the cell atlas, mechanisms, knowledge graph, disease, therapy and evidence layers. Completing a module is teaching progress, not claim review. Progress stays in this browser."
         actions={
           <>
             <Button asChild className="bio-primary">
@@ -82,19 +82,19 @@ function AcademyLanding() {
             </Button>
           </>
         }
-        foot="Foundation navigable · Intermediate scaffold · Advanced empty · Not Gate C coverage · Not certification"
+        foot="Foundation available · Intermediate and Advanced in development · Not a certification programme"
       />
 
       <MarketingBody>
         <MarketingSection
           id="foundation"
-          eyebrow="01 / FOUNDATION"
+          eyebrow="Foundation"
           title={foundation.title}
           lede={foundation.summary}
         >
           <div className="mkt-course">
             <div className="mkt-course-meta">
-              <StatusChip label="navigable · primary" tone="primary" />
+              <StatusChip label="Available" tone="primary" />
               <span className="mkt-course-progress">
                 Lessons opened (this browser):{" "}
                 {
@@ -145,9 +145,9 @@ function AcademyLanding() {
 
         <MarketingSection
           id="scaffolds"
-          eyebrow="02 / IN DEVELOPMENT"
-          title="Intermediate and Advanced stay incomplete."
-          lede="These are labelled scaffolds — not finished courses presented as equal cards."
+          eyebrow="In development"
+          title="Intermediate and Advanced are not finished yet."
+          lede="These tracks are labelled in development — not presented as finished courses."
         >
           <div className="mkt-scaffold-list">
             {incomplete.map((track) => (
@@ -158,9 +158,9 @@ function AcademyLanding() {
 
         <MarketingSection
           id="extra-reading"
-          eyebrow="03 / EXTRA READING · DRAFT"
+          eyebrow="Extra reading"
           title="Draft domain lessons outside the Foundation track."
-          lede="Deep-links into existing extension lessons — educational scaffolds only. Not certification and not Foundation modules."
+          lede="Extension lessons for deeper reading — draft teaching, not Foundation modules."
         >
           <ul className="mkt-draft-reading">
             {(
@@ -168,12 +168,12 @@ function AcademyLanding() {
                 {
                   id: "microbiome",
                   title: "Microbiome and barrier",
-                  blurb: "Fibre / SCFA → Treg → IBD neighbourhood — claim-level review incomplete.",
+                  blurb: "Fibre / SCFA → Treg → IBD neighbourhood — review incomplete.",
                 },
                 {
                   id: "vaccines",
                   title: "Vaccines: building memory on purpose",
-                  blurb: "Platform → germinal centre → memory and correlates — draft teaching.",
+                  blurb: "Platform → germinal centre → memory and correlates — draft.",
                 },
                 {
                   id: "immunogenetics",
@@ -194,17 +194,17 @@ function AcademyLanding() {
           <p className="mkt-aside">
             More draft domains on <Link to="/overview" hash="draft-domains">Overview</Link>
             {" · "}
-            Claim-level density on <Link to="/methods" hash="live-ev-heading">Methods coverage</Link>
+            Claim coverage on <Link to="/methods" hash="live-ev-heading">Methods</Link>
             {" · "}
-            Foundation track above stays the primary navigable path.
+            Foundation above remains the primary path.
           </p>
         </MarketingSection>
 
         <MarketingSection
           id="connect"
-          eyebrow="04 / CONNECTED LAYERS"
+          eyebrow="Connected layers"
           title="Lessons map into the same atlas."
-          lede="Open the layer that matches your goal — Academy is not a thirteenth top-level layer."
+          lede="Open the layer that matches your goal. Academy is a learning overlay — not a thirteenth atlas layer."
         >
           <div className="mkt-link-row">
             <Link to="/learn">Cell Atlas</Link>
@@ -221,7 +221,7 @@ function AcademyLanding() {
 
         <MarketingCta
           title="Begin with innate sensing."
-          lede="Foundation module 1 walks TLR4 → NF-κB with labelled teaching simplifications."
+          lede="Foundation module 1 walks TLR4 → NF-κB with clear teaching simplifications."
         >
           <Button asChild className="bio-primary">
             <Link to="/mechanism/$id" params={{ id: "tlr4" }}>
@@ -243,7 +243,7 @@ function IncompleteTrack({ track, progress }: { track: AcademyTrack; progress: L
   return (
     <article className={`mkt-scaffold${empty ? " is-empty" : ""}`} id={track.id}>
       <div className="mkt-scaffold-head">
-        <StatusChip label={`${track.level} · scaffold · in development`} tone="warn" />
+        <StatusChip label={`${track.level} · in development`} tone="warn" />
         <h3>{track.title}</h3>
       </div>
       <p>{track.summary}</p>
@@ -254,7 +254,8 @@ function IncompleteTrack({ track, progress }: { track: AcademyTrack; progress: L
       ) : (
         <>
           <p className="mkt-aside">
-            Reuses Mechanism lessons ({opened}/{track.modules.length} opened in this browser). Not certification.
+            Reuses Mechanism lessons ({opened}/{track.modules.length} opened in this browser). Not a certification
+            programme.
           </p>
           <ul className="mkt-scaffold-mods">
             {track.modules.map((m) => (

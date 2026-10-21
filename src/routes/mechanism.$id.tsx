@@ -28,7 +28,7 @@ export const Route = createFileRoute("/mechanism/$id")({
 function MechanismNotFound() {
   return (
     <div className="page">
-      <PageHead kicker="Learn · Mechanisms · not found" title="We don't have that mechanism" lede="This address doesn't match any lesson. Pick one of the available cascades below." />
+      <PageHead kicker="Learn · Mechanisms · not found" title="Mechanism not found" lede="This address does not match any lesson. Choose one of the cascades below." />
       <ul className="section">
         {CONTENT.lessons.map((l) => (
           <li key={l.id}>
@@ -111,7 +111,7 @@ function Mechanism() {
       </nav>
 
       <Section id="cascade" n={1} title="Walk the cascade"
-        lede="Select a step to open its function, what sits upstream and downstream, what fails if it is absent, and the clinical read-out."
+        lede="Select a step for its function, upstream and downstream links, what fails if it is absent, and the clinical read-out."
         aside={
           <Facts items={[
             ...(cellNames.length ? [{ label: "Cells involved", children: <div className="row">{cellNames.map((n) => <span className="chip" key={n}>{n}</span>)}</div> }] : []),

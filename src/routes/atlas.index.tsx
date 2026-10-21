@@ -13,7 +13,7 @@ export const Route = createFileRoute("/atlas/")({
   head: () =>
     seoHead({
       title: `Immunology Knowledge Atlas | ${PRODUCT_NAME}`,
-      description: `Browse ${KG.nodes.length} immunology concepts across eight domains — cells, molecules, signalling, disease, therapy, methods and research — each linked to its relationships and evidence status.`,
+      description: `Browse ${KG.nodes.length} immunology concepts across eight domains — cells, molecules, signalling, disease, therapy, methods and research — each with relationships and review status.`,
       path: "/atlas",
     }),
   component: Atlas,
@@ -35,7 +35,7 @@ function Atlas() {
       <PageHead
         kicker="Learn · Knowledge atlas"
         title="Every concept, connected."
-        lede="Pick an area to explore. Every concept has its own page with a short explanation, a picture of its connections and what to learn next."
+        lede="Choose a domain to explore. Each concept has its own page — a short explanation, its connections and suggested next steps."
         stats={[
           { v: KG.nodes.length, l: "CONCEPTS" },
           { v: DOMAINS.length, l: "DOMAINS" },
@@ -56,7 +56,7 @@ function Atlas() {
                 </li>
               ))}
             </ul>
-          ) : <p className="isi-empty" style={{ marginTop: 12 }}>No concept matches "{q}". Try Ask Immune for a broader question.</p>
+          ) : <p className="isi-empty" style={{ marginTop: 12 }}>No concept matches “{q}”. Try Ask Immune for a broader question.</p>
         ) : null}
       </section>
 
@@ -73,7 +73,7 @@ function Atlas() {
                     <li key={id}><Link to="/atlas/$id" params={{ id }}>{byId[id]!.name}</Link></li>
                   ))}
                 </ul>
-              ) : <p className="small">No graph concepts in this domain yet.</p>}
+              ) : <p className="small">No concepts in this domain yet.</p>}
               {d.conceptIds.length > 6 ? (
                 <details className="ex-tile-more">
                   <summary>See all {d.conceptIds.length}</summary>
@@ -81,7 +81,7 @@ function Atlas() {
                 </details>
               ) : null}
               {d.topics.some((t) => !t.covered) ? (
-                <p className="xs isi-gaps"><b>Not yet covered:</b> {d.topics.filter((t) => !t.covered).map((t) => t.label).join(" · ")}</p>
+                <p className="xs isi-gaps"><b>Gaps:</b> {d.topics.filter((t) => !t.covered).map((t) => t.label).join(" · ")}</p>
               ) : null}
             </div>
           </section>

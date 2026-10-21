@@ -20,7 +20,7 @@ const CELL_GENE: Record<string, string> = {
 
 export const Route = createFileRoute("/learn")({
   validateSearch: zodValidator(z.object({ cell: fallback(z.string(), "").default("") })),
-  head: () => seoHead({ title: "Cell atlas — Immune Super Intelligence", description: "The immune residents: metaphors, mechanistic detail, clinical relevance and where each metaphor breaks.", path: "/learn" }),
+  head: () => seoHead({ title: "Cell atlas — Immune Super Intelligence", description: "Immune cell types with everyday metaphors, mechanistic detail, clinical relevance and where each metaphor breaks.", path: "/learn" }),
   component: Learn,
 });
 
@@ -132,7 +132,7 @@ function Learn() {
       <PageHead art={ART.cellsArt}
         kicker="Learn · Cell atlas"
         title="The residents"
-        lede={`${LEGACY.cells.length} entries — immune cell types and the complement system beside them — each with an everyday metaphor, the mechanistic detail behind it, and where that metaphor stops being true. Expand a card for the full entry.`}
+        lede={`${LEGACY.cells.length} entries — immune cell types and the complement system — each with an everyday metaphor, the mechanistic detail behind it, and where that metaphor stops being true. Expand a card for the full entry.`}
         stats={[
           { v: LEGACY.cells.length, l: "ATLAS ENTRIES" },
           { v: LINEAGES.length - 1, l: "LINEAGES" },
@@ -140,7 +140,7 @@ function Learn() {
         ]}
       />
       <Section id="entries" n={1} title="Atlas entries"
-        lede="Filter by lineage. Each card opens the mechanism behind the metaphor, the lessons that use the cell, and its signature protein where UniProt returns one.">
+        lede="Filter by lineage. Each card opens the mechanism behind the metaphor, related lessons and a signature protein where UniProt returns one.">
       <Toolbar count={`${cells.length} of ${LEGACY.cells.length} entries`}>
         <div role="group" aria-label="Filter by lineage">
           {LINEAGES.map((l) => (

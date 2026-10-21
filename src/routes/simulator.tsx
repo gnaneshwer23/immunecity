@@ -24,7 +24,7 @@ function Simulator() {
       <PageHead
         kicker="Investigate · System simulator"
         title="Watch the system run"
-        lede="A teaching model, in normalised units. Pick a host state, then change the pathogen, the arms of immunity and the treatments, and see which outcome follows."
+        lede="A teaching model in normalised units. Pick a host state, then change the pathogen, the arms of immunity and the treatments, and see which outcome follows."
         stats={[
           { v: Object.keys(presets).length, l: "HOST STATES" },
           { v: 10, l: "PARAMETERS" },

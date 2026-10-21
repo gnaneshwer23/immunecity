@@ -37,7 +37,7 @@ export const Route = createFileRoute("/reasoning")({
     seoHead({
       title: "Reasoning & Scientific AI — Immune Super Intelligence",
       description:
-        "Ask Immune with graph context and Gate C cites when present, see fail-closed retrieval, trace paths and run start–perturbation–outcome reasoning. Educational beta — not fully evidence-grounded AI.",
+        "Ask Immune with graph context and reviewed cites when present, inspect retrieval grounding, trace paths and run start–perturbation–outcome reasoning. Educational resource — not fully evidence-grounded AI.",
       path: "/reasoning",
     }),
   component: Reasoning,
@@ -60,8 +60,8 @@ function Reasoning() {
     <div className="page">
       <PageHead
         kicker="Investigate · Scientific reasoning"
-        title="AI that works through the biology"
-        lede="Ask with retrieved graph context (and Gate C cites when they exist), inspect fail-closed grounding, walk exemplar pathways, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative unless independently validated — not fully evidence-grounded AI."
+        title="Reason through the biology"
+        lede="Ask with graph context and reviewed cites when they exist, inspect grounding, walk curated pathways, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative — not fully evidence-grounded AI."
         stats={[
           { v: CONTENT.cases.length, l: "CASES" },
           { v: "A→B", l: "PATH TRACER" },
@@ -75,10 +75,9 @@ function Reasoning() {
         title="Ask Immune"
         lede={
           <>
-            Graph-retrieved teaching — answers use retrieved concepts, causal links and relationship-level review status.
-            Gate C reviewed cites appear when present; provisional PubMed/Europe PMC hits stay labelled unreviewed;
-            counterevidence (contradicts/partial) is a separate bucket (empty when Neon has none); citation checks
-            fail-closed. Sparse Gate C means this is not fully evidence-grounded AI.{" "}
+            Answers use retrieved concepts, causal links and relationship-level review status. Reviewed cites appear
+            when present; provisional literature stays labelled; unsupported citation claims are rejected. Reviewed-claim
+            coverage is still limited.{" "}
             <Link to="/ask">Full Ask page</Link>
             {" · "}
             <Link to="/methods" hash="live-ev-heading">
@@ -93,7 +92,7 @@ function Reasoning() {
         id="how-ai-works"
         n={2}
         title="How the AI works"
-        lede="Before any answer is written, Ask runs this retrieval: question → graph context → Gate C / counterevidence / provisional lit status. The demo below makes no AI call and invents no sources."
+        lede="Before any answer is written, Ask runs this retrieval: question → graph context → reviewed cites, counterevidence and provisional literature status. The demo below makes no AI call and invents no sources."
       >
         <PhoneFold label="Show the retrieval demo">
           <ResearchWorkspace />
@@ -107,11 +106,11 @@ function Reasoning() {
       </Section>
       <Section id="pathways" n={3} title="Exemplar pathways">
         {evidenceUnavailable ? (
-          <p className="lede" role="alert">Evidence service unavailable — pathway maturity below cannot be recomputed from live approvals (not the same as zero reviewed support).</p>
+          <p className="lede" role="alert">Evidence service unavailable — pathway maturity below may be stale (not a finding of zero reviewed support).</p>
         ) : (
           <p className="lede">
-            PRD priority pathways — graph-connected teaching scaffolds. Maturity badges recompute from live approved+supports cites.
-            Partial and scaffold pathways are not evidence-grounded AI demos.
+            Priority teaching pathways connected in the graph. Maturity badges recompute from live approved supporting
+            cites. Partial and early pathways are not evidence-grounded AI demos.
           </p>
         )}
         <PhoneFold label="Show all pathways">
@@ -138,7 +137,7 @@ function Reasoning() {
                 <p className="xs muted" style={{ marginTop: 10 }}>
                   {report.connected ? "Waypoints are graph-connected." : `Gap: ${report.missingSegment ?? "incomplete path"}`}
                   {" · "}
-                  {report.approvedEdgeCount}/{report.uniqueRelIds.length} unique on-path edges with approved+supports
+                  {report.approvedEdgeCount}/{report.uniqueRelIds.length} on-path links with approved support
                   {" · "}
                   {maturityTitle}
                   {!exemplarAllowsEvidenceGroundedClaim(report.maturity) ? " · not evidence-grounded" : ""}
@@ -165,7 +164,7 @@ function Reasoning() {
         </div>
         </PhoneFold>
       </Section>
-      <Section id="workspace" n={4} title="Mechanism workspace" lede="Choose a starting concept, an intervention or perturbation, and an outcome. Inspect paths, polarity, evidence status, assumptions and gaps.">
+      <Section id="workspace" n={4} title="Mechanism workspace" lede="Choose a starting concept, a perturbation and an outcome. Inspect paths, polarity, evidence status, assumptions and gaps.">
         <MechanismWorkspace initialStart={urlFrom && byId[urlFrom] ? urlFrom : "C003"} />
       </Section>
       <Section id="cases" n={5} title="Case reasoning">
@@ -183,7 +182,7 @@ function Reasoning() {
           <p>{c.answer}</p>
         </div>
       </Section>
-      <Section id="tracer" n={6} title="Path tracer" lede="Pick any two concepts. The tracer finds the shortest chain of causal links between them, directed or not.">
+      <Section id="tracer" n={6} title="Path tracer" lede="Pick any two concepts. The tracer finds the shortest chain of causal links between them.">
         <div className="card">
           <div className="row" style={{ gap: 12, marginBottom: 16 }}>
             <label className="field" style={{ flex: 1, minWidth: 200 }}>
@@ -221,7 +220,7 @@ function Reasoning() {
               ))}
             </div>
           ) : (
-            <p className="empty">No causal path connects these two concepts in the current graph. That gap is itself a finding — it may be a missing curation, or a genuinely absent link.</p>
+            <p className="empty">No causal path connects these two concepts in the current graph. That may reflect a missing curation or a genuinely absent link.</p>
           )}
         </div>
       </Section>

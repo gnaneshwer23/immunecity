@@ -60,13 +60,13 @@ function Patient() {
       <PageHead
         kicker="Investigate · Patient and biomarkers"
         title="Precision immunology"
-        lede="Select the features this patient carries — comorbidities, biomarkers, clinical state — and see which therapies the mechanism supports, and which it cautions against. Scores are sums of explicit rules, each with its reason."
+        lede="Select comorbidities, biomarkers and clinical state, then see which therapies the mechanism supports or cautions against. Scores are sums of explicit rules, each with its reason."
         stats={[
           { v: CONTENT.rules.length, l: "SCORING RULES" },
           { v: EXT_BIOMARKERS.length, l: "BIOMARKER SLIDERS" },
         ]}
       />
-      <EduBanner>Rule-based teaching scores built from the graph; each rule shows its reason. Educational illustration — not patient-specific advice.</EduBanner>
+      <EduBanner>Rule-based teaching scores from the graph; each rule shows its reason. Educational illustration — not patient-specific advice.</EduBanner>
       <div className="isi-workspace">
         <div className="card isi-panel isi-panel-sticky">
           <div className="isi-panel-head">

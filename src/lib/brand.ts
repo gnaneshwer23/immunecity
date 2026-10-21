@@ -20,7 +20,7 @@ export const LEARN_PATH = "/academy" as const;
 export const LEARN_CTA = "Explore the Academy";
 /** Atlas graph entry from the platform overview CTA. */
 export const ATLAS_PATH = "/graph" as const;
-export const ATLAS_CTA = "Enter atlas";
+export const ATLAS_CTA = "Enter Atlas";
 /**
  * Public collaboration inbox for mailto enquiries.
  * Update if DNS/mail routing changes; do not invent alternate contact channels in copy.
@@ -36,20 +36,30 @@ export const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@DrGnaneshwer";
 export const YOUTUBE_CHANNEL_LABEL = "Immunology videos — Dr Gnaneshwer on YouTube";
 
 export const PROPOSITION =
-  "Immune Super Intelligence is building tools that connect immunology, scientific evidence and advanced AI—helping people learn mechanisms, explore biological relationships and investigate research questions.";
+  "Immune Super Intelligence connects immunology, curated evidence and scientific AI—so people can learn mechanisms, explore biological relationships and investigate research questions in one place.";
 
 /** Short hero supporting line — keep the first viewport lean. */
 export const HERO_SUPPORT =
-  "Explore immune mechanisms, connect biological entities, trace scientific evidence and investigate how immune responses change across cells, tissues, diseases and therapies.";
+  "Explore mechanisms, follow biological relationships, inspect evidence status and ask how immune responses connect across cells, tissues, diseases and therapies.";
 /** Secondary homepage CTA → mechanism explorer. */
 export const INVESTIGATE_PATH = "/mechanism" as const;
 export const INVESTIGATE_CTA = "Investigate a Mechanism";
-/** Hero trust line — educational beta framing for the first viewport. */
-export const HERO_TRUST =
-  "Educational beta · Gate C cites still sparse · not clinical decision support";
-/** Single public trust line — reuse; avoid repeating “educational beta” on every section. */
+/** Hero trust line — short, publication-grade disclaimer for the first viewport. */
+export const HERO_TRUST = "Educational resource · Not clinical decision support";
+/**
+ * Single public trust line for footer / TrustBlock.
+ * Keep claim-coverage detail on Methods — not in chrome.
+ */
 export const TRUST_STATEMENT =
-  "Educational immunology model with curated references. Ask Immune retrieves graph context and Gate C cites when present, may list provisional PubMed/Europe PMC hits as unreviewed, and fail-closes unsupported citation claims — not fully evidence-grounded AI. Not clinical decision support.";
+  "An educational immunology resource with curated references. Not clinical decision support.";
+/**
+ * Compact Ask product line for journeys and enter rails.
+ * Full limits live on Ask, Reasoning and Methods — avoid restating on every section.
+ */
+export const ASK_PUBLIC_LINE =
+  "Answers draw on the curated graph, with reviewed and provisional sources labelled.";
+/** One-line Ask evidence limit for secondary chrome. */
+export const ASK_EVIDENCE_LIMIT = "Not fully evidence-grounded AI.";
 
 export function pageTitle(section?: string): string {
   return section ? `${section} — ${PRODUCT_NAME}` : PRODUCT_LINE;

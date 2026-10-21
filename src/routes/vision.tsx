@@ -35,10 +35,10 @@ function VisionPage() {
         <section className="bio-section" aria-labelledby="spine-h">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">02 / THE CAUSAL SPINE</span>
+              <span className="mkt-section-label">Causal spine</span>
               <h2 id="spine-h">Connect the entire chain.</h2>
             </div>
-            <p>Not a decorative diagram — a structure you can traverse. Pick a stage.</p>
+            <p>A structure you can traverse — not a decorative diagram. Pick a stage.</p>
           </div>
           <CausalSpine />
         </section>
@@ -46,7 +46,7 @@ function VisionPage() {
         <section className="bio-section" aria-labelledby="diff-h">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">03 / WHAT MAKES ISI DIFFERENT</span>
+              <span className="mkt-section-label">Difference</span>
               <h2 id="diff-h">Connected, inspectable scientific reasoning.</h2>
             </div>
           </div>
@@ -64,10 +64,10 @@ function VisionPage() {
         <section className="bio-section" aria-labelledby="stages-h">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">04 / ROADMAP</span>
+              <span className="mkt-section-label">Roadmap</span>
               <h2 id="stages-h">Four connected stages.</h2>
             </div>
-            <p>Strategic ambitions — not claims that every capability exists today.</p>
+            <p>Strategic ambitions — not a claim that every capability exists today.</p>
           </div>
           <ol className="vision-grid">
             {STAGES.map((s) => (
@@ -84,7 +84,7 @@ function VisionPage() {
         <section className="bio-section" aria-labelledby="who-h">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">05 / WHO IT'S FOR</span>
+              <span className="mkt-section-label">Audience</span>
               <h2 id="who-h">One foundation, many workflows.</h2>
             </div>
           </div>
@@ -98,8 +98,8 @@ function VisionPage() {
         <section className="bio-section" aria-labelledby="not-h">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">06 / WHAT ISI IS NOT</span>
-              <h2 id="not-h">Not just another…</h2>
+              <span className="mkt-section-label">Boundaries</span>
+              <h2 id="not-h">What this is not.</h2>
             </div>
           </div>
           <ul className="vision-not">
@@ -110,7 +110,7 @@ function VisionPage() {
         <section className="bio-section" aria-labelledby="ns-h">
           <div className="bio-section-heading">
             <div>
-              <span className="bio-section-number">07 / NORTH STAR</span>
+              <span className="mkt-section-label">North star</span>
               <h2 id="ns-h">From a question to a reviewed hypothesis.</h2>
             </div>
             <p>Why might an inflammatory pathway drive disease — and is it a useful target?</p>

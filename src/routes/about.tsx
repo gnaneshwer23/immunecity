@@ -28,24 +28,24 @@ function About() {
         eyebrow="Organisation"
         title={`About ${PRODUCT_NAME}`}
         lede={PROPOSITION}
-        foot="Visible knowledge structure · explicit uncertainty · transparent AI evaluation"
+        foot="Visible structure · explicit uncertainty · transparent AI evaluation"
       />
 
       <MarketingBody>
-        <MarketingSection id="mission" eyebrow="01 / MISSION" title="Make immunology inspectable.">
+        <MarketingSection id="mission" eyebrow="Mission" title="Make immunology inspectable.">
           <p className="mkt-prose">
-            {PRODUCT_NAME} explores how immunology and advanced AI can work together. We are building an environment
-            where biological concepts, causal relationships, scientific evidence and computational tools can be explored
-            in one connected workflow. Our approach is to make the knowledge structure visible, keep uncertainty
-            explicit and develop AI capabilities through transparent evaluation rather than unsupported claims.
+            {PRODUCT_NAME} explores how immunology and scientific AI can work together. We are building an environment
+            where biological concepts, causal relationships, evidence and computational tools sit in one connected
+            workflow — with structure visible, uncertainty labelled and AI capabilities evaluated transparently rather
+            than overstated.
           </p>
         </MarketingSection>
 
         <MarketingSection
           id="architecture"
-          eyebrow="02 / BRAND ARCHITECTURE"
+          eyebrow="Brand"
           title="One umbrella. Clear products."
-          lede="We do not claim current “superintelligence.” Names describe roles, not maturity theatre."
+          lede="We do not claim current “superintelligence.” Names describe roles, not maturity."
         >
           <ol className="mkt-brand-arch">
             <li>
@@ -60,7 +60,7 @@ function About() {
               <div>
                 <strong>{FLAGSHIP_NAME}</strong>
                 <p>
-                  Flagship interactive causal immunology knowledge platform — start at the{" "}
+                  Flagship interactive causal immunology platform — start at the{" "}
                   <Link to="/overview">Platform overview</Link>.
                 </p>
               </div>
@@ -70,9 +70,9 @@ function About() {
               <div>
                 <strong>Immunology Academy</strong>
                 <p>
-                  Learning tracks at <Link to="/academy">Academy</Link> (Foundation primary; Intermediate and Advanced
-                  labelled in development). Companion educational videos:{" "}
-                  <LearningOutboundLink className="mkt-text-link" />. Not certification.
+                  Learning tracks at <Link to="/academy">Academy</Link> (Foundation available; Intermediate and Advanced
+                  in development). Companion videos:{" "}
+                  <LearningOutboundLink className="mkt-text-link" />. Not a certification programme.
                 </p>
               </div>
             </li>
@@ -81,8 +81,8 @@ function About() {
               <div>
                 <strong>Ask &amp; research workbench</strong>
                 <p>
-                  Graph-retrieved teaching (partial — Gate C when present, provisional lit labelled, fail-closed
-                  citation checks) and guided research workflows; candidates stay drafts until human review.{" "}
+                  Graph-based teaching with labelled sources, and guided research workflows. Candidates stay drafts
+                  until human review.{" "}
                   <Link to="/ask">Ask Immune</Link>
                   {" · "}
                   <Link to="/research" hash="workbench">Workbench</Link>
@@ -92,23 +92,22 @@ function About() {
           </ol>
         </MarketingSection>
 
-        <MarketingSection id="principles" eyebrow="03 / PRINCIPLES" title="How we build.">
+        <MarketingSection id="principles" eyebrow="Principles" title="How we build.">
           <ul className="mkt-principle-list">
-            <li>Educating with references from a curated graph — not clinical decision support.</li>
+            <li>Educate with references from a curated graph — not clinical decision support.</li>
             <li>Relationship-level evidence: a citation supports a link only when mapped and reviewed for that claim.</li>
-            <li>Drafts, unreviewed links and planned integrations are labelled honestly.</li>
-            <li>Patient and therapy layers stay educational explorations — not diagnosis or prescribing tools.</li>
+            <li>Drafts, unreviewed links and planned integrations are labelled clearly.</li>
+            <li>Patient and therapy layers are educational explorations — not diagnosis or prescribing tools.</li>
           </ul>
         </MarketingSection>
 
-        <MarketingSection id="roadmap" eyebrow="04 / ROADMAP HONESTY" title="Beta where it works. Labels where it does not.">
+        <MarketingSection id="roadmap" eyebrow="Status" title="Shipped where it works. Labelled where it does not.">
           <p className="mkt-prose">
-            Graph exploration, cell atlas content, mechanism walks and several teaching tools are available in beta.
-            Ask Immune is partial (not fully evidence-grounded); Gate C claim coverage remains sparse; the research
-            workbench and claim ledger are partial spines. Live Neon rate limiting and a Methods/Evidence coverage
-            dashboard are shipped. Fully evidence-grounded AI, dense counterevidence curation and omics/molecular
-            prediction integrations remain incomplete or planned. Details live on{" "}
-            <Link to="/methods" hash="live-ev-heading">Evidence &amp; Methods</Link>.
+            Graph exploration, cell atlas content, mechanism walks and several teaching tools are available today.
+            Ask Immune draws on graph context and labelled sources — it is not fully evidence-grounded AI. Most
+            relationship claims are not yet claim-reviewed. The research workbench remains a guided draft workflow.
+            Fully evidence-grounded AI, denser counterevidence curation and omics integrations remain planned. Details
+            on <Link to="/methods" hash="live-ev-heading">Evidence &amp; Methods</Link>.
           </p>
         </MarketingSection>
 

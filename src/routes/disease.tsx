@@ -29,7 +29,7 @@ function Disease() {
       <PageHead art={ART.diseaseArt}
         kicker="Explore · Disease explorer"
         title="When mechanism becomes pathology"
-        lede="Four hypersensitivity types describe how a normal effector mechanism turns on the host. The cancer immunity cycle shows the seven steps a tumour must defeat — each one a therapeutic opportunity."
+        lede="Four hypersensitivity types describe how a normal effector mechanism turns on the host. The cancer immunity cycle shows seven steps a tumour must evade — each a therapeutic opportunity."
         stats={[
           { v: CONTENT.hypersensitivity.length, l: "HYPERSENSITIVITY TYPES" },
           { v: CONTENT.cancerCycle.length, l: "CANCER CYCLE STEPS" },
@@ -37,7 +37,7 @@ function Disease() {
       />
       <PageToc items={TOC} />
       <Section id="hypersensitivity" n={1} title="Hypersensitivity"
-        lede="Same immune machinery, four different failure modes distinguished by mechanism and timing. Switch between types to compare.">
+        lede="The same immune machinery, four failure modes distinguished by mechanism and timing. Switch between types to compare.">
         <div className="hs-grid" role="tablist" aria-label="Hypersensitivity types">
           {CONTENT.hypersensitivity.map((h, i) => (
             <button

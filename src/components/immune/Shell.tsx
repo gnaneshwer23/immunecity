@@ -91,7 +91,6 @@ function PillarMenu({ label, items, pathname, onNavigate }: {
         <div className="pillar-menu" role="menu" aria-label={label}>
           {items.map((l) => (
             <Link key={journeyKey(l)} to={l.path as "/"} hash={l.hash} role="menuitem" className="pillar-item" activeOptions={{ exact: l.path === "/", includeHash: Boolean(l.hash) }} activeProps={{ className: "pillar-item current" }} onClick={() => { setOpen(false); onNavigate(); }}>
-              <span className="pillar-num">{l.n}</span>
               <span className="pillar-body"><strong>{l.title}</strong><small>{l.desc}</small></span>
             </Link>
           ))}
@@ -108,7 +107,6 @@ function SiteFooter() {
         <div className="sf-brand">
           <Link className="brand" to="/"><Logo /><span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span></Link>
           <p className="sf-trust">{TRUST_STATEMENT}</p>
-          <span className="sf-status"><span className="sf-dot" /> Reviewed cites when available · Academy scaffolds in development</span>
         </div>
         {FOOTER_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">
@@ -346,7 +344,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <DialogPortal>
             <DialogPrimitive.Content className="global-ask-dialog corner-ask-dialog" onInteractOutside={(e) => e.preventDefault()}>
               <DialogTitle className="sr-only">{ASK_NAME}</DialogTitle>
-              <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational teaching with references — not fully evidence-grounded AI, not patient-specific advice.</DialogDescription>
+              <DialogDescription className="sr-only">Find concepts and explore immune connections. Educational resource with references — not clinical decision support.</DialogDescription>
               <Button variant="ghost" size="icon" className="corner-ask-close" onClick={() => setAskOpen(false)} aria-label={`Minimize ${ASK_NAME}`} title={`Minimize ${ASK_NAME}`}><X size={18} /></Button>
               <AskAtlas showFullPageLink />
             </DialogPrimitive.Content>

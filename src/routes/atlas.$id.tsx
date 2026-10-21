@@ -35,7 +35,7 @@ export const Route = createFileRoute("/atlas/$id")({
   },
   notFoundComponent: () => (
     <div className="page">
-      <h1>We don't have that concept</h1>
+      <h1>Concept not found</h1>
       <p className="lede">It may have been renamed or not yet added. <Link to="/atlas">Browse the Knowledge Atlas</Link>.</p>
     </div>
   ),
@@ -85,7 +85,7 @@ function ConceptPage() {
   const inN = total - outN;
   const art = DOMAIN_ART[doms[0]?.id ?? "foundations"];
   const src = useSources([id], all.map((r) => relId(r.edge)));
-  const desc = n.desc || "No definition has been recorded for this concept yet.";
+  const desc = n.desc || "No definition is recorded for this concept yet.";
   const topTypes = GROUP_ORDER.filter((t) => groups[t]?.length).slice(0, 3).map((t) => `${groups[t]!.length} ${TYPES[t].label.toLowerCase()}`);
 
   const takeaways = [
@@ -116,8 +116,8 @@ function ConceptPage() {
         summary={firstSentence(desc)}
       >
         {x.aliases.length ? <p className="small muted">Also called: {x.aliases.join(", ")}</p> : null}
-        {n.draft ? <p className="si-warn" role="note">Draft — added to close a coverage gap and awaiting expert review.</p> : null}
-        {!n.draft && total < 2 ? <p className="si-warn" role="note">Sparsely connected — only {total} link recorded so far.</p> : null}
+        {n.draft ? <p className="si-warn" role="note">Draft — awaiting expert review.</p> : null}
+        {!n.draft && total < 2 ? <p className="si-warn" role="note">Sparsely connected — only {total} link{total === 1 ? "" : "s"} recorded so far.</p> : null}
         <div className="isi-concept-actions">
           <Link className="btn sm primary" to="/ask" search={{ about: n.id }}><MessageSquare size={14} /> Ask about {n.name}</Link>
           <Link className="btn sm" to="/graph" search={{ focus: n.id }}><Network size={14} /> See in graph</Link>
@@ -130,15 +130,15 @@ function ConceptPage() {
       <div className="isi-concept-grid">
         <div>
           {desc !== firstSentence(desc) || x.clinical ? (
-            <ExplainerSection title="What it does" summary={x.clinical ? firstSentence(x.clinical) : "The full definition from the curated knowledge graph."}>
+            <ExplainerSection title="What it does" summary={x.clinical ? firstSentence(x.clinical) : "Definition from the curated knowledge graph."}>
               <p>{desc}</p>
               {x.clinical ? <p>{x.clinical}</p> : null}
             </ExplainerSection>
           ) : null}
 
           <ExplainerSection
-            title="Its connections at a glance"
-            summary={total ? `Each dot is a concept directly linked to ${n.name}. Colours show the kind of concept.` : "No links recorded yet."}
+            title="Connections at a glance"
+            summary={total ? `Each dot is a concept directly linked to ${n.name}. Colour marks the concept type.` : "No links recorded yet."}
             visual={total ? <MiniDiagram id={id} /> : null}
           >
             {GROUP_ORDER.filter((t) => groups[t]?.length).map((t) => (
@@ -188,7 +188,7 @@ function ConceptPage() {
           </section>
           <section>
             <h2>Read the research</h2>
-            <p className="small">Find recent papers on {n.name}.</p>
+            <p className="small">Find publications mentioning {n.name}.</p>
             <Link to="/research" search={{ lib: n.name }} hash="library"><BookOpen size={13} /> Search publications →</Link>
           </section>
           {doms.length ? (

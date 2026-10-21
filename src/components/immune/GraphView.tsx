@@ -229,9 +229,9 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
   return (
     <div className="page graph-explorer">
       <PageHead
-        kicker="Layer 04 · Immune City · Knowledge graph"
+        kicker="Explore · Knowledge graph"
         title="The causal map"
-        lede="Flagship explorer for typed immune concepts and directional links. Search or pick a starting point, inspect evidence on each relationship, and use the list view on small screens — an empty filter is not a scientific negative finding."
+        lede="Explore typed immune concepts and directional links. Search or pick a starting point, inspect evidence on each relationship, and use the list view on small screens. An empty filter is not a scientific finding."
       />
       <div className="graph-view-toggle" role="group" aria-label="Explorer view">
         <button

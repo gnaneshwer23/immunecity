@@ -808,6 +808,16 @@ html[data-theme][data-theme] {
 
 .mkt-lede { font-size: 15.5px; line-height: 1.65; max-width: 42rem; color: var(--muted); }
 .mkt-section-head { margin-bottom: 8px; }
+.mkt-section-label {
+  display: block;
+  font-family: var(--font-sans, inherit);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
 .mkt-section-head h2 {
   font-size: clamp(1.45rem, 1.2rem + 1vw, 1.85rem);
   font-weight: 500;

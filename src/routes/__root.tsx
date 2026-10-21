@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: `${PRODUCT_NAME} — ${TAGLINE}` },
       {
         name: "description",
-        content: `${PRODUCT_NAME}: learn immunology as a connected system — curated causal map, mechanisms and Ask that educates with references. Educational beta; not patient-specific advice.`,
+        content: `${PRODUCT_NAME}: learn immunology as a connected system — curated causal map, mechanisms and Ask that educates with references. Educational resource; not clinical decision support.`,
       },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "googlebot", content: "index, follow" },

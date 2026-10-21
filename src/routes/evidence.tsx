@@ -12,7 +12,7 @@ import { PageToc, Section, Toolbar } from "@/components/immune/page";
 import { loadEvidenceCoverage } from "@/lib/citations.functions";
 
 const TOC = [
-  { id: "live-neon", label: "Live Neon" },
+  { id: "live-neon", label: "Live coverage" },
   { id: "coverage", label: "Coverage" },
   { id: "timeline", label: "Timeline" },
   { id: "trials", label: "Landmark trials" },
@@ -30,11 +30,11 @@ function LiveNeonCoverage() {
   }
   return (
     <div className="card" aria-labelledby="live-neon-heading">
-      <h3 id="live-neon-heading" style={{ fontSize: "1.05rem", marginBottom: 8 }}>Live Neon coverage</h3>
+      <h3 id="live-neon-heading" style={{ fontSize: "1.05rem", marginBottom: 8 }}>Live claim-review coverage</h3>
       <dl className="grid g3" style={{ marginBottom: 8 }}>
-        <div><dt className="xs muted">Gate C distinct / links</dt><dd><b>{`${data.distinctGateCRels} / ${data.runtimeRelationships}`}</b></dd></div>
+        <div><dt className="xs muted">Reviewed claims / links</dt><dd><b>{`${data.distinctGateCRels} / ${data.runtimeRelationships}`}</b></dd></div>
         <div><dt className="xs muted">Contradicts / partial</dt><dd><b>{`${data.contradicts} / ${data.partial}`}</b></dd></div>
-        <div><dt className="xs muted">Open P0 targets</dt><dd><b>{data.openP0Targets}</b></dd></div>
+        <div><dt className="xs muted">Open priority pathway targets</dt><dd><b>{data.openP0Targets}</b></dd></div>
       </dl>
       <ul className="small" style={{ paddingLeft: 18, margin: "8px 0" }}>
         {data.exemplar.map((e) => (
@@ -50,7 +50,7 @@ function LiveNeonCoverage() {
 
 export const Route = createFileRoute("/evidence")({
   loader: () => loadEvidenceCoverage(),
-  head: () => seoHead({ title: "Evidence: trials as experiments — Immune Super Intelligence", description: "Landmark immunology trials as hypothesis tests, plus honest claim-level evidence coverage. Educational beta — most runtime links are not yet claim-approved.", path: "/evidence" }),
+  head: () => seoHead({ title: "Evidence: trials as experiments — Immune Super Intelligence", description: "Landmark immunology trials as hypothesis tests, plus live claim-level evidence coverage. Educational resource — most runtime links are not yet claim-approved.", path: "/evidence" }),
   component: Evidence,
 });
 
@@ -80,7 +80,7 @@ function Evidence() {
       <PageHead art={ART.researchArt}
         kicker="Investigate · Evidence explorer"
         title="Trials as experiments"
-        lede="Each trial is a test of a biological hypothesis in humans. The negative ones teach the most: a mechanism that is real in a dish can be irrelevant, redundant, or protective in a tissue."
+        lede="Each trial tests a biological hypothesis in humans. Negative results often teach the most: a mechanism that is real in a dish can be irrelevant, redundant or protective in a tissue."
         stats={[
           { v: trials.length, l: "TRIAL LESSONS" },
           { v: `${years[0]!.y}–${years[years.length - 1]!.y}`, l: "YEARS COVERED" },
@@ -88,12 +88,12 @@ function Evidence() {
         ]}
       />
       <PageToc items={TOC} />
-      <Section id="live-neon" n={1} title="Live Neon Gate C dashboard"
-        lede="Counts come from the production evidence database at fetch time. If the database is down, you will see an error — not a fake zero.">
+      <Section id="live-neon" n={1} title="Live claim-review coverage"
+        lede="Counts come from the evidence database at fetch time. If the database is down, you see an error — not a fake zero.">
         <LiveNeonCoverage />
       </Section>
       <Section id="coverage" n={2} title="How much of the graph is reviewed"
-        lede="Claim-level approved support for graph links is still sparse. These panels are the honest source of truth for what has been reviewed."
+        lede="Approved claim support for graph links is still limited. These panels are the source of truth for what has been reviewed."
         aside={
           <div className="isi-sec-action">
             <Link className="btn sm" to="/curation">Open citation curation</Link>
@@ -106,7 +106,7 @@ function Evidence() {
         </PhoneFold>
       </Section>
       <Section id="timeline" n={3} title="When mechanisms were tested"
-        lede="Bar height is the number of landmark trials in that year. Select a bar to filter the trial list below.">
+        lede="Bar height is the number of landmark trials in that year. Select a bar to filter the list below.">
         <div className="timeline-bar">
           {years.map(({ y, c }) => (
             <div className="tl-col" key={y}>
@@ -123,7 +123,7 @@ function Evidence() {
         </div>
       </Section>
       <Section id="trials" n={4} title={year ? `Trials in ${year}` : "Landmark trials"}
-        lede="Each trial is written as hypothesis, outcome and lesson, so the result reads as evidence for or against a mechanism.">
+        lede="Each trial is framed as hypothesis, outcome and lesson — so the result reads as evidence for or against a mechanism.">
         <Toolbar count={`${shown.length} of ${trials.length} trials`}>
           <div role="group" aria-label="Filter by result">
             <button className={`chip${result === null ? " on" : ""}`} aria-pressed={result === null} onClick={() => setResult(null)}>All results · {trials.length}</button>

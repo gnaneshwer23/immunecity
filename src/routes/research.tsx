@@ -71,7 +71,7 @@ function Research() {
       <PageHead art={ART.researchArt}
         kicker="Investigate · Research library"
         title="Turn a research question into a reviewable investigation."
-        lede="A guided workspace for organising evidence, tracing mechanisms and drafting candidate hypotheses and experiment proposals. Generated artefacts stay separate from approved scientific knowledge — never auto-promoted to the curated graph. Literature candidates stay local until a curator imports them at /curation; Ask may separately list provisional PubMed/Europe PMC hits as unreviewed. Model adapters are planned / interface-only stubs."
+        lede="Organise evidence, trace mechanisms and draft candidate hypotheses — kept separate from approved scientific knowledge until a curator reviews them. Literature candidates stay local until imported at Curation. Ask may separately list provisional PubMed/Europe PMC hits as unreviewed. Model adapters are planned."
         stats={[
           { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },
@@ -87,10 +87,10 @@ function Research() {
         lede={
           <>
             Search live article metadata from five Nature Portfolio journals (no affiliation implied). Proposing an
-            article starts an unreviewed local candidate in the literature workflow below — it never becomes Gate C
-            without curator review. Export a curation manifest and import at{" "}
-            <Link to="/curation">/curation</Link> (admin); Research Library propose does not auto-write Neon evidence.
-            Ask Immune may also fetch provisional PubMed/Europe PMC hits that stay labelled unreviewed.
+            article starts an unreviewed local candidate — it never becomes an approved claim without curator review.
+            Export a curation manifest and import at{" "}
+            <Link to="/curation">Curation</Link> (admin). Propose does not write the evidence database. Ask Immune may
+            also fetch provisional PubMed/Europe PMC hits that stay labelled unreviewed.
           </>
         }
       >
@@ -114,7 +114,7 @@ function Research() {
         />
       </Section>
 
-      <Section id="literature" n={2} title="Literature intelligence" lede="Phase C workflow — local metadata + candidate claims. Not live bulk PubMed ingest; export candidates or send them into the workbench evidence step (still drafts).">
+      <Section id="literature" n={2} title="Literature intelligence" lede="Local metadata and candidate claims — not bulk PubMed ingest. Export candidates or send them into the workbench evidence step; they remain drafts.">
         {litSeed ? (
           <p className="small" role="status">Started a candidate from <b>{litSeed.seed.title}</b> (DOI {litSeed.seed.doi}). Status: unreviewed.</p>
         ) : null}
@@ -127,11 +127,11 @@ function Research() {
         title="Workbench"
         lede={
           <>
-            Partial spine: Question→Search→Screen→Extract→Assess→Hypothesis→Export with claim-ledger candidates and
-            counterevidence hints when present. Export for human review at{" "}
-            <Link to="/curation">/curation</Link>; nothing is automatically published to the knowledge graph. See also{" "}
+            Guided steps from question through search, extract, assess, hypothesis and export. Candidates and
+            counterevidence hints stay drafts until human review at{" "}
+            <Link to="/curation">Curation</Link>. Nothing is automatically published to the knowledge graph. See{" "}
             <Link to="/methods" hash="models">
-              Methods § models
+              Methods · models
             </Link>
             .
           </>
@@ -144,7 +144,7 @@ function Research() {
         />
       </Section>
 
-      <Section id="model-registry" n={4} title="Advanced model registry" lede={<>Phase D interfaces for future omics, structure, pMHC/epitope, genomics, and agent adapters. Badges read <b>planned / interface-only · not live</b> — see also <Link to="/methods" hash="models">Methods §4</Link>.</>}>
+      <Section id="model-registry" n={4} title="Advanced model registry" lede={<>Planned interfaces for future omics, structure, pMHC/epitope, genomics and agent adapters. Badges read <b>planned / interface-only · not live</b> — see <Link to="/methods" hash="models">Methods · models</Link>.</>}>
         <PhoneFold label="Show model registry"><ModelRegistryPanel /></PhoneFold>
       </Section>
 

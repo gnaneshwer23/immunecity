@@ -62,7 +62,7 @@ function Therapy() {
       <PageHead art={ART.therapyArt}
         kicker="Explore · Therapy explorer"
         title="Pull one lever, follow the chain"
-        lede={`${all.length} interventions, each linked to what it acts on and the trials that tested it. Filter by the kind of target to compare mechanisms of action.`}
+        lede={`${all.length} interventions, each linked to its targets and the trials that tested it. Filter by target type to compare mechanisms of action.`}
         stats={[
           { v: all.length, l: "INTERVENTIONS" },
           { v: Object.keys(TRIALS_BY_DRUG).length, l: "WITH LINKED TRIALS" },
@@ -70,7 +70,7 @@ function Therapy() {
         ]}
       />
       <Section id="therapies" n={1} title="Interventions and their targets"
-        lede="Each card names what the intervention acts on in the graph and the landmark trials that tested it, with the current registry status where ClinicalTrials.gov returns one.">
+        lede="Each card names what the intervention acts on in the graph and the landmark trials that tested it, with registry status where ClinicalTrials.gov returns one.">
         <Toolbar count={`${list.length} of ${all.length} shown`}>
           <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter therapies by name…" aria-label="Filter therapies" />
           <div className="therapy-filters" role="group" aria-label="Filter by target type">

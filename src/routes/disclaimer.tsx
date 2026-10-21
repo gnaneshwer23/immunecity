@@ -11,7 +11,7 @@ const TOC = [
 import { FLAGSHIP_NAME, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/disclaimer")({
-  head: () => seoHead({ title: pageTitle("Educational disclaimer"), description: `${PRODUCT_NAME} is an educational scientific exploration beta — not clinical decision support or patient-specific advice.`, path: "/disclaimer" }),
+  head: () => seoHead({ title: pageTitle("Educational disclaimer"), description: `${PRODUCT_NAME} is an educational scientific exploration resource — not clinical decision support or patient-specific advice.`, path: "/disclaimer" }),
   component: Disclaimer,
 });
 
@@ -21,13 +21,13 @@ function Disclaimer() {
       <PageHead
         kicker="Trust · Educational disclaimer"
         title="Educational disclaimer"
-        lede={`${PRODUCT_NAME} and ${FLAGSHIP_NAME} are for learning, teaching and research exploration with references — not for diagnosing, treating or managing individual patients.`}
+        lede={`${PRODUCT_NAME} and ${FLAGSHIP_NAME} support learning, teaching and research exploration with references — not diagnosing, treating or managing individual patients.`}
       />
       <PageToc items={TOC} />
       <Section id="what-this-product-is" n={1} title="What this product is">
         <p>
-          An educational beta that connects immunology concepts in a curated causal knowledge graph, with illustrative
-          mechanism walks and Ask responses that retrieve graph context and reviewed citations when present.
+          An educational resource that connects immunology concepts in a curated causal knowledge graph, with
+          illustrative mechanism walks and Ask responses that retrieve graph context and reviewed citations when present.
         </p>
       </Section>
       <Section id="what-this-product-is-not" n={2} title="What this product is not">
@@ -41,7 +41,7 @@ function Disclaimer() {
       <Section id="evidence-and-drafts" n={3} title="Evidence and drafts">
         <p>
           Some relationships remain unreviewed. Draft extensions are labelled. For how citations attach to claims, see{" "}
-          <Link to="/methods">Methods &amp; trust</Link> and <Link to="/evidence">Evidence coverage</Link>.
+          <Link to="/methods">Evidence &amp; Methods</Link> and <Link to="/evidence">Evidence coverage</Link>.
         </p>
       </Section>
     </div>

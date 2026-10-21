@@ -16,7 +16,7 @@ export const Route = createFileRoute("/insights")({
   head: () =>
     seoHead({
       title: pageTitle("Insights"),
-      description: `Build notes, methods context and honest capability status for ${PRODUCT_NAME} and ${FLAGSHIP_NAME} — not generic AI news.`,
+      description: `Build notes, methods context and capability status for ${PRODUCT_NAME} and ${FLAGSHIP_NAME} — not generic AI news.`,
       path: "/insights",
     }),
   component: Insights,
@@ -44,14 +44,14 @@ function Insights() {
       <MarketingHero
         eyebrow="Science · Draft series"
         title="Insights"
-        lede="Explainers, methods notes and release context tied to the live graph. Full editorial series will grow as reviewed content is ready — this destination stays out of primary navigation until then."
+        lede="Explainers, methods notes and release context tied to the live graph. The full editorial series will grow as reviewed content is ready — this destination stays out of primary navigation until then."
         foot="Draft / unpublished · not primary navigation · no unverified scientific claims"
       />
 
       <MarketingBody>
         <MarketingSection
           id="release"
-          eyebrow="01 / BUILD NOTE"
+          eyebrow="Release"
           title="Current release context."
         >
           <p className="mkt-prose">
@@ -62,16 +62,16 @@ function Insights() {
           </p>
           {snap.versionNotes ? <p className="mkt-aside">{snap.versionNotes}</p> : null}
           <p className="mkt-aside">
-            Same counts appear on the homepage footer and <Link to="/methods">Methods</Link>. Explore{" "}
+            Same counts appear on the homepage and <Link to="/methods">Methods</Link>. Explore{" "}
             <Link to="/overview">{FLAGSHIP_NAME}</Link>.
           </p>
         </MarketingSection>
 
         <MarketingSection
           id="drafts"
-          eyebrow="02 / DRAFT EXPLAINERS"
+          eyebrow="Draft explainers"
           title="Unpublished — not finished articles."
-          lede="Prepared from maintained exemplar pathways. Remain draft until editorial review."
+          lede="Prepared from maintained exemplar pathways. They remain draft until editorial review."
         >
           <div className="insight-drafts">
             {draftExplainers.map((d) => (
@@ -93,14 +93,14 @@ function Insights() {
           </div>
         </MarketingSection>
 
-        <MarketingSection id="read-first" eyebrow="03 / READ FIRST" title="Methods before headlines.">
+        <MarketingSection id="read-first" eyebrow="Read first" title="Methods before headlines.">
           <ul className="mkt-principle-list">
             <li>
               <Link to="/methods">How the graph and evidence lifecycle work</Link> — provenance, review statuses and
               limitations.
             </li>
             <li>
-              <Link to="/evidence">Evidence coverage</Link> — relationship-level support, not concept-level inflation.
+              <Link to="/evidence">Evidence coverage</Link> — relationship-level support, not concept-level padding.
             </li>
             <li>
               <Link to="/disclaimer">Educational disclaimer</Link> — teaching with references, not patient-specific
@@ -111,9 +111,9 @@ function Insights() {
 
         <MarketingSection
           id="phases"
-          eyebrow="04 / IMPLEMENTATION"
+          eyebrow="Implementation"
           title="Phase status from the maintained list."
-          lede="Partial means shipped interfaces with honest gaps — not finished science."
+          lede="Partial means shipped interfaces with known gaps — not finished science."
         >
           <ul className="mkt-phase-list">
             {IMPLEMENTATION_PHASES.map((p) => (

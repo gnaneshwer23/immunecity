@@ -5,7 +5,7 @@ export function IsiCityBand() {
     <section className="bio-section" aria-labelledby="isi-city-h">
       <div className="bio-section-heading">
         <div>
-          <span className="bio-section-number">ISI + IMMUNE CITY</span>
+          <span className="mkt-section-label">Brand &amp; platform</span>
           <h2 id="isi-city-h">The world, and the intelligence that navigates it.</h2>
         </div>
         <p>AI sits on top of the knowledge and evidence — never in place of it.</p>

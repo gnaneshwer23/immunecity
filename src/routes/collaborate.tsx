@@ -99,9 +99,9 @@ function Collaborate() {
           <aside className="mkt-collab-aside">
             <MarketingSection
               id="direct"
-              eyebrow="DIRECT"
+              eyebrow="Contact"
               title="Email first."
-              lede="Prefer a short note? Reach the public collaboration inbox directly."
+              lede="Prefer a short note? Write to the public collaboration inbox."
             >
               <div className="mkt-collab-address">
                 <code>{CONTACT_EMAIL}</code>
@@ -127,9 +127,9 @@ function Collaborate() {
           <div className="mkt-collab-main">
             <MarketingSection
               id="form"
-              eyebrow="ENQUIRY"
+              eyebrow="Enquiry"
               title="Start a conversation."
-              lede="Submitting opens your email client with a pre-filled message (mailto)."
+              lede="Submitting opens your email client with a pre-filled message."
             >
               <form className="collab-form" onSubmit={onSubmit} noValidate>
                 <label>

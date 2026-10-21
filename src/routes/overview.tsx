@@ -8,7 +8,6 @@ import { CONTENT } from "@/data/content";
 import { NAV_GROUPS } from "@/components/immune/nav";
 import { Button } from "@/components/ui/button";
 import {
-  CapabilityChips,
   MarketingBody,
   MarketingCta,
   MarketingHero,
@@ -16,6 +15,7 @@ import {
   WontClaimList,
 } from "@/components/immune/marketing";
 import {
+  ASK_PUBLIC_LINE,
   ATLAS_CTA,
   ATLAS_PATH,
   FLAGSHIP_NAME,
@@ -45,7 +45,7 @@ function draftRoute(title: string): DraftRoute | null {
   return r as DraftRoute;
 }
 
-/** Draft educational scaffolds — not reviewed exemplars; claim-level Gate C incomplete. */
+/** Draft teaching chains — not reviewed exemplars; claim review incomplete. */
 const DRAFT_TEACHING_CHAINS = (
   [
     {
@@ -53,21 +53,21 @@ const DRAFT_TEACHING_CHAINS = (
       title: "Fibre → butyrate → Treg → IBD",
       lessonId: "microbiome",
       lessonLabel: "Microbiome mechanism lesson",
-      lede: "Educational scaffold from draft microbiome extensions — claim-level review incomplete. Not a reviewed exemplar.",
+      lede: "Draft microbiome teaching path — claim review incomplete. Not a reviewed exemplar.",
     },
     {
       id: "draft-vaccine",
       title: "Vaccine → germinal centre → memory",
       lessonId: "vaccines",
       lessonLabel: "Vaccines mechanism lesson",
-      lede: "Draft vaccine teaching chain — germinal centre affinity maturation to memory and titre. Not a finished Academy course.",
+      lede: "Draft vaccine path from germinal-centre maturation to memory and titre. Not a finished Academy course.",
     },
     {
       id: "draft-hla",
       title: "Shared epitope → ACPA → RA",
       lessonId: "immunogenetics",
       lessonLabel: "Immunogenetics mechanism lesson",
-      lede: "Draft immunogenetics bridge into the RA neighbourhood — association teaching, not mechanism-complete. TNF→RA remains the primary reviewed exemplar.",
+      lede: "Draft immunogenetics bridge into the RA neighbourhood — association teaching, not mechanism-complete.",
     },
   ] as const
 ).flatMap((def) => {
@@ -97,7 +97,7 @@ export const Route = createFileRoute("/overview")({
   head: () =>
     seoHead({
       title: pageTitle("Platform"),
-      description: `Explore immune cells, mechanisms, disease biology, therapies and evidence through ${FLAGSHIP_NAME} — the ${PRODUCT_NAME} flagship atlas. Causal spine, twelve layers, educational model with references.`,
+      description: `Explore immune cells, mechanisms, disease biology, therapies and evidence through ${FLAGSHIP_NAME} — the ${PRODUCT_NAME} flagship atlas. Causal spine, twelve layers and an educational model with references.`,
       path: "/overview",
     }),
   component: Overview,
@@ -145,13 +145,13 @@ function DraftChainBlock({
         })}
       </div>
       <p className="mkt-aside">
-        Teaching only — not clinical decision support.{" "}
+        Teaching path.{" "}
         <Link to="/mechanism/$id" params={{ id: lessonId }}>
           {lessonLabel}
         </Link>
         {" · "}
         <Link to="/graph" search={{ focus: route.chain[0] ?? "" }}>
-          Open atlas chain
+          Open in graph
         </Link>
       </p>
     </>
@@ -169,9 +169,9 @@ function Overview() {
   const { data: approvedCites = [], isPending: citesPending, isError: citesError } = useQuery(approvedQuery);
   const primaryReport = reportExemplar(primaryExemplar, approvedCites);
   const pathwayMaturityLine = citesPending
-    ? "Loading live review status…"
+    ? "Loading review status…"
     : citesError
-      ? "Evidence service unavailable — hop badges may not reflect approvals."
+      ? "Evidence service unavailable — status may be stale."
       : EXEMPLAR_MATURITY_LABEL[primaryReport.maturity];
 
   function selectSpineStage(step: string) {
@@ -184,7 +184,7 @@ function Overview() {
       <MarketingHero
         eyebrow={`Platform · ${FLAGSHIP_NAME}`}
         title="One connected view of immunology."
-        lede={`${FLAGSHIP_NAME} joins cells, mechanisms, disease biology, therapies and evidence in a shared causal map. Orient here, then open a layer or the live graph.`}
+        lede={`${FLAGSHIP_NAME} brings cells, mechanisms, disease biology, therapies and evidence into a shared causal map. Orient here, then open a layer or the live graph.`}
         actions={
           <>
             <Button asChild className="bio-primary">
@@ -229,15 +229,15 @@ function Overview() {
       <MarketingBody>
         <MarketingSection
           id="enter"
-          eyebrow="01 / ENTER"
+          eyebrow="Start here"
           title="Three ways in."
-          lede="Same atlas — pick the job you need now."
+          lede="One atlas — choose how you want to begin."
         >
           <div className="mkt-enter-rail" role="list">
             <Link className="mkt-enter" to={LEARN_PATH} role="listitem">
               <span className="mkt-enter-kicker">Learn</span>
               <strong>Academy &amp; mechanisms</strong>
-              <span>Walk labelled teaching cascades, then inspect linked graph concepts.</span>
+              <span>Walk teaching cascades, then inspect the linked graph concepts.</span>
             </Link>
             <Link className="mkt-enter" to="/graph" role="listitem">
               <span className="mkt-enter-kicker">Explore</span>
@@ -246,20 +246,17 @@ function Overview() {
             </Link>
             <Link className="mkt-enter" to="/ask" role="listitem">
               <span className="mkt-enter-kicker">Investigate</span>
-              <strong>Ask Immune (partial)</strong>
-              <span>
-                Graph + Gate C when present; provisional lit labelled; fail-closed citation checks — not fully
-                evidence-grounded AI.
-              </span>
+              <strong>Ask Immune</strong>
+              <span>{ASK_PUBLIC_LINE}</span>
             </Link>
           </div>
         </MarketingSection>
 
         <MarketingSection
           id="pathway"
-          eyebrow="02 / LIVE PATHWAY"
+          eyebrow="Exemplar pathway"
           title={primaryExemplar.title}
-          lede={`Primary reviewed exemplar. Real hops from the curated graph with review labels from approved claim cites when available. Maturity: ${pathwayMaturityLine}`}
+          lede={`Primary reviewed exemplar from the curated graph. Review labels reflect approved claim cites when available. ${pathwayMaturityLine}`}
         >
           <ol className="mkt-path" aria-label={`${primaryExemplar.title} relationships`}>
             {primaryReport.segments.flatMap((seg, si) =>
@@ -288,8 +285,8 @@ function Overview() {
             )}
           </ol>
           <p className="mkt-aside">
-            {primaryExemplar.purpose} Teaching axis only — not disease-complete.{" "}
-            <Link to="/methods">Evidence lifecycle</Link>
+            {primaryExemplar.purpose} Teaching axis — not a complete disease model.{" "}
+            <Link to="/methods">Evidence methods</Link>
             {EXEMPLAR_PATHWAYS.length > 1 ? (
               <>
                 {" · "}
@@ -318,7 +315,7 @@ function Overview() {
           <MarketingSection
             key={chain.id}
             id={chain.id}
-            eyebrow={`0${3 + idx} / DRAFT PATHWAY`}
+            eyebrow="Draft pathway"
             title={chain.route.title}
             lede={chain.lede}
           >
@@ -332,9 +329,9 @@ function Overview() {
 
         <MarketingSection
           id="draft-domains"
-          eyebrow="06 / DRAFT DOMAINS"
-          title="Extension domains awaiting claim-level curation."
-          lede="Phase B teaching scaffolds already in the atlas — each badge stays Draft until Gate C cites land. Not finished Academy courses."
+          eyebrow="Draft domains"
+          title="Extension domains still under claim review."
+          lede="Teaching paths already in the atlas — each stays Draft until claim cites are reviewed. Not finished Academy courses."
         >
           <ul className="mkt-domain-strip" aria-label="Draft knowledge domains">
             {KNOWLEDGE_DOMAINS.map((d) => (
@@ -347,9 +344,9 @@ function Overview() {
             ))}
           </ul>
           <p className="mkt-aside">
-            Density and gaps: <Link to="/methods" hash="live-ev-heading">Live Methods coverage</Link>
+            Coverage detail: <Link to="/methods" hash="live-ev-heading">Methods</Link>
             {" · "}
-            <Link to="/evidence" hash="coverage">Evidence breakdown</Link>
+            <Link to="/evidence" hash="coverage">Evidence explorer</Link>
             {" · "}
             Extra reading on <Link to={LEARN_PATH} hash="extra-reading">Academy</Link>
           </p>
@@ -357,9 +354,9 @@ function Overview() {
 
         <MarketingSection
           id="spine"
-          eyebrow="07 / CAUSAL SPINE"
+          eyebrow="Causal spine"
           title="Fifteen stages from trigger to discovery."
-          lede="Select a stage to preview curated example concepts (drafts excluded)."
+          lede="Select a stage to preview curated example concepts. Drafts are excluded from the preview."
         >
           <div className="mkt-spine" role="tablist" aria-label="Causal spine stages">
             {KG.core_spine.map((step, i) => (
@@ -413,7 +410,7 @@ function Overview() {
 
         <MarketingSection
           id="chain"
-          eyebrow="08 / SIGNAL CHAIN"
+          eyebrow="Signal chain"
           title="One signal. A chain of consequences."
           lede="Trace a teaching route from trigger toward treatment context."
         >
@@ -480,9 +477,9 @@ function Overview() {
 
         <MarketingSection
           id="layers"
-          eyebrow="09 / TWELVE LAYERS"
+          eyebrow="Atlas layers"
           title="Different lenses. One immune system."
-          lede="Academy overlays learning — not a thirteenth top-level layer."
+          lede="Twelve layers organise the atlas. Academy is a learning overlay — not a thirteenth layer."
         >
           <ul className="mkt-layer-grid">
             {layers.map((layer) => (
@@ -501,18 +498,13 @@ function Overview() {
 
         <MarketingSection
           id="honesty"
-          eyebrow="10 / HONEST LIMITS"
-          title="Capability status, in plain sight."
-          lede="Labels match shipped behaviour in capabilityStatus — not roadmap aspiration."
+          eyebrow="Limits"
+          title="What this platform is — and is not."
+          lede="Labels describe what ships today, not what is planned."
         >
-          <CapabilityChips />
           <WontClaimList />
           <p className="mkt-aside">
             <Link to="/methods" hash="live-ev-heading">Live coverage</Link>
-            {" · "}
-            <Link to="/research" hash="workbench">Research workbench</Link>
-            {" · "}
-            <Link to="/curation">Curation (admin)</Link>
             {" · "}
             <Link to="/disclaimer">Educational disclaimer</Link>
             {" · "}
@@ -522,7 +514,7 @@ function Overview() {
 
         <MarketingCta
           title="Open the live atlas."
-          lede="Start in the graph, ask a graph-grounded question, or inspect live Gate C density on Methods."
+          lede="Start in the graph, ask a question, or review claim coverage on Methods."
         >
           <Button asChild className="bio-primary">
             <Link to={ATLAS_PATH}>

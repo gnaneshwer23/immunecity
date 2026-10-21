@@ -6,16 +6,16 @@ import { relationshipStatus, STATUS_INFO, type CitationLike, type ReviewStatus }
 
 export type ExemplarMaturity = "scaffold" | "partially-reviewed" | "reviewed";
 
-/** User-facing maturity labels — never imply Gate C is complete when partial/scaffold. */
+/** User-facing maturity labels — never imply claim review is complete when partial/scaffold. */
 export const EXEMPLAR_MATURITY_LABEL: Record<ExemplarMaturity, string> = {
-  scaffold: "Scaffold — few or no approved claim cites",
-  "partially-reviewed": "Partially reviewed — some edges still need approved+supports",
-  reviewed: "On-path edges reviewed — teaching axis, not disease-complete",
+  scaffold: "Early path — few or no reviewed claims yet",
+  "partially-reviewed": "Partially reviewed — some links still await claim approval",
+  reviewed: "On-path claims reviewed — teaching axis, not a full disease model",
 };
 
-/** Compact strip labels for landings (TNF reviewed / PD-1 partial / IFN scaffold). */
+/** Compact strip labels for landings (TNF reviewed / PD-1 partial / IFN early). */
 export const EXEMPLAR_MATURITY_SHORT: Record<ExemplarMaturity, string> = {
-  scaffold: "Scaffold",
+  scaffold: "Early",
   "partially-reviewed": "Partial",
   reviewed: "Reviewed",
 };

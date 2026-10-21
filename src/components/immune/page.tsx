@@ -1,7 +1,7 @@
-/* Shared page anatomy for product pages: numbered sections, a sticky
+/* Shared page anatomy for product pages: titled sections, a sticky
    "On this page" rail with scroll-spy, labelled fact panels and the journey
    footer. Every journey page reads in the same order:
-   head → on this page → numbered sections → continue the journey. */
+   head → on this page → sections → continue the journey. */
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
@@ -9,10 +9,11 @@ import { JOURNEY_NAV, type JourneyItem } from "@/data/marketingNav";
 
 export type TocItem = { id: string; label: string };
 
-/** Numbered page section with a consistent two-column header. */
+/** Page section with a consistent two-column header.
+ * `n` is accepted for call-site compatibility but not shown — editorial titles carry the section. */
 export function Section({
   id,
-  n,
+  n: _n,
   title,
   lede,
   aside,
@@ -20,6 +21,7 @@ export function Section({
   className,
 }: {
   id?: string;
+  /** @deprecated Unused visually; kept so existing `n={…}` call sites need not churn. */
   n?: number;
   title: ReactNode;
   lede?: ReactNode;
@@ -27,6 +29,7 @@ export function Section({
   children?: ReactNode;
   className?: string;
 }) {
+  void _n;
   const headId = id ? `${id}-title` : undefined;
   return (
     <section
@@ -36,11 +39,6 @@ export function Section({
     >
       <header className="isi-sec-head">
         <div className="isi-sec-titles">
-          {n != null ? (
-            <span className="isi-sec-n" aria-hidden>
-              {String(n).padStart(2, "0")}
-            </span>
-          ) : null}
           <h2 id={headId}>{title}</h2>
         </div>
         {lede || aside ? (
@@ -82,10 +80,9 @@ export function PageToc({ items }: { items: TocItem[] }) {
     <nav className="isi-toc" aria-label="On this page">
       <span className="isi-toc-label">On this page</span>
       <ol>
-        {items.map((i, idx) => (
+        {items.map((i) => (
           <li key={i.id}>
             <a href={`#${i.id}`} aria-current={active === i.id ? "location" : undefined}>
-              <span className="isi-toc-n">{String(idx + 1).padStart(2, "0")}</span>
               {i.label}
             </a>
           </li>
@@ -183,9 +180,7 @@ export function JourneyNext() {
   return (
     <nav className="isi-journey" aria-label="Continue the journey">
       <div className="isi-journey-where">
-        <span className="isi-journey-label">
-          {current.group} · {current.index} of {current.total}
-        </span>
+        <span className="isi-journey-label">{current.group}</span>
         <strong>{current.title}</strong>
       </div>
       <div className="isi-journey-links">

@@ -12,7 +12,7 @@ const TOC = [
 import { CONTACT_EMAIL, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => seoHead({ title: pageTitle("Privacy"), description: `Privacy notice for ${PRODUCT_NAME}: what we collect for the educational beta and collaboration enquiries.`, path: "/privacy" }),
+  head: () => seoHead({ title: pageTitle("Privacy"), description: `Privacy notice for ${PRODUCT_NAME}: what we collect for the educational resource and collaboration enquiries.`, path: "/privacy" }),
   component: Privacy,
 });
 
@@ -22,7 +22,7 @@ function Privacy() {
       <PageHead
         kicker="Trust · Privacy"
         title="Privacy"
-        lede="This notice describes information handled by the public educational beta and collaboration pages. It is not legal advice."
+        lede="This notice describes information handled by the public educational site and collaboration pages. It is not legal advice."
       />
       <PageToc items={TOC} />
       <Section id="what-we-process" n={1} title="What we process">

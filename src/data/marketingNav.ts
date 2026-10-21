@@ -108,10 +108,10 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
   {
     label: "Learn",
     items: [
-      { n: "L1", path: "/ask", title: "Ask Immune", desc: "Graph-retrieved teaching; Gate C cites when present; provisional lit labelled." },
-      { n: "L2", path: "/atlas", title: "Knowledge atlas", desc: "Every concept across eight domains, with its own page." },
-      { n: "L3", path: "/overview", title: "Overview", desc: "The 15-step causal spine and twelve layers in one view." },
-      { n: "L4", path: "/learn", title: "Cell atlas", desc: "Immune cells, what they do, and their limits." },
+      { n: "L1", path: "/ask", title: "Ask Immune", desc: "Graph-based answers with labelled sources." },
+      { n: "L2", path: "/atlas", title: "Knowledge atlas", desc: "Concepts across eight domains, each with its own page." },
+      { n: "L3", path: "/overview", title: "Overview", desc: "Causal spine and twelve layers in one view." },
+      { n: "L4", path: "/learn", title: "Cell atlas", desc: "Immune cells, roles and where metaphors break." },
       { n: "L5", path: "/academy", title: "Immune system foundations", desc: "Guided foundation track through core immunology." },
       { n: "L6", path: "/mechanism", title: "Mechanisms and pathways", desc: "Step-by-step cascades and perturbations." },
     ],
@@ -119,28 +119,28 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
   {
     label: "Explore",
     items: [
-      { n: "E1", path: "/graph", title: "Knowledge graph", desc: "Every concept and typed causal link." },
+      { n: "E1", path: "/graph", title: "Knowledge graph", desc: "Typed concepts and directional causal links." },
       { n: "E2", path: "/dynamics", title: "Immune dynamics", desc: "Tissues, metabolism and genetics." },
       { n: "E3", path: "/disease", title: "Disease explorer", desc: "Hypersensitivity and the cancer immunity cycle." },
-      { n: "E4", path: "/therapy", title: "Therapy explorer", desc: "Interventions, their targets and trials." },
+      { n: "E4", path: "/therapy", title: "Therapy explorer", desc: "Interventions, targets and linked trials." },
     ],
   },
   {
     label: "Investigate",
     items: [
       { n: "I1", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
-      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Ask, how the AI works, and the path tracer." },
-      { n: "I3", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench spine." },
-      { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Trials as experiments and live Gate C coverage." },
-      { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Educational, rule-based — not medical advice." },
+      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Ask, retrieval grounding and path tracing." },
+      { n: "I3", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench." },
+      { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
+      { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Rule-based teaching — not medical advice." },
     ],
   },
   {
     label: "Trust",
     items: [
       { n: "T1", path: "/methods", title: "Methods", desc: "Evidence lifecycle, live coverage and model limits." },
-      { n: "T2", path: "/methods", hash: "live-ev-heading", title: "Live coverage", desc: "Gate C density and exemplar maturity from Neon." },
-      { n: "T3", path: "/methods", hash: "statuses", title: "Evidence standards", desc: "What each evidence status means." },
+      { n: "T2", path: "/methods", hash: "live-ev-heading", title: "Live coverage", desc: "How many relationship claims have been reviewed." },
+      { n: "T3", path: "/methods", hash: "statuses", title: "Evidence standards", desc: "What each review status means." },
       { n: "T4", path: "/methods", hash: "limitations", title: "Data sources and limitations", desc: "Where the evidence stops." },
     ],
   },
