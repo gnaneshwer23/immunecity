@@ -8,10 +8,18 @@ const neighbours = (id: string) => [
 ];
 
 describe("knowledge-graph connectivity", () => {
-  it("links every curated therapy to at least one disease", () => {
+  it("gives every curated therapy at least one indication (treats/prevents) edge", () => {
     const orphans = KG.nodes
-      .filter((n) => n.node_type === "INTERVENTION" && !n.draft)
-      .filter((n) => !neighbours(n.id).some((id) => byId[id]?.node_type === "DISEASE"))
+      // Teplizumab delays stage 3 type 1 diabetes; recorded honestly as shifts_ratio_in, not treats/prevents.
+      .filter((n) => n.node_type === "INTERVENTION" && !n.draft && n.id !== "I013")
+      .filter(
+        (n) =>
+          !(out[n.id] ?? []).some(
+            (e) =>
+              ["treats", "prevents"].includes(e.relation) &&
+              byId[e.object_id]?.node_type === "DISEASE",
+          ),
+      )
       .map((n) => n.name);
     expect(orphans).toEqual([]);
   });

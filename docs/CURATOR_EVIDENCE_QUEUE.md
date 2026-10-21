@@ -117,7 +117,7 @@ Use `EXEMPLAR_CURATOR_TARGETS` / curation UI callout for the same hints. Maturit
 
 ## Draft microbiome (EM) Gate C targets — PubMed queries only
 
-Educational scaffold in `src/data/extensions.ts` (`draft-ext-4`). Marketing may **surface** the draft pathway with a Draft badge; claim-level review is incomplete. Queries are search starting points — **never invent PMIDs**; verify before approve.
+Educational scaffold in `src/data/extensions.ts` (introduced in `draft-ext-4`; current release `draft-ext-5`). Marketing may **surface** the draft pathway with a Draft badge; claim-level review is incomplete. Queries are search starting points — **never invent PMIDs**; verify before approve.
 
 | Priority | relId | Soft claim (teaching) | PubMed query |
 |----------|-------|----------------------|--------------|

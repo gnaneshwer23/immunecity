@@ -39,7 +39,7 @@
 | Canonical URL | https://www.immune-super-intelligence.co.uk |
 | Secondary URL | https://immune-city.lovable.app — divergent; keep until deliberately retired (**D-06**) |
 | Auth / DB | Neon Managed Better Auth + drizzle/postgres |
-| Graph | KG **0.3** + extensions **draft-ext-4** · via `graphReleaseSnapshot()` · ~260 core / ~70 draft concepts · ~549 runtime relationships · 15 spine · 12 layers |
+| Graph | KG **0.3** + extensions **draft-ext-5** · via `graphReleaseSnapshot()` · ~260 core / ~70 draft concepts · ~595 runtime relationships · 15 spine · 12 layers |
 
 ### Landmark commits on `main`
 
@@ -73,7 +73,7 @@
 | Phase | Status | Notes |
 |-------|--------|-------|
 | **A / A2** | **DONE** | `bun scripts/smoke-prd-a2.ts` **ALL PASSED** this audit |
-| **B** | **PARTIAL** | draft-ext-4 + coverage; TNF→RA on-path approved; PD-1 partial; IFN scaffold-ish |
+| **B** | **PARTIAL** | draft-ext-5 (ext-4 coverage + ext-5 connectivity drafts); TNF→RA on-path approved; PD-1 partial; IFN scaffold-ish |
 | **C** | **PARTIAL** | Lit workflow UI; honesty: not live PubMed bulk ingest |
 | **D** | **PARTIAL** | Registry planned/interface-only · not live; `implementedModels() === []` |
 | **E** | **PARTIAL** | Workbench candidates + human-gated curation handoff stub; no KG write-back |
@@ -200,7 +200,7 @@ Do **not** mass-approve or invent PMIDs.
 | Gate | Result | Evidence |
 |------|--------|----------|
 | **A — Security** | **PASS** (residuals noted) | Neon Auth + admin present; write invariants on prod SHA |
-| **B — Data integrity** | **PASS** (graph) | Snapshot 0.3+draft-ext-4 loads |
+| **B — Data integrity** | **PASS** (graph) | Snapshot 0.3+draft-ext-5 loads |
 | **C — Scientific honesty** | **PARTIAL** | **9 / ~549**; TNF→RA on-path done; PD-1/IFN incomplete |
 | **D — Functional** | **PASS** | Routes + Ask stream OK this pass |
 | **E — AI reliability** | **PASS** (SME open) | Prod Ask OK + smoke-prd-a2 pass; SME gold-set sign-off still open |
