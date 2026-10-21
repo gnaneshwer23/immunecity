@@ -434,3 +434,13 @@ a.isi-journey-card, a.isi-journey-card:hover { text-decoration: none; }
   .isi-tx-row { grid-template-columns: 1fr; gap: 6px; }
   .isi-tx-row > span::before { content: attr(data-label); display: block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 }
+
+/* Disease pipelines. */
+.isi-pipe-index { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--isi-space-3); grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.isi-pipe-card { display: grid; gap: 4px; padding: var(--isi-space-4); text-decoration: none; height: 100%; }
+.isi-pipe-card:hover { border-color: var(--primary); }
+.isi-pipe-groups { display: grid; gap: var(--isi-space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); }
+.isi-pipe-group { padding: var(--isi-space-4); display: grid; gap: var(--isi-space-3); align-content: start; }
+.isi-pipe-group-head h3 { margin: 0 0 2px; font-size: 1.05rem; }
+.isi-pipe-curated { margin: 0; padding-left: 1.1rem; display: grid; gap: 6px; font-size: 14px; }
+.isi-pipe-link { margin-top: var(--isi-space-3); }

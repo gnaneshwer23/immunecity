@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import { byId, human } from "@/lib/immune/engine";
 import { registryQueryFor, translationalPath } from "@/lib/immune/translational";
+import { isPipelineDisease } from "@/lib/immune/pipeline";
 import { TRIAL_REGISTRY, ctgStudyUrl } from "@/data/trialRegistry";
 import { getActiveTrials } from "@/lib/liveData.functions";
 import { ExplainerSection } from "@/components/immune/explain";
@@ -115,6 +116,11 @@ export default function TranslationalPath({ id }: { id: string }) {
         </div>
       ) : null}
       {live ? <ActiveRegistryTrials condition={live.condition} intervention={live.intervention} /> : null}
+      {isPipelineDisease(id) ? (
+        <p className="small isi-pipe-link">
+          <Link to="/pipeline/$disease" params={{ disease: id }}>Open the full {node.name} pipeline — every mechanism and its active trials →</Link>
+        </p>
+      ) : null}
     </ExplainerSection>
   );
 }

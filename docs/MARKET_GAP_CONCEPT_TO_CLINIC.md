@@ -43,7 +43,7 @@ Ordered by leverage. Blockers come first.
 - Any patient-level feature needs a scoped regulatory call first (see §2).
 
 **Next 30 days**
-1. **Disease pipeline pages** (`/pipeline/$disease`): mechanism-ordered landscape that combines approved therapies (graph) with active trials grouped by target (registry `InterventionName` mapped to graph targets via the identifiers on `feat/concept-xrefs`). This is the "where is this field going" view nobody offers for free.
+1. **Disease pipeline pages** (`/pipeline/$disease`) — *shipped on `feat/disease-pipeline`: 16 diseases. Active registry studies map to mechanisms by exact drug name or brand only. Mechanisms in active testing that aren't linked to the disease in the graph are flagged as curation gaps (e.g. CD20, CD19 and IL-6R in RA).* Original plan: mechanism-ordered landscape that combines approved therapies (graph) with active trials grouped by target (registry `InterventionName` mapped to graph targets via the identifiers on `feat/concept-xrefs`). This is the "where is this field going" view nobody offers for free.
 2. **Merge identifiers + trials.** ChEMBL IDs on therapies enable mechanism-of-action and target lookups from ChEMBL. MONDO IDs on diseases enable Open Targets association scores. Both are free APIs; show them as *external evidence, not curated*.
 3. **Case-based learning** (Immunopaedia's proven format): 5 cases, each following one patient journey through the graph (presentation → mechanism → biomarker → therapy → trial), linking existing Atlas and mechanism pages.
 

@@ -10,7 +10,7 @@ export interface LiveStudy { nctId: string; label: string; phase: string | null;
 /** Registry view of one curated TRIAL concept. */
 export interface LiveTrial { nodeId: string; studies: LiveStudy[]; unregisteredReason: string | null; note: string | null }
 /** A currently active interventional study returned by a live registry query (not curated). */
-export interface ActiveStudy { nctId: string; title: string; phase: string | null; status: string; sponsor: string | null; url: string }
+export interface ActiveStudy { nctId: string; title: string; phase: string | null; status: string; sponsor: string | null; url: string; interventions: string[] }
 export interface ActiveTrials { total: number; studies: ActiveStudy[]; query: { condition: string | null; intervention: string | null }; unavailable?: boolean }
 export interface LiveProtein { gene: string; protein: string | null; accession: string | null; size: number | null; url: string | null; unavailable?: boolean }
 
@@ -59,10 +59,10 @@ async function fetchTrial(nodeId: string): Promise<LiveTrial> {
 
 const ACTIVE = "RECRUITING,NOT_YET_RECRUITING,ACTIVE_NOT_RECRUITING,ENROLLING_BY_INVITATION";
 
-async function fetchActive(condition: string | null, intervention: string | null): Promise<ActiveTrials> {
+async function fetchActive(condition: string | null, intervention: string | null, pageSize = 6): Promise<ActiveTrials> {
   const query = { condition, intervention };
   return (
-    (await cached(`active:${condition ?? ""}|${intervention ?? ""}`, async () => {
+    (await cached(`active:${condition ?? ""}|${intervention ?? ""}|${pageSize}`, async () => {
       // Exact-phrase match on the registry's own Condition / InterventionName fields: free-text
       // query.cond expands synonyms and pulls in loosely related studies. Default sort is relevance.
       const phrase = (v: string) => `"${v.replace(/"/g, "")}"`;
@@ -76,8 +76,8 @@ async function fetchActive(condition: string | null, intervention: string | null
         "filter.overallStatus": ACTIVE,
         "filter.advanced": clauses.join(" AND "),
         countTotal: "true",
-        pageSize: "6",
-        fields: "NCTId,BriefTitle,Phase,OverallStatus,LeadSponsorName",
+        pageSize: String(pageSize),
+        fields: "NCTId,BriefTitle,Phase,OverallStatus,LeadSponsorName,InterventionName",
       });
       const res = await fetch(`${CTG}?${params}`, { headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" }, signal: AbortSignal.timeout(6000) });
       if (!res.ok) throw new Error(`ClinicalTrials.gov ${res.status}`);
@@ -92,6 +92,7 @@ async function fetchActive(condition: string | null, intervention: string | null
           status: p.statusModule?.overallStatus ?? "UNKNOWN",
           sponsor: p.sponsorCollaboratorsModule?.leadSponsor?.name ?? null,
           url: ctgStudyUrl(id),
+          interventions: (p.armsInterventionsModule?.interventions ?? []).map((i: any) => String(i.name ?? "")).filter(Boolean),
         };
       }).filter((x: ActiveStudy) => /^NCT\d{8}$/.test(x.nctId));
       return { total: Number(j.totalCount ?? studies.length), studies, query } as ActiveTrials;
@@ -144,6 +145,11 @@ export const getActiveTrials = createServerFn({ method: "GET" })
       .parse(d),
   )
   .handler(async ({ data }) => fetchActive(data.condition, data.intervention));
+
+/** Up to 100 most relevant active phase 2–4 interventional studies for one condition (pipeline pages). */
+export const getPipelineTrials = createServerFn({ method: "GET" })
+  .inputValidator((d: unknown) => z.object({ condition: z.string().min(2).max(120) }).parse(d))
+  .handler(async ({ data }) => fetchActive(data.condition, null, 100));
 
 export const getLiveProteins = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ genes: z.array(z.string().max(20)).max(30) }).parse(d))
