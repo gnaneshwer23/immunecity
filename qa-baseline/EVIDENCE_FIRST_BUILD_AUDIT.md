@@ -1,7 +1,7 @@
 # Evidence-first build audit
 
 **Date (UTC):** 2026-10-21  
-**Branch tip:** `92eabfd` (`feature/evidence-first-sprint` → merge to `main`)  
+**Branch tip:** `db51f13` (`feature/evidence-first-sprint` → merge to `main`)  
 **Baseline start:** `a3ca29a` (evidence-first sprint tip)  
 **Canonical:** https://www.immune-super-intelligence.co.uk/  
 **Scope:** Engineering only — skipped Dribbble/UI chrome and chat-sdk polish.
@@ -101,6 +101,11 @@ Also exercised: claim ledger add/lifecycle, workbench spine readiness, citation 
 5. `e1afca8` test(eval): expand graph-true scientific cases to 75; document runs  
 6. `75834c6` feat(obs): structured Ask/prepare latency and trace fields  
 7. `92eabfd` docs(neon): journal 0005–0007 and owner-approved apply steps  
+8. `db51f13` docs(qa): evidence-first build audit for engineering pass  
+
+**Merged tip:** `main` = `feature/evidence-first-sprint` = `db51f13` (FF).  
+**Smoke re-check after merge:** ALL PASSED (75 eval cases + unit checks).  
+**Deploy:** deferred in finalize pass unless already safe post-push (migrations 0005–0007 still unapplied on Neon; runtime fallbacks OK).
 
 ---
 
