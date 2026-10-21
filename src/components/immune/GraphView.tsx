@@ -88,7 +88,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
     sel.selectAll("*").remove();
     sel.attr("viewBox", `0 0 ${width} ${height}`);
     const root = sel.append("g");
-    const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.25, 3]).on("zoom", (e) => root.attr("transform", e.transform));
+    const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.1, 3]).on("zoom", (e) => root.attr("transform", e.transform));
     zoomRef.current = zoom;
     sel.call(zoom);
 
@@ -199,7 +199,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
     const xs = pts.map((d) => d.x!), ys = pts.map((d) => d.y!);
     const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
     const pad = 40, w = stage.clientWidth, h = stage.clientHeight;
-    const k = Math.max(0.25, Math.min(3, Math.min((w - pad * 2) / Math.max(x1 - x0, 1), (h - pad * 2) / Math.max(y1 - y0, 1))));
+    const k = Math.max(0.1, Math.min(3, Math.min((w - pad * 2) / Math.max(x1 - x0, 1), (h - pad * 2) / Math.max(y1 - y0, 1))));
     const t = d3.zoomIdentity.translate(w / 2 - ((x0 + x1) / 2) * k, h / 2 - ((y0 + y1) / 2) * k).scale(k);
     (d3.select(svgEl).transition().duration(300) as any).call(zoom.transform, t);
   };
