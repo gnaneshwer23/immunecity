@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MAX_QUESTION_CHARS, isAskEmergencyDisabled, ASK_DISABLED_MESSAGE } from "@/lib/askGrounding";
 import { prepareAskServer } from "@/lib/ask.server";
+import { askObservabilityPublic } from "@/lib/askObservability";
 
 /** Lightweight grounding for Ask Immune UI (graph + Gate C + provisional lit). */
 async function handlePrepare(request: Request): Promise<Response> {
@@ -22,7 +23,14 @@ async function handlePrepare(request: Request): Promise<Response> {
   const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
   const result = await prepareAskServer(question, ip);
   if (!result.ok) {
-    return Response.json({ error: result.message, code: "evidence_unavailable" }, { status: 503 });
+    return Response.json(
+      {
+        error: result.message,
+        code: "evidence_unavailable",
+        observability: result.observability ? askObservabilityPublic(result.observability) : null,
+      },
+      { status: 503 },
+    );
   }
 
   const {
@@ -34,6 +42,7 @@ async function handlePrepare(request: Request): Promise<Response> {
     counterHarvestError,
     researchTrace,
     researchTraceText,
+    observability,
   } = result;
   return Response.json({
     queryClass: prepared.queryClass,
@@ -59,6 +68,7 @@ async function handlePrepare(request: Request): Promise<Response> {
     counterHarvestError: counterHarvestError ?? null,
     researchTrace: researchTrace ?? null,
     researchTraceText: researchTraceText ?? null,
+    observability: askObservabilityPublic(observability),
   });
 }
 

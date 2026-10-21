@@ -23,6 +23,13 @@ import { APPROVAL_ELIGIBLE_CHECK, isCounterEvidenceAssessment, isGateCSupporting
 import type { CitationLike } from "@/lib/immune/evidenceStatus";
 import { fetchCounterevidenceHarvest, fetchProvisionalLiterature } from "@/lib/provisionalLit.server";
 import {
+  askObservabilityPublic,
+  createAskObservability,
+  elapsedMs,
+  withTiming,
+  type AskObservability,
+} from "@/lib/askObservability";
+import {
   attachRetrievalToTrace,
   createInvestigatePlan,
   summariseTrace,
@@ -217,8 +224,9 @@ export type PrepareAskServerResult =
       /** Bounded planner scaffold for investigate / hypothesis classes (partial). */
       researchTrace?: ResearchRunTrace;
       researchTraceText?: string;
+      observability: AskObservability;
     }
-  | { ok: false; error: "evidence_unavailable"; message: string };
+  | { ok: false; error: "evidence_unavailable"; message: string; observability?: AskObservability };
 
 /**
  * Full server prepare: graph + Gate C approved cites + optional provisional lit.
@@ -228,17 +236,33 @@ export async function prepareAskServer(
   question: string,
   rateKey = "anon",
 ): Promise<PrepareAskServerResult> {
+  const t0 = Date.now();
+  let obs = createAskObservability();
   const preliminary = prepareAsk(question);
+  obs = withTiming(obs, "prepare", elapsedMs(t0));
+  obs = {
+    ...obs,
+    queryClass: preliminary.queryClass,
+    reviewedEvidenceCount: preliminary.grounding.coverage.reviewedEvidenceCount,
+    counterEvidenceCount: preliminary.grounding.coverage.counterEvidenceCount,
+    provisionalLiteratureCount: 0,
+    counterHarvestCount: 0,
+  };
   if (!preliminary.callModel) {
-    return { ok: true, prepared: preliminary, grounding: preliminary.grounding };
+    obs = { ...obs, totalMs: elapsedMs(t0), costUsd: null, modelId: null };
+    return { ok: true, prepared: preliminary, grounding: preliminary.grounding, observability: obs };
   }
 
+  const tEv = Date.now();
   const [evidence, counter] = await Promise.all([
     loadReviewedEvidenceForRels(preliminary.grounding.relIds),
     loadCounterEvidenceForRels(preliminary.grounding.relIds),
   ]);
+  obs = withTiming(obs, "evidence_load", elapsedMs(tEv));
+  obs = withTiming(obs, "counter_load", elapsedMs(tEv));
   if (!evidence.ok) {
-    return { ok: false, error: "evidence_unavailable", message: evidence.message };
+    obs = { ...obs, totalMs: elapsedMs(t0), errorCode: "evidence_unavailable", costUsd: null };
+    return { ok: false, error: "evidence_unavailable", message: evidence.message, observability: obs };
   }
   // Counter path soft-fails to empty (honest empty state) so Gate C support still flows.
   const counterCites = counter.ok ? counter.cites : [];
@@ -246,16 +270,31 @@ export async function prepareAskServer(
   let prepared = prepareAsk(question, [...evidence.cites, ...counterCites]);
   let grounding = attachReviewedCites(prepared.grounding, evidence.cites);
   grounding = attachCounterEvidence(grounding, counterCites);
+  const tLit = Date.now();
   const lit = await fetchProvisionalLiterature({
     grounding,
     question,
     queryClass: prepared.queryClass,
     rateKey,
   });
+  obs = withTiming(obs, "provisional_lit", elapsedMs(tLit));
   grounding = attachProvisionalLiterature(grounding, lit.items);
+  const tHarv = Date.now();
   const harvest = await fetchCounterevidenceHarvest({ grounding, question, rateKey });
+  obs = withTiming(obs, "counter_harvest", elapsedMs(tHarv));
   grounding = attachCounterEvidenceHarvest(grounding, harvest.items);
   prepared = { ...prepared, grounding };
+  obs = {
+    ...obs,
+    queryClass: prepared.queryClass,
+    reviewedEvidenceCount: grounding.coverage.reviewedEvidenceCount,
+    counterEvidenceCount: grounding.coverage.counterEvidenceCount,
+    provisionalLiteratureCount: grounding.provisionalLiterature.length,
+    counterHarvestCount: grounding.counterEvidenceHarvest.length,
+    costUsd: null,
+    modelId: null,
+    totalMs: elapsedMs(t0),
+  };
 
   let researchTrace: ResearchRunTrace | undefined;
   let researchTraceText: string | undefined;
@@ -287,6 +326,7 @@ export async function prepareAskServer(
     counterHarvestError: harvest.error,
     researchTrace,
     researchTraceText,
+    observability: obs,
   };
 }
 
@@ -363,6 +403,7 @@ export async function handleAsk(request: Request): Promise<Response> {
 
   // Buffer model text so we can enforce citation validation before returning to the client.
   let draft: string;
+  const tModel = Date.now();
   try {
     if (provider.kind === "lovable") {
       const { result } = createResponsesCall(
@@ -382,10 +423,29 @@ export async function handleAsk(request: Request): Promise<Response> {
       draft = await result.text;
     }
   } catch {
+    const failObs = withTiming(serverPrep.observability, "model", elapsedMs(tModel));
+    console.info(
+      "[ask.observability]",
+      JSON.stringify(askObservabilityPublic({ ...failObs, errorCode: "model_failed", costUsd: null, modelId: provider.model })),
+    );
     return Response.json({ error: "The model could not complete this answer. Please try again." }, { status: 502 });
   }
 
+  const tVal = Date.now();
   const validation = validateAnswerCitations(draft, prepared.grounding);
+  let obs = withTiming(serverPrep.observability, "model", elapsedMs(tModel));
+  obs = withTiming(obs, "citation_validation", elapsedMs(tVal));
+  obs = {
+    ...obs,
+    citationValidationOk: validation.ok,
+    modelId: provider.model,
+    // Cost unknown unless provider returns it — never invent.
+    costUsd: null,
+    totalMs: (obs.totalMs ?? 0) + elapsedMs(tModel) + elapsedMs(tVal),
+  };
+  // Structured log line for ops (no question text / no secrets).
+  console.info("[ask.observability]", JSON.stringify(askObservabilityPublic(obs)));
+
   if (!validation.ok) {
     return textReply(validation.failReason ? `${CITATION_REJECT} (${validation.failReason})` : CITATION_REJECT);
   }
