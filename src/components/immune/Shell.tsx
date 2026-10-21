@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, Menu, MessageSquare, X } from "lucide-react";
+import { ChevronDown, Menu, MessageSquare, X, Youtube } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { NAV_GROUPS } from "./nav";
 import {
@@ -26,7 +26,24 @@ import {
   PRODUCT_NAME,
   TAGLINE,
   TRUST_STATEMENT,
+  YOUTUBE_CHANNEL_LABEL,
+  YOUTUBE_CHANNEL_URL,
 } from "@/lib/brand";
+
+function YouTubeNavIcon({ className }: { className?: string }) {
+  return (
+    <a
+      href={YOUTUBE_CHANNEL_URL}
+      className={className}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={YOUTUBE_CHANNEL_LABEL}
+      title={YOUTUBE_CHANNEL_LABEL}
+    >
+      <Youtube size={18} aria-hidden />
+    </a>
+  );
+}
 
 function Logo() {
   return (
@@ -204,6 +221,14 @@ function MarketingCompactNav({
           </details>
           <div className="marketing-compact-group">
             <span className="marketing-compact-label">Organisation</span>
+            <a
+              href={YOUTUBE_CHANNEL_URL}
+              target="_blank"
+              rel="noreferrer"
+              onClick={onClose}
+            >
+              {YOUTUBE_CHANNEL_LABEL}
+            </a>
             {[...JOURNEY_SECONDARY, MARKETING_NAV_ACTION].map((item) => (
               <Link
                 key={item.path}
@@ -279,6 +304,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />
           ))}
           <span className="journey-sep journey-secondary" aria-hidden />
+          <YouTubeNavIcon className="marketing-nav-link journey-secondary youtube-nav-link" />
           {JOURNEY_SECONDARY.map((item) => (
             <Link
               key={item.path}

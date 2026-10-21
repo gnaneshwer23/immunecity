@@ -17,8 +17,6 @@ import {
   EXPLORE_PATH,
   LEARN_CTA,
   LEARN_PATH,
-  YOUTUBE_CHANNEL_LABEL,
-  YOUTUBE_CHANNEL_URL,
 } from "@/lib/brand";
 
 describe("marketing IA wiring", () => {
@@ -69,11 +67,8 @@ describe("marketing IA wiring", () => {
     const atlasPaths = new Set(ALL_NAV.map((l) => l.path));
     for (const group of FOOTER_GROUPS) {
       for (const item of group.items) {
-        if ("href" in item) {
-          expect(item.href).toBe(YOUTUBE_CHANNEL_URL);
-          expect(item.label).toBe(YOUTUBE_CHANNEL_LABEL);
-          continue;
-        }
+        expect("path" in item, "footer outbound links belong in the header").toBe(true);
+        if (!("path" in item)) continue;
         const known =
           MARKETING_PATHS.has(item.path as never) ||
           atlasPaths.has(item.path as never) ||
@@ -83,11 +78,5 @@ describe("marketing IA wiring", () => {
         expect(known, item.path).toBe(true);
       }
     }
-  });
-
-  it("lists the immunology YouTube channel under Explore footer outbound", () => {
-    const explore = FOOTER_GROUPS.find((g) => g.label === "Explore");
-    const yt = explore?.items.find((i) => "href" in i && i.href === YOUTUBE_CHANNEL_URL);
-    expect(yt).toMatchObject({ label: YOUTUBE_CHANNEL_LABEL, href: YOUTUBE_CHANNEL_URL });
   });
 });

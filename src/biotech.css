@@ -2231,6 +2231,7 @@ html[data-theme='light'] .pillar-menu { background: var(--surface); box-shadow: 
 .journey-nav { display: flex; align-items: center; gap: 2px; flex: 1; justify-content: center; min-width: 0; }
 .journey-nav .marketing-nav-link { color: var(--muted); }
 .journey-nav .marketing-nav-link:hover, .journey-nav .marketing-nav-link.current { color: var(--text); }
+.journey-nav .youtube-nav-link { display: inline-flex; align-items: center; justify-content: center; padding: 8px; line-height: 0; }
 .journey-sep { width: 1px; height: 18px; background: var(--border-strong); margin: 0 8px; }
 @media (max-width: 1100px) { .journey-nav .journey-secondary { display: none; } }
 @media (max-width: 800px) { .journey-nav { display: none; } }

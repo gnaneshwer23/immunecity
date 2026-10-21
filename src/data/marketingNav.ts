@@ -1,5 +1,3 @@
-import { YOUTUBE_CHANNEL_LABEL, YOUTUBE_CHANNEL_URL } from "@/lib/brand";
-
 /** Public marketing IA — separate from the twelve atlas layer groups in nav.ts. */
 
 /** Footer item: internal path or outbound href (learning / social). */
@@ -39,7 +37,6 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
       { label: "Platform", path: "/overview" },
       { label: "Academy", path: "/academy" },
       { label: "Reasoning & AI", path: "/reasoning" },
-      { label: YOUTUBE_CHANNEL_LABEL, href: YOUTUBE_CHANNEL_URL },
     ],
   },
   {
