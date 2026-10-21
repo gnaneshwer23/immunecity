@@ -1,6 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import { attachNeonAuth } from "./auth-attacher";
 
 function resolveAuthBaseUrl(): string {
   const raw = process.env["NEON_AUTH_BASE_URL"] || process.env["VITE_NEON_AUTH_URL"] || "";
@@ -36,7 +37,10 @@ export type NeonAuthClaims = JWTPayload & {
   id?: string;
 };
 
-export const requireNeonAuth = createMiddleware({ type: "function" }).server(async ({ next }) => {
+/** Attaches the Neon Auth JWT client-side (only for functions that require auth), then verifies it server-side. */
+export const requireNeonAuth = createMiddleware({ type: "function" })
+  .middleware([attachNeonAuth])
+  .server(async ({ next }) => {
   const baseUrl = resolveAuthBaseUrl();
   const request = getRequest();
   if (!request?.headers) throw new Error("Unauthorized: No request headers available");

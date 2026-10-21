@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { MAX_QUESTION_CHARS, isAskEmergencyDisabled, ASK_DISABLED_MESSAGE } from "@/lib/askGrounding";
 import { prepareAskServer } from "@/lib/ask.server";
 import { askObservabilityPublic } from "@/lib/askObservability";
+import { clientIp } from "@/lib/clientIp";
 
 /** Lightweight grounding for Ask Immune UI (graph + Gate C + provisional lit). */
 async function handlePrepare(request: Request): Promise<Response> {
@@ -20,7 +21,7 @@ async function handlePrepare(request: Request): Promise<Response> {
     return Response.json({ error: `Please keep questions under ${MAX_QUESTION_CHARS} characters.` }, { status: 400 });
   }
 
-  const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
+  const ip = clientIp(request.headers);
   const result = await prepareAskServer(question, ip);
   if (!result.ok) {
     return Response.json(

@@ -28,7 +28,7 @@ describe("marketing IA wiring", () => {
 
   it("puts Academy on /academy; Insights footer-only (no More menu); Collaborate distinct", () => {
     expect(MARKETING_NAV_PRIMARY.find((i) => i.label === "Academy")?.path).toBe("/academy");
-    expect(FOOTER_GROUPS[0].items.find((i) => "path" in i && i.path === "/academy")?.label).toBe("Academy");
+    expect(FOOTER_GROUPS[0]?.items.find((i) => "path" in i && i.path === "/academy")?.label).toBe("Academy");
     expect(MARKETING_NAV_MORE).toHaveLength(0);
     expect(MARKETING_NAV_PRIMARY.some((i) => (i.path as string) === "/insights")).toBe(false);
     expect(MARKETING_NAV.some((i) => (i.path as string) === "/insights")).toBe(false);

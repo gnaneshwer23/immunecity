@@ -4,6 +4,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { TRIAL_REGISTRY, ctgStudyUrl } from "@/data/trialRegistry";
+import { KG } from "@/lib/immune/engine";
+import { registryTerm } from "@/lib/immune/translational";
+
+/* Live registry queries accept only terms the graph itself would send, so these public
+   endpoints cannot be used as an open proxy to ClinicalTrials.gov or to grow the cache. */
+const ALLOWED_CONDITIONS = new Set(KG.nodes.filter((n) => n.node_type === "DISEASE").map((n) => registryTerm(n.name)));
+const ALLOWED_INTERVENTIONS = new Set(
+  KG.nodes.filter((n) => n.node_type === "INTERVENTION" && !/\(class\)/i.test(n.name)).map((n) => n.name),
+);
+const condition = z.string().refine((v) => ALLOWED_CONDITIONS.has(v), "unknown condition");
+const intervention = z.string().refine((v) => ALLOWED_INTERVENTIONS.has(v), "unknown intervention");
 
 /** One registered study, fetched from ClinicalTrials.gov by its verified NCT ID. */
 export interface LiveStudy { nctId: string; label: string; phase: string | null; status: string | null; url: string; unavailable?: boolean }
@@ -16,12 +27,16 @@ export interface LiveProtein { gene: string; protein: string | null; accession: 
 
 const cache = new Map<string, { at: number; value: unknown }>();
 const TTL = 6 * 60 * 60 * 1000; // 6 h
+/** Inputs are allowlisted, so this only bounds worst-case memory per warm instance. */
+const CACHE_MAX = 600;
 async function cached<T>(key: string, fn: () => Promise<T>): Promise<T | null> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < TTL) return hit.value as T;
   try {
     const value = await fn();
+    cache.delete(key);
     cache.set(key, { at: Date.now(), value });
+    while (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value!);
     return value;
   } catch {
     return null;
@@ -140,7 +155,7 @@ export const getLiveTrials = createServerFn({ method: "GET" })
 export const getActiveTrials = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) =>
     z
-      .object({ condition: z.string().min(2).max(120).nullable(), intervention: z.string().min(2).max(120).nullable() })
+      .object({ condition: condition.nullable(), intervention: intervention.nullable() })
       .refine((v) => v.condition || v.intervention, "condition or intervention required")
       .parse(d),
   )
@@ -148,11 +163,11 @@ export const getActiveTrials = createServerFn({ method: "GET" })
 
 /** Up to 100 most relevant active phase 2–4 interventional studies for one condition (pipeline pages). */
 export const getPipelineTrials = createServerFn({ method: "GET" })
-  .inputValidator((d: unknown) => z.object({ condition: z.string().min(2).max(120) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ condition }).parse(d))
   .handler(async ({ data }) => fetchActive(data.condition, null, 100));
 
 export const getLiveProteins = createServerFn({ method: "GET" })
-  .inputValidator((d: unknown) => z.object({ genes: z.array(z.string().max(20)).max(30) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ genes: z.array(z.string().regex(/^[A-Za-z0-9-]{1,20}$/)).max(30) }).parse(d))
   .handler(async ({ data }) => {
     const out: Record<string, LiveProtein> = {};
     for (const gene of data.genes) out[gene] = await fetchProtein(gene);

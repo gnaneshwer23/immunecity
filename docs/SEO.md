@@ -6,8 +6,8 @@ Canonical site: **https://www.immune-super-intelligence.co.uk/**
 
 | Asset | Purpose |
 |--------|---------|
-| `/robots.txt` | Allows crawlers; points to sitemap; disallows `/auth` and `/curation` |
-| `/sitemap.xml` | Index of public marketing + atlas entry pages |
+| `/robots.txt` | One `*` group: allows crawlers, disallows `/auth`, `/curation`, `/api/`; points to sitemap |
+| `/sitemap.xml` | Generated per request by `src/routes/sitemap[.]xml.ts` from `src/lib/sitemap.ts`: hub pages plus every indexable concept, pipeline and mechanism page |
 | `/og-image.jpg` | Open Graph / Twitter share image |
 | `src/lib/seo.ts` | Shared title/description/OG helpers + JSON-LD |
 | Root + key routes | `index,follow`, canonical URLs, Organization/WebSite schema |
