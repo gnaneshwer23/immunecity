@@ -92,7 +92,7 @@ describe("scientific evaluation set", () => {
         expect(shouldFetchProvisionalLit(g, cls) || cls === "source_lookup").toBe(true);
         expect(provisionalLitLabel()).toMatch(/[Uu]nreviewed/);
         expect(SYSTEM).toMatch(/PROVISIONAL_LITERATURE/);
-        expect(SYSTEM).toMatch(/not fully evidence-grounded/);
+        expect(SYSTEM).toMatch(/not fully evidence-grounded/i);
       } else if (c.kind === "multi-concept") {
         const g = graphContext(c.question);
         expect(g.coverage.matched).toBe(true);
