@@ -14,7 +14,7 @@ import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } fr
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v6";
+export const PROMPT_VERSION = "ask-grounding-v7";
 
 /** Unreviewed literature hits (PubMed / Europe PMC). Never Gate C approved. */
 export interface ProvisionalLitItem {
@@ -155,6 +155,14 @@ export interface CitationValidation {
   inventedRelIds: string[];
   unretrievedConceptIds: string[];
   unretrievedRelIds: string[];
+  /** PMIDs treated as Gate C / verified support that are only provisional or absent. */
+  unsupportedSupportClaims: string[];
+  /** Provisional PMIDs mentioned without unreviewed/provisional labelling. */
+  provisionalMislabels: string[];
+  /** Edge IDs cited with strong support language but no Gate C supports row. */
+  claimSupportGaps: string[];
+  /** Human-readable fail reason for Ask fail-closed replies. */
+  failReason: string | null;
 }
 
 export interface PrepareAskResult {
@@ -636,7 +644,19 @@ export function prepareAsk(question: string, cites: CitationLike[] = []): Prepar
   return { grounding, queryClass, callModel: true, replyText: null };
 }
 
-/** FR-025: reject invented concept/edge IDs; flag citations outside the retrieval set. */
+const STRONG_SUPPORT_LANG =
+  /\b(gate\s*c|approved\s+support|scientifically\s+verified|claim[- ]supported|reviewed\s+cite|proven\s+by|confirmed\s+by\s+pmid|definitively\s+shows)\b/i;
+const PROVISIONAL_LABEL =
+  /\b(unreviewed|provisional|not\s+gate\s*c|not\s+approved|literature\s+hit)\b/i;
+
+function nearbyWindow(text: string, index: number, radius = 120): string {
+  return text.slice(Math.max(0, index - radius), Math.min(text.length, index + radius));
+}
+
+/**
+ * FR-025 + ISI-005 MVP: reject invented/unretrieved IDs; fail closed on Gate C overclaims
+ * and unlabelled provisional PMIDs. Full passage entailment remains planned (no span ledger yet).
+ */
 export function validateAnswerCitations(text: string, grounding: AskGrounding): CitationValidation {
   const allowedNodes = new Set(grounding.nodeIds);
   const allowedRels = new Set(grounding.relIds);
@@ -644,6 +664,9 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   const inventedRelIds: string[] = [];
   const unretrievedConceptIds: string[] = [];
   const unretrievedRelIds: string[] = [];
+  const unsupportedSupportClaims: string[] = [];
+  const provisionalMislabels: string[] = [];
+  const claimSupportGaps: string[] = [];
 
   for (const m of text.matchAll(/\]\(concept:([^)]+)\)/g)) {
     const id = (m[1] ?? "").trim();
@@ -658,29 +681,113 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     else if (!allowedRels.has(id)) unretrievedRelIds.push(id);
   }
 
+  const gateCPmids = new Set(
+    grounding.links.flatMap((l) => l.reviewedPmids).filter((p) => /^\d+$/.test(p)),
+  );
+  for (const c of grounding.counterEvidence) {
+    // Counter PMIDs are allowed as identifiers but must not be sold as Gate C support.
+    if (c.pmid && /^\d+$/.test(c.pmid)) {
+      /* tracked below */
+    }
+  }
   const provisionalPmids = new Set(
     grounding.provisionalLiterature.map((p) => p.pmid).filter((p): p is string => !!p),
   );
   const counterPmids = new Set(
     grounding.counterEvidence.map((c) => c.pmid).filter((p): p is string => !!p && /^\d+$/.test(p)),
   );
-  // Fabricated PMIDs outside reviewed, counter, or provisional extract are rejected.
+  const graphEdgePmids = new Set<string>();
+  for (const l of grounding.links) {
+    const e = edgeByRel[l.relId];
+    if (!e) continue;
+    if (e.pmid && /^\d+$/.test(e.pmid)) graphEdgePmids.add(e.pmid);
+    if (e.reference && /^\d+$/.test(e.reference)) graphEdgePmids.add(e.reference);
+    for (const r of e.source_refs || []) {
+      if (/^\d+$/.test(r)) graphEdgePmids.add(r);
+    }
+  }
+
   for (const m of text.matchAll(/\bPMID[:\s]*(\d{6,9})\b/gi)) {
     const pmid = m[1]!;
-    const linked = grounding.links.some((l) => {
-      if (l.reviewedPmids.includes(pmid)) return true;
-      const e = edgeByRel[l.relId];
-      return !!e && (e.pmid === pmid || e.reference === pmid || (e.source_refs || []).includes(pmid));
-    });
-    if (!linked && !provisionalPmids.has(pmid) && !counterPmids.has(pmid)) inventedRelIds.push(`PMID:${pmid}`);
+    const idx = m.index ?? 0;
+    const window = nearbyWindow(text, idx);
+    const inGateC = gateCPmids.has(pmid);
+    const inProvisional = provisionalPmids.has(pmid);
+    const inCounter = counterPmids.has(pmid);
+    const inGraphEdge = graphEdgePmids.has(pmid);
+
+    if (!inGateC && !inProvisional && !inCounter && !inGraphEdge) {
+      inventedRelIds.push(`PMID:${pmid}`);
+      continue;
+    }
+    if (inProvisional && !inGateC) {
+      if (!PROVISIONAL_LABEL.test(window)) provisionalMislabels.push(pmid);
+      if (STRONG_SUPPORT_LANG.test(window)) unsupportedSupportClaims.push(`PMID:${pmid}`);
+    }
+    if (inCounter && !inGateC && STRONG_SUPPORT_LANG.test(window)) {
+      unsupportedSupportClaims.push(`PMID:${pmid}:counter-as-support`);
+    }
+  }
+
+  // Strong support language with zero Gate C rows on the retrieval → fail closed.
+  if (STRONG_SUPPORT_LANG.test(text) && grounding.coverage.reviewedEvidenceCount === 0) {
+    unsupportedSupportClaims.push("gate-c-language-without-reviewed-cites");
+  }
+
+  // Edges cited beside strong support language must have Gate C supports.
+  for (const m of text.matchAll(/\]\(edge:(REL-[^)]+)\)/g)) {
+    const id = (m[1] ?? "").trim();
+    if (!id || !allowedRels.has(id)) continue;
+    const window = nearbyWindow(text, m.index ?? 0);
+    if (!STRONG_SUPPORT_LANG.test(window)) continue;
+    const link = grounding.links.find((l) => l.relId === id);
+    if (!link?.hasClaimSupport) claimSupportGaps.push(id);
+  }
+
+  const inventedConceptIdsU = [...new Set(inventedConceptIds)];
+  const inventedRelIdsU = [...new Set(inventedRelIds)];
+  const unretrievedConceptIdsU = [...new Set(unretrievedConceptIds)];
+  const unretrievedRelIdsU = [...new Set(unretrievedRelIds)];
+  const unsupportedSupportClaimsU = [...new Set(unsupportedSupportClaims)];
+  const provisionalMislabelsU = [...new Set(provisionalMislabels)];
+  const claimSupportGapsU = [...new Set(claimSupportGaps)];
+
+  const ok =
+    inventedConceptIdsU.length === 0 &&
+    inventedRelIdsU.length === 0 &&
+    unretrievedConceptIdsU.length === 0 &&
+    unretrievedRelIdsU.length === 0 &&
+    unsupportedSupportClaimsU.length === 0 &&
+    provisionalMislabelsU.length === 0 &&
+    claimSupportGapsU.length === 0;
+
+  let failReason: string | null = null;
+  if (!ok) {
+    if (inventedConceptIdsU.length || inventedRelIdsU.length) {
+      failReason = "Answer cited concepts, links or PMIDs outside the atlas / retrieval set.";
+    } else if (unretrievedConceptIdsU.length || unretrievedRelIdsU.length) {
+      failReason = "Answer cited atlas IDs that were not in the retrieved grounding set.";
+    } else if (unsupportedSupportClaimsU.length || claimSupportGapsU.length) {
+      failReason =
+        "Answer implied reviewed/Gate C support that is not entailed by approved+supports evidence for the retrieved links.";
+    } else if (provisionalMislabelsU.length) {
+      failReason =
+        "Answer cited provisional literature without labelling it as unreviewed / not Gate C.";
+    } else {
+      failReason = "Citation-to-claim validation failed.";
+    }
   }
 
   return {
-    ok: inventedConceptIds.length === 0 && inventedRelIds.length === 0,
-    inventedConceptIds: [...new Set(inventedConceptIds)],
-    inventedRelIds: [...new Set(inventedRelIds)],
-    unretrievedConceptIds: [...new Set(unretrievedConceptIds)],
-    unretrievedRelIds: [...new Set(unretrievedRelIds)],
+    ok,
+    inventedConceptIds: inventedConceptIdsU,
+    inventedRelIds: inventedRelIdsU,
+    unretrievedConceptIds: unretrievedConceptIdsU,
+    unretrievedRelIds: unretrievedRelIdsU,
+    unsupportedSupportClaims: unsupportedSupportClaimsU,
+    provisionalMislabels: provisionalMislabelsU,
+    claimSupportGaps: claimSupportGapsU,
+    failReason,
   };
 }
 
@@ -746,6 +853,7 @@ Rules:
 - COUNTER_EVIDENCE lists assessed contradicts/partial separately. Never present them as approved support. If it says none, that is an honest empty set — do not invent counterevidence.
 - PROVISIONAL_LITERATURE (if present) is unreviewed PubMed/Europe PMC search — never treat it as approved evidence or "supports". If you mention those items, label them explicitly as "unreviewed literature" / provisional. Do not invent extra PMIDs.
 - Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, COUNTER_EVIDENCE, PROVISIONAL_LITERATURE, or on the LINK line itself.
+- Never claim Gate C / approved / scientifically verified support unless REVIEWED_EVIDENCE lists that PMID for the link. If you cite provisional PMIDs, keep the words "unreviewed" or "provisional" in the same sentence.
 - For QUERY_CLASS hypothesis_request: label every suggestion as a candidate hypothesis and include at least one alternative or disconfirming consideration.
 - Concise: a short explanation, then compact bullets of key connections, then the causal chain used.
 - Educational only. Never give diagnosis, dosing or treatment recommendations for a real person. Not clinical decision support. Not fully evidence-grounded AI.

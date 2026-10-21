@@ -190,7 +190,7 @@ export async function loadCounterEvidenceForRels(relIds: string[]): Promise<Revi
 }
 
 const CITATION_REJECT =
-  "I drafted an answer but it cited concepts, links or PMIDs outside the retrieved graph extract / reviewed evidence / provisional literature, so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods & trust.";
+  "I drafted an answer but citation-to-claim validation failed (invented or unretrieved IDs, Gate C overclaim, or provisional literature without an unreviewed label), so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods & trust.";
 
 export type PrepareAskServerResult =
   | { ok: true; prepared: PrepareAskResult; grounding: AskGrounding; provisionalError?: string; provisionalSkipped?: string }
@@ -330,7 +330,7 @@ export async function handleAsk(request: Request): Promise<Response> {
 
   const validation = validateAnswerCitations(draft, prepared.grounding);
   if (!validation.ok) {
-    return textReply(CITATION_REJECT);
+    return textReply(validation.failReason ? `${CITATION_REJECT} (${validation.failReason})` : CITATION_REJECT);
   }
 
   return textReply(draft);

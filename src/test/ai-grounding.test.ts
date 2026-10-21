@@ -122,6 +122,40 @@ describe("AI grounding", () => {
     expect(bad.ok).toBe(false);
     expect(bad.inventedConceptIds).toContain("FAKE99");
   });
+  it("fail-closes Gate C overclaims and unlabelled provisional PMIDs", () => {
+    const g = graphContext("How does TNF drive rheumatoid arthritis?");
+    expect(g.coverage.reviewedEvidenceCount).toBe(0);
+    const overclaim = validateAnswerCitations(
+      "This is Gate C approved support that TNF causes RA.",
+      g,
+    );
+    expect(overclaim.ok).toBe(false);
+    expect(overclaim.unsupportedSupportClaims.length).toBeGreaterThan(0);
+
+    const withProv = {
+      ...g,
+      provisionalLiterature: [
+        {
+          pmid: "12345678",
+          doi: null,
+          title: "Example",
+          journal: "J",
+          year: "2020",
+          source: "PubMed" as const,
+          url: "https://pubmed.ncbi.nlm.nih.gov/12345678/",
+        },
+      ],
+      coverage: { ...g.coverage, provisionalLiteratureCount: 1 },
+    };
+    const mislabel = validateAnswerCitations("See PMID 12345678 for the mechanism.", withProv);
+    expect(mislabel.ok).toBe(false);
+    expect(mislabel.provisionalMislabels).toContain("12345678");
+    const labelled = validateAnswerCitations(
+      "See unreviewed provisional PMID 12345678 (not Gate C).",
+      withProv,
+    );
+    expect(labelled.ok).toBe(true);
+  });
   it("refuses personal clinical questions", () => {
     expect(isPersonalClinical("What dose of prednisone should I take?")).toBe(true);
     expect(isPersonalClinical("How do steroids suppress T cells?")).toBe(false);
