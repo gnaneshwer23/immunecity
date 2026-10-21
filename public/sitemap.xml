@@ -86,6 +86,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://www.immune-super-intelligence.co.uk/pipeline</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://www.immune-super-intelligence.co.uk/dynamics</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
