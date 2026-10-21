@@ -228,7 +228,8 @@ function Curation() {
     (filter.status === "all" || r.check_status === filter.status) &&
     (filter.type === "all" || r.node_type === filter.type) &&
     (filter.curation === "all" || r.curation === filter.curation) &&
-    (!filter.q || `${r.node_name} ${r.evidence_id} ${r.source_ref ?? ""}`.toLowerCase().includes(filter.q.toLowerCase())),
+    (!filter.q || `${r.node_name} ${r.evidence_id} ${r.source_ref ?? ""} ${r.relationship_id ?? ""}`.toLowerCase().includes(filter.q.toLowerCase())) &&
+    (!p0Only || (!!r.relationship_id && p0RelIds.has(r.relationship_id))),
   );
   const types = [...new Set(KG.nodes.map((r) => r.node_type))];
 
