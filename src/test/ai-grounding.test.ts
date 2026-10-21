@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  attachCounterEvidence,
   classifyAskQuery,
+  counterEvidenceBucketLabel,
   graphContext,
   isPersonalClinical,
   prepareAsk,
@@ -225,5 +227,34 @@ describe("AI grounding", () => {
     const now = 1_000_000;
     for (let i = 0; i < 8; i++) expect(rateLimited("t2", 8, 60_000, now)).toBe(false);
     expect(rateLimited("t2", 8, 60_000, now)).toBe(true);
+  });
+  it("surfaces Neon contradicts/partial via attachCounterEvidence without inflating Gate C", () => {
+    const g = graphContext("How does PD-L1 suppress CD8 T cells?");
+    const withCounter = attachCounterEvidence(g, [
+      {
+        evidence_id: "RELQ-REL-R012-suppresses-C015-C1",
+        relationship_id: "REL-R012-suppresses-C015",
+        claim_support: "partial",
+        curation: "unreviewed",
+        label: "PMID 15240681",
+        url: "https://pubmed.ncbi.nlm.nih.gov/15240681/",
+        reviewed_at: null,
+      },
+      {
+        evidence_id: "TEST-ONLY-CONTRADICTS-ROW",
+        relationship_id: "REL-R012-suppresses-C015",
+        claim_support: "contradicts",
+        curation: "unreviewed",
+        label: "test-only counter cite",
+        url: "https://example.test/counter",
+        reviewed_at: null,
+      },
+    ]);
+    expect(withCounter.coverage.counterEvidenceCount).toBe(2);
+    expect(withCounter.coverage.reviewedEvidenceCount ?? 0).toBe(g.coverage.reviewedEvidenceCount ?? 0);
+    expect(withCounter.counterEvidence.map((c) => c.claim_support).sort()).toEqual(["contradicts", "partial"]);
+    expect(counterEvidenceBucketLabel(2)).toBe("2 contradicts/partial");
+    expect(counterEvidenceBucketLabel(0)).toMatch(/honest empty/);
+    expect(withCounter.text).toMatch(/COUNTER_EVIDENCE/);
   });
 });

@@ -993,6 +993,12 @@ GRAPH EXTRACT:
  * provisioned in this project, so limits reset on cold start and do not span
  * serverless instances. Residual documented in docs/RELEASE_AUDIT.md.
  */
+/** Honest empty-set copy for Ask GroundingPanel when Neon has no contradicts/partial on retrieved links. */
+export function counterEvidenceBucketLabel(count: number): string {
+  if (count > 0) return `${count} contradicts/partial`;
+  return "none curated yet (honest empty)";
+}
+
 export const ASK_RATE_LIMIT_BACKEND = "in-memory" as const;
 export const ASK_RATE_LIMIT_DEFAULT = { limit: 8, windowMs: 60_000 } as const;
 

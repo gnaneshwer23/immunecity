@@ -3,7 +3,11 @@ import { ArrowRight, AlertTriangle, BookOpenCheck, BookMarked, CircleOff } from 
 import { byId, TYPES, human } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import type { AskGrounding, EvidenceTier } from "@/lib/askGrounding";
-import { provisionalLitLabel, shouldFetchProvisionalLit } from "@/lib/askGrounding";
+import {
+  counterEvidenceBucketLabel,
+  provisionalLitLabel,
+  shouldFetchProvisionalLit,
+} from "@/lib/askGrounding";
 import EdgeReference from "./EdgeReference";
 import { edgeByRel } from "@/lib/immune/engine";
 
@@ -101,11 +105,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
           <AlertTriangle size={14} aria-hidden />
           <div>
             <b>Counterevidence</b>
-            <span>
-              {counterCount > 0
-                ? `${counterCount} contradicts/partial`
-                : "none curated yet (honest empty)"}
-            </span>
+            <span>{counterEvidenceBucketLabel(counterCount)}</span>
           </div>
         </div>
         <div className="grounding-bucket grounding-bucket--provisional">

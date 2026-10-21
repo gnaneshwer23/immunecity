@@ -295,6 +295,13 @@ function Curation() {
         “Identifier verified” / “One match found” means the bibliographic ID resolved — not that the paper supports the atlas claim.
         Gate C coverage counts only <code>curation=approved</code> + <code>claim_support=supports</code> on a mapped <code>relationship_id</code>.
       </p>
+      <p className="callout" style={{ marginBottom: 20 }} role="note">
+        <strong>Counterevidence path (not Gate C).</strong>{" "}
+        Set <code>claim_support</code> to <strong>partial</strong> or <strong>contradicts</strong> when the paper only partly supports or opposes the directional claim.
+        Those rows surface in Ask’s GroundingPanel counterevidence bucket — they never count as approved+supports.
+        Do <strong>not</strong> invent a contradicts row to “populate” the UI; leave empty when polarity is unclear.
+        Prod currently has Chemnitz as <code>partial</code> on <code>REL-R012-suppresses-C015</code> and <strong>0</strong> contradicts (honest empty).
+      </p>
       {role && !isAdmin ? (
         <p className="callout" style={{ marginBottom: 20 }}>
           <strong>Read-only view.</strong> Importing manifests and approving records is limited to the atlas admin.
@@ -545,12 +552,18 @@ function RecordDetail({ r, isAdmin, onSave, onClaim }: { r: Rec; isAdmin: boolea
         <label className="field" style={{ marginTop: 8 }}>Claim support
           <select value={r.claim_support ?? "unassessed"} disabled={!isAdmin || !r.relationship_id} onChange={(e) => onClaim({ claim_support: e.target.value })}>
             <option value="unassessed">Not assessed</option>
-            <option value="supports">Supports the claim</option>
-            <option value="partial">Partially supports</option>
-            <option value="contradicts">Contradicts the claim</option>
+            <option value="supports">Supports (Gate C eligible when approved)</option>
+            <option value="partial">Partial — counterevidence path (not Gate C)</option>
+            <option value="contradicts">Contradicts — counterevidence path (not Gate C)</option>
             <option value="unrelated">Does not address it</option>
           </select>
         </label>
+        {(r.claim_support === "partial" || r.claim_support === "contradicts") && (
+          <p className="xs muted" style={{ marginTop: 8 }} role="status">
+            This assessment is counterevidence for Ask / Inspector — it will not raise Gate C coverage even if curation is later approved.
+            Approve is blocked unless claim_support is supports.
+          </p>
+        )}
         {r.reviewed_at ? <p className="xs muted" style={{ marginTop: 8 }}>Reviewed {new Date(r.reviewed_at).toLocaleDateString()}{r.reviewed_by ? ` by ${r.reviewed_by}` : ""}</p> : null}
       </div>
       {isAdmin ? (
