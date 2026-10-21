@@ -14,7 +14,13 @@ import appCss from "../styles.css?url";
 import Shell from "../components/immune/Shell";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CANONICAL_URL, PRODUCT_NAME, TAGLINE } from "../lib/brand";
-import { OG_IMAGE_ALT, OG_IMAGE_HEIGHT, OG_IMAGE_URL, OG_IMAGE_WIDTH, siteJsonLd } from "../lib/seo";
+import {
+  OG_IMAGE_ALT,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_URL,
+  OG_IMAGE_WIDTH,
+  siteJsonLd,
+} from "../lib/seo";
 
 function NotFoundComponent() {
   return (

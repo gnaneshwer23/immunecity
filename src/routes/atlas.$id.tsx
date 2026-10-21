@@ -43,7 +43,6 @@ export const Route = createFileRoute("/atlas/$id")({
       id: n.id,
       name: n.name,
       description,
-      typeLabel: TYPES[n.node_type].label,
       aliases: conceptExtras(n).aliases,
       graphVersion: GRAPH_CORE_VERSION,
       sameAs: conceptSameAs(n.id),

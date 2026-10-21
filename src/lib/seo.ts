@@ -47,16 +47,26 @@ export function seoHead({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:url", content: url },
-      ...(image?.startsWith("https://") ? [
-        { property: "og:image", content: image },
-        ...(image === OG_IMAGE_URL ? [
-          { property: "og:image:width", content: OG_IMAGE_WIDTH },
-          { property: "og:image:height", content: OG_IMAGE_HEIGHT },
-        ] : []),
-        { property: "og:image:alt", content: image === OG_IMAGE_URL ? OG_IMAGE_ALT : `${PRODUCT_NAME} — ${TAGLINE}` },
-        { name: "twitter:image", content: image },
-        { name: "twitter:image:alt", content: image === OG_IMAGE_URL ? OG_IMAGE_ALT : `${PRODUCT_NAME} — ${TAGLINE}` },
-      ] : []),
+      ...(image?.startsWith("https://")
+        ? [
+            { property: "og:image", content: image },
+            ...(image === OG_IMAGE_URL
+              ? [
+                  { property: "og:image:width", content: OG_IMAGE_WIDTH },
+                  { property: "og:image:height", content: OG_IMAGE_HEIGHT },
+                ]
+              : []),
+            {
+              property: "og:image:alt",
+              content: image === OG_IMAGE_URL ? OG_IMAGE_ALT : `${PRODUCT_NAME} — ${TAGLINE}`,
+            },
+            { name: "twitter:image", content: image },
+            {
+              name: "twitter:image:alt",
+              content: image === OG_IMAGE_URL ? OG_IMAGE_ALT : `${PRODUCT_NAME} — ${TAGLINE}`,
+            },
+          ]
+        : []),
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
@@ -107,7 +117,6 @@ export function conceptJsonLd(c: {
   id: string;
   name: string;
   description: string;
-  typeLabel: string;
   aliases: string[];
   graphVersion: string;
   sameAs?: string[];
@@ -121,7 +130,6 @@ export function conceptJsonLd(c: {
     termCode: c.id,
     description: c.description,
     ...(c.aliases.length ? { alternateName: c.aliases } : {}),
-    additionalType: c.typeLabel,
     ...(c.sameAs?.length ? { sameAs: c.sameAs } : {}),
     url,
     inDefinedTermSet: {

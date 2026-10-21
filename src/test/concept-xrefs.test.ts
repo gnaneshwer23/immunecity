@@ -36,7 +36,11 @@ describe("concept external identifiers", () => {
   it("asserts sameAs only for exact matches, as absolute https IRIs", () => {
     expect(conceptSameAs("M001")).toEqual(["https://www.uniprot.org/uniprotkb/P01375"]);
     expect(conceptSameAs("P003")).toEqual([]);
-    for (const id of Object.keys(NODE_XREFS)) {
+    for (const [id, xrefs] of Object.entries(NODE_XREFS)) {
+      const expected = xrefs
+        .filter((x) => x.match === "exact")
+        .map((x) => XREF_SOURCES[x.source].iri(x.id));
+      expect(conceptSameAs(id), id).toEqual(expected);
       for (const iri of conceptSameAs(id)) expect(iri).toMatch(/^https:\/\//);
     }
   });
