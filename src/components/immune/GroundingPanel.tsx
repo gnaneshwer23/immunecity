@@ -3,7 +3,7 @@ import { ArrowRight, AlertTriangle, BookOpenCheck, BookMarked } from "lucide-rea
 import { byId, TYPES, human } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import type { AskGrounding, EvidenceTier } from "@/lib/askGrounding";
-import { provisionalLitLabel, shouldFetchProvisionalLit } from "@/lib/askGrounding";
+import { countReviewedPapers, provisionalLitLabel, shouldFetchProvisionalLit } from "@/lib/askGrounding";
 import EdgeReference from "./EdgeReference";
 import { edgeByRel } from "@/lib/immune/engine";
 
@@ -77,13 +77,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
   const reviewed = grounding.coverage.reviewedEvidenceCount ?? 0;
   const counterCount = grounding.coverage.counterEvidenceCount ?? counter.length;
   // Count distinct papers, not evidence rows (one paper can back several links).
-  // reviewedCites can include approved cites for links outside this answer, so scope to its links.
-  const answerRelIds = new Set(grounding.links.map((l) => l.relId));
-  const reviewedPapers = new Set(
-    (grounding.reviewedCites ?? [])
-      .filter((c) => c.relationship_id && answerRelIds.has(c.relationship_id))
-      .map((c) => c.pmid || c.doi || c.url || c.evidence_id),
-  ).size;
+  const reviewedPapers = countReviewedPapers(grounding.reviewedCites ?? [], grounding.links.map((l) => l.relId));
   const totalLinks = grounding.links.length;
   const reviewedLinks = grounding.links.filter((l) => l.reviewedEvidenceCount > 0).length;
   const provisionalCount = grounding.coverage.provisionalLiteratureCount ?? provisional.length;

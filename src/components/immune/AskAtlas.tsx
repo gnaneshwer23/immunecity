@@ -185,8 +185,6 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   };
   const [pick, setPick] = useState<Pick | null>(null);
   const [grounding, setGrounding] = useState<AskGrounding | null>(null);
-  /** Questions answered with a fixed refusal / no-match reply — no model call was made. */
-  const [noModelQuestions, setNoModelQuestions] = useState<Set<string>>(() => new Set());
   const [localNote, setLocalNote] = useState<string | null>(null);
   const busy = status === "submitted" || status === "streaming";
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -201,6 +199,16 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   }, [messages, status, grounding, localNote, provisionalNote]);
   useEffect(() => { inputRef.current?.focus(); }, []);
 
+  const callModelCache = useRef(new Map<string, boolean>());
+  const willCallModel = (q: string) => {
+    let v = callModelCache.current.get(q);
+    if (v === undefined) {
+      v = prepareAsk(q).callModel;
+      callModelCache.current.set(q, v);
+    }
+    return v;
+  };
+
   const asked = useMemo(
     () => new Set(messages.filter((m) => m.role === "user").flatMap((m) => m.parts.map((p) => (p.type === "text" ? p.text : "")))),
     [messages],
@@ -210,7 +218,6 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     const t = text.trim();
     if (!t || busy) return;
     const prepared = prepareAsk(t);
-    if (!prepared.callModel) setNoModelQuestions((prev) => new Set(prev).add(t));
     setGrounding(prepared.grounding);
     setResearchTraceText(null);
     setLocalNote(null);
@@ -227,7 +234,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           const want = shouldFetchProvisionalLit(prepared.grounding, prepared.queryClass);
           if (want) {
             setProvisionalNote(
-              "The literature search and reviewed-source check were unavailable for this answer, so it uses the graph only.",
+              "The reviewed-source and literature lookup for this panel was unavailable, so the counts below may be incomplete.",
             );
           }
           return;
@@ -255,7 +262,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
         const want = shouldFetchProvisionalLit(prepared.grounding, prepared.queryClass);
         if (want) {
           setProvisionalNote(
-            "The literature search could not be reached, so this answer uses the graph only. No sources were invented.",
+            "The reviewed-source and literature lookup for this panel could not be reached, so the counts below may be incomplete.",
           );
         }
       }
@@ -381,9 +388,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
           const prevUser = [...messages.slice(0, i)].reverse().find((x) => x.role === "user");
           const prevUserText = prevUser?.parts.map((p) => (p.type === "text" ? p.text : "")).join("").trim() ?? "";
-          const noModel =
-            noModelQuestions.has(prevUserText) ||
-            (m === lastAssistant && !!grounding && (grounding.trace.abstained || !grounding.coverage.matched));
+          // Same deterministic routing as the server: refusals and no-match replies never call the model.
+          const noModel = m.role === "assistant" && !!prevUserText && !willCallModel(prevUserText);
           const fu = m === lastAssistant && !busy ? followUps(conceptsIn(text), asked) : [];
           return (
             <div key={m.id} className={`ask-msg ${m.role}`}>
