@@ -36,6 +36,13 @@ const CLASS_LABEL: Record<string, string> = {
   clinical_personal: "Personal medical question",
 };
 
+/** Full sentences for fixed (non-AI) replies, per query class. */
+const ABSTAIN_REASON: Record<string, string> = {
+  unsupported: "This question is outside the knowledge graph",
+  clinical_personal: "This looks like a personal medical question, which Ask Immune does not answer",
+  omics_request: "This asks for omics data analysis, which is not available yet",
+};
+
 export type GroundingPanelProps = {
   grounding: AskGrounding;
   /** Soft-fail note from /api/ask/prepare (provisional lit API down / skipped). */
@@ -54,7 +61,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
           <AlertTriangle size={14} aria-hidden />
           <p>
             {grounding.trace.abstained
-              ? `This looks like a ${classLabel.toLowerCase()}, which Ask Immune does not answer from the graph — so nothing was generated and no sources were invented.`
+              ? `${ABSTAIN_REASON[grounding.queryClass] ?? "This question is outside what Ask Immune answers from the graph"}, so nothing was generated and no sources were invented.`
               : "Nothing in the knowledge graph matched this question, so Ask Immune did not write an answer rather than guess."}
           </p>
         </div>
