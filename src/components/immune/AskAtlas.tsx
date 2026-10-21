@@ -185,6 +185,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   };
   const [pick, setPick] = useState<Pick | null>(null);
   const [grounding, setGrounding] = useState<AskGrounding | null>(null);
+  /** Questions answered with a fixed refusal / no-match reply — no model call was made. */
+  const [noModelQuestions, setNoModelQuestions] = useState<Set<string>>(() => new Set());
   const [localNote, setLocalNote] = useState<string | null>(null);
   const busy = status === "submitted" || status === "streaming";
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -208,6 +210,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     const t = text.trim();
     if (!t || busy) return;
     const prepared = prepareAsk(t);
+    if (!prepared.callModel) setNoModelQuestions((prev) => new Set(prev).add(t));
     setGrounding(prepared.grounding);
     setResearchTraceText(null);
     setLocalNote(null);
@@ -224,7 +227,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           const want = shouldFetchProvisionalLit(prepared.grounding, prepared.queryClass);
           if (want) {
             setProvisionalNote(
-              "Provisional literature lookup soft-failed (service unavailable). Graph grounding above is still local — Gate C cites were not refreshed from the server.",
+              "The literature search and reviewed-source check were unavailable for this answer, so it uses the graph only.",
             );
           }
           return;
@@ -245,14 +248,14 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           !(data.grounding.provisionalLiterature?.length)
         ) {
           setProvisionalNote(
-            "Provisional PubMed/Europe PMC returned no hits for this question — soft-fail / empty search, not Gate C coverage.",
+            "The literature search found no papers for this question. That is not a claim that no research exists.",
           );
         }
       } catch {
         const want = shouldFetchProvisionalLit(prepared.grounding, prepared.queryClass);
         if (want) {
           setProvisionalNote(
-            "Provisional literature lookup could not be reached. Local graph grounding is shown; do not invent PMIDs.",
+            "The literature search could not be reached, so this answer uses the graph only. No sources were invented.",
           );
         }
       }
@@ -374,8 +377,13 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
             )}
           </div>
         ) : null}
-        {messages.map((m) => {
+        {messages.map((m, i) => {
           const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
+          const prevUser = [...messages.slice(0, i)].reverse().find((x) => x.role === "user");
+          const prevUserText = prevUser?.parts.map((p) => (p.type === "text" ? p.text : "")).join("").trim() ?? "";
+          const noModel =
+            noModelQuestions.has(prevUserText) ||
+            (m === lastAssistant && !!grounding && (grounding.trace.abstained || !grounding.coverage.matched));
           const fu = m === lastAssistant && !busy ? followUps(conceptsIn(text), asked) : [];
           return (
             <div key={m.id} className={`ask-msg ${m.role}`}>
@@ -384,7 +392,9 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                 {m.role === "assistant" ? (
                   <>
                     <div className="ask-ai-badge" role="note">
-                      AI-written from the knowledge graph · evidence {CAPABILITY_STATUS_LABEL.partial.toLowerCase()} · not medical advice
+                      {noModel
+                        ? "Fixed response — no AI answer generated · not medical advice"
+                        : `AI-written from the knowledge graph · evidence ${CAPABILITY_STATUS_LABEL.partial.toLowerCase()} · not medical advice`}
                     </div>
                     <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
                     {!busy || m !== lastAssistant ? (
