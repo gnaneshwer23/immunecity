@@ -34,6 +34,28 @@ ON CONFLICT (user_id, role) DO NOTHING;
 - `bun add @neondatabase/neon-js` / `jose` **hung** (disk / peer resolution). Cutover uses a **thin fetch** auth client + on-disk `jose` (`package.json` declares `jose`; lockfile may lag until a successful install).
 - Orphan `@neondatabase/*` folders under `node_modules` are unused.
 
+## Migrations 0005 / 0006 / 0007 (apply with owner approval)
+
+SQL files live under `drizzle/migrations/` and are listed in `drizzle/migrations/meta/_journal.json`.
+
+| File | Purpose | Risk |
+|------|---------|------|
+| `0005_audit_events_restrict_delete.sql` | FK on `evidence_audit_events.evidence_record_id` → `ON DELETE RESTRICT` | Low — additive constraint change; may fail if orphan audit rows exist |
+| `0006_ask_rate_buckets.sql` | Shared Ask rate-limit table | Low — `CREATE TABLE IF NOT EXISTS` |
+| `0007_claim_candidates.sql` | Optional claim-ledger candidates table | Low — additive; no Gate C auto-write |
+
+**Do not apply destructively without approval.** Prefer Neon MCP `prepare_database_migration` on a temporary branch, verify with `run_sql`, then `complete_database_migration` after owner OK.
+
+Exact apply (production branch of project `immunecity` / `autumn-snow-67879321`) when approved:
+
+```bash
+# Option A — Neon SQL editor: paste each file in order 0005 → 0006 → 0007
+# Option B — MCP prepare_database_migration with the SQL body, test on temp branch, then complete
+# Option C — bun run db:neon-schema only if that script is confirmed to include these files
+```
+
+Ask falls back to in-memory rate limiting until `0006` exists. Claim ledger UI works locally without `0007`.
+
 ## Smoke
 
 ```bash

@@ -36,6 +36,27 @@
       "when": 1791718000000,
       "tag": "0004_evidence_audit_events",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791800000000,
+      "tag": "0005_audit_events_restrict_delete",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791801000000,
+      "tag": "0006_ask_rate_buckets",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791802000000,
+      "tag": "0007_claim_candidates",
+      "breakpoints": true
     }
   ]
 }
