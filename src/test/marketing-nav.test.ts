@@ -63,7 +63,7 @@ describe("marketing IA wiring", () => {
     expect(LEARN_PATH).toBe("/academy");
     expect(LEARN_CTA).toBe("Explore the Academy");
     expect(ATLAS_PATH).toBe("/graph");
-    expect(ATLAS_CTA).toBe("Enter atlas");
+    expect(ATLAS_CTA).toBe("Enter Atlas");
     const atlasPaths = new Set(ALL_NAV.map((l) => l.path));
     for (const group of FOOTER_GROUPS) {
       for (const item of group.items) {
