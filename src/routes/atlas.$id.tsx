@@ -14,6 +14,7 @@ import { inspect } from "@/lib/immune/inspector";
 import { StatusBadge } from "@/components/immune/ScientificInspector";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
+import TranslationalPath from "@/components/immune/TranslationalPath";
 import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
 
 export const Route = createFileRoute("/atlas/$id")({
@@ -158,6 +159,8 @@ function ConceptPage() {
               </div>
             ))}
           </ExplainerSection>
+
+          <TranslationalPath id={id} />
 
           {(steps.prereq.length || steps.next.length) ? (
             <section className="ex-section">

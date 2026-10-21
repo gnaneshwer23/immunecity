@@ -3,8 +3,15 @@
    memory. Any failure returns nulls so pages fall back to curated data. */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { TRIAL_REGISTRY, ctgStudyUrl } from "@/data/trialRegistry";
 
-export interface LiveTrial { name: string; nctId: string | null; phase: string | null; status: string | null; url: string | null; unavailable?: boolean }
+/** One registered study, fetched from ClinicalTrials.gov by its verified NCT ID. */
+export interface LiveStudy { nctId: string; label: string; phase: string | null; status: string | null; url: string; unavailable?: boolean }
+/** Registry view of one curated TRIAL concept. */
+export interface LiveTrial { nodeId: string; studies: LiveStudy[]; unregisteredReason: string | null; note: string | null }
+/** A currently active interventional study returned by a live registry query (not curated). */
+export interface ActiveStudy { nctId: string; title: string; phase: string | null; status: string; sponsor: string | null; url: string }
+export interface ActiveTrials { total: number; studies: ActiveStudy[]; query: { condition: string | null; intervention: string | null }; unavailable?: boolean }
 export interface LiveProtein { gene: string; protein: string | null; accession: string | null; size: number | null; url: string | null; unavailable?: boolean }
 
 const cache = new Map<string, { at: number; value: unknown }>();
@@ -24,26 +31,71 @@ async function cached<T>(key: string, fn: () => Promise<T>): Promise<T | null> {
 const CTG = "https://clinicaltrials.gov/api/v2/studies";
 const UNIPROT = "https://rest.uniprot.org/uniprotkb/search";
 
-async function fetchTrial(name: string): Promise<LiveTrial> {
-  const empty: LiveTrial = { name, nctId: null, phase: null, status: null, url: null };
+const phaseLabel = (phases: string[] | undefined) =>
+  (phases ?? []).map((p) => p.replace(/^PHASE/, "").replace(/^EARLY_/, "early ")).join("/") || null;
+
+async function fetchStudy(nctId: string, label: string): Promise<LiveStudy> {
+  const url = ctgStudyUrl(nctId);
   return (
-    (await cached(`trial:${name}`, async () => {
-      const url = `${CTG}?query.term=${encodeURIComponent(name)}&pageSize=1&fields=NCTId,BriefTitle,Phase,OverallStatus`;
-      const res = await fetch(url, { headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" }, signal: AbortSignal.timeout(5000) });
+    (await cached(`study:${nctId}`, async () => {
+      const res = await fetch(`${CTG}/${nctId}?fields=NCTId,Phase,OverallStatus`, {
+        headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error(`ClinicalTrials.gov ${res.status}`);
+      const p: any = (await res.json()).protocolSection ?? {};
+      if (p.identificationModule?.nctId !== nctId) throw new Error("registry returned a different study");
+      return { nctId, label, url, phase: phaseLabel(p.designModule?.phases), status: p.statusModule?.overallStatus ?? null } as LiveStudy;
+    })) ?? { nctId, label, url, phase: null, status: null, unavailable: true }
+  );
+}
+
+async function fetchTrial(nodeId: string): Promise<LiveTrial> {
+  const reg = TRIAL_REGISTRY[nodeId];
+  if (!reg) return { nodeId, studies: [], unregisteredReason: null, note: null };
+  const studies = await Promise.all(reg.studies.map((s) => fetchStudy(s.nctId, s.label)));
+  return { nodeId, studies, unregisteredReason: reg.unregisteredReason ?? null, note: reg.note ?? null };
+}
+
+const ACTIVE = "RECRUITING,NOT_YET_RECRUITING,ACTIVE_NOT_RECRUITING,ENROLLING_BY_INVITATION";
+
+async function fetchActive(condition: string | null, intervention: string | null): Promise<ActiveTrials> {
+  const query = { condition, intervention };
+  return (
+    (await cached(`active:${condition ?? ""}|${intervention ?? ""}`, async () => {
+      // Exact-phrase match on the registry's own Condition / InterventionName fields: free-text
+      // query.cond expands synonyms and pulls in loosely related studies. Default sort is relevance.
+      const phrase = (v: string) => `"${v.replace(/"/g, "")}"`;
+      const clauses = [
+        "AREA[StudyType]INTERVENTIONAL",
+        "(AREA[Phase]PHASE2 OR AREA[Phase]PHASE3 OR AREA[Phase]PHASE4)",
+        ...(condition ? [`AREA[Condition]${phrase(condition)}`] : []),
+        ...(intervention ? [`AREA[InterventionName]${phrase(intervention)}`] : []),
+      ];
+      const params = new URLSearchParams({
+        "filter.overallStatus": ACTIVE,
+        "filter.advanced": clauses.join(" AND "),
+        countTotal: "true",
+        pageSize: "6",
+        fields: "NCTId,BriefTitle,Phase,OverallStatus,LeadSponsorName",
+      });
+      const res = await fetch(`${CTG}?${params}`, { headers: { "User-Agent": "ImmuneSuperIntelligence/1.0" }, signal: AbortSignal.timeout(6000) });
       if (!res.ok) throw new Error(`ClinicalTrials.gov ${res.status}`);
       const j: any = await res.json();
-      const s = j.studies?.[0];
-      if (!s) return empty;
-      const p = s.protocolSection ?? {};
-      const id = p.identificationModule?.nctId ?? null;
-      return {
-        name,
-        nctId: id,
-        phase: (p.designModule?.phases ?? []).join("/") || null,
-        status: p.statusModule?.overallStatus ?? null,
-        url: id ? `https://clinicaltrials.gov/study/${id}` : null,
-      } as LiveTrial;
-    })) ?? { ...empty, unavailable: true }
+      const studies: ActiveStudy[] = (j.studies ?? []).map((st: any) => {
+        const p = st.protocolSection ?? {};
+        const id = p.identificationModule?.nctId as string;
+        return {
+          nctId: id,
+          title: p.identificationModule?.briefTitle ?? id,
+          phase: phaseLabel(p.designModule?.phases),
+          status: p.statusModule?.overallStatus ?? "UNKNOWN",
+          sponsor: p.sponsorCollaboratorsModule?.leadSponsor?.name ?? null,
+          url: ctgStudyUrl(id),
+        };
+      }).filter((x: ActiveStudy) => /^NCT\d{8}$/.test(x.nctId));
+      return { total: Number(j.totalCount ?? studies.length), studies, query } as ActiveTrials;
+    })) ?? { total: 0, studies: [], query, unavailable: true }
   );
 }
 
@@ -73,15 +125,25 @@ async function fetchProtein(gene: string): Promise<LiveProtein> {
 }
 
 export const getLiveTrials = createServerFn({ method: "GET" })
-  .inputValidator((d: unknown) => z.object({ names: z.array(z.string().max(80)).max(30) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ ids: z.array(z.string().regex(/^TR\d{3}$/)).max(40) }).parse(d))
   .handler(async ({ data }) => {
     const out: Record<string, LiveTrial> = {};
-    for (let i = 0; i < data.names.length; i += 6) {
-      const batch = await Promise.all(data.names.slice(i, i + 6).map(fetchTrial));
-      batch.forEach((trial) => { out[trial.name] = trial; });
+    for (let i = 0; i < data.ids.length; i += 6) {
+      const batch = await Promise.all(data.ids.slice(i, i + 6).map(fetchTrial));
+      batch.forEach((trial) => { out[trial.nodeId] = trial; });
     }
     return out;
   });
+
+/** Live, uncurated view of active phase 2–4 interventional studies for a condition and/or intervention. */
+export const getActiveTrials = createServerFn({ method: "GET" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({ condition: z.string().min(2).max(120).nullable(), intervention: z.string().min(2).max(120).nullable() })
+      .refine((v) => v.condition || v.intervention, "condition or intervention required")
+      .parse(d),
+  )
+  .handler(async ({ data }) => fetchActive(data.condition, data.intervention));
 
 export const getLiveProteins = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ genes: z.array(z.string().max(20)).max(30) }).parse(d))
