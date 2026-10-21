@@ -9,17 +9,9 @@
  */
 
 import { ASK_RATE_LIMIT_DEFAULT, rateLimited as memoryRateLimited } from "@/lib/askGrounding";
+export { ASK_RATE_LIMIT_STATUS } from "@/lib/askRateLimitStatus";
 
 export type AskRateLimitBackend = "neon" | "in-memory" | "in-memory-fallback";
-
-export const ASK_RATE_LIMIT_STATUS: {
-  preferred: "neon-when-migrated";
-  residual: string;
-} = {
-  preferred: "neon-when-migrated",
-  residual:
-    "Until ask_rate_buckets is applied on Neon, Ask uses per-isolate in-memory limits (cold-start reset; not cross-instance).",
-};
 
 let neonAvailable: boolean | null = null;
 

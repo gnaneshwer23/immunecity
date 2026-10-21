@@ -92,7 +92,7 @@
 | IC-06 Exemplars | **PARTIAL** | TNF→RA on-path **done**; PD-1 partial; IFN→SLE scaffold-ish |
 | IC-08 Graph snapshot | **DONE** | Shared snapshot on trust surfaces |
 | IC-11 Gap queue | **DONE (candidates)** | No auto-approve |
-| IC-15 Rate limits | **PARTIAL** | Neon `ask_rate_buckets` preferred when migrated; else in-memory 8/min/IP — no KV/Upstash/Redis |
+| IC-15 Rate limits | **PASS (Neon)** | Prod `ask_rate_buckets` verified 2026-10-21; memory fallback if DB down — see `docs/ASK_RATE_LIMIT_STATUS.md` |
 | IC-16 A11y/perf | **PARTIAL** | Automated available; **human sign-off open** |
 
 ---

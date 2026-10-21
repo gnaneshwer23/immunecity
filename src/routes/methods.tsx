@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SEM } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { PROMPT_VERSION } from "@/lib/askGrounding";
+import { ASK_RATE_LIMIT_STATUS } from "@/lib/askRateLimitStatus";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
@@ -237,6 +238,10 @@ function Methods() {
               present → optionally fetch provisional PubMed/Europe PMC hits (never auto-approved) → optional synthesis
               from that extract only (prompt {PROMPT_VERSION}). Sparse cites mean Ask Immune is graph-retrieved, not
               fully evidence-grounded. Answers can still be wrong.
+            </li>
+            <li>
+              <b>Ask rate limit:</b> prefers Neon <code>{ASK_RATE_LIMIT_STATUS.table}</code> ({ASK_RATE_LIMIT_STATUS.limit};
+              verified {ASK_RATE_LIMIT_STATUS.verifiedAt}). {ASK_RATE_LIMIT_STATUS.residual}
             </li>
             <li>
               <b>Research / literature / adapters:</b> candidate workflows on <Link to="/research">Research</Link> —
