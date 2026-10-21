@@ -58,6 +58,10 @@ async function handlePrepare(request: Request): Promise<Response> {
       queryClass: grounding.queryClass,
       trace: grounding.trace,
       coverage: grounding.coverage,
+      // Only the reviewed cites for this answer's links (the panel counts distinct papers from these).
+      reviewedCites: (grounding.reviewedCites ?? []).filter(
+        (c) => c.relationship_id && grounding.relIds.includes(c.relationship_id),
+      ),
       counterEvidence: grounding.counterEvidence,
       counterEvidenceHarvest: grounding.counterEvidenceHarvest,
       provisionalLiterature: grounding.provisionalLiterature,

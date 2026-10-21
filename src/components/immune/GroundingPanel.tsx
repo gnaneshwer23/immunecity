@@ -3,7 +3,7 @@ import { ArrowRight, AlertTriangle, BookOpenCheck, BookMarked } from "lucide-rea
 import { byId, TYPES, human } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import type { AskGrounding, EvidenceTier } from "@/lib/askGrounding";
-import { provisionalLitLabel, shouldFetchProvisionalLit } from "@/lib/askGrounding";
+import { countReviewedPapers, provisionalLitLabel, shouldFetchProvisionalLit } from "@/lib/askGrounding";
 import EdgeReference from "./EdgeReference";
 import { edgeByRel } from "@/lib/immune/engine";
 
@@ -76,6 +76,8 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
   const counter = grounding.counterEvidence ?? [];
   const reviewed = grounding.coverage.reviewedEvidenceCount ?? 0;
   const counterCount = grounding.coverage.counterEvidenceCount ?? counter.length;
+  // Count distinct papers, not evidence rows (one paper can back several links).
+  const reviewedPapers = countReviewedPapers(grounding.reviewedCites ?? [], grounding.links.map((l) => l.relId));
   const totalLinks = grounding.links.length;
   const reviewedLinks = grounding.links.filter((l) => l.reviewedEvidenceCount > 0).length;
   const provisionalCount = grounding.coverage.provisionalLiteratureCount ?? provisional.length;
@@ -89,7 +91,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         <strong>How well supported is this answer?</strong>
       </div>
       <p className="grounding-summary">
-        <b>{reviewedLinks} of {totalLinks}</b> graph link{totalLinks === 1 ? "" : "s"} used here {reviewedLinks === 1 ? "has" : "have"} an expert-reviewed source.
+        <b>{reviewedLinks} of {totalLinks}</b> graph link{totalLinks === 1 ? "" : "s"} used here {reviewedLinks === 1 ? "has" : "have"} an expert-reviewed supporting source.
       </p>
       <div
         className="grounding-meter"
@@ -102,14 +104,14 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         <span style={{ width: `${totalLinks ? Math.max((reviewedLinks / totalLinks) * 100, reviewedLinks ? 3 : 0) : 0}%` }} />
       </div>
       <ul className="grounding-chips" aria-label="Evidence counts">
-        <li><BookOpenCheck size={13} aria-hidden /> {reviewed} reviewed source{reviewed === 1 ? "" : "s"}</li>
+        <li><BookOpenCheck size={13} aria-hidden /> {reviewedPapers} reviewed supporting paper{reviewedPapers === 1 ? "" : "s"}</li>
         <li><AlertTriangle size={13} aria-hidden /> {counterCount} conflicting finding{counterCount === 1 ? "" : "s"} on record</li>
         <li><BookMarked size={13} aria-hidden /> {provisionalCount} unreviewed paper{provisionalCount === 1 ? "" : "s"}</li>
       </ul>
       {reviewedLinks === 0 ? (
         <div className="grounding-callout grounding-callout--warn" role="status">
           <AlertTriangle size={14} aria-hidden />
-          <p>None of these links has been checked against a source yet. Read this as a teaching explanation, not verified evidence.</p>
+          <p>None of these links has a reviewed supporting source yet. Read this as a teaching explanation, not verified evidence.</p>
         </div>
       ) : reviewedLinks < totalLinks ? (
         <p className="xs muted">The rest are teaching links still awaiting expert review. No sources were invented for them.</p>
@@ -261,7 +263,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         <span><b>{grounding.coverage.draftCount}</b> draft</span>
       </div>
       <dl className="grounding-glossary">
-        <dt>Reviewed source</dt><dd>A paper an expert has checked supports this exact link, with a verified PubMed or DOI identifier.</dd>
+        <dt>Reviewed supporting source</dt><dd>A paper an expert has checked supports this exact link, with a verified PubMed or DOI identifier.</dd>
         <dt>Conflicting finding</dt><dd>A reviewed paper that contradicts or only partly supports a link. Never counted as support.</dd>
         <dt>Unreviewed paper</dt><dd>A literature search result shown for further reading. Not checked and never treated as support.</dd>
       </dl>

@@ -564,6 +564,37 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
   );
 }
 
+const normDoi = (raw: string) =>
+  raw.trim().replace(/^https?:\/\/(dx\.)?doi\.org\//i, "").replace(/^doi:/i, "").toLowerCase();
+const normPmid = (raw: string) => raw.trim().replace(/^pmid:?\s*/i, "");
+
+/**
+ * Distinct reviewed supporting papers behind the given relationships. Rows are merged when
+ * they share a normalised PMID or DOI (union-find), so one paper recorded as PMID on one row
+ * and PMID+DOI on another counts once. Rows with neither identifier fall back to evidence id.
+ */
+export function countReviewedPapers(cites: CitationLike[], relIds: Iterable<string>): number {
+  const scope = new Set(relIds);
+  const rows = partitionEvidencePolarity(cites).supporting.filter(
+    (c) => c.relationship_id && scope.has(c.relationship_id),
+  );
+  const parent = rows.map((_, i) => i);
+  const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i]!)));
+  const owner = new Map<string, number>();
+  rows.forEach((c, i) => {
+    const pmid = c.pmid ? normPmid(c.pmid) : "";
+    const doi = c.doi ? normDoi(c.doi) : "";
+    const keys = [pmid ? `pmid:${pmid}` : null, doi ? `doi:${doi}` : null].filter((k): k is string => Boolean(k));
+    if (!keys.length) keys.push(`row:${c.evidence_id}`);
+    for (const k of keys) {
+      const j = owner.get(k);
+      if (j === undefined) owner.set(k, i);
+      else parent[find(i)] = find(j);
+    }
+  });
+  return new Set(rows.map((_, i) => find(i))).size;
+}
+
 function supportingCitationsFrom(cites: CitationLike[]): CitationLike[] {
   const { supporting } = partitionEvidencePolarity(cites);
   return supporting;
