@@ -93,7 +93,7 @@ Post-deploy: re-check Home trust CTAs (`/ask`, Methods `#live-ev-heading`, `/res
 - [x] Reflect live coverage where server fn exists  
 - [x] Keep Gate C sparse / educational beta framing  
 - [x] Push `main` + `vercel --prod` + www alias (`76ab645` / `dpl_9K1G8CfJbHsZup42g3kcFsjAFwET`)  
-- [ ] Post-deploy: confirm Home trust CTAs + Methods live numbers resolve (follow-up if still “Loading…”)  
+- [x] Post-deploy browser: new Home CTAs/copy live on www; live Gate C glance still often “Loading…” (ops gap)  
 
 ---
 
