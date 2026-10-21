@@ -6,6 +6,7 @@
  */
 
 import { byId, edgeByRel } from "@/lib/immune/engine";
+import { conceptExtras } from "@/lib/immune/concepts";
 import type { CitationLike } from "@/lib/immune/evidenceStatus";
 
 /** Local fold — avoid importing askGrounding (circular with validateAnswerCitations). */
@@ -86,18 +87,18 @@ export function tokenOverlapRatio(a: string, b: string): number {
 export function windowMentionsEdgeEndpoints(window: string, relId: string): boolean {
   const edge = edgeByRel[relId];
   if (!edge) return false;
-  const sub = byId[edge.source];
-  const obj = byId[edge.target];
+  const sub = byId[edge.subject_id];
+  const obj = byId[edge.object_id];
   if (!sub || !obj) return false;
   const w = normaliseAskText(window);
   const subHit =
     hasToken(w, normaliseAskText(sub.name)) ||
     hasToken(w, normaliseAskText(sub.id)) ||
-    (sub.aliases || []).some((a) => hasToken(w, normaliseAskText(a)));
+    conceptExtras(sub).aliases.some((a) => hasToken(w, normaliseAskText(a)));
   const objHit =
     hasToken(w, normaliseAskText(obj.name)) ||
     hasToken(w, normaliseAskText(obj.id)) ||
-    (obj.aliases || []).some((a) => hasToken(w, normaliseAskText(a)));
+    conceptExtras(obj).aliases.some((a) => hasToken(w, normaliseAskText(a)));
   return subHit && objHit;
 }
 
