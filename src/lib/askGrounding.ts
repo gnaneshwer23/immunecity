@@ -20,7 +20,7 @@ import {
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v7";
+export const PROMPT_VERSION = "ask-grounding-v8";
 
 /** Unreviewed literature hits (PubMed / Europe PMC). Never Gate C approved. */
 export interface ProvisionalLitItem {
@@ -197,6 +197,29 @@ export interface PrepareAskResult {
   replyText: string | null;
 }
 
+/* Broad "what is the immune system" questions have no single concept to match, and
+   word-level scoring pulled in unrelated nodes ("system" → Central nervous system,
+   "immune" → Cancer immune escape), so the model answered that the graph lacked coverage.
+   Overview questions get a fixed, ordered layer of real foundational graph concepts. */
+const OVERVIEW_PATTERNS: RegExp[] = [
+  /^(what s|whats|what is|what are|define|explain|describe|tell me about)( the| our| your| a)?( human)? (immune system|immunity|immune response)( in simple terms| simply| for beginners)?$/,
+  /^how (does|do) (the |our |your )?(human )?(immune system|immunity|immune response)s? (work|function|protect us|defend the body)$/,
+  /^(immune system|immunology|immunity) (basics|overview|101|explained|introduction)$/,
+  /^(introduction to|overview of|basics of) (the )?(immune system|immunology|immunity)$/,
+  /^(what is the difference between |difference between |compare )?innate (vs|versus|and) adaptive immun(ity|e system|e response)s?$/,
+];
+
+/** Ordered teaching layer: innate defence → antigen presentation → adaptive response → memory and tolerance. */
+export const OVERVIEW_NODE_IDS = [
+  "C001", "C003", "R001", "P013", "C006", "C004", "P005", "P006",
+  "C010", "C015", "C017", "C018", "C026", "C019", "C014", "P023",
+] as const;
+
+export function isOverviewQuestion(question: string): boolean {
+  const q = normaliseAskText(question).replace(/^(please |can you |could you )/, "").trim();
+  return OVERVIEW_PATTERNS.some((re) => re.test(q));
+}
+
 /**
  * Rank graph concepts for a question using name, aliases/synonyms, description and id.
  * Prefer phrase-level alias hits (e.g. "tumour necrosis factor", "RA") over weak desc tokens.
@@ -204,6 +227,10 @@ export interface PrepareAskResult {
 export function relevantNodes(question: string, limit = 8): KGNode[] {
   const qNorm = normaliseAskText(question);
   if (!qNorm) return [];
+  if (isOverviewQuestion(question)) {
+    const overview = OVERVIEW_NODE_IDS.map((id) => byId[id]).filter((n): n is KGNode => Boolean(n));
+    return overview.slice(0, limit === 1 ? 1 : Math.max(limit, overview.length));
+  }
   const tokens = qNorm.split(" ").filter((t) => t.length > 2);
   const scored = KG.nodes.map((n) => {
     const name = normaliseAskText(n.name);
@@ -416,6 +443,11 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
   const seen = new Set<string>();
   const links: GroundedLink[] = [];
   lines.push(`QUERY_CLASS ${cls}`);
+  if (isOverviewQuestion(question)) {
+    lines.push(
+      "OVERVIEW_REQUEST: broad introductory question. The concepts below are the atlas's foundational layer, in teaching order (innate defence → antigen presentation → adaptive response → memory and tolerance).",
+    );
+  }
   for (const n of nodes) {
     const aliases = conceptExtras(n).aliases;
     const aliasNote = aliases.length ? ` aliases=[${aliases.slice(0, 6).join("; ")}]` : "";
@@ -979,6 +1011,7 @@ Rules:
 - PROVISIONAL_LITERATURE (if present) is unreviewed PubMed/Europe PMC search — never treat it as approved evidence or "supports". If you mention those items, label them explicitly as "unreviewed literature" / provisional. Do not invent extra PMIDs.
 - Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, COUNTER_EVIDENCE, COUNTEREVIDENCE_HARVEST, PROVISIONAL_LITERATURE, or on the LINK line itself.
 - Never claim Gate C / approved / scientifically verified support unless REVIEWED_EVIDENCE lists that PMID for the link. If you cite provisional PMIDs, keep the words "unreviewed" or "provisional" in the same sentence.
+- If OVERVIEW_REQUEST is present: give a plain-language layered overview of the immune system built from those concepts (what each layer does and how it hands off to the next), linking each concept. Do not say the graph lacks coverage. Suggest 2–3 concepts to explore next.
 - For QUERY_CLASS hypothesis_request: label every suggestion as a candidate hypothesis and include at least one alternative or disconfirming consideration.
 - Concise: a short explanation, then compact bullets of key connections, then the causal chain used.
 - Educational only. Never give diagnosis, dosing or treatment recommendations for a real person. Not clinical decision support. Not fully evidence-grounded AI.

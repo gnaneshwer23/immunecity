@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
 import { Link } from "@tanstack/react-router";
-import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight, Copy, RotateCcw, Maximize2 } from "lucide-react";
+import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight, Copy, RotateCcw, Maximize2, Info } from "lucide-react";
 import type { UIMessage } from "ai";
 import { byId, out, inn, human, TYPES, edgeByRel, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
@@ -22,6 +22,7 @@ import GroundingPanel from "./GroundingPanel";
 import { Button } from "@/components/ui/button";
 
 const SUGGESTIONS = [
+  "What is the immune system?",
   "How does TNF drive rheumatoid arthritis?",
   "What connects the gut microbiome to inflammation?",
   "How do checkpoint inhibitors help T cells?",
@@ -141,6 +142,8 @@ export type AskAtlasProps = {
 };
 
 export default function AskAtlas({ persistKey, initialInput = "", groupedSuggestions, showFullPageLink }: AskAtlasProps = {}) {
+  const [howOpen, setHowOpen] = useState(false);
+  const howId = useId();
   const { messages, sendMessage, status, stop, error, setMessages, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: "/api/ask" }),
   });
@@ -311,30 +314,44 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     <div className={`ask-atlas card${showFullPageLink ? " ask-atlas--corner" : " ask-atlas--page"}`}>
       <div className="ask-head">
         <span className="ask-id" aria-hidden><Microscope size={18} /></span>
-        <div>
+        <div className="ask-head-main">
           <div className="ask-head-row">
             <h3>{ASK_NAME}</h3>
-            <span className="ask-capability" title="capabilityStatus · ask-atlas">{CAPABILITY_STATUS_LABEL.partial}</span>
+            <button
+              type="button"
+              className="ask-capability"
+              aria-expanded={howOpen}
+              aria-controls={howId}
+              onClick={() => setHowOpen((o) => !o)}
+              title="How answers work"
+            >
+              <Info size={12} aria-hidden /> Evidence: {CAPABILITY_STATUS_LABEL.partial.toLowerCase()}
+            </button>
             <span className="ask-head-actions">
-              {showFullPageLink ? <Link to="/ask" className="ask-mini-btn"><Maximize2 size={13} /> Open full page</Link> : null}
-              {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New conversation</button> : null}
+              {showFullPageLink ? <Link to="/ask" className="ask-mini-btn"><Maximize2 size={13} /> Full page</Link> : null}
+              {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New chat</button> : null}
             </span>
           </div>
-          <p className="xs muted ask-tagline">
-            Graph-retrieved teaching · Gate C reviewed cites when present · provisional PubMed/Europe PMC labelled unreviewed · not fully evidence-grounded AI
-          </p>
-          <p className="xs muted">
-            Educational — not patient-specific advice or CDS. Questions go to the configured AI service; see our{" "}
-            <Link to="/privacy">privacy notice</Link>.
-          </p>
+          <p className="ask-tagline">Answers from a curated immunology knowledge graph, with every source labelled.</p>
+          {howOpen ? (
+            <div className="ask-how" id={howId}>
+              <b>How answers work</b>
+              <ul>
+                <li>Answers are built from the site’s curated knowledge graph, not the open web.</li>
+                <li>Sources an expert has checked for that exact claim are marked <i>reviewed</i>; literature search hits are marked <i>unreviewed</i>.</li>
+                <li><b>Why “partial”:</b> most links in the graph are still awaiting expert claim review, so many answers are teaching explanations rather than verified evidence. <Link to="/methods" hash="live-ev-heading">See live coverage</Link>.</li>
+                <li>Questions are sent to our AI provider to write the answer — see the <Link to="/privacy">privacy notice</Link>.</li>
+              </ul>
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="ask-scroll" ref={scrollRef}>
         {messages.length === 0 ? (
           <div className="ask-empty" role="region" aria-label={`${ASK_NAME} starters`}>
             <p className="ask-empty-lead">
-              Ask about a cell, pathway, cytokine, disease or therapy in the curated graph.
-              Answers show grounding tiers separately — Gate C support, counterevidence (contradicts/partial; empty when none curated), provisional literature, and missing support are never conflated.
+              Ask anything from the basics to a specific mechanism — a cell, cytokine, pathway, disease or therapy.
+              Each answer links the concepts it uses and shows how well each step is supported.
             </p>
             {groupedSuggestions ? (
               <div className="ask-suggest-groups">
@@ -349,7 +366,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
               </div>
             ) : (
               <div className="ask-suggestions">
-                <span className="ask-insp-label">Try a starter</span>
+                <span className="ask-insp-label">Try asking</span>
                 {SUGGESTIONS.map((s) => (
                   <button key={s} type="button" className="chip" onClick={() => send(s)} disabled={busy}>{s}</button>
                 ))}
@@ -485,6 +502,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           <button type="submit" className="btn sm primary" disabled={!input.trim()} aria-label="Send question"><Send size={14} /> Ask</button>
         )}
       </form>
+      <p className="ask-foot-note">Educational only — not medical advice or clinical decision support.</p>
       {pick ? <Inspector pick={pick} onClose={() => setPick(null)} /> : null}
     </div>
   );
