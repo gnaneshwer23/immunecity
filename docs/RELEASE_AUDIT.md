@@ -175,7 +175,7 @@ Do **not** mass-approve or invent PMIDs.
 |----|-----|-------------|--------|
 | D-05 | P0 science | Sparse Gate C (9/549) | **Open** — TNF on-path reviewed; PD-1 1/4 + Chemnitz partial; IFN scaffold (BAFF detour approved); see `docs/CURATOR_EVIDENCE_QUEUE.md` P0 matrix |
 | D-06 | P1 | Dual public URLs (Vercel + Lovable) | **Open** |
-| D-08 | P1 | Shared Ask rate limit | **Partial** — Neon table + server helper shipped; residual until `0006` applied on Neon |
+| D-08 | P1 | Shared Ask rate limit | **Done on prod** — `0006` applied; insert/delete smoke 2026-10-21; residual = memory fallback on DB outage only |
 | D-11 | P2 | Vitest hang risk | **Mitigated** — removed `@vitejs/plugin-react` from `vitest.config.ts` (was hanging at collection); node env + forks; jsdom only for `.tsx` |
 | D-16 | P0 | Prod SHA lag | **Closed at b8030fb**; watch after this push |
 | D-18 | P1 | Local smoke defaults to vercel-dev | **Open** (ops hygiene) |
