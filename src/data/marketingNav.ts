@@ -1,4 +1,11 @@
+import { YOUTUBE_CHANNEL_LABEL, YOUTUBE_CHANNEL_URL } from "@/lib/brand";
+
 /** Public marketing IA — separate from the twelve atlas layer groups in nav.ts. */
+
+/** Footer item: internal path or outbound href (learning / social). */
+export type FooterItem =
+  | { label: string; path: string }
+  | { label: string; href: string };
 
 /** Primary header links. Insights stays footer-only until the series is ready. */
 export const MARKETING_NAV_PRIMARY = [
@@ -25,13 +32,14 @@ export const MARKETING_NAV = [
   MARKETING_NAV_ACTION,
 ] as const;
 
-export const FOOTER_GROUPS = [
+export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem[] }[] = [
   {
     label: "Explore",
     items: [
       { label: "Platform", path: "/overview" },
       { label: "Academy", path: "/academy" },
       { label: "Reasoning & AI", path: "/reasoning" },
+      { label: YOUTUBE_CHANNEL_LABEL, href: YOUTUBE_CHANNEL_URL },
     ],
   },
   {
@@ -60,7 +68,7 @@ export const FOOTER_GROUPS = [
       { label: "Accessibility", path: "/accessibility" },
     ],
   },
-] as const;
+];
 
 /** Exact paths that use marketing chrome (nav + no layer sidebar). */
 export const MARKETING_PATHS = new Set([

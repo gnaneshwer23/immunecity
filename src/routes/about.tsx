@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { MarketingBody, MarketingCta, MarketingHero, MarketingSection } from "@/components/immune/marketing";
+import {
+  LearningOutboundLink,
+  MarketingBody,
+  MarketingCta,
+  MarketingHero,
+  MarketingSection,
+} from "@/components/immune/marketing";
 import { EXPLORE_CTA, EXPLORE_PATH, FLAGSHIP_NAME, pageTitle, PRODUCT_NAME, PROPOSITION } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 import { ArrowUpRight } from "lucide-react";
@@ -65,7 +71,8 @@ function About() {
                 <strong>Immunology Academy</strong>
                 <p>
                   Learning tracks at <Link to="/academy">Academy</Link> (Foundation primary; Intermediate and Advanced
-                  labelled in development). Not certification.
+                  labelled in development). Companion educational videos:{" "}
+                  <LearningOutboundLink className="mkt-text-link" />. Not certification.
                 </p>
               </div>
             </li>

@@ -10,7 +10,16 @@ import {
   MARKETING_PATHS,
 } from "@/data/marketingNav";
 import { ALL_NAV } from "@/components/immune/nav";
-import { ATLAS_CTA, ATLAS_PATH, EXPLORE_CTA, EXPLORE_PATH, LEARN_CTA, LEARN_PATH } from "@/lib/brand";
+import {
+  ATLAS_CTA,
+  ATLAS_PATH,
+  EXPLORE_CTA,
+  EXPLORE_PATH,
+  LEARN_CTA,
+  LEARN_PATH,
+  YOUTUBE_CHANNEL_LABEL,
+  YOUTUBE_CHANNEL_URL,
+} from "@/lib/brand";
 
 describe("marketing IA wiring", () => {
   it("keeps every header item on marketing chrome", () => {
@@ -21,11 +30,11 @@ describe("marketing IA wiring", () => {
 
   it("puts Academy on /academy; Insights footer-only (no More menu); Collaborate distinct", () => {
     expect(MARKETING_NAV_PRIMARY.find((i) => i.label === "Academy")?.path).toBe("/academy");
-    expect(FOOTER_GROUPS[0].items.find((i) => i.path === "/academy")?.label).toBe("Academy");
+    expect(FOOTER_GROUPS[0].items.find((i) => "path" in i && i.path === "/academy")?.label).toBe("Academy");
     expect(MARKETING_NAV_MORE).toHaveLength(0);
     expect(MARKETING_NAV_PRIMARY.some((i) => (i.path as string) === "/insights")).toBe(false);
     expect(MARKETING_NAV.some((i) => (i.path as string) === "/insights")).toBe(false);
-    expect(FOOTER_GROUPS.some((g) => g.items.some((i) => i.path === "/insights"))).toBe(true);
+    expect(FOOTER_GROUPS.some((g) => g.items.some((i) => "path" in i && i.path === "/insights"))).toBe(true);
     expect(MARKETING_NAV_ACTION.path).toBe("/collaborate");
     expect(isMarketingPath("/collaborate")).toBe(true);
     expect(isMarketingPath("/academy")).toBe(true);
@@ -59,7 +68,12 @@ describe("marketing IA wiring", () => {
     expect(ATLAS_CTA).toBe("Enter atlas");
     const atlasPaths = new Set(ALL_NAV.map((l) => l.path));
     for (const group of FOOTER_GROUPS) {
-      for (const item of group.items as readonly { path: string }[]) {
+      for (const item of group.items) {
+        if ("href" in item) {
+          expect(item.href).toBe(YOUTUBE_CHANNEL_URL);
+          expect(item.label).toBe(YOUTUBE_CHANNEL_LABEL);
+          continue;
+        }
         const known =
           MARKETING_PATHS.has(item.path as never) ||
           atlasPaths.has(item.path as never) ||
@@ -69,5 +83,11 @@ describe("marketing IA wiring", () => {
         expect(known, item.path).toBe(true);
       }
     }
+  });
+
+  it("lists the immunology YouTube channel under Explore footer outbound", () => {
+    const explore = FOOTER_GROUPS.find((g) => g.label === "Explore");
+    const yt = explore?.items.find((i) => "href" in i && i.href === YOUTUBE_CHANNEL_URL);
+    expect(yt).toMatchObject({ label: YOUTUBE_CHANNEL_LABEL, href: YOUTUBE_CHANNEL_URL });
   });
 });

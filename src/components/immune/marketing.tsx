@@ -5,7 +5,7 @@ import {
   CAPABILITY_STATUS_LABEL,
   type CapabilityFeature,
 } from "@/data/capabilityStatus";
-import { TRUST_STATEMENT } from "@/lib/brand";
+import { TRUST_STATEMENT, YOUTUBE_CHANNEL_LABEL, YOUTUBE_CHANNEL_URL } from "@/lib/brand";
 import {
   EXEMPLAR_MATURITY_SHORT,
   EXEMPLAR_PATHWAYS,
@@ -153,6 +153,20 @@ export function TrustBlock({ className = "" }: { className?: string }) {
       {" · "}
       <Link to="/disclaimer">Disclaimer</Link>
     </p>
+  );
+}
+
+/** Shared outbound learning link (YouTube immunology channel). */
+export function LearningOutboundLink({ className }: { className?: string }) {
+  return (
+    <a
+      className={className}
+      href={YOUTUBE_CHANNEL_URL}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {YOUTUBE_CHANNEL_LABEL}
+    </a>
   );
 }
 

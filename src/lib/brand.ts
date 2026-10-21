@@ -27,6 +27,14 @@ export const ATLAS_CTA = "Enter atlas";
  */
 export const CONTACT_EMAIL = "collaborate@immune-super-intelligence.co.uk";
 
+/**
+ * Public educational immunology video channel (outbound learning link).
+ * Reuse via LearningOutboundLink — do not invent alternate YouTube URLs in copy.
+ */
+export const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@DrGnaneshwer";
+/** Visible label — educational video channel, not clinical decision support. */
+export const YOUTUBE_CHANNEL_LABEL = "Immunology videos — Dr Gnaneshwer on YouTube";
+
 export const PROPOSITION =
   "Immune Super Intelligence is building tools that connect immunology, scientific evidence and advanced AI—helping people learn mechanisms, explore biological relationships and investigate research questions.";
 

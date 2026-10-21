@@ -96,11 +96,17 @@ function SiteFooter() {
         {FOOTER_GROUPS.map((g) => (
           <div key={g.label} className="sf-col">
             <div className="sf-label">{g.label}</div>
-            {g.items.map((l) => (
-              <Link key={l.path} to={l.path}>
-                {l.label}
-              </Link>
-            ))}
+            {g.items.map((l) =>
+              "href" in l ? (
+                <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
+                  {l.label}
+                </a>
+              ) : (
+                <Link key={l.path} to={l.path}>
+                  {l.label}
+                </Link>
+              ),
+            )}
           </div>
         ))}
       </div>

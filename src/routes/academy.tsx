@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { NodeChip } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
-import { MarketingBody, MarketingCta, MarketingHero, MarketingSection, StatusChip } from "@/components/immune/marketing";
+import {
+  LearningOutboundLink,
+  MarketingBody,
+  MarketingCta,
+  MarketingHero,
+  MarketingSection,
+  StatusChip,
+} from "@/components/immune/marketing";
 import {
   ACADEMY_TRACKS,
   type AcademyTrack,
@@ -208,6 +215,7 @@ function AcademyLanding() {
             <Link to="/disease">Disease</Link>
             <Link to="/therapy">Therapy</Link>
             <Link to="/evidence">Evidence</Link>
+            <LearningOutboundLink />
           </div>
         </MarketingSection>
 
