@@ -5,7 +5,7 @@
    Provenance: textbook / review-level consensus drafted for education; not claim-approved. */
 
 export const EXT_PROVENANCE = {
-  version: "draft-ext-4",
+  version: "draft-ext-5",
   label: "Phase B draft gap fills (coverage + teaching)",
   note: "Draft educational extensions. evidence_status is a graph label, not curator approval. No PMIDs fabricated.",
 };
@@ -295,6 +295,55 @@ export const EXT_EDGES: E[] = [
   e("DS003", "characterises", "C003", "Frontier: tissue-resident macrophage states.", "", "EMERGING", "medium"),
   e("DS005", "characterises", "D019", "Frontier: inflammation drives cardiovascular risk beyond LDL.", "", "EVIDENCE-SUPPORTED", "medium"),
   e("I023", "prevents", "D019", "IL-1β blockade lowered recurrent cardiovascular events (CANTOS).", "clinical trial"),
+
+  // draft-ext-5 · connectivity gaps (2026-10-21): approved-indication therapy → disease links,
+  // landmark trial → disease context, and bridges for the HLA pharmacogenetics island.
+  // Approvals / trials named in each mechanism; no PMIDs added. Expert review required.
+  e("I008", "treats", "D012", "Anti-PD-1 approved for advanced melanoma (FDA 2014); superior to ipilimumab in KEYNOTE-006.", "clinical"),
+  e("I009", "treats", "D012", "Anti-PD-1 approved for advanced melanoma (FDA 2014); CheckMate 067 alone and with ipilimumab.", "clinical"),
+  e("I025", "treats", "D012", "Anti-CTLA-4 approved for advanced melanoma (FDA 2011); first therapy to extend overall survival.", "clinical"),
+  e("I011", "treats", "D001", "Anti-CD20 B-cell depletion approved for RA with methotrexate after inadequate TNF-inhibitor response (FDA 2006).", "clinical"),
+  e("I011", "treats", "D014", "Rituximab non-inferior to cyclophosphamide for remission induction in ANCA vasculitis (RAVE; FDA 2011).", "clinical"),
+  e("I002", "treats", "D001", "Anti-TNF monoclonal antibody approved for rheumatoid arthritis (FDA 2002).", "clinical"),
+  e("I002", "treats", "D004", "Anti-TNF approved for Crohn disease and ulcerative colitis.", "clinical"),
+  e("I002", "treats", "D003", "Anti-TNF approved for moderate-to-severe plaque psoriasis.", "clinical"),
+  e("I005", "treats", "D003", "Anti-IL-12/23 p40 approved for moderate-to-severe plaque psoriasis (FDA 2009).", "clinical"),
+  e("I005", "treats", "D004", "Anti-IL-12/23 p40 approved for Crohn disease and ulcerative colitis.", "clinical"),
+  e("I026", "treats", "D001", "IL-1 receptor antagonist approved for rheumatoid arthritis (FDA 2001); modest efficacy versus TNF blockade.", "clinical"),
+  e("I030", "treats", "D027", "Standard therapy for acute gout flares and flare prophylaxis; limits NLRP3-driven neutrophil inflammation.", "clinical"),
+  e("EP15", "treats", "D026", "Immunoglobulin replacement is standard care for hyper-IgM syndrome, replacing absent class-switched IgG.", "blood"),
+
+  e("TR001", "has_clinical_context", "D001", "ATTRACT: infliximab plus methotrexate in rheumatoid arthritis.", "clinical trial"),
+  e("TR002", "has_clinical_context", "D019", "CANTOS: canakinumab after myocardial infarction with raised hsCRP.", "clinical trial"),
+  e("TR003", "has_clinical_context", "D012", "KEYNOTE-006: pembrolizumab versus ipilimumab in advanced melanoma.", "clinical trial"),
+  e("TR004", "has_clinical_context", "D003", "ERASURE: secukinumab in plaque psoriasis.", "clinical trial"),
+  e("TR005", "has_clinical_context", "D006", "LIBERTY AD (SOLO 1/2): dupilumab in atopic dermatitis.", "clinical trial"),
+  e("TR006", "has_clinical_context", "D014", "RAVE: rituximab versus cyclophosphamide in ANCA vasculitis.", "clinical trial"),
+  e("TR007", "has_clinical_context", "D002", "ORATORIO: ocrelizumab in primary progressive multiple sclerosis.", "clinical trial"),
+  e("TR008", "has_clinical_context", "D013", "TN10: teplizumab delayed stage 3 type 1 diabetes in at-risk relatives.", "clinical trial"),
+  e("TR009", "has_clinical_context", "D018", "RECOVERY: dexamethasone reduced mortality in hospitalised COVID-19 needing oxygen.", "clinical trial"),
+  e("TR010", "has_clinical_context", "D020", "CARTITUDE-4: cilta-cel in lenalidomide-refractory multiple myeloma.", "clinical trial"),
+  e("TR011", "has_clinical_context", "D005", "LIBERTY ASTHMA QUEST: dupilumab in uncontrolled moderate-to-severe asthma.", "clinical trial"),
+  e("TR012", "has_clinical_context", "D019", "COLCOT: low-dose colchicine after myocardial infarction.", "clinical trial"),
+  e("TR013", "has_clinical_context", "D002", "Lenercept increased exacerbations in relapsing multiple sclerosis.", "clinical trial"),
+  e("TR014", "has_clinical_context", "D004", "Secukinumab was ineffective and associated with worsening in Crohn disease.", "clinical trial"),
+  e("TR015", "has_clinical_context", "D025", "ATTACH: high-dose infliximab worsened moderate-to-severe heart failure.", "clinical trial"),
+  e("TR016", "has_clinical_context", "D005", "MENSA: mepolizumab in severe eosinophilic asthma.", "clinical trial"),
+  e("TR017", "has_clinical_context", "D021", "TOWER: blinatumomab versus chemotherapy in relapsed/refractory B-cell ALL.", "clinical trial"),
+  e("TR018", "has_clinical_context", "D024", "N-MOmentum: inebilizumab in neuromyelitis optica spectrum disorder.", "clinical trial"),
+  e("TR019", "has_clinical_context", "D004", "GEMINI 1: vedolizumab in ulcerative colitis.", "clinical trial"),
+  e("TR020", "has_clinical_context", "D012", "CheckMate 067: nivolumab with or without ipilimumab in advanced melanoma.", "clinical trial"),
+  e("TR021", "has_clinical_context", "D007", "TULIP-2: anifrolumab in systemic lupus erythematosus.", "clinical trial"),
+  e("TR022", "has_clinical_context", "D007", "BLISS-52: belimumab in systemic lupus erythematosus.", "clinical trial"),
+  e("TR023", "has_clinical_context", "D005", "NAVIGATOR: tezepelumab in severe asthma.", "clinical trial"),
+  e("TR024", "has_clinical_context", "D003", "POETYK PSO-1: deucravacitinib in plaque psoriasis.", "clinical trial"),
+  e("TR025", "has_clinical_context", "D023", "TRIUMPH: eculizumab in transfusion-dependent PNH.", "clinical trial"),
+  e("TR026", "has_target_axis", "R019", "TGN1412 was a CD28 superagonist antibody tested first-in-human.", "clinical trial"),
+  e("TR026", "has_clinical_context", "D022", "All six volunteers developed a life-threatening cytokine storm within hours of dosing.", "clinical trial"),
+
+  e("EG04", "is_a", "R025", "HLA-B*57:01 is an HLA class I (HLA-B) allele.", "genetics"),
+  e("EG05", "is_a", "R025", "HLA-B*15:02 is an HLA class I (HLA-B) allele.", "genetics"),
+  e("C015", "mediates", "EG12", "Drug-specific CD8 cytotoxic T cells drive keratinocyte death in SJS/TEN (granulysin, perforin).", "skin"),
 ];
 
 const step = (name: string, type: string, phase: string, desc: string, fn: string, absent: string, clinical: string) => ({ name, type, phase, desc, fn, absent, clinical });

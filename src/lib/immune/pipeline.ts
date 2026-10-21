@@ -58,9 +58,11 @@ export function matchTherapies(intervention: string, index = therapyTerms()): KG
   return index.filter((x) => x.terms.some((t) => hay.includes(` ${t} `))).map((x) => x.node);
 }
 
-/** Primary mechanism for a therapy: the first target it acts on in the graph. */
+/** Primary mechanism for a therapy: its molecular target (molecule or receptor) when the graph records one,
+    otherwise the first thing it acts on — so nivolumab groups under PD-1, not the T cells it rescues. */
 function primaryTarget(row: TranslationalRow): KGNode | null {
-  return row.targets[0]?.node ?? null;
+  const molecular = row.targets.find((t) => t.node.node_type === "MOLECULE" || t.node.node_type === "RECEPTOR");
+  return (molecular ?? row.targets[0])?.node ?? null;
 }
 
 /** Curated therapies for a disease grouped by mechanism, then live studies slotted into those groups. */
