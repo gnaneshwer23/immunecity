@@ -38,7 +38,12 @@ describe("countReviewedPapers", () => {
 
   it("falls back to evidence id when a row has no identifier", () => {
     expect(countReviewedPapers([cite({}), cite({})], ["REL-A"])).toBe(2);
-    expect(countReviewedPapers([cite({ pmid: "PMID: " }), cite({ doi: "  " }), cite({ doi: "https://doi.org/" })], ["REL-A"])).toBe(3);
+    expect(
+      countReviewedPapers(
+        [cite({ pmid: "PMID: " }), cite({ doi: "  " }), cite({ doi: "https://doi.org/" })],
+        ["REL-A"],
+      ),
+    ).toBe(3);
     expect(countReviewedPapers([], ["REL-A"])).toBe(0);
   });
 });
