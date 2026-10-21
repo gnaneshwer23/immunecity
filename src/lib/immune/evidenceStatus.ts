@@ -14,6 +14,11 @@ export interface CitationLike {
   curation?: string;
   pmid?: string | null;
   doi?: string | null;
+  /** Optional curated assertion / notes for passage-window checks (never invent). */
+  claim_text?: string | null;
+  /** Exact supporting span when curator recorded one (Layer B ledger). */
+  passage_span?: string | null;
+  notes?: string | null;
 }
 
 export type ReviewStatus = "draft" | "unreviewed" | "source-verified" | "claim-assessed" | "approved" | "rejected" | "conflicting" | "superseded";

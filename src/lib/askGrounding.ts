@@ -11,6 +11,12 @@ import {
   type ReviewStatus,
 } from "@/lib/immune/evidenceStatus";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
+import {
+  findUnaanchoredMaterialClaims,
+  passageSupportsWindow,
+  provisionalTreatedAsGateC,
+  windowMentionsEdgeEndpoints,
+} from "@/lib/citationClaimValidation";
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
@@ -134,6 +140,8 @@ export interface AskGrounding {
   };
   /** Server-attached counterevidence; empty when Neon has none (honest empty). */
   counterEvidence: CitationLike[];
+  /** Gate C approved+supports cites with optional claim_text / notes for passage checks. */
+  reviewedCites: CitationLike[];
   /** Server-attached unreviewed literature; empty on pure client prepareAsk. */
   provisionalLiterature: ProvisionalLitItem[];
 }
@@ -162,6 +170,12 @@ export interface CitationValidation {
   provisionalMislabels: string[];
   /** Edge IDs cited with strong support language but no Gate C supports row. */
   claimSupportGaps: string[];
+  /** Material assertions without nearby concept/edge/PMID anchors. */
+  unaanchoredClaims: string[];
+  /** Gate C PMIDs whose curated passage/notes do not overlap the cite window. */
+  passageMismatchPmids: string[];
+  /** Edge cites with strong support language that omit both endpoint names. */
+  endpointMismatchEdges: string[];
   /** Human-readable fail reason for Ask fail-closed replies. */
   failReason: string | null;
 }
@@ -379,6 +393,7 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
         chains: [],
         coverage: { ...EMPTY_COVERAGE },
         counterEvidence: [],
+        reviewedCites: [],
         provisionalLiterature: [],
       },
       cls,
@@ -496,12 +511,18 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
       chains,
       coverage,
       counterEvidence: counterForLinks,
+      reviewedCites: supportingCitationsFrom(cites),
       provisionalLiterature: [],
     },
     cls,
     false,
     null,
   );
+}
+
+function supportingCitationsFrom(cites: CitationLike[]): CitationLike[] {
+  const { supporting } = partitionEvidencePolarity(cites);
+  return supporting;
 }
 
 /** Whether Ask should request provisional PubMed/Europe PMC (server decides; UI mirrors). */
@@ -514,6 +535,22 @@ export function shouldFetchProvisionalLit(grounding: AskGrounding, queryClass: A
 /** UI / SYSTEM copy for provisional hits — never Gate C. */
 export function provisionalLitLabel(): string {
   return "Unreviewed literature (provisional)";
+}
+
+/** Attach Gate C supporting cites (with optional claim_text/notes) for passage checks. */
+export function attachReviewedCites(grounding: AskGrounding, items: CitationLike[]): AskGrounding {
+  const { supporting } = partitionEvidencePolarity(items);
+  if (!supporting.length && !(grounding.reviewedCites?.length)) {
+    return { ...grounding, reviewedCites: grounding.reviewedCites ?? [] };
+  }
+  const merged = [...(grounding.reviewedCites ?? [])];
+  const seen = new Set(merged.map((c) => c.evidence_id));
+  for (const c of supporting) {
+    if (seen.has(c.evidence_id)) continue;
+    seen.add(c.evidence_id);
+    merged.push(c);
+  }
+  return { ...grounding, reviewedCites: merged };
 }
 
 /** Attach counterevidence without mixing it into Gate C reviewed counts. */
@@ -598,6 +635,7 @@ export function prepareAsk(question: string, cites: CitationLike[] = []): Prepar
         chains: [],
         coverage: { ...EMPTY_COVERAGE },
         counterEvidence: [],
+        reviewedCites: [],
         provisionalLiterature: [],
       },
       queryClass,
@@ -656,8 +694,9 @@ function nearbyWindow(text: string, index: number, radius = 120): string {
 }
 
 /**
- * FR-025 + ISI-005 MVP: reject invented/unretrieved IDs; fail closed on Gate C overclaims
- * and unlabelled provisional PMIDs. Full passage entailment remains planned (no span ledger yet).
+ * FR-025 + ISI-005: reject invented/unretrieved IDs; fail closed on Gate C overclaims,
+ * unlabelled provisional PMIDs, unaanchored material claims, and passage-window mismatches
+ * when curated claim_text/notes/passage_span exist. Provisional lit is never Gate C.
  */
 export function validateAnswerCitations(text: string, grounding: AskGrounding): CitationValidation {
   const allowedNodes = new Set(grounding.nodeIds);
@@ -669,6 +708,8 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   const unsupportedSupportClaims: string[] = [];
   const provisionalMislabels: string[] = [];
   const claimSupportGaps: string[] = [];
+  const passageMismatchPmids: string[] = [];
+  const endpointMismatchEdges: string[] = [];
 
   for (const m of text.matchAll(/\]\(concept:([^)]+)\)/g)) {
     const id = (m[1] ?? "").trim();
@@ -686,11 +727,9 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   const gateCPmids = new Set(
     grounding.links.flatMap((l) => l.reviewedPmids).filter((p) => /^\d+$/.test(p)),
   );
-  for (const c of grounding.counterEvidence) {
-    // Counter PMIDs are allowed as identifiers but must not be sold as Gate C support.
-    if (c.pmid && /^\d+$/.test(c.pmid)) {
-      /* tracked below */
-    }
+  const gateCByPmid = new Map<string, CitationLike>();
+  for (const c of grounding.reviewedCites ?? []) {
+    if (c.pmid && /^\d+$/.test(c.pmid)) gateCByPmid.set(c.pmid, c);
   }
   const provisionalPmids = new Set(
     grounding.provisionalLiterature.map((p) => p.pmid).filter((p): p is string => !!p),
@@ -712,8 +751,8 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   for (const m of text.matchAll(/\bPMID[:\s]*(\d{6,9})\b/gi)) {
     const pmid = m[1]!;
     const idx = m.index ?? 0;
-    const window = nearbyWindow(text, idx);
-    const inGateC = gateCPmids.has(pmid);
+    const window = nearbyWindow(text, idx, 160);
+    const inGateC = gateCPmids.has(pmid) || gateCByPmid.has(pmid);
     const inProvisional = provisionalPmids.has(pmid);
     const inCounter = counterPmids.has(pmid);
     const inGraphEdge = graphEdgePmids.has(pmid);
@@ -724,10 +763,18 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     }
     if (inProvisional && !inGateC) {
       if (!PROVISIONAL_LABEL.test(window)) provisionalMislabels.push(pmid);
-      if (STRONG_SUPPORT_LANG.test(window)) unsupportedSupportClaims.push(`PMID:${pmid}`);
+      if (STRONG_SUPPORT_LANG.test(window) || provisionalTreatedAsGateC(window, true)) {
+        unsupportedSupportClaims.push(`PMID:${pmid}:provisional-as-gate-c`);
+      }
     }
     if (inCounter && !inGateC && STRONG_SUPPORT_LANG.test(window)) {
       unsupportedSupportClaims.push(`PMID:${pmid}:counter-as-support`);
+    }
+    if (inGateC) {
+      const cite = gateCByPmid.get(pmid);
+      if (cite && !passageSupportsWindow(window, cite)) {
+        passageMismatchPmids.push(pmid);
+      }
     }
   }
 
@@ -736,15 +783,18 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     unsupportedSupportClaims.push("gate-c-language-without-reviewed-cites");
   }
 
-  // Edges cited beside strong support language must have Gate C supports.
+  // Edges cited beside strong support language must have Gate C supports + endpoint names.
   for (const m of text.matchAll(/\]\(edge:(REL-[^)]+)\)/g)) {
     const id = (m[1] ?? "").trim();
     if (!id || !allowedRels.has(id)) continue;
-    const window = nearbyWindow(text, m.index ?? 0);
+    const window = nearbyWindow(text, m.index ?? 0, 160);
     if (!STRONG_SUPPORT_LANG.test(window)) continue;
     const link = grounding.links.find((l) => l.relId === id);
     if (!link?.hasClaimSupport) claimSupportGaps.push(id);
+    else if (!windowMentionsEdgeEndpoints(window, id)) endpointMismatchEdges.push(id);
   }
+
+  const unaanchoredClaims = findUnaanchoredMaterialClaims(text);
 
   const inventedConceptIdsU = [...new Set(inventedConceptIds)];
   const inventedRelIdsU = [...new Set(inventedRelIds)];
@@ -753,6 +803,9 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   const unsupportedSupportClaimsU = [...new Set(unsupportedSupportClaims)];
   const provisionalMislabelsU = [...new Set(provisionalMislabels)];
   const claimSupportGapsU = [...new Set(claimSupportGaps)];
+  const passageMismatchPmidsU = [...new Set(passageMismatchPmids)];
+  const endpointMismatchEdgesU = [...new Set(endpointMismatchEdges)];
+  const unaanchoredClaimsU = [...new Set(unaanchoredClaims)];
 
   const ok =
     inventedConceptIdsU.length === 0 &&
@@ -761,7 +814,10 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     unretrievedRelIdsU.length === 0 &&
     unsupportedSupportClaimsU.length === 0 &&
     provisionalMislabelsU.length === 0 &&
-    claimSupportGapsU.length === 0;
+    claimSupportGapsU.length === 0 &&
+    passageMismatchPmidsU.length === 0 &&
+    endpointMismatchEdgesU.length === 0 &&
+    unaanchoredClaimsU.length === 0;
 
   let failReason: string | null = null;
   if (!ok) {
@@ -769,12 +825,19 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
       failReason = "Answer cited concepts, links or PMIDs outside the atlas / retrieval set.";
     } else if (unretrievedConceptIdsU.length || unretrievedRelIdsU.length) {
       failReason = "Answer cited atlas IDs that were not in the retrieved grounding set.";
-    } else if (unsupportedSupportClaimsU.length || claimSupportGapsU.length) {
+    } else if (
+      unsupportedSupportClaimsU.length ||
+      claimSupportGapsU.length ||
+      passageMismatchPmidsU.length ||
+      endpointMismatchEdgesU.length
+    ) {
       failReason =
-        "Answer implied reviewed/Gate C support that is not entailed by approved+supports evidence for the retrieved links.";
+        "Answer implied reviewed/Gate C support that is not entailed by approved+supports evidence or passage windows for the retrieved links.";
     } else if (provisionalMislabelsU.length) {
       failReason =
         "Answer cited provisional literature without labelling it as unreviewed / not Gate C.";
+    } else if (unaanchoredClaimsU.length) {
+      failReason = "Answer made material scientific assertions without anchoring concept, edge, or PMID cites.";
     } else {
       failReason = "Citation-to-claim validation failed.";
     }
@@ -789,6 +852,9 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     unsupportedSupportClaims: unsupportedSupportClaimsU,
     provisionalMislabels: provisionalMislabelsU,
     claimSupportGaps: claimSupportGapsU,
+    unaanchoredClaims: unaanchoredClaimsU,
+    passageMismatchPmids: passageMismatchPmidsU,
+    endpointMismatchEdges: endpointMismatchEdgesU,
     failReason,
   };
 }

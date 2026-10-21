@@ -156,6 +156,67 @@ describe("AI grounding", () => {
     );
     expect(labelled.ok).toBe(true);
   });
+  it("fail-closes unaanchored material claims and provisional-as-Gate-C", () => {
+    const g = graphContext("How does TNF drive rheumatoid arthritis?");
+    const bare = validateAnswerCitations("TNF drives rheumatoid arthritis through chronic synovitis.", g);
+    expect(bare.ok).toBe(false);
+    expect(bare.unaanchoredClaims.length).toBeGreaterThan(0);
+
+    const withProv = {
+      ...g,
+      provisionalLiterature: [
+        {
+          pmid: "12345678",
+          doi: null,
+          title: "Example",
+          journal: "J",
+          year: "2020",
+          source: "PubMed" as const,
+          url: "https://pubmed.ncbi.nlm.nih.gov/12345678/",
+        },
+      ],
+      coverage: { ...g.coverage, provisionalLiteratureCount: 1 },
+    };
+    const asGateC = validateAnswerCitations(
+      "Unreviewed provisional PMID 12345678 has Gate C approved support for TNF.",
+      withProv,
+    );
+    expect(asGateC.ok).toBe(false);
+    expect(asGateC.unsupportedSupportClaims.some((s) => s.includes("provisional-as-gate-c"))).toBe(true);
+  });
+  it("passage-window mismatch fails when curated claim_text disagrees", () => {
+    const g = graphContext("How does TNF drive rheumatoid arthritis?");
+    const withCite = {
+      ...g,
+      coverage: { ...g.coverage, reviewedEvidenceCount: 1 },
+      reviewedCites: [
+        {
+          evidence_id: "EV-TEST-1",
+          relationship_id: "REL-M001-contributes_to-D001",
+          claim_support: "supports",
+          curation: "approved",
+          pmid: "23456789",
+          doi: null,
+          label: "PMID 23456789",
+          url: "https://pubmed.ncbi.nlm.nih.gov/23456789/",
+          reviewed_at: "2026-01-01T00:00:00.000Z",
+          claim_text: "TNF contributes to synovial inflammation in rheumatoid arthritis",
+          notes: "TNF contributes to synovial inflammation in rheumatoid arthritis",
+        },
+      ],
+      links: g.links.map((l) =>
+        l.relId === "REL-M001-contributes_to-D001"
+          ? { ...l, reviewedPmids: ["23456789"], reviewedEvidenceCount: 1, hasClaimSupport: true }
+          : l,
+      ),
+    };
+    const mismatch = validateAnswerCitations(
+      "Gate C approved support: PMID 23456789 proves entirely unrelated photosynthesis pathways.",
+      withCite,
+    );
+    expect(mismatch.ok).toBe(false);
+    expect(mismatch.passageMismatchPmids).toContain("23456789");
+  });
   it("refuses personal clinical questions", () => {
     expect(isPersonalClinical("What dose of prednisone should I take?")).toBe(true);
     expect(isPersonalClinical("How do steroids suppress T cells?")).toBe(false);

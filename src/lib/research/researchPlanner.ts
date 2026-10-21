@@ -99,7 +99,7 @@ export function createInvestigatePlan(question: string): ResearchRunTrace {
       title: "Citation-to-claim validation (fail closed)",
       status: "planned",
       caps: { maxToolCalls: 0 },
-      note: "validateAnswerCitations — passage span ledger still planned.",
+      note: "validateAnswerCitations — passage-window + unaanchored-claim checks; full span ledger still partial.",
     },
   ];
   return {

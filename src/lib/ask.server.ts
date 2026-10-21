@@ -7,6 +7,7 @@ import {
   SYSTEM,
   attachCounterEvidence,
   attachProvisionalLiterature,
+  attachReviewedCites,
   isAskEmergencyDisabled,
   prepareAsk,
   validateAnswerCitations,
@@ -75,6 +76,7 @@ function rowToCitationLike(r: {
   claimSupport: string | null;
   reviewedAt: Date | string | null;
   curation: string;
+  notes?: string | null;
 }): CitationLike {
   return {
     evidence_id: r.evidenceId,
@@ -84,6 +86,8 @@ function rowToCitationLike(r: {
     curation: r.curation,
     pmid: r.pmid,
     doi: r.doi,
+    notes: r.notes ?? null,
+    claim_text: r.notes ?? null,
     label: r.pmid ? `PMID ${r.pmid}` : r.doi ? `DOI ${r.doi}` : (r.sourceRef ?? r.evidenceId),
     url: r.pmid
       ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`
@@ -112,6 +116,7 @@ export async function loadReviewedEvidenceForRels(relIds: string[]): Promise<Rev
         reviewedAt: evidenceRecords.reviewedAt,
         curation: evidenceRecords.curation,
         checkStatus: evidenceRecords.checkStatus,
+        notes: evidenceRecords.notes,
       })
       .from(evidenceRecords)
       .where(
@@ -235,7 +240,8 @@ export async function prepareAskServer(
   const counterCites = counter.ok ? counter.cites : [];
 
   let prepared = prepareAsk(question, [...evidence.cites, ...counterCites]);
-  let grounding = attachCounterEvidence(prepared.grounding, counterCites);
+  let grounding = attachReviewedCites(prepared.grounding, evidence.cites);
+  grounding = attachCounterEvidence(grounding, counterCites);
   const lit = await fetchProvisionalLiterature({
     grounding,
     question,
