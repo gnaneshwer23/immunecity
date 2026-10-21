@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { run, type SimParams, type Interventions, type SimPoint } from "@/lib/immune/sim";
-import { download, simToCSV, simSummaryJSON } from "@/lib/immune/export";
 
 const PARAMS: { k: keyof SimParams; label: string; min: number; max: number; step: number }[] = [
   { k: "inoculum", label: "Starting dose of pathogen", min: 0.001, max: 0.3, step: 0.001 },
@@ -90,12 +89,6 @@ export default function InfectionSim({ initial }: { initial?: Partial<SimParams>
           <div className="row" style={{ gap: 6 }}>
             <button className="btn" type="button" onClick={() => { setP(DEFAULTS); setTx(TREAT0); }}>Reset</button>
             <button className="btn" type="button" onClick={() => setBase(base ? null : series)}>{base ? "Clear comparison" : "Pin this run to compare"}</button>
-            <button className="btn" type="button" onClick={() => download("immune-city-run.csv", simToCSV(series), "text/csv")}>Export CSV</button>
-            <button className="btn" type="button" onClick={() => {
-              const iv: Interventions = {};
-              TREATS.forEach(({ k }) => { if (tx[k].on) iv[k] = { strength: tx[k].strength, day: tx[k].day }; });
-              download("immune-city-run.json", simSummaryJSON(p, iv, summary as unknown as Record<string, unknown>), "application/json");
-            }}>Export JSON</button>
           </div>
           {base ? <p className="xs muted" style={{ marginTop: 6 }}>Dashed lines show the pinned run.</p> : null}
         </div>
