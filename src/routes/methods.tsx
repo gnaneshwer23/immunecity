@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { SEM } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { PROMPT_VERSION } from "@/lib/askGrounding";
@@ -7,7 +6,7 @@ import { ASK_RATE_LIMIT_STATUS } from "@/lib/askRateLimitStatus";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
-import { evidenceCoverageQuery } from "@/lib/citations.functions";
+import { loadEvidenceCoverage } from "@/lib/citations.functions";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import { MarketingBody, MarketingHero, MarketingSection } from "@/components/imm
 import { ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/methods")({
+  loader: () => loadEvidenceCoverage(),
   head: () =>
     seoHead({
       title: pageTitle("Evidence & Methods"),
@@ -26,23 +26,20 @@ export const Route = createFileRoute("/methods")({
 });
 
 function LiveEvidencePanel() {
-  const { data, isError, isPending, isFetching, error } = useQuery(evidenceCoverageQuery);
-  const fetchedAt = data?.fetchedAt ?? null;
+  const { coverage: data, coverageError } = Route.useLoaderData();
 
-  if (isError) {
+  if (coverageError || !data) {
     return (
       <div className="mkt-ev-panel" role="alert">
         <h3 id="live-ev-heading">Live evidence coverage</h3>
         <p>
           Evidence database unavailable
-          {error instanceof Error ? ` (${error.message})` : ""}. This is a service error, not a finding that the graph
+          {coverageError ? ` (${coverageError})` : ""}. This is a service error, not a finding that the graph
           has zero reviewed citations.
         </p>
       </div>
     );
   }
-
-  const loading = isPending || (isFetching && !data);
 
   return (
     <div className="mkt-ev-panel" aria-labelledby="live-ev-heading">
@@ -50,22 +47,22 @@ function LiveEvidencePanel() {
       <dl className="mkt-ev-metrics">
         <div>
           <dt>Gate C (distinct rels)</dt>
-          <dd>{loading ? "…" : `${data?.distinctGateCRels ?? 0} / ${data?.runtimeRelationships ?? "…"}`}</dd>
+          <dd>{`${data.distinctGateCRels} / ${data.runtimeRelationships}`}</dd>
         </div>
         <div>
           <dt>Approved+supports rows</dt>
-          <dd>{loading ? "…" : (data?.approvedSupportsRows ?? 0)}</dd>
+          <dd>{data.approvedSupportsRows}</dd>
         </div>
         <div>
           <dt>Contradicts / partial</dt>
-          <dd>{loading ? "…" : `${data?.contradicts ?? 0} / ${data?.partial ?? 0}`}</dd>
+          <dd>{`${data.contradicts} / ${data.partial}`}</dd>
         </div>
         <div>
           <dt>Open P0 exemplar targets</dt>
-          <dd>{loading ? "…" : (data?.openP0Targets ?? 0)}</dd>
+          <dd>{data.openP0Targets}</dd>
         </div>
       </dl>
-      {!loading && data?.exemplar?.length ? (
+      {data.exemplar.length ? (
         <ul className="mkt-aside" style={{ marginTop: 8, paddingLeft: 18 }}>
           {data.exemplar.map((e) => (
             <li key={e.pathwayId}>
@@ -76,11 +73,8 @@ function LiveEvidencePanel() {
         </ul>
       ) : null}
       <p className="mkt-aside">
-        {loading
-          ? "Fetching live Neon coverage…"
-          : <>Fetched at <code>{fetchedAt ?? "unavailable"}</code>.</>}{" "}
-        Gate C = distinct <code>relationship_id</code> with approved+supports. Counterevidence is separate.
-        Concept-level rows never inflate coverage.{" "}
+        Fetched at <code>{data.fetchedAt}</code>. Gate C = distinct <code>relationship_id</code> with
+        approved+supports. Counterevidence is separate. Concept-level rows never inflate coverage.{" "}
         <Link to="/evidence">Full Evidence breakdown</Link>
       </p>
     </div>

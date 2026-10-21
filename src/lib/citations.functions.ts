@@ -310,9 +310,48 @@ export const getEvidenceCoverageStats = createServerFn({ method: "GET" }).handle
   },
 );
 
+/** Loader-friendly wrap: never leave marketing panels on eternal “Loading…”. */
+export type EvidenceCoverageLoaderData = {
+  coverage: EvidenceCoverageStats | null;
+  coverageError: string | null;
+};
+
+export async function loadEvidenceCoverage(): Promise<EvidenceCoverageLoaderData> {
+  try {
+    const coverage = await getEvidenceCoverageStats();
+    return { coverage, coverageError: null };
+  } catch (err) {
+    const coverageError =
+      err instanceof Error
+        ? err.message
+        : "Evidence coverage stats unavailable. This is a database/service error — not a finding that coverage is zero.";
+    return { coverage: null, coverageError };
+  }
+}
+
+const COVERAGE_CLIENT_TIMEOUT_MS = 10_000;
+
 export const evidenceCoverageQuery = queryOptions({
   queryKey: ["evidence-coverage-stats"],
-  queryFn: () => getEvidenceCoverageStats(),
+  queryFn: async () => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        getEvidenceCoverageStats(),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => {
+            reject(
+              new EvidenceServiceError(
+                "Evidence coverage stats timed out. This is a service error — not a finding that coverage is zero.",
+              ),
+            );
+          }, COVERAGE_CLIENT_TIMEOUT_MS);
+        }),
+      ]);
+    } finally {
+      if (timer !== undefined) clearTimeout(timer);
+    }
+  },
   staleTime: 60_000,
   retry: 1,
 });

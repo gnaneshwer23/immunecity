@@ -22,7 +22,7 @@ import {
   PRODUCT_NAME,
   TAGLINE,
 } from "@/lib/brand";
-import { approvedQuery, evidenceCoverageQuery } from "@/lib/citations.functions";
+import { approvedQuery, loadEvidenceCoverage } from "@/lib/citations.functions";
 import { byId, human } from "@/lib/immune/engine";
 import {
   EXEMPLAR_MATURITY_LABEL,
@@ -60,6 +60,7 @@ const HOME_DRAFT_ROUTES = HOME_DRAFT_TEASERS.filter((t) =>
 
 
 export const Route = createFileRoute("/")({
+  loader: () => loadEvidenceCoverage(),
   head: () =>
     seoHead({
       title: `${PRODUCT_NAME} | ${TAGLINE}`,
@@ -208,13 +209,12 @@ function HomeCausalPathway() {
 const SNAP = graphReleaseSnapshot();
 
 function HomeCoverageGlance() {
-  const { data, isError, isPending, isFetching, error } = useQuery(evidenceCoverageQuery);
-  const loading = isPending || (isFetching && !data);
-  if (isError) {
+  const { coverage: data, coverageError } = Route.useLoaderData();
+  if (coverageError || !data) {
     return (
       <p className="home-causal-note" role="alert">
         Live coverage unavailable
-        {error instanceof Error ? ` (${error.message})` : ""}. That is a service error, not proof of zero reviewed
+        {coverageError ? ` (${coverageError})` : ""}. That is a service error, not proof of zero reviewed
         cites.{" "}
         <Link to="/methods" hash="live-ev-heading">
           Methods coverage
@@ -224,16 +224,10 @@ function HomeCoverageGlance() {
   }
   return (
     <p className="home-causal-note" role="status">
-      {loading ? (
-        "Loading live Gate C coverage…"
-      ) : (
-        <>
-          Live Gate C: <b>{data?.distinctGateCRels ?? 0}</b> / {data?.runtimeRelationships ?? "…"} distinct
-          relationship claims with approved+supports
-          {data != null ? ` · contradicts ${data.contradicts} / partial ${data.partial}` : null}. Coverage stays
-          sparse on purpose until curators map claims.{" "}
-        </>
-      )}
+      Live Gate C: <b>{data.distinctGateCRels}</b> / {data.runtimeRelationships} distinct
+      relationship claims with approved+supports
+      {` · contradicts ${data.contradicts} / partial ${data.partial}`}. Coverage stays
+      sparse on purpose until curators map claims.{" "}
       <Link to="/methods" hash="live-ev-heading">
         Methods dashboard
       </Link>

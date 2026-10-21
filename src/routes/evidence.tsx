@@ -1,7 +1,6 @@
 import { ART } from "@/components/immune/explain";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CONTENT } from "@/data/content";
 import { byId } from "@/lib/immune/engine";
@@ -10,7 +9,7 @@ import CoveragePanel from "@/components/immune/CoveragePanel";
 import DomainCoveragePanel from "@/components/immune/DomainCoveragePanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { PageToc, Section, Toolbar } from "@/components/immune/page";
-import { evidenceCoverageQuery } from "@/lib/citations.functions";
+import { loadEvidenceCoverage } from "@/lib/citations.functions";
 
 const TOC = [
   { id: "live-neon", label: "Live Neon" },
@@ -20,12 +19,11 @@ const TOC = [
 ];
 
 function LiveNeonCoverage() {
-  const { data, isError, isPending, isFetching, error } = useQuery(evidenceCoverageQuery);
-  const loading = isPending || (isFetching && !data);
-  if (isError) {
+  const { coverage: data, coverageError } = Route.useLoaderData();
+  if (coverageError || !data) {
     return (
       <p className="callout" role="alert">
-        Evidence database unavailable{error instanceof Error ? ` (${error.message})` : ""}.
+        Evidence database unavailable{coverageError ? ` (${coverageError})` : ""}.
         This is a service error — not a finding that coverage is zero.
       </p>
     );
@@ -34,25 +32,24 @@ function LiveNeonCoverage() {
     <div className="card" aria-labelledby="live-neon-heading">
       <h3 id="live-neon-heading" style={{ fontSize: "1.05rem", marginBottom: 8 }}>Live Neon coverage</h3>
       <dl className="grid g3" style={{ marginBottom: 8 }}>
-        <div><dt className="xs muted">Gate C distinct / links</dt><dd><b>{loading ? "…" : `${data?.distinctGateCRels ?? 0} / ${data?.runtimeRelationships ?? "…"}`}</b></dd></div>
-        <div><dt className="xs muted">Contradicts / partial</dt><dd><b>{loading ? "…" : `${data?.contradicts ?? 0} / ${data?.partial ?? 0}`}</b></dd></div>
-        <div><dt className="xs muted">Open P0 targets</dt><dd><b>{loading ? "…" : (data?.openP0Targets ?? 0)}</b></dd></div>
+        <div><dt className="xs muted">Gate C distinct / links</dt><dd><b>{`${data.distinctGateCRels} / ${data.runtimeRelationships}`}</b></dd></div>
+        <div><dt className="xs muted">Contradicts / partial</dt><dd><b>{`${data.contradicts} / ${data.partial}`}</b></dd></div>
+        <div><dt className="xs muted">Open P0 targets</dt><dd><b>{data.openP0Targets}</b></dd></div>
       </dl>
-      {!loading && data ? (
-        <ul className="small" style={{ paddingLeft: 18, margin: "8px 0" }}>
-          {data.exemplar.map((e) => (
-            <li key={e.pathwayId}>{e.title}: {e.approvedEdges}/{e.uniqueEdges} approved on-path · {e.maturity}</li>
-          ))}
-        </ul>
-      ) : null}
+      <ul className="small" style={{ paddingLeft: 18, margin: "8px 0" }}>
+        {data.exemplar.map((e) => (
+          <li key={e.pathwayId}>{e.title}: {e.approvedEdges}/{e.uniqueEdges} approved on-path · {e.maturity}</li>
+        ))}
+      </ul>
       <p className="xs muted">
-        {loading ? "Fetching…" : <>Fetched <code>{data?.fetchedAt}</code></>} · unreviewed rows {loading ? "…" : data?.unreviewed} · total evidence slots {loading ? "…" : data?.totalEvidenceRows}
+        Fetched <code>{data.fetchedAt}</code> · unreviewed rows {data.unreviewed} · total evidence slots {data.totalEvidenceRows}
       </p>
     </div>
   );
 }
 
 export const Route = createFileRoute("/evidence")({
+  loader: () => loadEvidenceCoverage(),
   head: () => seoHead({ title: "Evidence: trials as experiments — Immune Super Intelligence", description: "Landmark immunology trials as hypothesis tests, plus honest claim-level evidence coverage. Educational beta — most runtime links are not yet claim-approved.", path: "/evidence" }),
   component: Evidence,
 });
