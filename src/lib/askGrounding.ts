@@ -582,9 +582,9 @@ export function countReviewedPapers(cites: CitationLike[], relIds: Iterable<stri
   const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i]!)));
   const owner = new Map<string, number>();
   rows.forEach((c, i) => {
-    const keys = [c.pmid ? `pmid:${normPmid(c.pmid)}` : null, c.doi ? `doi:${normDoi(c.doi)}` : null].filter(
-      (k): k is string => Boolean(k),
-    );
+    const pmid = c.pmid ? normPmid(c.pmid) : "";
+    const doi = c.doi ? normDoi(c.doi) : "";
+    const keys = [pmid ? `pmid:${pmid}` : null, doi ? `doi:${doi}` : null].filter((k): k is string => Boolean(k));
     if (!keys.length) keys.push(`row:${c.evidence_id}`);
     for (const k of keys) {
       const j = owner.get(k);

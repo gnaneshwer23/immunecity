@@ -218,6 +218,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     const t = text.trim();
     if (!t || busy) return;
     const prepared = prepareAsk(t);
+    callModelCache.current.set(t, prepared.callModel);
     setGrounding(prepared.grounding);
     setResearchTraceText(null);
     setLocalNote(null);
