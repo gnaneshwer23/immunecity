@@ -63,7 +63,8 @@ export type ExplanationAction =
   | "show_path"
   | "compare_explanations"
   | "what_evidence_missing"
-  | "what_would_change";
+  | "what_would_change"
+  | "show_counterevidence";
 
 export interface GroundedLink {
   relId: string;
@@ -644,8 +645,9 @@ export function prepareAsk(question: string, cites: CitationLike[] = []): Prepar
   return { grounding, queryClass, callModel: true, replyText: null };
 }
 
+/** Affirmative Gate C / verified-support claims — exclude “not Gate C …” negations. */
 const STRONG_SUPPORT_LANG =
-  /\b(gate\s*c|approved\s+support|scientifically\s+verified|claim[- ]supported|reviewed\s+cite|proven\s+by|confirmed\s+by\s+pmid|definitively\s+shows)\b/i;
+  /(?:(?<!\bnot\s)\bgate\s*c\s+(?:approved|reviewed|support)|(?:has|with)\s+gate\s*c|\bapproved\s+support|\bscientifically\s+verified|\bclaim[- ]supported|\breviewed\s+cite(?:s|d)?|\bproven\s+by|\bconfirmed\s+by\s+pmid|\bdefinitively\s+shows)\b/i;
 const PROVISIONAL_LABEL =
   /\b(unreviewed|provisional|not\s+gate\s*c|not\s+approved|literature\s+hit)\b/i;
 
@@ -836,6 +838,23 @@ export function runExplanationAction(action: ExplanationAction, grounding: AskGr
       return (
         `If the polarity or evidence for ${target.relId} (${names(target.fromId)} ${target.relation} ${names(target.toId)}) were revised or contradicted, ` +
         `the chain from ${names(chain!.fromId)} to ${names(chain!.toId)} would need re-evaluation. This is a graph-structure caveat, not an experimental prediction.`
+      );
+    }
+    case "show_counterevidence": {
+      const rows = grounding.counterEvidence ?? [];
+      const withCount = grounding.links.filter((l) => l.counterEvidenceCount > 0);
+      if (!rows.length && !withCount.length) {
+        return (
+          "Counterevidence (skeptic path): none curated on retrieved links yet — honest empty set. " +
+          "Neon may still have zero contradicts/partial rows. Do not invent opposing literature; ask a curator to assess claim_support when sources disagree."
+        );
+      }
+      return (
+        "Counterevidence (assessed contradicts/partial — not Gate C support):\n" +
+        rows
+          .slice(0, 12)
+          .map((c) => `• ${c.label} · ${c.claim_support} · ${c.relationship_id ?? "unmapped"}`)
+          .join("\n")
       );
     }
     default:

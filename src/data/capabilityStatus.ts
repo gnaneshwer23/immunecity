@@ -77,7 +77,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Ask Immune (graph-retrieved teaching)",
     page: "scientific-ai",
     description:
-      "Ask Immune retrieves graph context and Gate C approved cites when present; may surface PubMed/Europe PMC hits as provisional unreviewed literature only — not fully evidence-grounded AI.",
+      "Ask Immune retrieves graph context and Gate C approved+supports cites when present; citation validation fail-closes invented IDs, Gate C overclaims, and unlabelled provisional lit — not fully evidence-grounded AI (passage entailment still partial).",
     status: "partial",
     statusAsOf: "2026-10",
     relatedAppRoute: "/ask",

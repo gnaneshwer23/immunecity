@@ -126,7 +126,7 @@ describe("AI grounding", () => {
     const g = graphContext("How does TNF drive rheumatoid arthritis?");
     expect(g.coverage.reviewedEvidenceCount).toBe(0);
     const overclaim = validateAnswerCitations(
-      "This is Gate C approved support that TNF causes RA.",
+      "This has Gate C approved support that TNF causes RA.",
       g,
     );
     expect(overclaim.ok).toBe(false);
