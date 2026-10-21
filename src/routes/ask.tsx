@@ -9,7 +9,7 @@ import { ASK_EVIDENCE_LIMIT, ASK_NAME, ASK_PUBLIC_LINE, PRODUCT_NAME } from "@/l
 import { seoHead } from "@/lib/seo";
 
 const ASK_SUGGESTIONS = [
-  { label: "Foundations", items: ["What is the difference between innate and adaptive immunity?", "How do antibodies work?", "Explain antigen presentation."] },
+  { label: "Foundations", items: ["What is the immune system?", "What is the difference between innate and adaptive immunity?", "How do antibodies work?", "Explain antigen presentation."] },
   { label: "Mechanisms", items: ["How does IL-6 signalling work?", "How does the NLRP3 inflammasome activate inflammation?", "How does T-cell receptor signalling work?"] },
   { label: "Disease", items: ["How do regulatory T cells contribute to immune tolerance?", "What happens to immune function during sepsis?", "How do immune checkpoint inhibitors work?"] },
   { label: "Research", items: ["What evidence supports the role of IL-6 in inflammatory disease?", "Compare competing models of T-cell exhaustion.", "What are the limitations of current evidence on TNF in arthritis?"] },
