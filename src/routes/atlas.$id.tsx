@@ -19,6 +19,7 @@ import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
 import { XREF_SOURCES, conceptSameAs, conceptXrefs } from "@/data/xrefs";
 import TranslationalPath from "@/components/immune/TranslationalPath";
 import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
+import EntityActions from "@/components/immune/EntityActions";
 
 export const Route = createFileRoute("/atlas/$id")({
   loader: ({ params }) => {
@@ -200,6 +201,7 @@ function ConceptPage() {
           <Link className="btn sm primary" to="/ask" search={{ about: n.id }}><MessageSquare size={14} /> Ask about {n.name}</Link>
           <Link className="btn sm" to="/graph" search={{ focus: n.id }}><Network size={14} /> See in graph</Link>
           <SourcesPill count={src.isLoading || src.isError ? null : src.items.length} />
+          <EntityActions id={n.id} showAsk={false} />
         </div>
       </ExplainHero>
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JOURNEY_NAV, journeyKey } from "@/data/marketingNav";
+import { JOURNEY_NAV, JOURNEY_PRIMARY, journeyKey } from "@/data/marketingNav";
 
 describe("journey navigation", () => {
   it("groups the header into Learn, Explore, Investigate, Trust", () => {
@@ -16,6 +16,27 @@ describe("merged pages", () => {
     const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path as string));
     expect(paths).not.toContain("/scientific-ai");
     expect(paths).toContain("/reasoning");
+  });
+});
+
+describe("primary entries", () => {
+  it("shows Ask, Research, Simulate and Community beside the journeys", () => {
+    expect(JOURNEY_PRIMARY.map((i) => [i.label, i.path])).toEqual([
+      ["Ask Immune", "/ask"],
+      ["Research", "/research"],
+      ["Simulate", "/simulator"],
+      ["Community", "/community"],
+    ]);
+    expect(JOURNEY_PRIMARY.some((i) => i.label === "My Workspace")).toBe(false);
+  });
+  it("keeps those tools inside Learn, Explore and Investigate", () => {
+    expect(JOURNEY_NAV.map((g) => g.label)).toEqual(["Learn", "Explore", "Investigate", "Trust"]);
+    const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path as string));
+    expect(paths).toEqual(expect.arrayContaining(["/ask", "/research", "/simulator"]));
+    const learn = JOURNEY_NAV.find((g) => g.label === "Learn")!.items.map((i) => i.path);
+    const investigate = JOURNEY_NAV.find((g) => g.label === "Investigate")!.items.map((i) => i.path);
+    expect(learn).toContain("/ask");
+    expect(investigate).toEqual(expect.arrayContaining(["/simulator", "/research"]));
   });
 });
 

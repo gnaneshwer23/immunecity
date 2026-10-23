@@ -6,6 +6,7 @@ import {
   FOOTER_GROUPS,
   isMarketingPath,
   JOURNEY_NAV,
+  JOURNEY_PRIMARY,
   journeyKey,
   type JourneyItem,
   JOURNEY_SECONDARY,
@@ -199,6 +200,14 @@ function MarketingCompactNav({
           </Button>
         </div>
         <div className="marketing-compact-links">
+          <div className="marketing-compact-group">
+            <span className="marketing-compact-label">Primary</span>
+            {JOURNEY_PRIMARY.map((item) => (
+              <Link key={item.path} to={item.path} activeProps={{ className: "active" }} onClick={onClose}>
+                {item.label}
+              </Link>
+            ))}
+          </div>
           {JOURNEY_NAV.map((g) => (
             <div key={g.label} className="marketing-compact-group">
               <span className="marketing-compact-label">{g.label}</span>
@@ -300,6 +309,18 @@ export default function Shell({ children }: { children: ReactNode }) {
         <nav className="journey-nav" aria-label="Primary">
           {JOURNEY_NAV.map((g) => (
             <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />
+          ))}
+          <span className="journey-sep" aria-hidden />
+          {JOURNEY_PRIMARY.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="marketing-nav-link journey-direct"
+              activeOptions={{ exact: item.path !== "/community" }}
+              activeProps={{ className: "marketing-nav-link journey-direct current" }}
+            >
+              {item.label}
+            </Link>
           ))}
           <span className="journey-sep journey-secondary" aria-hidden />
           <YouTubeNavIcon className="marketing-nav-link journey-secondary youtube-nav-link" />

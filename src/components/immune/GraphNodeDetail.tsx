@@ -4,6 +4,7 @@ import { TYPES, byId, human, inn, out } from "@/lib/immune/engine";
 import EdgeReference, { NodeCitations } from "./EdgeReference";
 import { NodeLink } from "./ui";
 import { inspect } from "@/lib/immune/inspector";
+import EntityActions from "./EntityActions";
 
 export default function GraphNodeDetail({ id, onClose }: { id: string; onClose: () => void }) {
   const n = byId[id];
@@ -41,6 +42,7 @@ export default function GraphNodeDetail({ id, onClose }: { id: string; onClose: 
         <Link className="btn sm" to="/reasoning" search={{ from: id }}>Trace from here</Link>
         <button className="btn sm" onClick={() => inspect({ kind: "concept", id })}>Full scientific detail</button>
       </div>
+      <EntityActions id={id} />
       {outs.length ? (
         <div className="id-section">
           <h5 className="id-sub">Acts on ({outs.length})</h5>

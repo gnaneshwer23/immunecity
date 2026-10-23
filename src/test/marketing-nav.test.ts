@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   FOOTER_GROUPS,
   isMarketingPath,
+  JOURNEY_PRIMARY,
   MARKETING_NAV,
   MARKETING_NAV_ACTION,
   MARKETING_NAV_MORE,
@@ -72,6 +73,7 @@ describe("marketing IA wiring", () => {
         const known =
           MARKETING_PATHS.has(item.path as never) ||
           atlasPaths.has(item.path as never) ||
+          JOURNEY_PRIMARY.some((p) => p.path === item.path) ||
           item.path === "/mechanism" ||
           item.path === "/academy" ||
           item.path.startsWith("/mechanism/");

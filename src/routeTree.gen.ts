@@ -41,6 +41,11 @@ import { Route as TherapyRouteImport } from './routes/therapy'
 import { Route as VisionRouteImport } from './routes/vision'
 import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticated/curation'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
+import { Route as CommunityIndexRouteImport } from './routes/community.index'
+import { Route as CommunityModerationRouteImport } from './routes/community.moderation'
+import { Route as CommunityNewRouteImport } from './routes/community.new'
+import { Route as CommunityPostPostIdRouteImport } from './routes/community.post.$postId'
+import { Route as CommunityTopicSlugRouteImport } from './routes/community.topic.$slug'
 import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
 import { Route as AtlasIdRouteImport } from './routes/atlas.$id'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
@@ -243,6 +248,31 @@ const ApiAskPrepareRoute = ApiAskPrepareRouteImport.update({
   path: '/prepare',
   getParentRoute: () => ApiAskRoute,
 } as any)
+const CommunityIndexRoute = CommunityIndexRouteImport.update({
+  id: '/community/',
+  path: '/community/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityNewRoute = CommunityNewRouteImport.update({
+  id: '/community/new',
+  path: '/community/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityModerationRoute = CommunityModerationRouteImport.update({
+  id: '/community/moderation',
+  path: '/community/moderation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityTopicSlugRoute = CommunityTopicSlugRouteImport.update({
+  id: '/community/topic/$slug',
+  path: '/community/topic/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityPostPostIdRoute = CommunityPostPostIdRouteImport.update({
+  id: '/community/post/$postId',
+  path: '/community/post/$postId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -283,6 +313,11 @@ export interface FileRoutesByFullPath {
   '/mechanism/': typeof MechanismIndexRoute
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
+  '/community/': typeof CommunityIndexRoute
+  '/community/new': typeof CommunityNewRoute
+  '/community/moderation': typeof CommunityModerationRoute
+  '/community/topic/$slug': typeof CommunityTopicSlugRoute
+  '/community/post/$postId': typeof CommunityPostPostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -323,6 +358,11 @@ export interface FileRoutesByTo {
   '/mechanism': typeof MechanismIndexRoute
   '/pipeline': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
+  '/community': typeof CommunityIndexRoute
+  '/community/new': typeof CommunityNewRoute
+  '/community/moderation': typeof CommunityModerationRoute
+  '/community/topic/$slug': typeof CommunityTopicSlugRoute
+  '/community/post/$postId': typeof CommunityPostPostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -365,6 +405,11 @@ export interface FileRoutesById {
   '/mechanism/': typeof MechanismIndexRoute
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
+  '/community/': typeof CommunityIndexRoute
+  '/community/new': typeof CommunityNewRoute
+  '/community/moderation': typeof CommunityModerationRoute
+  '/community/topic/$slug': typeof CommunityTopicSlugRoute
+  '/community/post/$postId': typeof CommunityPostPostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -407,6 +452,11 @@ export interface FileRouteTypes {
     | '/mechanism/'
     | '/pipeline/'
     | '/api/ask/prepare'
+    | '/community/'
+    | '/community/new'
+    | '/community/moderation'
+    | '/community/topic/$slug'
+    | '/community/post/$postId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -447,6 +497,11 @@ export interface FileRouteTypes {
     | '/mechanism'
     | '/pipeline'
     | '/api/ask/prepare'
+    | '/community'
+    | '/community/new'
+    | '/community/moderation'
+    | '/community/topic/$slug'
+    | '/community/post/$postId'
   id:
     | '__root__'
     | '/'
@@ -488,6 +543,11 @@ export interface FileRouteTypes {
     | '/mechanism/'
     | '/pipeline/'
     | '/api/ask/prepare'
+    | '/community/'
+    | '/community/new'
+    | '/community/moderation'
+    | '/community/topic/$slug'
+    | '/community/post/$postId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -528,6 +588,11 @@ export interface RootRouteChildren {
   AtlasIndexRoute: typeof AtlasIndexRoute
   MechanismIndexRoute: typeof MechanismIndexRoute
   PipelineIndexRoute: typeof PipelineIndexRoute
+  CommunityIndexRoute: typeof CommunityIndexRoute
+  CommunityNewRoute: typeof CommunityNewRoute
+  CommunityModerationRoute: typeof CommunityModerationRoute
+  CommunityTopicSlugRoute: typeof CommunityTopicSlugRoute
+  CommunityPostPostIdRoute: typeof CommunityPostPostIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -805,6 +870,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAskPrepareRouteImport
       parentRoute: typeof ApiAskRoute
     }
+    '/community/': {
+      id: '/community/'
+      path: '/community'
+      fullPath: '/community/'
+      preLoaderRoute: typeof CommunityIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/new': {
+      id: '/community/new'
+      path: '/community/new'
+      fullPath: '/community/new'
+      preLoaderRoute: typeof CommunityNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/moderation': {
+      id: '/community/moderation'
+      path: '/community/moderation'
+      fullPath: '/community/moderation'
+      preLoaderRoute: typeof CommunityModerationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/topic/$slug': {
+      id: '/community/topic/$slug'
+      path: '/community/topic/$slug'
+      fullPath: '/community/topic/$slug'
+      preLoaderRoute: typeof CommunityTopicSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/post/$postId': {
+      id: '/community/post/$postId'
+      path: '/community/post/$postId'
+      fullPath: '/community/post/$postId'
+      preLoaderRoute: typeof CommunityPostPostIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -868,6 +968,11 @@ const rootRouteChildren: RootRouteChildren = {
   AtlasIndexRoute: AtlasIndexRoute,
   MechanismIndexRoute: MechanismIndexRoute,
   PipelineIndexRoute: PipelineIndexRoute,
+  CommunityIndexRoute: CommunityIndexRoute,
+  CommunityNewRoute: CommunityNewRoute,
+  CommunityModerationRoute: CommunityModerationRoute,
+  CommunityTopicSlugRoute: CommunityTopicSlugRoute,
+  CommunityPostPostIdRoute: CommunityPostPostIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -37,6 +37,7 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
       { label: "Platform", path: "/overview" },
       { label: "Academy", path: "/academy" },
       { label: "Reasoning & AI", path: "/reasoning" },
+      { label: "Community", path: "/community" },
     ],
   },
   {
@@ -146,6 +147,18 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
     ],
   },
 ];
+
+/**
+ * Visible primary destinations. They also stay inside Learn / Explore / Investigate
+ * so those journeys remain the map. Community is listed only because /community exists.
+ * My Workspace is intentionally absent.
+ */
+export const JOURNEY_PRIMARY = [
+  { label: "Ask Immune", path: "/ask" },
+  { label: "Research", path: "/research" },
+  { label: "Simulate", path: "/simulator" },
+  { label: "Community", path: "/community" },
+] as const;
 
 /** Secondary header links shown after the journeys. */
 export const JOURNEY_SECONDARY = [

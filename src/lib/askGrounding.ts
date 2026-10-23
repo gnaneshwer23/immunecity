@@ -294,7 +294,7 @@ export function matchConceptSuggestions(query: string, limit = 5): KGNode[] {
 }
 
 /* Personal clinical requests (dosing, "should I", my diagnosis) are refused without calling a model. */
-const CLINICAL = /\b(should i|can i take|my (doctor|dose|medication|child|son|daughter|husband|wife|mother|father)|what dose|how much .* (take|give)|dosage for me|diagnose me|i have (been diagnosed|a rash|symptoms)|am i)\b/i;
+const CLINICAL = /\b(should i|i should|can i take|my (doctor|dose|medication|symptoms|child|son|daughter|husband|wife|mother|father)|what dose|how much .* (take|give)|dosage for me|diagnose me|prescribe me|for my (rash|arthritis|diagnosis|condition|pain)|i have (been diagnosed|a rash|symptoms)|am i)\b/i;
 export const isPersonalClinical = (q: string) => CLINICAL.test(q);
 
 export const CLINICAL_REFUSAL =

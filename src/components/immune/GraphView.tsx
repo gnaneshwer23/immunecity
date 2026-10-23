@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { ZoomIn, ZoomOut, Scan, List, Network } from "lucide-react";
 import { KG, TYPES, byId, SEM, deg, out, inn, propagate, human, TISSUES, edgeTissues, type NodeType, type Tissue, type KGEdge } from "@/lib/immune/engine";
+import { filterGraphSlice } from "@/lib/immune/graphFilters";
 import { PageHead, NodeLink } from "./ui";
 import GraphNodeDetail from "./GraphNodeDetail";
 import GraphEdgeDetail from "./GraphEdgeDetail";
@@ -69,14 +70,19 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
   useEffect(() => { if (modeParam === "activate" || modeParam === "inhibit") setMode(modeParam); }, [modeParam, simId]);
 
   const [tissue, setTissue] = useState<Tissue | "">("");
+  const [evidenceStatus, setEvidenceStatus] = useState("");
   const { nodes, links } = useMemo(() => {
-    const ns = KG.nodes.filter((n) => active.has(n.node_type)).map((n) => ({ ...n })) as any[];
+    const ns = KG.nodes.filter((n) => active.has(n.node_type));
     const ids = new Set(ns.map((n) => n.id));
-    const ls = KG.relationships
-      .filter((r) => ids.has(r.subject_id) && ids.has(r.object_id) && (!tissue || edgeTissues(r).includes(tissue)))
-      .map((r) => ({ ...r, source: r.subject_id, target: r.object_id })) as any[];
-    return { nodes: ns, links: ls };
-  }, [active, tissue]);
+    const ls = KG.relationships.filter((r) => ids.has(r.subject_id) && ids.has(r.object_id) && (!tissue || edgeTissues(r).includes(tissue)));
+    const keep = new Set<string>();
+    if (focusId && byId[focusId]) keep.add(focusId);
+    const sliced = filterGraphSlice(ns, ls, evidenceStatus, keep);
+    return {
+      nodes: sliced.nodes.map((n) => ({ ...n })) as any[],
+      links: sliced.edges.map((r) => ({ ...r, source: r.subject_id, target: r.object_id })) as any[],
+    };
+  }, [active, tissue, evidenceStatus, focusId]);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -267,6 +273,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
         <div className="graph-list-mode">
           <GraphTable
             embedded
+            evidenceStatus={evidenceStatus}
             onFocusConcept={(id) => {
               findGo(id);
             }}
@@ -355,6 +362,16 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
             </select>
             <p className="xs muted" style={{ marginTop: 6 }}>Shows only links recorded in that tissue. Perturbations also skip links recorded elsewhere; links with no tissue apply everywhere.</p>
           </div>
+          {KG.evidence_statuses.length ? (
+            <div className="card">
+              <h2 className="graph-panel-h">Evidence status</h2>
+              <select value={evidenceStatus} onChange={(e) => setEvidenceStatus(e.target.value)} aria-label="Limit links to an evidence status" style={{ width: "100%" }}>
+                <option value="">All evidence statuses</option>
+                {KG.evidence_statuses.map((s) => <option key={s} value={s}>{s.toLowerCase()}</option>)}
+              </select>
+              <p className="xs muted" style={{ marginTop: 6 }}>Filters links by the status recorded on the graph edge. This is not Gate C claim review. An empty result is a filter, not evidence of absence.</p>
+            </div>
+          ) : null}
           <div className="card">
             <h3>Perturbation</h3>
             {simNode && simId ? (
@@ -395,7 +412,9 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
           </div>
           {!nodes.length ? (
             <p className="empty" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
-              No concept types are selected. Choose at least one type in the panel to draw the graph.
+              {evidenceStatus
+                ? `No ${evidenceStatus.toLowerCase()} links among the selected concept types. This is a filter result, not evidence of absence.`
+                : "No concept types are selected. Choose at least one type in the panel to draw the graph."}
             </p>
           ) : null}
           <div className="graph-legend">
@@ -418,6 +437,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
       {viewMode === "graph" ? (
         <div className="graph-a11y-wrap">
           <GraphTable
+            evidenceStatus={evidenceStatus}
             onFocusConcept={(id) => {
               findGo(id);
             }}

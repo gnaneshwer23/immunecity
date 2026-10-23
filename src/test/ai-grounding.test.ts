@@ -257,4 +257,22 @@ describe("AI grounding", () => {
     expect(counterEvidenceBucketLabel(0)).toMatch(/honest empty/);
     expect(withCounter.text).toMatch(/COUNTER_EVIDENCE/);
   });
+  it("fails closed on a fabricated PMID that is not in the retrieval set", () => {
+    const g = graphContext("How does TNF drive rheumatoid arthritis?");
+    const fabricated = validateAnswerCitations("See PMID 99999999.", g);
+    expect(fabricated.ok).toBe(false);
+    expect(fabricated.inventedRelIds).toContain("PMID:99999999");
+    expect(fabricated.failReason).toMatch(/PMID/i);
+  });
+  it("does not call the model for personal medical advice", () => {
+    const q = "I should start prednisone for my arthritis";
+    expect(isPersonalClinical(q)).toBe(true);
+    expect(classifyAskQuery(q)).toBe("clinical_personal");
+    const prepared = prepareAsk(q);
+    expect(prepared.callModel).toBe(false);
+    expect(prepared.queryClass).toBe("clinical_personal");
+    expect(prepared.grounding.trace.abstained).toBe(true);
+    expect(prepared.replyText).toMatch(/clinician/i);
+    expect(prepareAsk("How do steroids suppress T cells?").queryClass).not.toBe("clinical_personal");
+  });
 });

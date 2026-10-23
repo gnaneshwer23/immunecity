@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const JOURNEYS = ["Learn", "Explore", "Investigate"];
-const DESTINATIONS = ["Platform", "Academy", "Cell atlas", "Knowledge graph", "Evidence", "Methods", "Reasoning & AI", "Research library", "Vision", "About", "Collaborate"];
+const DESTINATIONS = ["Platform", "Academy", "Cell atlas", "Knowledge graph", "Evidence", "Methods", "Reasoning & AI", "Research library", "Research", "Simulate", "Community", "Vision", "About", "Collaborate"];
 
 async function expectDesktopNav(page: Page) {
   const nav = page.getByRole("navigation", { name: "Primary" });
@@ -9,6 +9,10 @@ async function expectDesktopNav(page: Page) {
   for (const label of JOURNEYS) {
     await expect(nav.getByRole("button", { name: label, exact: true })).toBeVisible();
   }
+  await expect(nav.getByRole("link", { name: "Ask Immune", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Research", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Simulate", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Community", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Vision", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "About", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /More/i })).toHaveCount(0);

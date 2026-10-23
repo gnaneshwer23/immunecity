@@ -80,6 +80,7 @@ export const KG = {
   relationships,
   node_types: raw.node_types as NodeType[],
   core_spine: raw.core_spine as string[],
+  evidence_statuses: (Array.isArray(raw.evidence_statuses) ? raw.evidence_statuses : []) as string[],
   stats: raw.stats as { total_nodes: number; total_relationships: number },
 };
 

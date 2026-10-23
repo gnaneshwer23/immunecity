@@ -8,22 +8,24 @@ type Props = {
   embedded?: boolean;
   /** Focus a subject concept in the graph (list → graph handoff). */
   onFocusConcept?: (id: string) => void;
+  /** Edge evidence_status from the KG. Empty shows every status. */
+  evidenceStatus?: string;
 };
 
 /* Keyboard- and screen-reader-friendly alternative to the force graph. */
-export default function GraphTable({ embedded = false, onFocusConcept }: Props) {
+export default function GraphTable({ embedded = false, onFocusConcept, evidenceStatus = "" }: Props) {
   const [q, setQ] = useState("");
   const [limit, setLimit] = useState(50);
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
-    return KG.relationships.filter(
-      (r) =>
-        !t ||
-        `${byId[r.subject_id]?.name} ${r.relation} ${byId[r.object_id]?.name} ${r.mechanism ?? ""}`
-          .toLowerCase()
-          .includes(t),
-    );
-  }, [q]);
+    return KG.relationships.filter((r) => {
+      if (evidenceStatus && r.evidence_status !== evidenceStatus) return false;
+      if (!t) return true;
+      return `${byId[r.subject_id]?.name} ${r.relation} ${byId[r.object_id]?.name} ${r.mechanism ?? ""}`
+        .toLowerCase()
+        .includes(t);
+    });
+  }, [q, evidenceStatus]);
 
   const body = (
     <>
