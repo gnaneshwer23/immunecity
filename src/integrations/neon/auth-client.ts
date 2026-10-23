@@ -23,19 +23,53 @@ export type NeonAuthSession = {
 
 type AuthResult<T> = { data: T | null; error: { message: string } | null };
 
-function authBaseUrl(): string {
+/** One-time handoff Neon appends to the app callback after Google consent. */
+export const NEON_AUTH_SESSION_VERIFIER = "neon_auth_session_verifier";
+const VERIFIER_MAX = 8_192;
+
+export function configuredAuthUrl(): string {
   const raw =
     (typeof import.meta !== "undefined" && import.meta.env?.["VITE_NEON_AUTH_URL"]) ||
     (typeof process !== "undefined" && process.env?.["NEON_AUTH_BASE_URL"]) ||
     (typeof process !== "undefined" && process.env?.["VITE_NEON_AUTH_URL"]) ||
     "";
-  const url = String(raw).replace(/\/+$/, "");
+  return String(raw).replace(/\/+$/, "");
+}
+
+/**
+ * Browser calls go through the same-origin `/api/auth` proxy so the OAuth
+ * challenge cookie is first-party. Server calls use the Neon Auth base URL.
+ */
+function authBaseUrl(): string {
+  const url = configuredAuthUrl();
   if (!url) {
     throw new Error(
       "Missing VITE_NEON_AUTH_URL (or NEON_AUTH_BASE_URL). Set from Neon Console → Auth → Configuration.",
     );
   }
+  if (typeof window !== "undefined") return "/api/auth";
   return url;
+}
+
+export function sessionRequestPath(verifier?: string): string {
+  const token = verifier?.trim() ?? "";
+  if (!token || token.length > VERIFIER_MAX) return "/get-session";
+  return `/get-session?${NEON_AUTH_SESSION_VERIFIER}=${encodeURIComponent(token)}`;
+}
+
+/**
+ * Google sign-in and sign-up share this call. `requestSignUp` lets a new
+ * Google account be created. The database trigger still stores only `user`.
+ */
+export function googleSignInBody(callbackURL: string) {
+  return {
+    provider: "google" as const,
+    callbackURL,
+    errorCallbackURL: callbackURL,
+    newUserCallbackURL: callbackURL,
+    disableRedirect: true,
+    requestSignUp: true,
+  };
 }
 
 async function authFetch(path: string, init?: RequestInit): Promise<Response> {
@@ -69,9 +103,9 @@ async function parseJson<T>(res: Response): Promise<AuthResult<T>> {
 }
 
 export const neonAuth = {
-  async getSession(): Promise<AuthResult<{ session: NeonAuthSession | null; user: NeonAuthUser | null }>> {
+  async getSession(verifier?: string): Promise<AuthResult<{ session: NeonAuthSession | null; user: NeonAuthUser | null }>> {
     try {
-    const res = await authFetch("/get-session", { method: "GET" });
+    const res = await authFetch(sessionRequestPath(verifier), { method: "GET" });
     const parsed = await parseJson<{ session?: NeonAuthSession | null; user?: NeonAuthUser | null } | null>(res);
     if (parsed.error) return { data: null, error: parsed.error };
     const payload = parsed.data;
@@ -87,8 +121,8 @@ export const neonAuth = {
     }
   },
 
-  async getUser(): Promise<AuthResult<{ user: NeonAuthUser | null }>> {
-    const session = await neonAuth.getSession();
+  async getUser(verifier?: string): Promise<AuthResult<{ user: NeonAuthUser | null }>> {
+    const session = await neonAuth.getSession(verifier);
     if (session.error) return { data: null, error: session.error };
     return { data: { user: session.data?.user ?? null }, error: null };
   },
@@ -124,11 +158,11 @@ export const neonAuth = {
     return { data: { token: parsed.data.token }, error: null };
   },
 
-  /** Starts Google OAuth via Neon shared credentials; redirects when Auth returns a URL. */
+  /** Starts Google OAuth. New accounts stay members; the role trigger does not grant admin. */
   async signInWithGoogle(callbackURL: string): Promise<AuthResult<{ redirected: true }>> {
     const res = await authFetch("/sign-in/social", {
       method: "POST",
-      body: JSON.stringify({ provider: "google", callbackURL }),
+      body: JSON.stringify(googleSignInBody(callbackURL)),
     });
     const parsed = await parseJson<{ url?: string; redirect?: boolean }>(res);
     if (parsed.error) return { data: null, error: parsed.error };

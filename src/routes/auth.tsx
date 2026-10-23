@@ -3,36 +3,66 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { neonAuth } from "@/integrations/neon/auth-client";
+import { NEON_AUTH_SESSION_VERIFIER, neonAuth } from "@/integrations/neon/auth-client";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: zodValidator(z.object({ redirect: fallback(z.string(), "/").default("/") })),
+  validateSearch: zodValidator(z.object({
+    redirect: fallback(z.string(), "/").default("/"),
+    [NEON_AUTH_SESSION_VERIFIER]: fallback(z.string().max(8192), "").optional(),
+    error: fallback(z.string().max(80), "").optional(),
+  })),
   head: () => seoHead({ title: "Sign in — Immune Super Intelligence", description: "Sign in to Immune Super Intelligence. Educational account for community, workspace and saved concepts. Not clinical decision support.", path: "/auth", noIndex: true }),
   component: AuthPage,
 });
 
 const safePath = (p: string) => (p.startsWith("/") && !p.startsWith("//") ? p : "/");
 
+function googleReturnMessage(code: string): string {
+  if (code === "signup_disabled" || code === "unable_to_create_user") {
+    return "Google could not create the account. Try again, or register with email.";
+  }
+  if (code === "state_not_found" || code === "please_restart_the_process") {
+    return "Google sign-in expired. Please try Continue with Google again.";
+  }
+  return "Google sign-in could not be completed. Please try again.";
+}
+
 function AuthPage() {
-  const { redirect } = Route.useSearch();
+  const search = Route.useSearch();
+  const { redirect } = search;
+  const verifier = search[NEON_AUTH_SESSION_VERIFIER] ?? "";
+  const oauthError = search.error ?? "";
   const navigate = useNavigate();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
-  const [available, setAvailable] = useState(false);
+  const [available, setAvailable] = useState(true);
   const target = safePath(redirect);
 
   useEffect(() => {
-    neonAuth.getUser().then(({ data, error }) => {
+    let cancelled = false;
+    neonAuth.getUser(verifier || undefined).then(({ data, error }) => {
+      if (cancelled) return;
       setAvailable(!error);
       if (error) setMsg(error.message);
-      if (data?.user) navigate({ to: target });
+      else if (data?.user) {
+        navigate({ to: target, replace: true });
+        return;
+      } else if (verifier) {
+        setMsg("Google sign-in did not finish. Please try Continue with Google again.");
+      } else if (oauthError) {
+        setMsg(googleReturnMessage(oauthError));
+      }
+      if (verifier || oauthError) {
+        navigate({ to: "/auth", search: { redirect: target }, replace: true });
+      }
     });
-  }, [navigate, target]);
+    return () => { cancelled = true; };
+  }, [navigate, oauthError, target, verifier]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

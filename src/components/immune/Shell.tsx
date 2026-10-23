@@ -56,7 +56,7 @@ function YouTubeNavIcon({ className }: { className?: string }) {
       aria-label={YOUTUBE_CHANNEL_LABEL}
       title={YOUTUBE_CHANNEL_LABEL}
     >
-      <Youtube size={18} aria-hidden />
+      <Youtube size={16} aria-hidden />
     </a>
   );
 }
