@@ -11,7 +11,7 @@ export const Route = createFileRoute("/community/moderation")({
   head: () =>
     seoHead({
       title: `Moderation — Community — ${PRODUCT_NAME}`,
-      description: "Admin queue to hide or restore community posts and comments, with a recorded reason.",
+      description: "Moderator queue to hide or restore community posts and comments, with a recorded reason.",
       path: "/community/moderation",
       noIndex: true,
     }),
@@ -62,7 +62,7 @@ function ModerationPage() {
       <PageHead
         kicker="Community · Moderation"
         title="Review reports"
-        lede="Existing atlas admins can hide or restore a post or comment. The reason is stored with the action. Signup does not make someone a moderator."
+        lede="Moderators and administrators can hide or restore a post or comment. The reason is stored with the action. Signup does not make someone a moderator."
       />
       <p><Link to="/community">Back to topics</Link></p>
       {member === null ? <p><Link to="/auth" search={{ redirect: "/community/moderation" }}>Sign in</Link></p> : null}

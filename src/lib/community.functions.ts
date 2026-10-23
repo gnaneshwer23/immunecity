@@ -17,7 +17,7 @@ import {
   validateReportReason,
   type CitationLookup,
 } from "@/lib/community/rules";
-import { getDb, getSqlClient } from "@/lib/db.server";
+import { getDb } from "@/lib/db.server";
 import {
   communityComments,
   communityEntityLinks,
@@ -29,6 +29,7 @@ import {
   communityReports,
   communityTopics,
 } from "@/lib/db/schema.server";
+import { loadAccountPowers } from "@/lib/access/roles.server";
 import { checkRecord } from "@/lib/evidenceCheck";
 import { byId } from "@/lib/immune/engine";
 
@@ -53,15 +54,6 @@ function mapWriteError(err: unknown): Error {
   if (code === "23503") return new Error("That topic or post is no longer available.");
   if (code === "23514") return new Error("That value is not allowed.");
   return new Error("Community request failed.");
-}
-
-async function actorIsAdmin(userId: string): Promise<boolean> {
-  try {
-    const rows = await getSqlClient()`SELECT public.has_role(${userId}::uuid, 'admin'::public.app_role) AS ok`;
-    return Boolean(rows[0]?.ok);
-  } catch {
-    return false;
-  }
 }
 
 function knownConceptIds(): Set<string> {
@@ -487,8 +479,9 @@ export const followCommunityTopic = createServerFn({ method: "POST" })
 export const getCommunityModerationQueue = createServerFn({ method: "GET" })
   .middleware([requireNeonAuth])
   .handler(async ({ context }) => {
-    if (!UUID_RE.test(context.userId) || !(await actorIsAdmin(context.userId))) {
-      throw new Error("Only existing admins can moderate. Signup does not grant moderator.");
+    const powers = await loadAccountPowers(context.userId);
+    if (!powers.moderator) {
+      throw new Error("Only moderators can hide or restore posts. Signup does not grant moderator.");
     }
     const db = getDb();
     try {
@@ -530,8 +523,8 @@ export const moderateCommunityTarget = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const admin = UUID_RE.test(context.userId) && (await actorIsAdmin(context.userId));
-    const plan = planModeration({ actorIsAdmin: admin, action: data.action, reason: data.reason });
+    const powers = await loadAccountPowers(context.userId);
+    const plan = planModeration({ actorCanModerate: powers.moderator, action: data.action, reason: data.reason });
     if (!plan.ok) throw new Error(plan.error);
     const db = getDb();
     try {

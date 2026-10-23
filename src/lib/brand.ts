@@ -4,8 +4,13 @@ export const PRODUCT_SHORT = "ISI";
 /** Flagship interactive platform under the umbrella brand. */
 export const FLAGSHIP_NAME = "Immune City";
 export const TAGLINE = "Where Immunology Meets Advanced AI";
-/** Exact homepage H1 — includes the terminal period from the product brief. */
-export const HERO_HEADLINE = "Understand the immune system as a connected, investigable system.";
+/** Exact homepage H1 from the ISI 2.0 blueprint. */
+export const HERO_HEADLINE = "Understand the Immune System Like Never Before";
+/** Flagship graph entry from the homepage hero. */
+export const CITY_PATH = "/graph" as const;
+export const CITY_CTA = "Explore Immune City";
+export const COMMUNITY_PATH = "/community" as const;
+export const COMMUNITY_CTA = "Join Community";
 export const BRAND_EYEBROW = "Immunology × Scientific AI";
 export const PRODUCT_LINE = `${PRODUCT_NAME} — ${TAGLINE}`;
 /** Conversational assistant product name (umbrella brand stays PRODUCT_NAME). */
@@ -40,7 +45,7 @@ export const PROPOSITION =
 
 /** Short hero supporting line — keep the first viewport lean. */
 export const HERO_SUPPORT =
-  "Explore mechanisms, follow biological relationships, inspect evidence status and ask how immune responses connect across cells, tissues, diseases and therapies.";
+  "A curated map of immune relationships, with review status labelled. Educational resource — not clinical decision support.";
 /** Secondary homepage CTA → mechanism explorer. */
 export const INVESTIGATE_PATH = "/mechanism" as const;
 export const INVESTIGATE_CTA = "Investigate a Mechanism";

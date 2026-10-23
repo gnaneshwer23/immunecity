@@ -8,11 +8,14 @@ import { IsiCityBand } from "@/components/immune/IsiCityBand";
 import { WontClaimList } from "@/components/immune/marketing";
 import { CONTENT } from "@/data/content";
 import { VISION_MOTTO } from "@/data/vision";
+import { AUDIENCES } from "@/data/audiences";
 import {
   ASK_PUBLIC_LINE,
   BRAND_EYEBROW,
-  EXPLORE_CTA,
-  EXPLORE_PATH,
+  CITY_CTA,
+  CITY_PATH,
+  COMMUNITY_CTA,
+  COMMUNITY_PATH,
   HERO_HEADLINE,
   HERO_SUPPORT,
   HERO_TRUST,
@@ -249,13 +252,18 @@ function Home() {
           <p className="hero-description">{HERO_SUPPORT}</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary home-helix-primary">
-              <Link to="/ask">
-                Ask Immune <ArrowUpRight />
+              <Link to={CITY_PATH}>
+                {CITY_CTA} <ArrowRight />
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
-              <Link to={EXPLORE_PATH}>
-                {EXPLORE_CTA} <ArrowRight />
+              <Link to={COMMUNITY_PATH}>
+                {COMMUNITY_CTA} <ArrowRight />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
+              <Link to="/ask">
+                Ask Immune <ArrowUpRight />
               </Link>
             </Button>
           </div>
@@ -264,6 +272,42 @@ function Home() {
       </section>
 
       <div className="bio-content home-sections">
+        <nav className="home-audiences" aria-label="Start by audience">
+          {AUDIENCES.map((audience) => (
+            <Link key={audience.id} to={audience.to}>
+              <b>{audience.label}</b>
+              <span>{audience.note}</span>
+            </Link>
+          ))}
+        </nav>
+        <section className="bio-section" aria-labelledby="live-heading">
+          <div className="bio-section-heading">
+            <div>
+              <span className="mkt-section-label">On the platform</span>
+              <h2 id="live-heading">Academy, research, simulator, and community.</h2>
+            </div>
+            <p>Each card opens a live page. The review count below comes from the evidence service when it responds.</p>
+          </div>
+          <div className="home-live">
+            <Link to="/academy">
+              <b>Academy</b>
+              <span>Foundation lessons are navigable. Intermediate and advanced tracks are scaffolds, not finished courses.</span>
+            </Link>
+            <Link to="/research">
+              <b>Research</b>
+              <span>Journal metadata and candidate claims. Nothing enters the curated graph until a person reviews it.</span>
+            </Link>
+            <Link to="/simulator">
+              <b>Simulator</b>
+              <span>A 30-day teaching infection. Parameters are illustrative and not calibrated to patients.</span>
+            </Link>
+            <Link to="/community">
+              <b>Community</b>
+              <span>Educational discussion. Not clinical advice, and not part of the reviewed knowledge graph.</span>
+            </Link>
+          </div>
+          <HomeCoverageGlance />
+        </section>
         <nav className="isi-three" aria-label="Three ways in">
           <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>{ASK_PUBLIC_LINE}</span></Link>
           <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Cells, molecules, diseases and therapies — one page per concept.</span></Link>
@@ -393,7 +437,6 @@ function Home() {
               {SNAP.draftNodes} draft concepts and {SNAP.draftRelationships} draft links awaiting review.
             </p>
           </div>
-          <HomeCoverageGlance />
           <ul className="home-limit-list">
             <li>
               <strong>Claim-linked cites</strong>

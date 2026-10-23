@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { and, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import { z } from "zod";
 import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
-import { getDb, getSqlClient } from "@/lib/db.server";
+import { assertAdministrator, assertCanReview, loadAccountPowers } from "@/lib/access/roles.server";
+import { getDb } from "@/lib/db.server";
 import { evidenceAuditEvents, evidenceRecords } from "@/lib/db/schema.server";
 import { edgeByRel } from "./immune/engine";
 import { computeEvidenceUpdate } from "./immune/evidenceInvariants";
@@ -31,11 +32,6 @@ function auditReason(patch: Record<string, unknown>, set: Record<string, unknown
   if ("claimSupport" in set) return "claim_support_updated";
   if ("curation" in set) return "curation_updated";
   return "evidence_updated";
-}
-
-async function assertAdmin(userId: string) {
-  const rows = await getSqlClient()`SELECT public.has_role(${userId}::uuid, 'admin'::public.app_role) AS ok`;
-  if (!rows[0]?.ok) throw new Error("Only atlas admins can change curation records.");
 }
 
 function rowToClient(r: typeof evidenceRecords.$inferSelect) {
@@ -68,8 +64,15 @@ function rowToClient(r: typeof evidenceRecords.$inferSelect) {
 export const getMyRole = createServerFn({ method: "GET" })
   .middleware([requireNeonAuth])
   .handler(async ({ context }) => {
-    const rows = await getSqlClient()`SELECT public.has_role(${context.userId}::uuid, 'admin'::public.app_role) AS ok`;
-    return { role: rows[0]?.ok ? "admin" : "reader", email: context.email ?? null };
+    const powers = await loadAccountPowers(context.userId);
+    const role = powers.administrator ? "admin" : powers.reviewer ? "reviewer" : "user";
+    return {
+      role,
+      canReview: powers.reviewer,
+      canModerate: powers.moderator,
+      administrator: powers.administrator,
+      email: context.email ?? null,
+    };
   });
 
 /** Signed-in readers browse bounded pages (admin gates writes separately). */
@@ -140,7 +143,7 @@ export const importManifest = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => manifestSchema.parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    await assertAdministrator(context.userId);
     const rows = data.evidence_records.flatMap((r) =>
       r.evidence.map((e) => {
         const ref = e.source_ref ?? null;
@@ -182,7 +185,7 @@ export const runChecks = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => z.object({ ids: z.array(z.string().uuid()).max(8) }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    await assertCanReview(context.userId);
     const db = getDb();
     const recs = await db
       .select({
@@ -232,7 +235,7 @@ export const updateRecord = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    await assertCanReview(context.userId);
     const { id, ...patch } = data;
     const db = getDb();
     const [existing] = await db.select().from(evidenceRecords).where(eq(evidenceRecords.id, id)).limit(1);
@@ -281,7 +284,7 @@ export const suggestSources = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => z.object({ ids: z.array(z.string().uuid()).max(6) }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    await assertCanReview(context.userId);
     const db = getDb();
     const recs = await db
       .select({
@@ -307,7 +310,7 @@ export const suggestSources = createServerFn({ method: "POST" })
 export const previewP0ExemplarDrafts = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    await assertAdministrator(context.userId);
     const { previewP0ExemplarPubmedDrafts } = await import("@/lib/p0ExemplarDrafts.server");
     return previewP0ExemplarPubmedDrafts();
   });
@@ -319,7 +322,7 @@ export const previewP0ExemplarDrafts = createServerFn({ method: "POST" })
 export const seedP0ExemplarDrafts = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    await assertAdministrator(context.userId);
     const { seedP0ExemplarPubmedDrafts } = await import("@/lib/p0ExemplarDrafts.server");
     return seedP0ExemplarPubmedDrafts();
   });

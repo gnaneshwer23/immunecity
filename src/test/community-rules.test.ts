@@ -78,10 +78,10 @@ describe("community server rules", () => {
     if (good.ok) expect(good.ids).toEqual([id]);
   });
 
-  it("requires an admin and a reason before hide or restore", () => {
-    expect(planModeration({ actorIsAdmin: false, action: "hide", reason: "Spam and off topic." }).ok).toBe(false);
-    expect(planModeration({ actorIsAdmin: true, action: "hide", reason: "short" }).ok).toBe(false);
-    const ok = planModeration({ actorIsAdmin: true, action: "restore", reason: "Report was a duplicate." });
+  it("requires moderator power and a reason before hide or restore", () => {
+    expect(planModeration({ actorCanModerate: false, action: "hide", reason: "Spam and off topic." }).ok).toBe(false);
+    expect(planModeration({ actorCanModerate: true, action: "hide", reason: "short" }).ok).toBe(false);
+    const ok = planModeration({ actorCanModerate: true, action: "restore", reason: "Report was a duplicate." });
     expect(ok).toEqual({ ok: true, action: "restore", reason: "Report was a duplicate." });
   });
 

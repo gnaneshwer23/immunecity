@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import AskAtlas from "./AskAtlas";
+import SiteSearch from "./SiteSearch";
 import ScientificInspector from "./ScientificInspector";
 import { JourneyNext } from "./page";
 import {
@@ -306,6 +307,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <Logo />
           <span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span>
         </Link>
+        <SiteSearch />
         <nav className="journey-nav" aria-label="Primary">
           {JOURNEY_NAV.map((g) => (
             <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />

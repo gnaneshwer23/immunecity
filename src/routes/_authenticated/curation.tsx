@@ -61,6 +61,8 @@ function Curation() {
   const seedP0Fn = useServerFn(seedP0ExemplarDrafts);
 
   const [role, setRole] = useState<string | null>(null);
+  const [canReview, setCanReview] = useState(false);
+  const [administrator, setAdministrator] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [rows, setRows] = useState<Rec[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +75,7 @@ function Curation() {
   const [filter, setFilter] = useState({ q: "", status: "all", type: "all", curation: "all" });
   const [p0Only, setP0Only] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
-  const isAdmin = role === "admin";
+  const isAdmin = administrator;
   const p0RelIds = useMemo(() => new Set(EXEMPLAR_CURATOR_TARGETS.map((t) => t.relId)), []);
 
   const load = useCallback(async () => {
@@ -91,7 +93,17 @@ function Curation() {
   }, [listFn, filter, after]);
 
   useEffect(() => {
-    roleFn().then((r) => { setRole(r.role); setEmail(r.email); }).catch(() => { setRole(null); setMsg("Your access level could not be loaded. Editing is unavailable."); });
+    roleFn().then((r) => {
+      setRole(r.role);
+      setCanReview(r.canReview);
+      setAdministrator(r.administrator);
+      setEmail(r.email);
+    }).catch(() => {
+      setRole(null);
+      setCanReview(false);
+      setAdministrator(false);
+      setMsg("Your access level could not be loaded. Editing is unavailable.");
+    });
   }, [roleFn]);
   useEffect(() => {
     load();
@@ -287,7 +299,7 @@ function Curation() {
         lede="Two separate gates: (1) identifier verification checks that a PMID/DOI resolves in PubMed or Crossref metadata; (2) claim approval maps that source to a directional relationship and assesses claim_support. Identifier verification alone never publishes a claim. Published cites support education — not treatment recommendations."
       />
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
-        <span className="xs muted">Signed in as {email ?? "…"} · {isAdmin ? "admin" : "read-only"}</span>
+        <span className="xs muted">Signed in as {email ?? "…"} · {administrator ? "administrator" : canReview ? "scientific reviewer" : role ? "member" : "…"}</span>
         <button className="btn sm" onClick={async () => { await neonAuth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
       </div>
       <p className="callout" style={{ marginBottom: 20 }} role="note">
@@ -302,9 +314,9 @@ function Curation() {
         Do <strong>not</strong> invent a contradicts row to “populate” the UI; leave empty when polarity is unclear.
         Prod currently has Chemnitz as <code>partial</code> on <code>REL-R012-suppresses-C015</code> and <strong>0</strong> contradicts (honest empty).
       </p>
-      {role && !isAdmin ? (
+      {role && !canReview ? (
         <p className="callout" style={{ marginBottom: 20 }}>
-          <strong>Read-only view.</strong> Importing manifests and approving records is limited to the atlas admin.
+          <strong>Read-only view.</strong> The review queue is limited to scientific reviewers and administrators. Signup does not grant that role.
         </p>
       ) : null}
 
@@ -409,7 +421,7 @@ function Curation() {
         <div className="ev-stat"><b>{stats.approved}</b><span>approved rows</span></div>
       </div>
 
-      {isAdmin ? (
+      {canReview ? (
         <div className="row" style={{ marginTop: 14 }}>
           <button className="btn primary" disabled={!!progress || !stats.pending} onClick={() => check("pending")}>Check {stats.pending} unchecked</button>
           <button className="btn" disabled={!!progress} onClick={() => check("retry")}>Retry unreachable</button>
@@ -481,7 +493,7 @@ function Curation() {
                       <div><button className="nodelink xs" onClick={() => setOpen(open === r.id ? null : r.id)}>{open === r.id ? "Hide" : "Details"}</button></div>
                     </td>
                     <td>
-                      {isAdmin ? (
+                      {canReview ? (
                         <div className="row" style={{ gap: 4 }}>
                           <button className={`chip${r.curation === "approved" ? " on" : ""}`} onClick={() => patch(r.id, { curation: r.curation === "approved" ? "unreviewed" : "approved" })}>Approve</button>
                           <button className={`chip${r.curation === "rejected" ? " on" : ""}`} onClick={() => patch(r.id, { curation: r.curation === "rejected" ? "unreviewed" : "rejected" })}>Reject</button>
@@ -490,7 +502,7 @@ function Curation() {
                     </td>
                   </tr>
                   {open === r.id ? (
-                    <tr><td colSpan={5}><RecordDetail r={r} isAdmin={isAdmin} onSave={(p) => patch(r.id, p, true)} onClaim={(p) => patch(r.id, p)} /></td></tr>
+                    <tr><td colSpan={5}><RecordDetail r={r} isAdmin={canReview} onSave={(p) => patch(r.id, p, true)} onClaim={(p) => patch(r.id, p)} /></td></tr>
                   ) : null}
                 </Fragment>
               ))}

@@ -96,11 +96,11 @@ export function validateReportReason(reason: string): { ok: true; reason: string
   return { ok: true, reason: text };
 }
 
-export function planModeration(input: { actorIsAdmin: boolean; action: string; reason: string }):
+export function planModeration(input: { actorCanModerate: boolean; action: string; reason: string }):
   | { ok: true; action: "hide" | "restore"; reason: string }
   | { ok: false; error: string } {
-  if (!input.actorIsAdmin) {
-    return { ok: false, error: "Only existing admins can moderate. Signup does not grant moderator." };
+  if (!input.actorCanModerate) {
+    return { ok: false, error: "Only moderators can hide or restore posts. Signup does not grant moderator." };
   }
   if (input.action !== "hide" && input.action !== "restore") {
     return { ok: false, error: "Moderation action must be hide or restore." };

@@ -1,6 +1,6 @@
 import { integer, jsonb, pgEnum, pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
 
-export const appRoleEnum = pgEnum("app_role", ["admin", "user"]);
+export const appRoleEnum = pgEnum("app_role", ["admin", "user", "moderator", "reviewer"]);
 
 export const userRoles = pgTable(
   "user_roles",
