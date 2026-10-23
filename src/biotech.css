@@ -671,13 +671,13 @@ html[data-theme][data-theme] {
 .marketing-compact-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 500; }
 .marketing-compact-links a.collab-action { color: var(--primary); font-weight: 500; }
 
-/* Wide: one desktop bar. Narrow: hide that bar and show the menu toggle. */
-@media (min-width: 1101px) {
+/* Wide: one desktop bar. Narrower than 1200px the full row overlaps, so use the menu. */
+@media (min-width: 1200px) {
   .marketing-topbar .marketing-nav-toggle { display: none !important; }
 }
-@media (max-width: 1100px) {
+@media (max-width: 1199px) {
   .marketing-nav, .journey-nav { display: none; }
-  /* Override atlas/biotech rule that hides .nav-toggle above 800px — kills the 801–1100 dead zone */
+  /* Override atlas/biotech rule that hides .nav-toggle above 800px — kills the 801–1199 dead zone */
   .marketing-topbar .marketing-nav-toggle { display: inline-grid !important; order: 4; margin-left: auto; }
   .marketing-topbar { height: auto; }
 }
@@ -2238,21 +2238,21 @@ html[data-theme='light'] .pillar-menu { background: var(--surface); box-shadow: 
 /* Journey header — one row: primary destinations, then quieter organisation links. */
 .journey-nav { display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: nowrap; justify-content: flex-start; min-width: 0; }
 .journey-main, .journey-org { display: flex; align-items: center; flex-wrap: nowrap; min-width: 0; }
-.journey-org { margin-left: auto; padding-left: 10px; border-left: 1px solid var(--border); flex-shrink: 0; }
+.journey-org { padding-left: 10px; border-left: 1px solid var(--border); flex-shrink: 0; }
 .journey-nav .pillar-trigger { padding: 8px 8px; }
 .journey-nav .marketing-nav-link { color: var(--muted); padding: 8px 8px; }
-.journey-org .marketing-nav-link { font-size: 12.5px; font-weight: 500; padding: 6px 8px; }
+.journey-org .marketing-nav-link { font-size: 12.5px; font-weight: 500; padding: 8px 8px; }
 .journey-nav .marketing-nav-link:hover, .journey-nav .marketing-nav-link.current { color: var(--text); }
-.journey-nav .youtube-nav-link { display: inline-flex; align-items: center; justify-content: center; padding: 6px; line-height: 0; color: var(--muted); }
+.journey-nav .youtube-nav-link { display: inline-flex; align-items: center; justify-content: center; padding: 8px 6px; line-height: 0; color: var(--muted); }
 .journey-sep { width: 1px; height: 16px; background: var(--border-strong); margin: 0 6px; flex-shrink: 0; }
 @media (max-width: 1360px) {
   .journey-nav { gap: 6px; }
   .journey-nav .pillar-trigger { padding: 8px 6px; font-size: 12.5px; }
   .journey-nav .journey-direct { padding-left: 6px; padding-right: 6px; }
   .journey-org { padding-left: 6px; }
-  .journey-org .marketing-nav-link { padding: 6px; }
+  .journey-org .marketing-nav-link { padding: 8px 6px; }
 }
-@media (max-width: 1100px) { .journey-nav { display: none; } }
+@media (max-width: 1199px) { .journey-nav { display: none; } }
 .marketing-compact-group { display: grid; gap: 2px; margin-bottom: 14px; }
 .marketing-compact-group .marketing-compact-label { margin: 4px 0 6px; }
 
