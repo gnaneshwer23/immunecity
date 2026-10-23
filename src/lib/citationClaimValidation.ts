@@ -156,3 +156,50 @@ export function provisionalTreatedAsGateC(window: string, pmidIsProvisionalOnly:
     window,
   );
 }
+
+/**
+ * Species and model-system phrases used only to detect a setting transfer.
+ * The knowledge graph has no species field; this is not a filter or a column.
+ */
+const BIO_CONTEXT_GROUPS: { id: string; pattern: RegExp }[] = [
+  { id: "human", pattern: /\b(?:humans?|patients?)\b/i },
+  { id: "mouse", pattern: /\b(?:mouse|mice|murine)\b/i },
+  { id: "rat", pattern: /\brats?\b/i },
+  { id: "zebrafish", pattern: /\bzebrafish\b/i },
+  { id: "macaque", pattern: /\bmacaques?\b/i },
+  { id: "nonhuman-primate", pattern: /\bnon-?human primates?\b/i },
+  { id: "canine", pattern: /\bcanines?\b/i },
+  { id: "porcine", pattern: /\bporcine\b/i },
+  { id: "rabbit", pattern: /\brabbits?\b/i },
+  { id: "in-vitro", pattern: /\bin vitro\b/i },
+  { id: "in-vivo", pattern: /\bin vivo\b/i },
+];
+
+/** Context ids mentioned in free text. Order follows the detector list. */
+export function biologicalContextIds(text: string): string[] {
+  const ids: string[] = [];
+  for (const group of BIO_CONTEXT_GROUPS) {
+    if (group.pattern.test(text)) ids.push(group.id);
+  }
+  return ids;
+}
+
+/** Settings the question requires that the retrieved evidence text does not establish. */
+export function unestablishedBiologicalContexts(question: string, evidenceCorpus: string): string[] {
+  const established = new Set(biologicalContextIds(evidenceCorpus));
+  return biologicalContextIds(question).filter((id) => !established.has(id));
+}
+
+/** Answer text that refuses to transfer a claim into an unestablished setting. */
+export const CONTEXT_TRANSFER_QUALIFIER =
+  /\b(does not establish|do not establish|not established|not shown|may not apply|does not apply|cannot be transferred|do not transfer|different biological setting|another biological setting|context gap)\b/i;
+
+/**
+ * Context ids asserted in `windowText` that `establishedText` does not contain.
+ * A qualifier in the same window suppresses the mismatch (qualify, don't transfer).
+ */
+export function biologicalContextMismatches(windowText: string, establishedText: string): string[] {
+  if (CONTEXT_TRANSFER_QUALIFIER.test(windowText)) return [];
+  const established = new Set(biologicalContextIds(establishedText));
+  return biologicalContextIds(windowText).filter((id) => !established.has(id));
+}

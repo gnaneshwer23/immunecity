@@ -10,6 +10,7 @@ import { inspect } from "@/lib/immune/inspector";
 import { ASK_NAME } from "@/lib/brand";
 import { CAPABILITY_STATUS_LABEL } from "@/data/capabilityStatus";
 import {
+  hideGraphScorePhrases,
   matchConceptSuggestions,
   prepareAsk,
   runExplanationAction,
@@ -110,7 +111,7 @@ function Inspector({ pick, onClose }: { pick: Pick; onClose: () => void }) {
       <>
         <div className="ask-insp-head"><strong>{byId[e.subject_id]?.name}</strong><em>{human(e.relation)}</em><strong>{byId[e.object_id]?.name}</strong></div>
         <p className="xs">{e.mechanism}</p>
-        <p className="xs muted">Confidence: {e.confidence} · Evidence: {e.evidence_status}{e.location ? ` · Tissue: ${e.location}` : ""}</p>
+        <p className="xs muted">Evidence: {e.evidence_status || "unspecified"}{e.location ? ` · Tissue: ${e.location}` : ""}</p>
         <div className="ask-insp-label">Sources</div>
         <EdgeReference edge={e} />
         <div className="ask-insp-actions">
@@ -386,7 +387,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           </div>
         ) : null}
         {messages.map((m, i) => {
-          const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
+          const rawText = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
+          const text = m.role === "assistant" ? hideGraphScorePhrases(rawText) : rawText;
           const prevUser = [...messages.slice(0, i)].reverse().find((x) => x.role === "user");
           const prevUserText = prevUser?.parts.map((p) => (p.type === "text" ? p.text : "")).join("").trim() ?? "";
           // Same deterministic routing as the server: refusals and no-match replies never call the model.
