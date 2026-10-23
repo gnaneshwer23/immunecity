@@ -39,6 +39,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TherapyRouteImport } from './routes/therapy'
 import { Route as VisionRouteImport } from './routes/vision'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticated/curation'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
 import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
@@ -208,6 +209,11 @@ const VisionRoute = VisionRouteImport.update({
   path: '/vision',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCurationRoute = AuthenticatedCurationRouteImport.update({
   id: '/curation',
   path: '/curation',
@@ -294,9 +300,9 @@ const CommunityProfileIndexRoute = CommunityProfileIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityProfileUserIdRoute = CommunityProfileUserIdRouteImport.update({
-  id: '/$userId',
-  path: '/$userId',
-  getParentRoute: () => CommunityProfileRoute,
+  id: '/community/profile/$userId',
+  path: '/community/profile/$userId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityTopicSlugRoute = CommunityTopicSlugRouteImport.update({
   id: '/community/topic/$slug',
@@ -334,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
+  '/workspace': typeof WorkspaceRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
@@ -384,6 +391,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
+  '/workspace': typeof WorkspaceRoute
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/therapy': typeof TherapyRoute
   '/vision': typeof VisionRoute
+  '/workspace': typeof WorkspaceRoute
   '/_authenticated/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
@@ -488,6 +497,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/therapy'
     | '/vision'
+    | '/workspace'
     | '/curation'
     | '/api/ask'
     | '/atlas/$id'
@@ -538,6 +548,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/therapy'
     | '/vision'
+    | '/workspace'
     | '/curation'
     | '/api/ask'
     | '/atlas/$id'
@@ -589,6 +600,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/therapy'
     | '/vision'
+    | '/workspace'
     | '/_authenticated/curation'
     | '/api/ask'
     | '/atlas/$id'
@@ -641,6 +653,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TherapyRoute: typeof TherapyRoute
   VisionRoute: typeof VisionRoute
+  WorkspaceRoute: typeof WorkspaceRoute
   ApiAskRoute: typeof ApiAskRouteWithChildren
   AtlasIdRoute: typeof AtlasIdRoute
   CommunityJournalClubsRoute: typeof CommunityJournalClubsRoute
@@ -655,6 +668,7 @@ export interface RootRouteChildren {
   MechanismIndexRoute: typeof MechanismIndexRoute
   PipelineIndexRoute: typeof PipelineIndexRoute
   CommunityPostPostIdRoute: typeof CommunityPostPostIdRoute
+  CommunityProfileUserIdRoute: typeof CommunityProfileUserIdRoute
   CommunityTopicSlugRoute: typeof CommunityTopicSlugRoute
   CommunityProfileIndexRoute: typeof CommunityProfileIndexRoute
 }
@@ -871,6 +885,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VisionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/curation': {
       id: '/_authenticated/curation'
       path: '/curation'
@@ -992,10 +1013,10 @@ declare module '@tanstack/react-router' {
     }
     '/community/profile/$userId': {
       id: '/community/profile/$userId'
-      path: '/$userId'
+      path: '/community/profile/$userId'
       fullPath: '/community/profile/$userId'
       preLoaderRoute: typeof CommunityProfileUserIdRouteImport
-      parentRoute: typeof CommunityProfileRoute
+      parentRoute: typeof rootRouteImport
     }
     '/community/topic/$slug': {
       id: '/community/topic/$slug'
@@ -1060,6 +1081,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TherapyRoute: TherapyRoute,
   VisionRoute: VisionRoute,
+  WorkspaceRoute: WorkspaceRoute,
   ApiAskRoute: ApiAskRouteWithChildren,
   AtlasIdRoute: AtlasIdRoute,
   CommunityJournalClubsRoute: CommunityJournalClubsRoute,
@@ -1074,6 +1096,7 @@ const rootRouteChildren: RootRouteChildren = {
   MechanismIndexRoute: MechanismIndexRoute,
   PipelineIndexRoute: PipelineIndexRoute,
   CommunityPostPostIdRoute: CommunityPostPostIdRoute,
+  CommunityProfileUserIdRoute: CommunityProfileUserIdRoute,
   CommunityTopicSlugRoute: CommunityTopicSlugRoute,
   CommunityProfileIndexRoute: CommunityProfileIndexRoute,
 }

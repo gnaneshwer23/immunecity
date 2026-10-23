@@ -2253,6 +2253,30 @@ html[data-theme='light'] .pillar-menu { background: var(--surface); box-shadow: 
 .header-signin:hover, .header-account:hover { background: var(--primary-hover); color: var(--primary-foreground); text-decoration: none; }
 .header-account { max-width: 180px; }
 .header-account span { overflow: hidden; text-overflow: ellipsis; }
+.header-account-slot { position: relative; margin-left: auto; flex-shrink: 0; }
+.header-account-slot .header-account { margin-left: 0; }
+button.header-account { border: 0; cursor: pointer; font: inherit; }
+.header-account-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 80; min-width: 180px; padding: 8px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-lg); display: grid; gap: 2px;
+}
+.header-account-menu a {
+  display: block; padding: 8px 10px; border-radius: 6px; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600;
+}
+.header-account-menu a:hover, .header-account-menu a:focus-visible,
+.header-account-menu .header-logout:hover, .header-account-menu .header-logout:focus-visible { background: color-mix(in oklab, var(--primary) 8%, transparent); outline: none; }
+.header-account-menu .header-logout {
+  display: block; width: 100%; text-align: left; padding: 8px 10px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.marketing-compact-links .header-logout {
+  display: block; width: 100%; text-align: left; margin-top: 4px; padding: 12px 10px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--text); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.marketing-compact-links .header-logout:hover, .marketing-compact-links .header-logout:focus-visible {
+  background: var(--primary-soft); color: var(--primary); outline: none;
+}
+.marketing-compact-nav .header-account-slot { margin: 8px 0 0; align-self: flex-start; }
 .community-unread-count {
   display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px;
   border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: 10px; line-height: 1;

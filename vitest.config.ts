@@ -9,7 +9,7 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     // bun:test module. These files are run with `bun test`, not the vitest pool.
-    exclude: ["src/test/phase2-scientific-ux.test.ts", "src/test/community-phase3.test.ts"],
+    exclude: ["src/test/phase2-scientific-ux.test.ts", "src/test/community-phase3.test.ts", "src/test/community-phase4.test.ts"],
     pool: "forks",
     fileParallelism: false,
     maxWorkers: 1,

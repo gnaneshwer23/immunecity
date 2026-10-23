@@ -561,3 +561,98 @@ export function paperStatusForClub(input: {
     title: null,
   };
 }
+
+/** Concept saves live in their own table. They are not community post saves. */
+export const CONCEPT_SAVE_TABLE = "concept_saves" as const;
+
+export type WorkspaceConceptSave = { userId: string; conceptId: string };
+export type WorkspaceTopicFollow = { userId: string; slug: string; title: string };
+export type WorkspacePostRow = { id: string; title: string; authorId: string; status: string };
+export type WorkspacePostFollow = { userId: string; postId: string };
+
+/** Accept a signed-in member and a concept id that already exists. Never adds a graph node. */
+export function planConceptSave(input: {
+  userId: string | null | undefined;
+  conceptId: string;
+  known: ReadonlySet<string>;
+}): { ok: true; userId: string; conceptId: string } | { ok: false; error: string } {
+  const userId = input.userId?.trim() ?? "";
+  if (!userId) return { ok: false, error: "Sign in to save a concept." };
+  const conceptId = input.conceptId.trim();
+  if (!conceptId || !input.known.has(conceptId)) {
+    return {
+      ok: false,
+      error: `Unknown concept id ${conceptId || "(blank)"}. Saving a concept cannot create a knowledge-graph node.`,
+    };
+  }
+  return { ok: true, userId, conceptId };
+}
+
+/** Toggle one member's save. Another member's rows stay. An unknown id leaves the list unchanged. */
+export function toggleMemberConceptSave(
+  saves: readonly WorkspaceConceptSave[],
+  input: { userId: string | null | undefined; conceptId: string; known: ReadonlySet<string> },
+): { ok: true; saved: boolean; saves: WorkspaceConceptSave[] } | { ok: false; error: string; saves: readonly WorkspaceConceptSave[] } {
+  const plan = planConceptSave(input);
+  if (!plan.ok) return { ok: false, error: plan.error, saves };
+  const exists = saves.some((row) => row.userId === plan.userId && row.conceptId === plan.conceptId);
+  const next = exists
+    ? saves.filter((row) => !(row.userId === plan.userId && row.conceptId === plan.conceptId))
+    : [...saves, { userId: plan.userId, conceptId: plan.conceptId }];
+  return { ok: true, saved: !exists, saves: next };
+}
+
+export function conceptIdsSavedBy(saves: readonly WorkspaceConceptSave[], userId: string): string[] {
+  const ids: string[] = [];
+  for (const row of saves) {
+    if (row.userId !== userId || ids.includes(row.conceptId)) continue;
+    ids.push(row.conceptId);
+  }
+  return ids;
+}
+
+/** One member's workspace. Other members' saves, follows and posts are left out. Unknown concept ids are dropped. */
+export function workspaceForMember(input: {
+  userId: string;
+  conceptSaves: readonly WorkspaceConceptSave[];
+  topicFollows: readonly WorkspaceTopicFollow[];
+  posts: readonly WorkspacePostRow[];
+  postFollows: readonly WorkspacePostFollow[];
+  known: ReadonlySet<string>;
+}): {
+  concepts: { id: string }[];
+  topics: { slug: string; title: string }[];
+  discussions: { id: string; title: string; wrote: boolean; follows: boolean; hidden: boolean }[];
+} {
+  const concepts: { id: string }[] = [];
+  const seenConcepts = new Set<string>();
+  for (const row of input.conceptSaves) {
+    if (row.userId !== input.userId || !input.known.has(row.conceptId) || seenConcepts.has(row.conceptId)) continue;
+    seenConcepts.add(row.conceptId);
+    concepts.push({ id: row.conceptId });
+  }
+  const topics: { slug: string; title: string }[] = [];
+  const seenTopics = new Set<string>();
+  for (const row of input.topicFollows) {
+    if (row.userId !== input.userId || seenTopics.has(row.slug)) continue;
+    seenTopics.add(row.slug);
+    topics.push({ slug: row.slug, title: row.title });
+  }
+  const followed = new Set(input.postFollows.filter((row) => row.userId === input.userId).map((row) => row.postId));
+  const discussions: { id: string; title: string; wrote: boolean; follows: boolean; hidden: boolean }[] = [];
+  const seenPosts = new Set<string>();
+  for (const post of input.posts) {
+    const wrote = post.authorId === input.userId;
+    const follows = followed.has(post.id);
+    if ((!wrote && !follows) || seenPosts.has(post.id)) continue;
+    seenPosts.add(post.id);
+    discussions.push({
+      id: post.id,
+      title: post.title,
+      wrote,
+      follows,
+      hidden: post.status === "hidden",
+    });
+  }
+  return { concepts, topics, discussions };
+}

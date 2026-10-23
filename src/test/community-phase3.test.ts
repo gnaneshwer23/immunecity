@@ -110,7 +110,17 @@ describe("header", () => {
     expect(shell).toContain("header-signin");
     expect(shell).toContain("AskAtlas");
     expect(shell).not.toContain("SiteSearch");
-    expect(shell).not.toContain("My Workspace");
+    const account = shell.slice(shell.indexOf("function HeaderAccount"), shell.indexOf("function PillarMenu"));
+    expect(account).toContain('to="/auth"');
+    expect(account).toContain("header-signin");
+    const db = readFileSync(resolve(process.cwd(), "src/lib/db.server.ts"), "utf8");
+    expect(db).not.toMatch(/from ["']postgres["']/);
+    expect(db).not.toMatch(/from ["']drizzle-orm\/postgres-js["']/);
+    expect(db).toContain('import(/* @vite-ignore */ "postgres")');
+    expect(account).toContain("My Workspace");
+    expect(account).toContain('to="/workspace"');
+    expect(header).not.toContain("My Workspace");
+    expect(header).not.toContain('to="/workspace"');
     for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box", "Users"]) {
       expect(shell).toContain(icon);
     }
@@ -254,6 +264,10 @@ describe("journal clubs", () => {
     expect(reader).not.toMatch(/\.insert\(evidenceRecords|\.update\(evidenceRecords|\.delete\(evidenceRecords/);
     expect(server).not.toMatch(/user_roles|membershipRole:\s*"moderator"/);
     const shell = readFileSync(resolve(process.cwd(), "src/components/immune/Shell.tsx"), "utf8");
-    expect(shell).not.toContain("My Workspace");
+    const account = shell.slice(shell.indexOf("function HeaderAccount"), shell.indexOf("function PillarMenu"));
+    const header = shell.slice(shell.indexOf("<header"), shell.indexOf("</header>"));
+    expect(account).toContain("My Workspace");
+    expect(header).not.toContain("My Workspace");
+    expect(header).not.toContain('to="/workspace"');
   });
 });

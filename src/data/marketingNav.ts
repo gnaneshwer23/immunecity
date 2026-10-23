@@ -151,7 +151,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
 /**
  * Direct header destinations beside the journey menus.
  * Ask Immune stays inside Learn. It is not a top-level header item.
- * My Workspace is intentionally absent.
+ * My Workspace stays out of this row. Signed-in members open it from the account menu.
  */
 export const JOURNEY_PRIMARY = [
   { label: "Research", path: "/research" },

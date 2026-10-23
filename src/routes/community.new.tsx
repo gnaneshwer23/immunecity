@@ -11,6 +11,8 @@ import { POST_KINDS, POST_KIND_LABEL } from "@/lib/community/rules";
 import { byId } from "@/lib/immune/engine";
 import { PRODUCT_NAME } from "@/lib/brand";
 
+const DISCUSSION_DRAFT_KEY = "isi-discussion-draft";
+
 export const Route = createFileRoute("/community/new")({
   validateSearch: zodValidator(
     z.object({
@@ -44,6 +46,34 @@ function NewPostPage() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [available, setAvailable] = useState(true);
+
+  useEffect(() => {
+    if (search.concept) {
+      setConcept(search.concept);
+      return;
+    }
+    let raw = "";
+    try {
+      raw = sessionStorage.getItem(DISCUSSION_DRAFT_KEY) ?? "";
+      if (raw) sessionStorage.removeItem(DISCUSSION_DRAFT_KEY);
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    let conceptId = "";
+    let topic = search.topic;
+    try {
+      const parsed = JSON.parse(raw) as { topic?: unknown; concept?: unknown };
+      if (typeof parsed.concept === "string") conceptId = parsed.concept.slice(0, 40);
+      if (typeof parsed.topic === "string") topic = parsed.topic.slice(0, 80);
+    } catch {
+      return;
+    }
+    if (!conceptId) return;
+    setConcept(conceptId);
+    if (topic) setTopicSlug(topic);
+    navigate({ to: "/community/new", search: { topic: topic || "", concept: conceptId }, replace: true });
+  }, [search.concept, search.topic, navigate]);
 
   useEffect(() => {
     listCommunityTopics().then((d) => {
@@ -82,7 +112,15 @@ function NewPostPage() {
       <CommunityNote />
       {!available ? <p className="callout">Community storage is not available on this database yet.</p> : null}
       {member === null ? (
-        <p><Link to="/auth" search={{ redirect: "/community/new" }}>Sign in to post</Link></p>
+        <p><Link to="/auth" search={{ redirect: "/community/new" }} onClick={() => {
+          const id = concept.trim();
+          if (!id) return;
+          try {
+            sessionStorage.setItem(DISCUSSION_DRAFT_KEY, JSON.stringify({ topic: topicSlug, concept: id }));
+          } catch {
+            /* Sign-in still returns to this page. */
+          }
+        }}>Sign in to post</Link></p>
       ) : null}
       {member ? (
         <form className="card community-card community-form" onSubmit={onSubmit}>

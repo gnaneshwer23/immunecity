@@ -67,7 +67,11 @@ describe("marketing IA wiring", () => {
     expect(shell).not.toContain("topbar-cta");
     expect(shell).not.toContain("marketing-compact-cta");
     expect(shell).not.toContain("EXPLORE_CTA");
-    expect(shell).not.toContain("My Workspace");
+    const account = shell.slice(shell.indexOf("function HeaderAccount"), shell.indexOf("function PillarMenu"));
+    expect(account).toContain("My Workspace");
+    expect(account).toContain('to="/workspace"');
+    expect(header).not.toContain("My Workspace");
+    expect(header).not.toContain('to="/workspace"');
     expect(header).not.toContain("Ask Immune");
     expect(header).toContain("HeaderAccount");
     expect(shell).toContain("header-signin");

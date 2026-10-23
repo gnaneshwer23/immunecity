@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { neonAuth } from "@/integrations/neon/auth-client";
 import { BookOpen, Box, ChevronDown, FlaskConical, Menu, MessageSquare, Network, Search, Shield, UserRound, Users, X, Youtube } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { useMember, useUnreadCount } from "@/components/immune/community/chrome";
@@ -74,16 +75,73 @@ function Logo() {
   );
 }
 
-function HeaderAccount({ pathname }: { pathname: string }) {
+function HeaderAccount({ pathname, variant = "bar", onNavigate }: {
+  pathname: string;
+  variant?: "bar" | "compact";
+  onNavigate?: () => void;
+}) {
   const member = useMember();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  async function logout() {
+    setMenuOpen(false);
+    onNavigate?.();
+    try {
+      const { error } = await neonAuth.signOut();
+      if (error) return;
+    } catch {
+      return;
+    }
+    window.location.assign("/");
+  }
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (e: MouseEvent) => { if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [menuOpen]);
   if (member) {
     const raw = (member.name ?? "").trim();
     const label = raw && !raw.includes("@") ? raw.slice(0, 22) : "Account";
+    if (variant === "compact") {
+      return (
+        <>
+          <span className="header-account">
+            <UserRound size={16} aria-hidden />
+            <span>{label}</span>
+          </span>
+          <Link to="/community/profile" onClick={onNavigate}>Profile</Link>
+          <Link to="/workspace" onClick={onNavigate}>My Workspace</Link>
+          <button type="button" className="header-logout" onClick={logout}>Logout</button>
+        </>
+      );
+    }
     return (
-      <Link className="header-account" to="/community/profile">
-        <UserRound size={16} aria-hidden />
-        <span>{label}</span>
-      </Link>
+      <div className="header-account-slot" ref={menuRef}>
+        <button
+          type="button"
+          className="header-account"
+          aria-expanded={menuOpen}
+          aria-haspopup="menu"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <UserRound size={16} aria-hidden />
+          <span>{label}</span>
+        </button>
+        {menuOpen ? (
+          <div className="header-account-menu" role="menu" aria-label="Account">
+            <Link role="menuitem" to="/community/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
+            <Link role="menuitem" to="/workspace" onClick={() => setMenuOpen(false)}>My Workspace</Link>
+            <button type="button" role="menuitem" className="header-logout" onClick={logout}>Logout</button>
+          </div>
+        ) : null}
+      </div>
     );
   }
   return (
@@ -290,7 +348,7 @@ function MarketingCompactNav({
                 {item.label}
               </Link>
             ))}
-            <HeaderAccount pathname={pathname} />
+            <HeaderAccount pathname={pathname} variant="compact" onNavigate={onClose} />
           </div>
         </div>
       </nav>

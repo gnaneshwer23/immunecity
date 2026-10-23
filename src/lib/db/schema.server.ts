@@ -239,6 +239,18 @@ export const communityJournalClubs = pgTable("community_journal_clubs", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Member id + an existing graph concept id. Not a community post save, and not a graph write. */
+export const conceptSaves = pgTable(
+  "concept_saves",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull(),
+    conceptId: text("concept_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("concept_saves_user_concept").on(t.userId, t.conceptId)],
+);
+
 export const communityModerationActions = pgTable("community_moderation_actions", {
   id: uuid("id").primaryKey().defaultRandom(),
   targetType: text("target_type").notNull(),
