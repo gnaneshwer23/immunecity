@@ -161,6 +161,13 @@ export const communityReports = pgTable("community_reports", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Signed-in Academy progress only. Does not reference evidence rows. */
+export const academyMemberProgress = pgTable("academy_member_progress", {
+  userId: uuid("user_id").primaryKey(),
+  progress: jsonb("progress").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const communityModerationActions = pgTable("community_moderation_actions", {
   id: uuid("id").primaryKey().defaultRandom(),
   targetType: text("target_type").notNull(),

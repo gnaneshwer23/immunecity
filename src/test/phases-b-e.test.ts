@@ -289,6 +289,12 @@ describe("Phase E workbench", () => {
     };
     expect(experimentCompleteness(s.experiment).ok).toBe(false);
     s = advanceWorkbench(s);
+    expect(s.step).toBe("appraisal");
+    s = { ...s, appraisal: { ...s.appraisal, limits: "Educational notes only — no new measurement." } };
+    s = advanceWorkbench(s);
+    expect(s.step).toBe("contradiction");
+    s = { ...s, contradiction: { ...s.contradiction, choice: "none_recorded" } };
+    s = advanceWorkbench(s);
     expect(s.step).toBe("review");
     expect(s.furthestStep).toBe("review");
   });
@@ -391,7 +397,10 @@ describe("Phase E workbench", () => {
     expect(buildWorkbenchExport(restored.session!).kgWrite).toBe(false);
 
     const progress = workbenchProgress(restored.session!);
-    expect(progress).toHaveLength(6);
+    expect(progress).toHaveLength(8);
+    expect(progress.some((p) => p.step === "appraisal")).toBe(true);
+    expect(progress.some((p) => p.step === "contradiction")).toBe(true);
+    expect(progress[progress.length - 1]!.step).toBe("review");
     expect(progress[0]!.ready).toBe(true);
     expect(progress.some((p) => p.step === "evidence" && p.ready)).toBe(true);
   });

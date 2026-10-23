@@ -6,49 +6,13 @@ import {
   type AcademyModule,
   type AcademyTrack,
 } from "@/data/academyCurriculum";
+import { CONTENT } from "@/data/content";
 import { CAPABILITY_STATUS_LABEL } from "@/data/capabilityStatus";
 import { byId } from "@/lib/immune/engine";
+import { courseMap, reviewDueLessons, statedMisconceptions, type AcademyProgress } from "@/lib/academy/progress";
 import { NodeChip } from "@/components/immune/ui";
-
-const STORAGE_KEY = "immune-city-academy-progress-v2";
-
-type LocalProgress = {
-  /** Module lesson ids where the learner opened the linked lesson */
-  visitedLessonIds: string[];
-  /** Quiz item ids answered correctly at least once */
-  quizCorrect: string[];
-};
-
-function loadProgress(): LocalProgress {
-  if (typeof window === "undefined") return { visitedLessonIds: [], quizCorrect: [] };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      // Migrate foundation-only v1 if present
-      const legacy = localStorage.getItem("immune-city-academy-foundation-v1");
-      if (legacy) {
-        const parsed = JSON.parse(legacy) as LocalProgress;
-        return {
-          visitedLessonIds: Array.isArray(parsed.visitedLessonIds) ? parsed.visitedLessonIds : [],
-          quizCorrect: Array.isArray(parsed.quizCorrect) ? parsed.quizCorrect : [],
-        };
-      }
-      return { visitedLessonIds: [], quizCorrect: [] };
-    }
-    const parsed = JSON.parse(raw) as LocalProgress;
-    return {
-      visitedLessonIds: Array.isArray(parsed.visitedLessonIds) ? parsed.visitedLessonIds : [],
-      quizCorrect: Array.isArray(parsed.quizCorrect) ? parsed.quizCorrect : [],
-    };
-  } catch {
-    return { visitedLessonIds: [], quizCorrect: [] };
-  }
-}
-
-function saveProgress(p: LocalProgress) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
-}
+import LessonDiscussions from "@/components/immune/LessonDiscussions";
+import { useAcademyProgress } from "@/components/immune/useAcademyProgress";
 
 function trackStatusLabel(track: AcademyTrack): string {
   if (track.status === "navigable") return "navigable scaffold";
@@ -61,7 +25,7 @@ function QuizBlock({
   onCorrect,
 }: {
   module: AcademyModule;
-  progress: LocalProgress;
+  progress: AcademyProgress;
   onCorrect: (quizId: string) => void;
 }) {
   const [picked, setPicked] = useState<Record<string, number | null>>({});
@@ -122,7 +86,7 @@ function TrackPanel({
 }: {
   track: AcademyTrack;
   lessonId: string;
-  progress: LocalProgress;
+  progress: AcademyProgress;
   onCorrect: (quizId: string) => void;
 }) {
   const hit = track.modules.find((m) => m.lessonId === lessonId);
@@ -184,12 +148,22 @@ function TrackPanel({
               <li key={t}>{t}</li>
             ))}
           </ul>
+          <h4>Prerequisites</h4>
+          <p className="xs muted">
+            {hit.prerequisiteLessonIds.length
+              ? hit.prerequisiteLessonIds
+                  .map((id) => courseMap().flatMap((track) => track.modules).find((item) => item.lessonId === id)?.title ?? id)
+                  .join("; ")
+              : "None recorded on this module."}
+          </p>
           <h4>Graph concepts</h4>
           <div className="row" style={{ marginTop: 8 }}>
             {hit.graphIds.filter((id) => byId[id]).map((id) => (
               <NodeChip key={id} id={id} />
             ))}
           </div>
+          <MisconceptionCheck lessonId={hit.lessonId} />
+          <LessonDiscussions conceptIds={hit.graphIds} />
           <QuizBlock module={hit} progress={progress} onCorrect={onCorrect} />
         </div>
       ) : null}
@@ -197,42 +171,65 @@ function TrackPanel({
   );
 }
 
+function MisconceptionCheck({ lessonId }: { lessonId: string }) {
+  const lesson = (CONTENT.lessons as { id?: string; steps?: Array<Record<string, unknown>>; perturbations?: Array<Record<string, unknown>> }[])
+    .find((item) => item.id === lessonId);
+  const lines = statedMisconceptions(lesson);
+  if (!lines.length) return null;
+  return (
+    <div>
+      <h4>Misconception check</h4>
+      <p className="xs muted">Quoted from this lesson. No new claim is added.</p>
+      <ul className="si-list">
+        {lines.map((line) => <li key={line}>{line}</li>)}
+      </ul>
+    </div>
+  );
+}
+
 /** Academy scaffolds inside Mechanism (not a finished multi-track curriculum). */
 export default function AcademyTrack({ lessonId }: { lessonId: string }) {
   const hit = moduleForLesson(lessonId);
-  const [progress, setProgress] = useState<LocalProgress>(() => loadProgress());
+  const { progress, update, storage } = useAcademyProgress();
+  const due = reviewDueLessons(progress);
 
   useEffect(() => {
-    if (!hit) return;
-    setProgress((prev) => {
-      if (prev.visitedLessonIds.includes(hit.module.lessonId)) return prev;
-      const next = {
-        ...prev,
-        visitedLessonIds: [...prev.visitedLessonIds, hit.module.lessonId],
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, [hit]);
+    if (!hit || storage === "loading") return;
+    if (progress.visitedLessonIds.includes(hit.module.lessonId)) return;
+    update({ ...progress, visitedLessonIds: [...progress.visitedLessonIds, hit.module.lessonId] });
+  }, [hit, storage, progress, update]);
 
   const onCorrect = (quizId: string) => {
-    setProgress((prev) => {
-      if (prev.quizCorrect.includes(quizId)) return prev;
-      const next = { ...prev, quizCorrect: [...prev.quizCorrect, quizId] };
-      saveProgress(next);
-      return next;
-    });
+    if (progress.quizCorrect.includes(quizId)) return;
+    update({ ...progress, quizCorrect: [...progress.quizCorrect, quizId] });
   };
 
   return (
     <section className="section academy-track" aria-labelledby="academy-track-heading">
       <h2 id="academy-track-heading">Immunology Academy</h2>
       <p className="lede">
-        Foundation is a navigable teaching scaffold; intermediate is an honest in-development scaffold over existing
-        Mechanism lessons; advanced is labelled empty. Progress stays in this browser — not certification, not Gate C
-        evidence coverage.{" "}
+        Foundation is navigable. Intermediate and advanced are unfinished scaffolds. Signed out, progress stays in
+        this browser. Signed in, the same record is kept on your account when Academy storage is available. Not
+        certification and not Gate C evidence coverage.{" "}
         <Link to="/academy">Academy overview</Link>
       </p>
+      <p className="xs muted">
+        Progress store: {storage === "account" ? "signed-in account" : storage === "loading" ? "checking" : "this browser"}.
+      </p>
+      {due.length ? (
+        <div>
+          <h3>Review due</h3>
+          <p className="xs muted">Completed lessons on the existing map. This is a reminder to re-open them, not a new course.</p>
+          <ul className="si-list">
+            {due.map((item) => (
+              <li key={item.lessonId}>
+                <Link to="/mechanism/$id" params={{ id: item.lessonId }}>{item.title}</Link>
+                <span className="xs muted"> · {item.trackTitle}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       <div className="grid auto" style={{ gap: 16 }}>
         {ACADEMY_TRACKS.map((track) => (
           <TrackPanel

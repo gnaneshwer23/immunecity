@@ -1,6 +1,6 @@
 /* Immunology Academy — curriculum manifest (playbook Phase 5).
    Uses existing mechanism lessons; does not invent core-graph content.
-   Progress is local/browser only — never claim server-backed completion. */
+   Signed-out progress stays in the browser. Signed-in progress can be stored for the member. */
 
 export type AcademyLevel = "foundation" | "intermediate" | "advanced";
 

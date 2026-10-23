@@ -1,5 +1,5 @@
 /* Scientific Workbench artefacts (PRD FR-038–040).
-   Researcher flow: question → evidence → mechanism → hypothesis → experiment → review.
+   Researcher flow: question → evidence → mechanism → hypothesis → experiment → appraisal → contradiction → review.
    Every generated/user-filled artefact is a candidate until human review.
    Nothing here auto-promotes into the curated knowledge graph. */
 
@@ -28,7 +28,49 @@ export type WorkbenchStep =
   | "mechanism"
   | "hypothesis"
   | "experiment"
+  | "appraisal"
+  | "contradiction"
   | "review";
+
+export type SourceVerification = "verified" | "unverified";
+
+export type LicenceLabel = "unknown" | "user-declared-open" | "user-declared-restricted" | "user-declared-other";
+
+export const LICENCE_LABELS: { id: LicenceLabel; label: string }[] = [
+  { id: "unknown", label: "Unknown" },
+  { id: "user-declared-open", label: "User-declared open" },
+  { id: "user-declared-restricted", label: "User-declared restricted" },
+  { id: "user-declared-other", label: "User-declared other" },
+];
+
+export interface StructuredExtraction {
+  population: string;
+  exposure: string;
+  comparator: string;
+  outcome: string;
+  timepoint: string;
+}
+
+export const EMPTY_EXTRACTION: StructuredExtraction = {
+  population: "",
+  exposure: "",
+  comparator: "",
+  outcome: "",
+  timepoint: "",
+};
+
+export interface AppraisalNote {
+  limits: string;
+  bias: string;
+  applicability: string;
+  kind: ArtefactKind;
+}
+
+export interface ContradictionNote {
+  choice: "unset" | "none_recorded" | "recorded";
+  statement: string;
+  kind: ArtefactKind;
+}
 
 export type ArtefactKind = "candidate";
 
@@ -55,6 +97,11 @@ export interface EvidenceNote {
   /** Optional provenance from literature workflow import. */
   sourceClaimId?: string;
   sourceProjectId?: string;
+  /** Verified only after a lookup succeeds. A failed lookup stays unverified and stores no identifier. */
+  verification: SourceVerification;
+  verifiedPmid: string | null;
+  verifiedDoi: string | null;
+  extraction: StructuredExtraction;
   kind: ArtefactKind;
 }
 
@@ -97,6 +144,10 @@ export interface WorkbenchSession {
   mechanism: MechanismNote;
   hypothesis: HypothesisDraft;
   experiment: ExperimentProposal;
+  appraisal: AppraisalNote;
+  contradiction: ContradictionNote;
+  /** User-set. Unknown until the user chooses a label. Never inferred. */
+  licence: LicenceLabel;
   reviewNotes: string;
   /** Human review disposition — never implies experimental validation. */
   reviewDisposition: "pending" | "needs_revision" | "approved_for_export_only";
@@ -108,7 +159,16 @@ export interface WorkbenchSession {
   importLog: string[];
 }
 
-const STEPS: WorkbenchStep[] = ["question", "evidence", "mechanism", "hypothesis", "experiment", "review"];
+const STEPS: WorkbenchStep[] = [
+  "question",
+  "evidence",
+  "mechanism",
+  "hypothesis",
+  "experiment",
+  "appraisal",
+  "contradiction",
+  "review",
+];
 
 const DEFAULT_MECH_ASSUMPTIONS = [
   "Graph paths are illustrative; not validated experimental conclusions.",
@@ -161,6 +221,9 @@ export function createWorkbenchSession(graphVersion: string, extensionsVersion: 
       status: "draft_proposal",
       kind: "candidate",
     },
+    appraisal: { limits: "", bias: "", applicability: "", kind: "candidate" },
+    contradiction: { choice: "unset", statement: "", kind: "candidate" },
+    licence: "unknown",
     reviewNotes: "",
     reviewDisposition: "pending",
     graphVersion,
@@ -194,8 +257,16 @@ export function canAdvance(session: WorkbenchSession): { ok: boolean; reason?: s
       return session.experiment.question.trim() && session.experiment.readouts.trim()
         ? { ok: true }
         : { ok: false, reason: "Experiment needs a question and readouts." };
+    case "appraisal":
+      return session.appraisal.limits.trim() || session.appraisal.bias.trim() || session.appraisal.applicability.trim()
+        ? { ok: true }
+        : { ok: false, reason: "Record a critical-appraisal note in your own words." };
+    case "contradiction":
+      if (session.contradiction.choice === "none_recorded") return { ok: true };
+      if (session.contradiction.choice === "recorded" && session.contradiction.statement.trim()) return { ok: true };
+      return { ok: false, reason: "Record a contradiction you have, or mark that none is recorded." };
     case "review":
-      return { ok: false, reason: "Final step — export or revise earlier steps." };
+      return { ok: false, reason: "Final step — human review, export, or revise earlier steps. This step cannot approve a claim." };
   }
 }
 
@@ -371,6 +442,7 @@ export function updateWorkbenchClaimLifecycle(
   lifecycle: ClaimLifecycle,
   reviewNotes?: string,
 ): WorkbenchSession {
+  if (lifecycle === "approved") return session;
   return touch({
     ...session,
     claims: (session.claims ?? []).map((c) =>
@@ -402,6 +474,10 @@ export function addEvidenceNote(
     relatedIds: relatedIds.map((x) => x.trim()).filter(Boolean),
     sourceClaimId: meta?.sourceClaimId,
     sourceProjectId: meta?.sourceProjectId,
+    verification: "unverified",
+    verifiedPmid: null,
+    verifiedDoi: null,
+    extraction: { ...EMPTY_EXTRACTION },
     kind: "candidate",
   };
   const furthest =
@@ -414,6 +490,118 @@ export function addEvidenceNote(
     step: session.step === "question" ? "evidence" : session.step,
     furthestStep: furthest,
   });
+}
+
+/** A failed or missing lookup stays unverified and does not keep a PMID or DOI. */
+export function sourceVerificationFromLookup(lookup: {
+  ok?: boolean;
+  pmid?: string | null;
+  doi?: string | null;
+} | null | undefined): { verification: SourceVerification; verifiedPmid: string | null; verifiedDoi: string | null } {
+  if (!lookup?.ok) return { verification: "unverified", verifiedPmid: null, verifiedDoi: null };
+  const pmid = typeof lookup.pmid === "string" && /^\d{6,9}$/.test(lookup.pmid.trim()) ? lookup.pmid.trim() : null;
+  const doi = typeof lookup.doi === "string" && /^10\.\d{4,9}\//.test(lookup.doi.trim()) ? lookup.doi.trim() : null;
+  if (!pmid && !doi) return { verification: "unverified", verifiedPmid: null, verifiedDoi: null };
+  return { verification: "verified", verifiedPmid: pmid, verifiedDoi: doi };
+}
+
+export function recordSourceLookup(
+  session: WorkbenchSession,
+  noteId: string,
+  lookup: { ok?: boolean; pmid?: string | null; doi?: string | null } | null | undefined,
+): WorkbenchSession {
+  const result = sourceVerificationFromLookup(lookup);
+  return touch({
+    ...session,
+    evidence: session.evidence.map((note) =>
+      note.note_id === noteId ? { ...note, ...result, kind: "candidate" as const } : note,
+    ),
+  });
+}
+
+export function setEvidenceExtraction(
+  session: WorkbenchSession,
+  noteId: string,
+  patch: Partial<StructuredExtraction>,
+): WorkbenchSession {
+  return touch({
+    ...session,
+    evidence: session.evidence.map((note) =>
+      note.note_id === noteId
+        ? {
+            ...note,
+            kind: "candidate" as const,
+            extraction: { ...EMPTY_EXTRACTION, ...note.extraction, ...patch },
+          }
+        : note,
+    ),
+  });
+}
+
+export function setLicence(session: WorkbenchSession, licence: LicenceLabel): WorkbenchSession {
+  const allowed = LICENCE_LABELS.some((item) => item.id === licence);
+  return touch({ ...session, licence: allowed ? licence : "unknown" });
+}
+
+export function setAppraisal(session: WorkbenchSession, patch: Partial<Pick<AppraisalNote, "limits" | "bias" | "applicability">>): WorkbenchSession {
+  return touch({
+    ...session,
+    appraisal: { ...session.appraisal, ...patch, kind: "candidate" },
+  });
+}
+
+export function setContradiction(
+  session: WorkbenchSession,
+  patch: Partial<Pick<ContradictionNote, "choice" | "statement">>,
+): WorkbenchSession {
+  return touch({
+    ...session,
+    contradiction: { ...session.contradiction, ...patch, kind: "candidate" },
+  });
+}
+
+function normaliseEvidenceNote(note: EvidenceNote): EvidenceNote {
+  const checked = sourceVerificationFromLookup(
+    note.verification === "verified"
+      ? { ok: true, pmid: note.verifiedPmid, doi: note.verifiedDoi }
+      : { ok: false },
+  );
+  return {
+    ...note,
+    kind: "candidate",
+    ...checked,
+    extraction: { ...EMPTY_EXTRACTION, ...note.extraction },
+  };
+}
+
+function normaliseSession(session: WorkbenchSession): WorkbenchSession {
+  const step = STEPS.includes(session.step) ? session.step : "question";
+  const furthest = STEPS.includes(session.furthestStep) ? session.furthestStep : step;
+  return {
+    ...session,
+    step,
+    furthestStep: furthest,
+    licence: LICENCE_LABELS.some((item) => item.id === session.licence) ? session.licence : "unknown",
+    appraisal: {
+      limits: session.appraisal?.limits ?? "",
+      bias: session.appraisal?.bias ?? "",
+      applicability: session.appraisal?.applicability ?? "",
+      kind: "candidate",
+    },
+    contradiction: {
+      choice: session.contradiction?.choice === "none_recorded" || session.contradiction?.choice === "recorded"
+        ? session.contradiction.choice
+        : "unset",
+      statement: session.contradiction?.statement ?? "",
+      kind: "candidate",
+    },
+    evidence: (session.evidence ?? []).map((note) => normaliseEvidenceNote(note)),
+    claims: (session.claims ?? []).map((claim) => ({
+      ...claim,
+      kind: "candidate" as const,
+      lifecycle: claim.lifecycle === "approved" ? "candidate" : claim.lifecycle,
+    })),
+  };
 }
 
 /** Import literature project claims as evidence notes (candidates only). */
@@ -602,7 +790,7 @@ export function restoreWorkbenchFromExportJson(jsonText: string): {
   if (!s.question || !s.mechanism || !s.hypothesis || !s.experiment) {
     return { error: "Export session is incomplete." };
   }
-  const restored: WorkbenchSession = {
+  const restored: WorkbenchSession = normaliseSession({
     ...s,
     schemaVersion: WORKBENCH_SCHEMA_VERSION,
     question: { ...s.question, kind: "candidate" },
@@ -620,7 +808,7 @@ export function restoreWorkbenchFromExportJson(jsonText: string): {
         : "pending",
     importLog: [...(s.importLog ?? []), "restore:workbench_export"],
     updatedAt: new Date().toISOString(),
-  };
+  });
   return { session: restored };
 }
 
@@ -671,8 +859,20 @@ export function workbenchProgress(session: WorkbenchSession): {
       detail: exp ? "draft proposal fields set" : "needs question + readouts",
     },
     {
+      step: "appraisal",
+      label: "Critical appraisal",
+      ready: !!(session.appraisal?.limits?.trim() || session.appraisal?.bias?.trim() || session.appraisal?.applicability?.trim()),
+      detail: "user-written limits, bias, or applicability",
+    },
+    {
+      step: "contradiction",
+      label: "Contradiction",
+      ready: session.contradiction?.choice === "none_recorded" || (session.contradiction?.choice === "recorded" && !!session.contradiction.statement.trim()),
+      detail: session.contradiction?.choice === "unset" ? "choose recorded or none" : session.contradiction?.choice ?? "unset",
+    },
+    {
       step: "review",
-      label: "Review",
+      label: "Human review",
       ready: session.reviewDisposition !== "pending",
       detail: `disposition ${session.reviewDisposition}`,
     },
@@ -863,12 +1063,15 @@ export function sessionCandidateFlags(session: WorkbenchSession): {
     mechanism: session.mechanism.kind,
     hypothesis: session.hypothesis.status,
     experiment: `${session.experiment.kind}/${session.experiment.status}`,
+    appraisal: session.appraisal?.kind ?? "candidate",
+    contradiction: session.contradiction?.kind ?? "candidate",
+    licence: session.licence ?? "unknown",
     reviewDisposition: session.reviewDisposition,
   };
   const allCandidates =
     session.question.kind === "candidate" &&
     session.evidence.every((e) => e.kind === "candidate") &&
-    claims.every((c) => c.kind === "candidate") &&
+    claims.every((c) => c.kind === "candidate" && c.lifecycle !== "approved") &&
     session.mechanism.kind === "candidate" &&
     session.mechanism.illustrative === true &&
     (session.hypothesis.status === "candidate" || session.hypothesis.status === "under_review") &&
@@ -905,7 +1108,15 @@ export function buildWorkbenchExport(session: WorkbenchSession): WorkbenchExport
     session: {
       ...session,
       question: { ...session.question, kind: "candidate" },
-      evidence: session.evidence.map((e) => ({ ...e, kind: "candidate" as const })),
+      evidence: session.evidence.map((e) => normaliseEvidenceNote({ ...e, kind: "candidate" })),
+      claims: (session.claims ?? []).map((c) => ({
+        ...c,
+        kind: "candidate" as const,
+        lifecycle: c.lifecycle === "approved" ? "candidate" : c.lifecycle,
+      })),
+      appraisal: { ...session.appraisal, kind: "candidate" as const },
+      contradiction: { ...session.contradiction, kind: "candidate" as const },
+      licence: session.licence ?? "unknown",
       mechanism: { ...session.mechanism, kind: "candidate", illustrative: true },
       hypothesis: { ...session.hypothesis, status: session.hypothesis.status === "under_review" ? "under_review" : "candidate" },
       experiment: { ...session.experiment, kind: "candidate", status: "draft_proposal" },

@@ -313,6 +313,7 @@ th { font-weight: 600; color: var(--muted); font-size: var(--text-xs); text-tran
 .graph-tools .tool-sep { width: 1px; height: 22px; background: var(--border-strong); margin: 0 2px; }
 .graph-legend { position: absolute; bottom: 10px; left: 10px; display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; background: color-mix(in oklab, var(--surface) 90%, transparent); padding: 6px 10px; border-radius: var(--r-sm); border: 1px solid var(--border); max-width: calc(100% - 20px); }
 .graph-legend span { display: inline-flex; gap: 5px; align-items: center; }
+.graph-legend-dir { font-weight: 600; }
 .node-label { font-family: var(--font-body); font-size: 10px; fill: var(--text); pointer-events: none; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
 .sim-results { max-height: 360px; overflow: auto; }
 .effect { display: flex; align-items: center; gap: 8px; font-size: var(--text-sm); padding: 5px 6px; border-radius: var(--r-sm); }

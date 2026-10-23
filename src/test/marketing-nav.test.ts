@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -56,6 +58,20 @@ describe("marketing IA wiring", () => {
     expect(isMarketingPath("/learn")).toBe(false);
     expect(isMarketingPath("/evidence")).toBe(false);
     expect(isMarketingPath("/research")).toBe(false);
+  });
+
+  it("keeps Ask in the header and leaves search and the explore pill off the chrome", () => {
+    const shell = readFileSync(resolve(process.cwd(), "src/components/immune/Shell.tsx"), "utf8");
+    expect(shell).not.toContain("SiteSearch");
+    expect(shell).not.toContain("topbar-cta");
+    expect(shell).not.toContain("marketing-compact-cta");
+    expect(shell).not.toContain("EXPLORE_CTA");
+    expect(shell).toContain("journey-main");
+    expect(shell).toContain("journey-org");
+    expect(shell).toContain("AskAtlas");
+    const home = readFileSync(resolve(process.cwd(), "src/routes/index.tsx"), "utf8");
+    expect(home).toContain("CITY_CTA");
+    expect(home).toContain("CITY_PATH");
   });
 
   it("wires Explore / Learn CTAs and footer destinations to known nav or marketing paths", () => {

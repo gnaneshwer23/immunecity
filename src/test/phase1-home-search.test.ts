@@ -7,7 +7,7 @@ import { accountLabel, accountPowers } from "@/lib/access/roles";
 import { catalogGroups, searchConcepts, searchCourses, SEARCH_GROUP_ORDER } from "@/lib/siteSearch";
 import { KG } from "@/lib/immune/engine";
 
-describe("header search groups", () => {
+describe("catalog search groups", () => {
   it("keeps concepts, publications, courses, and discussions in separate groups", () => {
     const concept = searchConcepts("TNF", 3)[0];
     expect(concept?.kind).toBe("concept");

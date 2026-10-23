@@ -5,6 +5,12 @@ import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION } from "@/lib/immune/graph
 import { reasonMechanism } from "@/lib/immune/mechanismReasoning";
 import {
   addEvidenceNote,
+  LICENCE_LABELS,
+  recordSourceLookup,
+  setAppraisal,
+  setContradiction,
+  setEvidenceExtraction,
+  setLicence,
   addMechanismGap,
   addMechanismPath,
   addWorkbenchClaim,
@@ -41,6 +47,7 @@ import {
 import { claimLifecycleLabel, summariseClaimTable } from "@/lib/research/claimLedger";
 import { hypothesisCompleteness } from "@/lib/research/hypothesisDraft";
 import { spineProvenance, spineStatusLabel, workbenchSpine } from "@/lib/research/workbenchSpine";
+import { lookupWorkbenchSource } from "@/lib/research/sourceLookup.functions";
 
 const STEP_LABEL: Record<WorkbenchStep, string> = {
   question: "Question",
@@ -48,7 +55,9 @@ const STEP_LABEL: Record<WorkbenchStep, string> = {
   mechanism: "Mechanism",
   hypothesis: "Hypothesis",
   experiment: "Experiment",
-  review: "Review",
+  appraisal: "Critical appraisal",
+  contradiction: "Contradiction",
+  review: "Human review",
 };
 
 function CandidateBadge({ label = "candidate · draft" }: { label?: string }) {
@@ -81,6 +90,13 @@ export default function ScientificWorkbench({
   const [evSummary, setEvSummary] = useState("");
   const [evSource, setEvSource] = useState("");
   const [evIds, setEvIds] = useState("");
+  const [evPopulation, setEvPopulation] = useState("");
+  const [evExposure, setEvExposure] = useState("");
+  const [evComparator, setEvComparator] = useState("");
+  const [evOutcome, setEvOutcome] = useState("");
+  const [evTime, setEvTime] = useState("");
+  const [evPmid, setEvPmid] = useState("");
+  const [evDoi, setEvDoi] = useState("");
   const [claimAssertion, setClaimAssertion] = useState("");
   const [claimSpan, setClaimSpan] = useState("");
   const [claimRel, setClaimRel] = useState("");
@@ -200,8 +216,8 @@ export default function ScientificWorkbench({
     <div className="scientific-workbench">
       <p className="lede">
         E2E spine: Question → Search → Screen → Extract → Assess → Hypothesis → Export (with provenance).
-        Mapped onto question → evidence → mechanism → hypothesis → experiment → review.
-        Every artefact is labelled <CandidateBadge />. Nothing auto-promotes into the curated graph.
+        Mapped onto question → evidence → mechanism → hypothesis → experiment → critical appraisal → contradiction → human review.
+        Every artefact is labelled <CandidateBadge />. Nothing here can be marked approved, and nothing auto-promotes into the curated graph.
       </p>
 
       <ol className="row" style={{ listStyle: "none", padding: 0, gap: 6, flexWrap: "wrap", marginTop: 10 }} aria-label="E2E research spine">
@@ -374,20 +390,63 @@ export default function ScientificWorkbench({
           <label className="field">Related concept / relationship IDs (comma-separated)
             <input value={evIds} onChange={(e) => setEvIds(e.target.value)} placeholder="EG07, REL-…" />
           </label>
+          <fieldset style={{ border: 0, padding: 0, display: "grid", gap: 8 }}>
+            <legend className="small">Structured extraction (your notes — left blank until you fill them)</legend>
+            <label className="field">Population or system
+              <input value={evPopulation} onChange={(e) => setEvPopulation(e.target.value)} />
+            </label>
+            <label className="field">Exposure or condition
+              <input value={evExposure} onChange={(e) => setEvExposure(e.target.value)} />
+            </label>
+            <label className="field">Comparator
+              <input value={evComparator} onChange={(e) => setEvComparator(e.target.value)} />
+            </label>
+            <label className="field">Outcome
+              <input value={evOutcome} onChange={(e) => setEvOutcome(e.target.value)} />
+            </label>
+            <label className="field">Timepoint
+              <input value={evTime} onChange={(e) => setEvTime(e.target.value)} />
+            </label>
+          </fieldset>
+          <label className="field">Licensing label
+            <select
+              value={session.licence}
+              aria-label="Licensing label"
+              onChange={(e) => setSession(setLicence(session, e.target.value as typeof session.licence))}
+            >
+              {LICENCE_LABELS.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+            </select>
+          </label>
+          <p className="xs muted">Licensing stays unknown until you set it. The workbench does not infer a licence.</p>
           <button
             type="button"
             className="btn sm"
             disabled={!evSummary.trim()}
             onClick={() => {
-              setSession(addEvidenceNote(
+              const noteSession = addEvidenceNote(
                 session,
                 evSummary,
                 evSource,
                 evIds.split(",").map((s) => s.trim()).filter(Boolean),
-              ));
+              );
+              const note = noteSession.evidence[noteSession.evidence.length - 1];
+              setSession(note
+                ? setEvidenceExtraction(noteSession, note.note_id, {
+                    population: evPopulation,
+                    exposure: evExposure,
+                    comparator: evComparator,
+                    outcome: evOutcome,
+                    timepoint: evTime,
+                  })
+                : noteSession);
               setEvSummary("");
               setEvSource("");
               setEvIds("");
+              setEvPopulation("");
+              setEvExposure("");
+              setEvComparator("");
+              setEvOutcome("");
+              setEvTime("");
             }}
           >
             Add evidence note
@@ -401,17 +460,46 @@ export default function ScientificWorkbench({
           <ul className="small">
             {session.evidence.map((n) => (
               <li key={n.note_id}>
-                <CandidateBadge /> <b>{n.sourceLabel}:</b> {n.summary}
+                <CandidateBadge /> <b>{n.verification === "verified" ? "Verified" : "Unverified"}</b> · <b>{n.sourceLabel}:</b> {n.summary}
                 {n.relatedIds.length ? <span className="muted"> · {n.relatedIds.join(", ")}</span> : null}
+                {n.extraction?.population || n.extraction?.outcome ? (
+                  <span className="muted"> · extraction recorded</span>
+                ) : null}
                 {n.sourceClaimId ? <span className="muted"> · claim {n.sourceClaimId}</span> : null}
               </li>
             ))}
           </ul>
+          <fieldset style={{ border: 0, padding: 0, display: "grid", gap: 8 }}>
+            <legend className="small">Source check</legend>
+            <p className="xs muted">
+              Paste an identifier you already have. A failed lookup stays unverified and does not create a PMID or DOI.
+            </p>
+            <label className="field">PMID
+              <input value={evPmid} onChange={(e) => setEvPmid(e.target.value)} inputMode="numeric" />
+            </label>
+            <label className="field">DOI
+              <input value={evDoi} onChange={(e) => setEvDoi(e.target.value)} />
+            </label>
+            <button
+              type="button"
+              className="btn sm"
+              disabled={!session.evidence.length}
+              onClick={() => {
+                const note = session.evidence[session.evidence.length - 1];
+                if (!note) return;
+                lookupWorkbenchSource({ data: { pmid: evPmid, doi: evDoi } })
+                  .then((result) => setSession(recordSourceLookup(session, note.note_id, result)))
+                  .catch(() => setSession(recordSourceLookup(session, note.note_id, { ok: false })));
+              }}
+            >
+              Check the latest note
+            </button>
+          </fieldset>
 
           <h4 style={{ fontSize: "0.95rem", marginTop: 8 }}>Claim ledger (candidates) <CandidateBadge /></h4>
           <p className="xs muted">
-            Layer B scaffold: assertion + optional span + mapped relationship. Lifecycle stays local —
-            &quot;Ready for curator&quot; is not Gate C approval and never writes the KG.
+            Layer B scaffold: assertion + optional span + mapped relationship. Lifecycle stays local.
+            This workbench cannot mark a claim approved and never writes the KG.
           </p>
           <label className="field">Assertion
             <textarea rows={2} value={claimAssertion} onChange={(e) => setClaimAssertion(e.target.value)} />
@@ -478,22 +566,6 @@ export default function ScientificWorkbench({
                           }
                         >
                           Assess
-                        </button>{" "}
-                        <button
-                          type="button"
-                          className="btn sm"
-                          onClick={() =>
-                            setSession(
-                              updateWorkbenchClaimLifecycle(
-                                session,
-                                c.claim_id,
-                                "approved",
-                                "Ready for curator handoff — not Gate C",
-                              ),
-                            )
-                          }
-                        >
-                          Curator queue
                         </button>{" "}
                         <button
                           type="button"
@@ -682,9 +754,66 @@ export default function ScientificWorkbench({
         </section>
       )}
 
+      {session.step === "appraisal" && (
+        <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
+          <h3 style={{ fontSize: "1.05rem" }}>Critical appraisal <CandidateBadge /></h3>
+          <p className="xs muted">Write your own limits. This step does not supply a score or a citation.</p>
+          {(
+            [
+              ["limits", "Limits of the sources you already recorded"],
+              ["bias", "Bias or confounding you want to flag"],
+              ["applicability", "Where these notes do not apply"],
+            ] as const
+          ).map(([key, label]) => (
+            <label className="field" key={key}>{label}
+              <textarea
+                rows={2}
+                value={session.appraisal[key]}
+                onChange={(e) => setSession(setAppraisal(session, { [key]: e.target.value }))}
+              />
+            </label>
+          ))}
+        </section>
+      )}
+
+      {session.step === "contradiction" && (
+        <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
+          <h3 style={{ fontSize: "1.05rem" }}>Contradiction <CandidateBadge /></h3>
+          <p className="xs muted">
+            Record a contradiction you have found, or say that none is recorded in this session. Do not invent one.
+          </p>
+          <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className={`chip${session.contradiction.choice === "none_recorded" ? " on" : ""}`}
+              onClick={() => setSession(setContradiction(session, { choice: "none_recorded" }))}
+            >
+              None recorded
+            </button>
+            <button
+              type="button"
+              className={`chip${session.contradiction.choice === "recorded" ? " on" : ""}`}
+              onClick={() => setSession(setContradiction(session, { choice: "recorded" }))}
+            >
+              Contradiction recorded
+            </button>
+          </div>
+          {session.contradiction.choice === "recorded" ? (
+            <label className="field">What conflicts
+              <textarea
+                rows={3}
+                value={session.contradiction.statement}
+                onChange={(e) => setSession(setContradiction(session, { statement: e.target.value }))}
+              />
+            </label>
+          ) : null}
+        </section>
+      )}
+
       {session.step === "review" && (
         <section className="card" style={{ marginTop: 16, display: "grid", gap: 10 }}>
-          <h3 style={{ fontSize: "1.05rem" }}>Human review <CandidateBadge label="required" /></h3>
+          <h3 style={{ fontSize: "1.05rem" }}>Human review <CandidateBadge label="required · cannot mark approved" /></h3>
+          <p className="small">Licence: {session.licence}. Claims stay unreviewed candidates.</p>
           <p className="small">
             Question: {session.question.text || "—"} · Evidence notes: {session.evidence.length} ·
             Paths: {session.mechanism.paths.length} · Gaps: {session.mechanism.gaps.length} ·

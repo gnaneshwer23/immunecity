@@ -16,15 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import AskAtlas from "./AskAtlas";
-import SiteSearch from "./SiteSearch";
 import ScientificInspector from "./ScientificInspector";
 import { JourneyNext } from "./page";
 import {
   ASK_NAME,
-  ATLAS_CTA,
-  ATLAS_PATH,
-  EXPLORE_CTA,
-  EXPLORE_PATH,
   PRODUCT_NAME,
   TAGLINE,
   TRUST_STATEMENT,
@@ -142,17 +137,13 @@ function SiteFooter() {
 function MarketingCompactNav({
   open,
   onClose,
-  pathname,
   panelId,
 }: {
   open: boolean;
   onClose: () => void;
-  pathname: string;
   panelId: string;
 }) {
   const panelRef = useRef<HTMLElement>(null);
-  const ctaPath = pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH;
-  const ctaLabel = pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA;
 
   useEffect(() => {
     if (!open) return;
@@ -241,7 +232,6 @@ function MarketingCompactNav({
               <Link
                 key={item.path}
                 to={item.path}
-                className={item.path === MARKETING_NAV_ACTION.path ? "collab-action" : undefined}
                 activeProps={{ className: "active" }}
                 onClick={onClose}
               >
@@ -249,13 +239,6 @@ function MarketingCompactNav({
               </Link>
             ))}
           </div>
-        </div>
-        <div className="marketing-compact-cta">
-          <Button asChild className="bio-primary">
-            <Link to={ctaPath} onClick={onClose}>
-              {ctaLabel}
-            </Link>
-          </Button>
         </div>
       </nav>
     </>
@@ -307,54 +290,50 @@ export default function Shell({ children }: { children: ReactNode }) {
           <Logo />
           <span className="brand-text"><strong>{PRODUCT_NAME}</strong><small>{TAGLINE}</small></span>
         </Link>
-        <SiteSearch />
         <nav className="journey-nav" aria-label="Primary">
-          {JOURNEY_NAV.map((g) => (
-            <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />
-          ))}
-          <span className="journey-sep" aria-hidden />
-          {JOURNEY_PRIMARY.map((item) => (
+          <div className="journey-main">
+            {JOURNEY_NAV.map((g) => (
+              <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />
+            ))}
+            <span className="journey-sep" aria-hidden />
+            {JOURNEY_PRIMARY.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="marketing-nav-link journey-direct"
+                activeOptions={{ exact: item.path !== "/community" }}
+                activeProps={{ className: "marketing-nav-link journey-direct current" }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="journey-org">
+            <YouTubeNavIcon className="marketing-nav-link youtube-nav-link" />
+            {JOURNEY_SECONDARY.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="marketing-nav-link"
+                activeProps={{ className: "marketing-nav-link current" }}
+              >
+                {item.label}
+              </Link>
+            ))}
             <Link
-              key={item.path}
-              to={item.path}
-              className="marketing-nav-link journey-direct"
-              activeOptions={{ exact: item.path !== "/community" }}
-              activeProps={{ className: "marketing-nav-link journey-direct current" }}
+              to={MARKETING_NAV_ACTION.path}
+              className="marketing-nav-link"
+              activeProps={{ className: "marketing-nav-link current" }}
             >
-              {item.label}
+              {MARKETING_NAV_ACTION.label}
             </Link>
-          ))}
-          <span className="journey-sep journey-secondary" aria-hidden />
-          <YouTubeNavIcon className="marketing-nav-link journey-secondary youtube-nav-link" />
-          {JOURNEY_SECONDARY.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="marketing-nav-link journey-secondary"
-              activeProps={{ className: "marketing-nav-link journey-secondary current" }}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <Link
-            to={MARKETING_NAV_ACTION.path}
-            className="marketing-nav-link collab-action journey-secondary"
-            activeProps={{ className: "marketing-nav-link collab-action journey-secondary current" }}
-          >
-            {MARKETING_NAV_ACTION.label}
-          </Link>
+          </div>
         </nav>
-        <Button asChild className="bio-primary topbar-cta">
-          <Link to={pathname === EXPLORE_PATH ? ATLAS_PATH : EXPLORE_PATH}>
-            {pathname === EXPLORE_PATH ? ATLAS_CTA : EXPLORE_CTA}
-          </Link>
-        </Button>
       </header>
         {(
           <MarketingCompactNav
             open={open}
             onClose={closeCompact}
-            pathname={pathname}
             panelId={compactNavId}
           />
         )}

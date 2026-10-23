@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { ZoomIn, ZoomOut, Scan, List, Network } from "lucide-react";
 import { KG, TYPES, byId, SEM, deg, out, inn, propagate, human, TISSUES, edgeTissues, type NodeType, type Tissue, type KGEdge } from "@/lib/immune/engine";
 import { filterGraphSlice } from "@/lib/immune/graphFilters";
+import { edgeDirectionLegend } from "@/lib/immune/graphPhase2";
 import { PageHead, NodeLink } from "./ui";
 import GraphNodeDetail from "./GraphNodeDetail";
 import GraphEdgeDetail from "./GraphEdgeDetail";
@@ -417,7 +418,25 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
                 : "No concept types are selected. Choose at least one type in the panel to draw the graph."}
             </p>
           ) : null}
-          <div className="graph-legend">
+          <div className="graph-legend" aria-label="Graph legend">
+            {(() => {
+              const sample = links[0];
+              const direction = edgeDirectionLegend(
+                sample
+                  ? {
+                      source: byId[sample.subject_id]?.name ?? sample.subject_id,
+                      target: byId[sample.object_id]?.name ?? sample.object_id,
+                    }
+                  : null,
+              );
+              return (
+                <span className="graph-legend-dir">
+                  <span aria-hidden="true">→</span>
+                  {direction.key}
+                  {direction.example ? <span className="xs"> · {direction.example}</span> : null}
+                </span>
+              );
+            })()}
             {ALL_TYPES.filter((t) => active.has(t)).map((t) => (
               <span key={t}><span className="dot" style={{ background: `var(${TYPES[t].c})` }} />{TYPES[t].label}</span>
             ))}

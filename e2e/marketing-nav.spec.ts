@@ -16,7 +16,10 @@ async function expectDesktopNav(page: Page) {
   await expect(nav.getByRole("link", { name: "Vision", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "About", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /More/i })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Explore the Immune System" }).first()).toBeVisible();
+  const header = page.getByRole("banner");
+  await expect(header.getByRole("search")).toHaveCount(0);
+  await expect(header.getByRole("link", { name: "Explore the Immune System" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Explore Immune City" }).first()).toBeVisible();
   // Insights stays out of primary header
   await expect(nav.getByRole("link", { name: "Insights" })).toHaveCount(0);
 }
@@ -31,7 +34,7 @@ async function openCompactNav(page: Page) {
 }
 
 test.describe("marketing navigation", () => {
-  test("desktop shows primary links, Collaborate, CTA; no More menu", async ({ page }, testInfo) => {
+  test("desktop shows primary links and organisation links; no search or explore pill", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "desktop viewport only");
     await page.goto("/");
     await expectDesktopNav(page);
@@ -50,7 +53,7 @@ test.describe("marketing navigation", () => {
     for (const label of DESTINATIONS) {
       await expect(panel.getByRole("link", { name: label, exact: true })).toBeVisible();
     }
-    await expect(panel.getByRole("link", { name: /Explore the Immune System|Enter atlas/ })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Explore the Immune System" })).toHaveCount(0);
     await page.keyboard.press("Escape");
     await expect(panel).toBeHidden();
   });

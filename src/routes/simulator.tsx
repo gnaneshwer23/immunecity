@@ -4,7 +4,9 @@ import { useState } from "react";
 import { CONTENT } from "@/data/content";
 import { EduBanner, PageHead } from "@/components/immune/ui";
 import type { SimParams } from "@/lib/immune/sim";
+import { NOT_A_PATIENT_PREDICTION, TEACHING_MODELS } from "@/lib/immune/teachingModels";
 import InfectionSim from "@/components/immune/InfectionSim";
+import TeachingModelPanel from "@/components/immune/TeachingModelPanel";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/immune/page";
 
@@ -31,7 +33,9 @@ function Simulator() {
           { v: 4, l: "TREATMENTS" },
         ]}
       />
-      <EduBanner>Normalised teaching model with hand-set parameters — not calibrated to patient data and not a prediction for any person.</EduBanner>
+      <EduBanner>
+        Normalised teaching model with hand-set parameters — not calibrated to patient data and not a prediction for any person. {NOT_A_PATIENT_PREDICTION}
+      </EduBanner>
       <Section id="host" n={1} title="Choose a host state"
         lede="Each preset sets the starting parameters for a different kind of host. You can change every parameter in the next step.">
         <div className="row" role="group" aria-label="Host states" style={{ flexWrap: "wrap", gap: 8 }}>
@@ -53,6 +57,12 @@ function Simulator() {
       <Section id="run" n={2} title="Run the infection"
         lede="Tune the pathogen, the arms of immunity and the treatments, then compare runs. Read the curves as direction of change, not magnitude.">
         <InfectionSim key={key} initial={(cur?.p ?? {}) as Partial<SimParams>} />
+      </Section>
+      <Section id="teaching-models" n={3} title="Other teaching sketches"
+        lede="Separate classroom sketches. Each one shows its parameters, units, assumptions, and limits. Values are teaching assumptions. This is not a patient prediction.">
+        <div className="grid auto" style={{ gap: 16 }}>
+          {TEACHING_MODELS.map((model) => <TeachingModelPanel key={model.id} model={model} />)}
+        </div>
       </Section>
     </div>
   );

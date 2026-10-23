@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { courseMap, reviewDueLessons, type AcademyProgress } from "@/lib/academy/progress";
+import { useAcademyProgress } from "@/components/immune/useAcademyProgress";
 import { ArrowUpRight } from "lucide-react";
 import { NodeChip } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
@@ -30,33 +31,10 @@ export const Route = createFileRoute("/academy")({
   component: AcademyLanding,
 });
 
-const STORAGE_KEY = "immune-city-academy-progress-v2";
-
-type LocalProgress = {
-  visitedLessonIds: string[];
-  quizCorrect: string[];
-};
-
-function loadProgress(): LocalProgress {
-  if (typeof window === "undefined") return { visitedLessonIds: [], quizCorrect: [] };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { visitedLessonIds: [], quizCorrect: [] };
-    const parsed = JSON.parse(raw) as LocalProgress;
-    return {
-      visitedLessonIds: Array.isArray(parsed.visitedLessonIds) ? parsed.visitedLessonIds : [],
-      quizCorrect: Array.isArray(parsed.quizCorrect) ? parsed.quizCorrect : [],
-    };
-  } catch {
-    return { visitedLessonIds: [], quizCorrect: [] };
-  }
-}
-
 function AcademyLanding() {
-  const [progress, setProgress] = useState<LocalProgress>({ visitedLessonIds: [], quizCorrect: [] });
-  useEffect(() => {
-    setProgress(loadProgress());
-  }, []);
+  const { progress, storage } = useAcademyProgress();
+  const map = courseMap();
+  const due = reviewDueLessons(progress);
 
   const foundation = ACADEMY_TRACKS.find((t) => t.level === "foundation")!;
   const incomplete = ACADEMY_TRACKS.filter((t) => t.level !== "foundation");
@@ -69,7 +47,7 @@ function AcademyLanding() {
       <MarketingHero
         eyebrow="Immunology Academy"
         title="Learn mechanisms as connected systems."
-        lede="Academy is the learning overlay for Immune Super Intelligence — linked to the cell atlas, mechanisms, knowledge graph, disease, therapy and evidence layers. Completing a module is teaching progress, not claim review. Progress stays in this browser."
+        lede="Academy is the learning overlay for Immune Super Intelligence — linked to the cell atlas, mechanisms, knowledge graph, disease, therapy and evidence layers. Completing a module is teaching progress, not claim review. Signed out, progress stays in this browser. Signed in, it is kept on your account when Academy storage is available."
         actions={
           <>
             <Button asChild className="bio-primary">
@@ -86,6 +64,61 @@ function AcademyLanding() {
       />
 
       <MarketingBody>
+        <MarketingSection
+          id="course-map"
+          eyebrow="Course map"
+          title="What is navigable, and what is unfinished."
+          lede="Prerequisites are the lesson titles already on the curriculum. Unfinished tracks are labelled. No extra modules are added here."
+        >
+          <p className="mkt-aside">
+            Progress store: {storage === "account" ? "signed-in account" : storage === "loading" ? "checking" : "this browser"}.
+          </p>
+          {due.length ? (
+            <div>
+              <h3>Review due</h3>
+              <p className="mkt-aside">Completed lessons only. Re-open them when you want. This is not a new course.</p>
+              <ul className="mkt-scaffold-mods">
+                {due.map((item) => (
+                  <li key={item.lessonId}>
+                    <Link to="/mechanism/$id" params={{ id: item.lessonId }}>{item.title}</Link>
+                    <span> · {item.trackTitle}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="mkt-aside">No review is due until you finish a lesson’s existing questions.</p>
+          )}
+          <ol className="mkt-course-modules">
+            {map.map((track) => (
+              <li key={track.id} className="mkt-course-mod">
+                <div className="mkt-course-mod-body">
+                  <div className="mkt-course-mod-head">
+                    <span>{track.title}</span>
+                    <span className="mkt-course-mod-state">{track.unfinished ? "Unfinished" : "Navigable"}</span>
+                  </div>
+                  {track.modules.length === 0 ? (
+                    <p>No modules on this track yet.</p>
+                  ) : (
+                    <ul>
+                      {track.modules.map((module) => (
+                        <li key={module.id}>
+                          <Link to="/mechanism/$id" params={{ id: module.lessonId }}>{module.title}</Link>
+                          <span className="mkt-aside">
+                            {module.prerequisites.length
+                              ? ` · Prerequisites: ${module.prerequisites.map((item) => item.title).join("; ")}`
+                              : " · No prerequisites"}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </MarketingSection>
+
         <MarketingSection
           id="foundation"
           eyebrow="Foundation"
@@ -234,7 +267,7 @@ function AcademyLanding() {
   );
 }
 
-function IncompleteTrack({ track, progress }: { track: AcademyTrack; progress: LocalProgress }) {
+function IncompleteTrack({ track, progress }: { track: AcademyTrack; progress: AcademyProgress }) {
   const empty = track.modules.length === 0;
   const opened = progress.visitedLessonIds.filter((id) =>
     track.modules.some((m) => m.lessonId === id),

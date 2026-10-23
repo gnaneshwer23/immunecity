@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { byId, human, relId, TYPES, type KGEdge } from "@/lib/immune/engine";
+import { edgePanelFields } from "@/lib/immune/graphPhase2";
 import { inspect } from "@/lib/immune/inspector";
 import EdgeReference from "./EdgeReference";
 import { NodeLink } from "./ui";
@@ -8,6 +9,7 @@ export default function GraphEdgeDetail({ edge, onClose }: { edge: KGEdge; onClo
   const s = byId[edge.subject_id];
   const o = byId[edge.object_id];
   if (!s || !o) return null;
+  const fields = edgePanelFields(edge, s.name, o.name);
   return (
     <div className="inline-detail">
       <div className="id-head">
@@ -25,23 +27,26 @@ export default function GraphEdgeDetail({ edge, onClose }: { edge: KGEdge; onClo
           <span className="dot" style={{ background: `var(${TYPES[o.node_type].c})`, display: "inline-block", width: 8, height: 8, borderRadius: 4, margin: "0 6px" }} />
           <NodeLink id={o.id} label={o.name} />
         </p>
-        <p className="small muted" style={{ marginTop: 6 }}>{edge.mechanism}</p>
+        <dl className="small" style={{ display: "grid", gap: 6, marginTop: 8 }}>
+          <div><dt className="xs muted">Direction</dt><dd>{fields.direction}</dd></div>
+          <div><dt className="xs muted">Predicate</dt><dd>{human(fields.predicate)}</dd></div>
+          <div><dt className="xs muted">Tissue</dt><dd>{fields.tissue}</dd></div>
+          <div><dt className="xs muted">Mechanism</dt><dd>{fields.mechanism}</dd></div>
+          <div><dt className="xs muted">Source</dt><dd>{fields.source}</dd></div>
+          <div><dt className="xs muted">Reviewer</dt><dd>{fields.reviewer}</dd></div>
+          <div><dt className="xs muted">Review decision</dt><dd>{fields.reviewDecision}</dd></div>
+          <div><dt className="xs muted">Version</dt><dd>{fields.version}</dd></div>
+          <div><dt className="xs muted">Timestamp</dt><dd>{fields.timestamp}</dd></div>
+        </dl>
       </div>
       <div className="id-section">
-        <h5 className="id-sub">Confidence &amp; context</h5>
-        <p className="small">
-          Confidence: <b>{edge.confidence}</b>
-          {edge.location ? <> · Tissue: <b>{edge.location}</b></> : null}
-          {typeof edge.weight === "number" ? <> · Measured weight: <b className="mono">{edge.weight}</b></> : null}
-        </p>
-      </div>
-      <div className="id-section">
-        <h5 className="id-sub">Evidence &amp; provenance</h5>
+        <h5 className="id-sub">Evidence status</h5>
         <p className="small"><EdgeReference edge={edge} /></p>
         <p className="xs muted" style={{ marginTop: 8 }}>
-          Evidence class on the edge: <b>{edge.evidence_status}</b>. Review badges reflect relationship-level
+          Evidence status on the edge: <b>{fields.evidenceStatus}</b>. Review badges reflect relationship-level
           curation only — concept-level cites do not inflate link support. An empty or pending citation is a
-          curation gap, not a negative finding.
+          curation gap, not a negative finding. Reviewer, review decision, version, and timestamp say “Not recorded”
+          when the graph record does not carry them.
         </p>
       </div>
       <button className="btn sm" style={{ marginTop: 10 }} onClick={() => inspect({ kind: "relationship", id: relId(edge) })}>Full scientific detail</button>

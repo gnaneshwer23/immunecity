@@ -109,8 +109,8 @@ export const SPINE_STAGE_DEFS: Array<
     id: "assess",
     title: "Assess",
     status: "partial",
-    mapsTo: ["evidence", "mechanism"],
-    note: "Support / partial / contradicts assessment + mechanism paths. Assessor cannot approve Gate C.",
+    mapsTo: ["evidence", "mechanism", "appraisal", "contradiction"],
+    note: "Support / partial / contradicts assessment, critical appraisal, and an explicit contradiction step. This workbench cannot mark a claim approved.",
     readiness: (s) => {
       const assessed = (s.claims ?? []).some((c) => c.lifecycle !== "candidate" || c.polarity !== "unassessed");
       const mech = s.mechanism.paths.length > 0 || s.mechanism.gaps.length > 0;
