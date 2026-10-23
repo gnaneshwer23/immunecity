@@ -107,7 +107,7 @@ export function ResearchWorkspace() {
               Ask Immune remains graph-retrieved teaching with provisional lit labelled, fail-closed citation checks,
               and a separate counterevidence bucket — not fully evidence-grounded AI.
             </li>
-            <li>Omics / molecular model adapters remain planned stubs and never invent scores.</li>
+            <li>Molecular model adapters are planned only and never invent scores.</li>
           </ul>
         </section>
       </div>
@@ -126,7 +126,7 @@ export function AiPrinciples() {
       </li>
       <li>Show graph release, retrieved relationships, source IDs and tool versions where available.</li>
       <li>
-        Fail closed on invented citation IDs, Gate C overclaims and unlabelled provisional literature — do not pad
+        Fail closed on invented citation IDs, overclaims of reviewed support, and unlabelled provisional literature — do not pad
         support gaps.
       </li>
       <li>We do not claim clinical validation, experimental confirmation or superior discovery performance without measured evidence.</li>

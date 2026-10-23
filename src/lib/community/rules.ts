@@ -103,7 +103,7 @@ export function planModeration(input: { actorCanModerate: boolean; action: strin
   | { ok: true; action: "hide" | "restore"; reason: string }
   | { ok: false; error: string } {
   if (!input.actorCanModerate) {
-    return { ok: false, error: "Only moderators can hide or restore posts. Signup does not grant moderator." };
+    return { ok: false, error: "Only moderators can hide or restore posts." };
   }
   if (input.action !== "hide" && input.action !== "restore") {
     return { ok: false, error: "Moderation action must be hide or restore." };
@@ -435,7 +435,7 @@ export function planAppealDecision(input: {
   | { ok: true; decision: "uphold" | "restore"; reason: string; nextStatus: "hidden" | "visible" }
   | { ok: false; error: string } {
   if (!input.actorCanModerate) {
-    return { ok: false, error: "Only moderators can decide an appeal. Signup does not grant moderator." };
+    return { ok: false, error: "Only moderators can decide an appeal." };
   }
   if (!input.appealOpen) return { ok: false, error: "That appeal is already decided." };
   if (input.decision !== "uphold" && input.decision !== "restore") {
@@ -507,7 +507,7 @@ export function planJournalClub(input: {
     }
   | { ok: false; error: string } {
   if (!input.actorCanModerate) {
-    return { ok: false, error: "Only moderators can create a journal club. Signup does not grant moderator." };
+    return { ok: false, error: "Only moderators can schedule a journal club." };
   }
   const title = input.title.trim();
   const agenda = input.agenda.trim();
@@ -524,7 +524,7 @@ export function planJournalClub(input: {
   if (!citation.ok) return citation;
   const requested = input.requestedFacilitatorId?.trim() || input.actorId;
   if (requested !== input.actorId && !input.requestedFacilitatorCanModerate) {
-    return { ok: false, error: "Facilitator must already be a moderator. This does not assign a new role." };
+    return { ok: false, error: "The facilitator must already be a moderator." };
   }
   return {
     ok: true,

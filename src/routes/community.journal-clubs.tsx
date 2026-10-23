@@ -19,6 +19,12 @@ export const Route = createFileRoute("/community/journal-clubs")({
   component: JournalClubsPage,
 });
 
+function paperLabel(status: string): string {
+  if (status === "matched") return "Paper matched to an approved record";
+  if (status === "unverified") return "Paper not verified";
+  return "Paper status unavailable";
+}
+
 function JournalClubsPage() {
   const data = Route.useLoaderData();
   const member = useMember();
@@ -74,15 +80,16 @@ function JournalClubsPage() {
             <li key={club.id} className="card community-card">
               <p className="xs muted">{club.topicTitle} · {club.scheduledAt} · {club.facilitatorName}</p>
               <h2><Link to="/community/post/$postId" params={{ postId: club.postId }}>{club.title}</Link></h2>
-              <p className="xs muted">Paper: {club.paperStatus}. Facilitator is an existing moderator, not a new role.</p>
+              <p className="xs muted">{paperLabel(club.paperStatus)}. The facilitator is a moderator.</p>
             </li>
           ))}
         </ul>
       ) : <p className="small muted">No visible journal clubs yet.</p>}
+      {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member ? (
         <form onSubmit={onSubmit} className="card community-card community-form">
           <h2>Schedule a club</h2>
-          <p className="xs muted">Only moderators and administrators can create one. Signup does not grant that role.</p>
+          <p className="xs muted">Only moderators and administrators can schedule a club.</p>
           <label className="field">Topic
             <select className="community-input" value={topicSlug} onChange={(e) => setTopicSlug(e.target.value)} required>
               {topics.map((topic) => <option key={topic.slug} value={topic.slug}>{topic.title}</option>)}

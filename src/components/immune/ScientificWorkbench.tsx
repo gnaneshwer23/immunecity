@@ -340,7 +340,7 @@ export default function ScientificWorkbench({
               rows={2}
               value={session.question.inclusionCriteria ?? ""}
               onChange={(e) => setSession(updateQuestion(session, { inclusionCriteria: e.target.value }))}
-              placeholder="What must a paper include to proceed? (screening scaffold)"
+              placeholder="What must a paper include to proceed?"
             />
           </label>
           <label className="field">
@@ -498,8 +498,8 @@ export default function ScientificWorkbench({
 
           <h4 style={{ fontSize: "0.95rem", marginTop: 8 }}>Claim ledger (candidates) <CandidateBadge /></h4>
           <p className="xs muted">
-            Layer B scaffold: assertion + optional span + mapped relationship. Lifecycle stays local.
-            This workbench cannot mark a claim approved and never writes the KG.
+            Candidate claims stay here: an assertion, an optional quote, and an optional mapped relationship.
+            This workbench cannot approve a claim and never writes the knowledge graph.
           </p>
           <label className="field">Assertion
             <textarea rows={2} value={claimAssertion} onChange={(e) => setClaimAssertion(e.target.value)} />

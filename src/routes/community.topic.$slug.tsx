@@ -27,6 +27,12 @@ export const Route = createFileRoute("/community/topic/$slug")({
   component: TopicPage,
 });
 
+function paperLabel(status: string): string {
+  if (status === "matched") return "Paper matched to an approved record";
+  if (status === "unverified") return "Paper not verified";
+  return "Paper status unavailable";
+}
+
 function TopicPage() {
   const data = Route.useLoaderData();
   const member = useMember();
@@ -50,7 +56,7 @@ function TopicPage() {
     setMsg("");
     try {
       await follow({ data: { slug: topic.slug } });
-      setMsg("You are a member of this topic. That does not grant moderator.");
+      setMsg("You are following this topic.");
       await router.invalidate();
     } catch (err) {
       setMsg(safeClientError(err));
@@ -80,7 +86,7 @@ function TopicPage() {
           <ul className="community-stack">
             {data.clubs.map((club) => (
               <li key={club.id} className="card community-card">
-                <p className="xs muted">{club.scheduledAt} · {club.paperStatus}</p>
+                <p className="xs muted">{club.scheduledAt} · {paperLabel(club.paperStatus)}</p>
                 <h2><Link to="/community/post/$postId" params={{ postId: club.postId }}>{club.title}</Link></h2>
               </li>
             ))}

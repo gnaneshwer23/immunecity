@@ -1089,10 +1089,10 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
       endpointMismatchEdgesU.length
     ) {
       failReason =
-        "Answer implied reviewed/Gate C support that is not entailed by approved+supports evidence or passage windows for the retrieved links.";
+        "Answer implied reviewed support that is not backed by approved supporting evidence or the retrieved passage.";
     } else if (provisionalMislabelsU.length) {
       failReason =
-        "Answer cited provisional literature without labelling it as unreviewed / not Gate C.";
+        "Answer cited provisional literature without labelling it as unreviewed.";
     } else if (contextMismatchesU.length) {
       failReason =
         "Answer applied a retrieved claim to a biological setting the evidence does not establish.";

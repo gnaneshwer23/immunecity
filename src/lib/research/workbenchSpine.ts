@@ -81,7 +81,7 @@ export const SPINE_STAGE_DEFS: Array<
     title: "Screen",
     status: "planned",
     mapsTo: ["evidence"],
-    note: "Inclusion/exclusion screening with transparent reasons — scaffold only (use evidence notes).",
+    note: "Inclusion and exclusion notes stay with the question. This step does not approve a claim.",
     readiness: (s) => ({
       ready: !!(s.question as ResearchQuestionWithScreen).inclusionCriteria?.trim(),
       detail: (s.question as ResearchQuestionWithScreen).inclusionCriteria?.trim()

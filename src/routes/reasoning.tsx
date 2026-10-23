@@ -23,6 +23,7 @@ import MechanismWorkspace from "@/components/immune/MechanismWorkspace";
 import { approvedQuery } from "@/lib/citations.functions";
 import {
   EXEMPLAR_MATURITY_LABEL,
+  EXEMPLAR_MATURITY_SHORT,
   EXEMPLAR_PATHWAYS,
   exemplarAllowsEvidenceGroundedClaim,
   reportExemplar,
@@ -131,7 +132,7 @@ function Reasoning() {
                     title={maturityTitle}
                     aria-label={maturityTitle}
                   >
-                    {report.maturity}
+                    {EXEMPLAR_MATURITY_SHORT[report.maturity]}
                   </span>
                 </div>
                 <p className="small muted" style={{ marginTop: 8 }}>{p.purpose}</p>

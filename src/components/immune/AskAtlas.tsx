@@ -418,7 +418,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                     <GroundingPanel grounding={grounding} provisionalNote={provisionalNote} />
                     {researchTraceText ? (
                       <details className="ask-research-trace">
-                        <summary className="xs">Investigate plan trace (partial scaffold — not a multi-agent swarm)</summary>
+                        <summary className="xs">Investigate plan trace (partial — not a multi-agent system)</summary>
                         <pre className="ask-local-note xs">{researchTraceText}</pre>
                       </details>
                     ) : null}

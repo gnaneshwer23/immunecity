@@ -71,7 +71,7 @@ function AcademyLanding() {
           lede="Prerequisites are the lesson titles already on the curriculum. Unfinished tracks are labelled. No extra modules are added here."
         >
           <p className="mkt-aside">
-            Progress store: {storage === "account" ? "signed-in account" : storage === "loading" ? "checking" : "this browser"}.
+            Progress is kept in {storage === "account" ? "your account" : storage === "loading" ? "…" : "this browser"}.
           </p>
           {due.length ? (
             <div>

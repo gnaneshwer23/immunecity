@@ -177,10 +177,13 @@ function PillarMenu({ label, items, pathname, onNavigate }: {
         className={`pillar-trigger${active ? " active" : ""}${open ? " open" : ""}`}
         aria-expanded={open}
         aria-haspopup="true"
+        aria-label={label}
+        title={label}
         onClick={() => setOpen(!open)}
       >
         {Icon ? <NavIcon icon={Icon} /> : null}
-        {label}<ChevronDown size={14} className="pillar-chevron" />
+        <span className="nav-label">{label}</span>
+        <ChevronDown size={14} className="pillar-chevron" />
       </button>
       {open && (
         <div className="pillar-menu" role="menu" aria-label={label}>
@@ -417,9 +420,10 @@ export default function Shell({ children }: { children: ReactNode }) {
                   className="marketing-nav-link journey-direct nav-line"
                   activeOptions={{ exact: item.path !== "/community" }}
                   activeProps={{ className: "marketing-nav-link journey-direct nav-line current" }}
+                  title={item.label}
                 >
                   {Icon ? <NavIcon icon={Icon} /> : null}
-                  {item.label}
+                  <span className="nav-label">{item.label}</span>
                   {item.path === "/community" && unread > 0 ? <span className="community-unread-count">{unread}</span> : null}
                 </Link>
               );

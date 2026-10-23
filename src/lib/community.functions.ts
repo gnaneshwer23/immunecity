@@ -550,7 +550,7 @@ export const getCommunityModerationQueue = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const powers = await loadAccountPowers(context.userId);
     if (!powers.moderator) {
-      throw new Error("Only moderators can hide or restore posts. Signup does not grant moderator.");
+      throw new Error("Only moderators can hide or restore posts.");
     }
     const db = getDb();
     try {

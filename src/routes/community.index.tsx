@@ -32,7 +32,7 @@ function CommunityIndex() {
       <CommunityBar unread={unread} />
       <p className="row" style={{ margin: "16px 0" }}>
         <Link className="btn sm primary" to="/community/new">New post</Link>
-        <Link className="btn sm" to="/auth" search={{ redirect: "/community" }}>Sign in</Link>
+        {member === null ? <Link className="btn sm" to="/auth" search={{ redirect: "/community" }}>Sign in</Link> : null}
       </p>
       {!data.available ? (
         <p className="callout" role="status">Community storage is not available on this database yet.</p>

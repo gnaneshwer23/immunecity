@@ -291,7 +291,7 @@ function Home() {
           <div className="home-live">
             <Link to="/academy">
               <b>Academy</b>
-              <span>Foundation lessons are navigable. Intermediate and advanced tracks are scaffolds, not finished courses.</span>
+              <span>Foundation lessons are open to read. Intermediate and advanced tracks are still being written, not finished courses.</span>
             </Link>
             <Link to="/research">
               <b>Research</b>

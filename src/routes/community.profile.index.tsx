@@ -88,7 +88,9 @@ function ProfileEditor() {
         lede="Display name, interests and visibility. A credential is optional and is not checked."
       />
       <CommunityBar unread={unread} />
+      {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member === null ? <p><Link to="/auth" search={{ redirect: "/community/profile" }}>Sign in</Link></p> : null}
+      {member && !mine && !msg ? <p className="small muted">Loading your profile.</p> : null}
       {member && mine ? (
         <form onSubmit={onSave} className="card community-card community-form">
           <label className="field">Display name<input className="community-input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required maxLength={80} /></label>
@@ -119,6 +121,12 @@ function ProfileEditor() {
           <p className="xs muted">Notifications are on for replies to posts you follow and for appeal decisions, unless you pause them.</p>
           <button className="btn sm primary" type="submit" disabled={busy}>Save profile</button>
         </form>
+      ) : null}
+      {member && (mine?.hiddenPosts.length || mine?.hiddenComments.length) ? (
+        <label className="field">Appeal reason
+          <textarea className="community-input" value={appealReason} onChange={(e) => setAppealReason(e.target.value)} minLength={8} maxLength={500} />
+          <span className="xs muted">Write at least 8 characters, then choose Appeal. The same reason is sent with each appeal.</span>
+        </label>
       ) : null}
       {mine?.hiddenPosts.length ? (
         <section className="card community-card" aria-label="Hidden posts">
@@ -178,11 +186,6 @@ function ProfileEditor() {
             ))}
           </ul>
         </section>
-      ) : null}
-      {member && (mine?.hiddenPosts.length || mine?.hiddenComments.length) ? (
-        <label className="field">Appeal reason
-          <textarea className="community-input" value={appealReason} onChange={(e) => setAppealReason(e.target.value)} minLength={8} maxLength={500} />
-        </label>
       ) : null}
       {member ? (
         <section className="card community-card" aria-label="Your data">

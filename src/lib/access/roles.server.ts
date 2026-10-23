@@ -24,20 +24,20 @@ export async function loadAccountPowers(userId: string | null | undefined): Prom
 export async function assertCanModerate(userId: string): Promise<void> {
   const powers = await loadAccountPowers(userId);
   if (!powers.moderator) {
-    throw new Error("Only moderators can hide or restore community posts. Signup does not grant moderator.");
+    throw new Error("Only moderators can hide or restore community posts.");
   }
 }
 
 export async function assertCanReview(userId: string): Promise<void> {
   const powers = await loadAccountPowers(userId);
   if (!powers.reviewer) {
-    throw new Error("Only scientific reviewers and administrators can change curation records. Signup does not grant that role.");
+    throw new Error("Only scientific reviewers and administrators can change curation records.");
   }
 }
 
 export async function assertAdministrator(userId: string): Promise<void> {
   const powers = await loadAccountPowers(userId);
   if (!powers.administrator) {
-    throw new Error("Only administrators can run that action. Signup does not grant administrator.");
+    throw new Error("Only administrators can run that action.");
   }
 }

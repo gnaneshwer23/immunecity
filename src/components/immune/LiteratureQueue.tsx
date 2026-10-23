@@ -148,7 +148,7 @@ export default function LiteratureQueue({ onSendToWorkbench, seed }: Props) {
             rows={2}
             value={restoreRaw}
             onChange={(e) => setRestoreRaw(e.target.value)}
-            placeholder="Paste a literature project export (draft_scaffold only)"
+            placeholder="Paste a literature project export (draft only)"
           />
         </label>
         <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
@@ -233,7 +233,7 @@ export default function LiteratureQueue({ onSendToWorkbench, seed }: Props) {
           )}
           <p className="xs muted">
             Live PubMed/Crossref verification runs in{" "}
-            <Link to="/curation">Citation curation</Link> after import — not in this browser scaffold.
+            <Link to="/curation">Citation curation</Link> after import. This page does not check identifiers itself.
           </p>
         </section>
       )}

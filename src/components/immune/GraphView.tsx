@@ -370,7 +370,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
                 <option value="">All evidence statuses</option>
                 {KG.evidence_statuses.map((s) => <option key={s} value={s}>{s.toLowerCase()}</option>)}
               </select>
-              <p className="xs muted" style={{ marginTop: 6 }}>Filters links by the status recorded on the graph edge. This is not Gate C claim review. An empty result is a filter, not evidence of absence.</p>
+              <p className="xs muted" style={{ marginTop: 6 }}>Filters links by the status stored on each graph edge. This is separate from reviewed claim coverage. An empty result is a filter, not evidence of absence.</p>
             </div>
           ) : null}
           <div className="card">

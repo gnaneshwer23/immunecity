@@ -46,7 +46,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     id: "mechanism-lessons",
     name: "Mechanism lessons",
     page: "academy",
-    description: "Walk illustrative cascades; Academy foundation is navigable, intermediate is an honest scaffold.",
+    description: "Walk illustrative cascades. Academy foundation is open to read. Intermediate is still being written.",
     status: "partial",
     statusAsOf: "2026-10",
     relatedAppRoute: "/academy",
@@ -77,7 +77,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Ask Immune (graph-retrieved teaching)",
     page: "scientific-ai",
     description:
-      "Ask Immune retrieves graph context and Gate C approved+supports cites when present; citation validation fail-closes invented IDs, Gate C overclaims, and unlabelled provisional lit — not fully evidence-grounded AI (passage entailment still partial).",
+      "Ask Immune retrieves graph context and reviewed supporting cites when present. Citation checks reject invented IDs, overclaims of reviewed support, and unlabelled provisional literature. Not fully evidence-grounded AI.",
     status: "partial",
     statusAsOf: "2026-10",
     relatedAppRoute: "/ask",
@@ -88,7 +88,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Bounded research planner",
     page: "research",
     description:
-      "Typed plan steps + run trace scaffold for hypothesis/comparison Ask modes — not a multi-agent swarm; most tool stages remain planned.",
+      "Typed plan steps and a run trace for hypothesis and comparison questions. Not a multi-agent system. Most tool stages remain planned.",
     status: "partial",
     statusAsOf: "2026-10",
     relatedAppRoute: "/ask",
@@ -99,7 +99,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Scientific research workbench",
     page: "research",
     description:
-      "Guided question → evidence → mechanism → hypothesis → experiment → review; candidates only. Bounded investigate plan trace on Ask (hypothesis/comparison) is a partial scaffold — not a multi-agent swarm. No KG write-back.",
+      "Guided question, evidence, mechanism, hypothesis, experiment and review. Candidates only. The investigate plan on Ask is partial and is not a multi-agent system. Nothing is written into the knowledge graph.",
     status: "partial",
     statusAsOf: "2026-10",
     relatedAppRoute: "/research",
@@ -121,7 +121,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Omics / molecular AI adapters",
     page: "scientific-ai",
     description:
-      "Planned / interface-only stubs — implementedModels() is empty; dry-run returns not_available and never invents scores.",
+      "Planned only. No molecular model is connected, and the product never invents a score.",
     status: "planned",
     statusAsOf: "2026-10",
     relatedAppRoute: "/research",
@@ -132,7 +132,7 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     name: "Immunology Academy curriculum",
     page: "academy",
     description:
-      "Foundation navigable + intermediate scaffold + advanced labelled empty — still in development; not certification.",
+      "Foundation is open to read. Intermediate is still being written. Advanced has no modules yet. Not a certificate.",
     status: "in_development",
     statusAsOf: "2026-10",
     relatedAppRoute: "/academy",

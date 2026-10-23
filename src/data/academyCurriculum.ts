@@ -43,7 +43,7 @@ export const FOUNDATION_TRACK: AcademyTrack = {
   title: "Foundation: innate sensing → cytokines → inflammation",
   level: "foundation",
   summary:
-    "One navigable beginner path through existing Mechanism lessons. Teaching simplifications are labelled; claim-level Gate C coverage is separate and may still be sparse.",
+    "One beginner path through existing Mechanism lessons. Teaching simplifications are labelled. Reviewed claim coverage is separate and may still be sparse.",
   status: "navigable",
   modules: [
     {
@@ -51,7 +51,7 @@ export const FOUNDATION_TRACK: AcademyTrack = {
       title: "Innate sensing (TLR4 → NF-κB)",
       objectives: [
         "Trace LPS recognition to NF-κB-driven inflammatory transcription.",
-        "Distinguish MyD88 vs TRIF branches as a teaching scaffold.",
+        "Distinguish MyD88 vs TRIF branches in this teaching model.",
         "Name one clinical timing lesson from failed TLR4 blockade in sepsis.",
       ],
       lessonId: "tlr4",
@@ -136,7 +136,7 @@ export const FOUNDATION_TRACK: AcademyTrack = {
       prerequisiteLessonIds: ["tlr4", "il6"],
       graphIds: ["R004", "P003", "M002", "M036", "M037"],
       evidenceNote:
-        "NLRP3/IL-1 teaching path is scaffolded from existing lessons; Gate C approved support is not implied by finishing the track.",
+        "The NLRP3/IL-1 path reuses existing lessons. Finishing the track does not mean those claims are reviewed.",
       teachingSimplifications: [
         "Diverse NLRP3 triggers are collapsed to K⁺ efflux / damage motifs.",
         "CANTOS secondary signals are hypothesis-generating, not Academy proof.",
@@ -176,14 +176,14 @@ export const INTERMEDIATE_TRACK: AcademyTrack = {
   title: "Intermediate: adaptive brakes, IFN sensing, type-2 effectors",
   level: "intermediate",
   summary:
-    "Honest scaffold over three existing Mechanism lessons (checkpoint, cGAS–STING, type-2). Not a finished intermediate curriculum — labelled in development; local quizzes only.",
+    "Three existing Mechanism lessons (checkpoint, cGAS–STING, type-2). Not a finished intermediate course. Still in development. Quizzes stay on this account or in this browser.",
   status: "scaffold",
   modules: [
     {
       id: "mod-checkpoint",
       title: "Checkpoints at the synapse (CTLA-4 / PD-1)",
       objectives: [
-        "Contrast CTLA-4 (priming) vs PD-1 (peripheral brake) as a teaching scaffold.",
+        "Contrast CTLA-4 (priming) with PD-1 (peripheral brake) in this teaching model.",
         "Name one toxicity-pattern difference that follows from where each acts.",
         "State why MHC-I loss can blunt anti-PD-1 response without inventing patient advice.",
       ],
@@ -191,10 +191,10 @@ export const INTERMEDIATE_TRACK: AcademyTrack = {
       prerequisiteLessonIds: ["tlr4", "il6"],
       graphIds: ["R019", "R011", "R012", "I008", "I009"],
       evidenceNote:
-        "Checkpoint teaching path is educational. Live Gate C on PD-1 exemplar edges may still be partial — finishing this module is not claim review.",
+        "Checkpoint teaching is educational. Reviewed support on PD-1 pathway links may still be partial. Finishing this module is not claim review.",
       teachingSimplifications: [
         "Synapse timing is simplified; real tumours and autoimmunity diverge.",
-        "Trial response rates are context, not Academy proof of Gate C.",
+        "Trial response rates are context. They are not proof that a claim has been reviewed.",
       ],
       quiz: [
         {
@@ -228,14 +228,14 @@ export const INTERMEDIATE_TRACK: AcademyTrack = {
       title: "Cytosolic DNA → type I IFN (cGAS–STING)",
       objectives: [
         "Trace cytosolic DNA to IFNAR-driven ISG programmes at teaching depth.",
-        "Link type I IFN amplification to BAFF / B-cell survival as a scaffold (not disease-complete).",
+        "Link type I IFN amplification to BAFF and B-cell survival as a teaching path, not a complete disease model.",
         "Name one IFNAR-targeted educational example without claiming CDS.",
       ],
       lessonId: "sting",
       prerequisiteLessonIds: ["checkpoint"],
       graphIds: ["P011", "M018", "R018", "P004", "I015", "D007"],
       evidenceNote:
-        "IFN teaching reuses the STING lesson. Exemplar IFN→SLE Gate C may still be scaffold — do not treat quiz completion as evidence approval.",
+        "IFN teaching reuses the STING lesson. Reviewed support on the IFN to SLE path may still be early. Quiz completion is not evidence approval.",
       teachingSimplifications: [
         "pDC and non-pDC IFN sources are collapsed for teaching.",
         "SLE biology is broader than the cGAS–STING spine shown here.",
@@ -298,10 +298,10 @@ export const INTERMEDIATE_TRACK: AcademyTrack = {
  */
 export const ADVANCED_TRACK: AcademyTrack = {
   id: "advanced-systems-integration",
-  title: "Advanced: systems integration (scaffold)",
+  title: "Advanced: systems integration",
   level: "advanced",
   summary:
-    "Placeholder for multi-pathway integration lessons. No modules are navigable yet — labelled scaffold only, not a finished advanced course or certification.",
+    "A place for multi-pathway integration lessons. No modules are open yet. This is not a finished advanced course or a certificate.",
   status: "scaffold",
   modules: [],
 };

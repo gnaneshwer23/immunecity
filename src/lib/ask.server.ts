@@ -213,7 +213,7 @@ export async function loadCounterEvidenceForRels(relIds: string[]): Promise<Revi
 }
 
 const CITATION_REJECT =
-  "I drafted an answer but citation-to-claim validation failed (invented or unretrieved IDs, Gate C overclaim, or provisional literature without an unreviewed label), so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods & trust.";
+  "I drafted an answer but citation checks failed (invented or unretrieved IDs, a claim of reviewed support the sources do not give, or provisional literature without an unreviewed label), so I'm not publishing it. Rephrase using named atlas concepts, or open the graph and Methods.";
 
 export type PrepareAskServerResult =
   | {

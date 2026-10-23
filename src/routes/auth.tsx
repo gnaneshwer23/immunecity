@@ -8,12 +8,12 @@ import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: zodValidator(z.object({ redirect: fallback(z.string(), "/curation").default("/curation") })),
-  head: () => seoHead({ title: "Sign in — Immune Super Intelligence", description: "Sign in to curate the Immune Super Intelligence citation layer.", path: "/auth", noIndex: true }),
+  validateSearch: zodValidator(z.object({ redirect: fallback(z.string(), "/").default("/") })),
+  head: () => seoHead({ title: "Sign in — Immune Super Intelligence", description: "Sign in to Immune Super Intelligence. Educational account for community, workspace and saved concepts. Not clinical decision support.", path: "/auth", noIndex: true }),
   component: AuthPage,
 });
 
-const safePath = (p: string) => (p.startsWith("/") && !p.startsWith("//") ? p : "/curation");
+const safePath = (p: string) => (p.startsWith("/") && !p.startsWith("//") ? p : "/");
 
 function AuthPage() {
   const { redirect } = Route.useSearch();
@@ -77,9 +77,9 @@ function AuthPage() {
   return (
     <div className="page" style={{ maxWidth: 440 }}>
       <PageHead
-        kicker="Curation · Access"
+        kicker="Account"
         title={mode === "in" ? "Sign in" : "Create an account"}
-        lede="Curation is open to signed-in readers. Editing rights are granted by the team, not on sign-up."
+        lede="Sign in for community discussion, your workspace and saved concepts. New accounts are members. Review and moderation are granted separately, not at sign-up. This is an educational resource, not clinical decision support."
       />
       <div className="card">
         <Button variant="outline" className="w-full" disabled={busy || !available} onClick={google}>

@@ -41,7 +41,9 @@ function NotificationsPage() {
     <div className="page community-page">
       <PageHead kicker="Community" title="Notifications" lede="In-app only. Replies on posts you follow, and decisions on your appeals. No email is sent." />
       <CommunityBar unread={unread} />
+      {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member === null ? <p><Link to="/auth" search={{ redirect: "/community/notifications" }}>Sign in</Link></p> : null}
+      {member && !data && !msg ? <p className="small muted">Loading notifications.</p> : null}
       {data?.items.length ? (
         <>
           <button type="button" className="btn sm" onClick={async () => {

@@ -765,7 +765,7 @@ export function parseLiteratureProjectJson(raw: string): {
   }
   if (!data || typeof data !== "object") return { error: "Expected a literature project object." };
   const o = data as Partial<LiteratureProject> & { export?: unknown };
-  if (o.status !== "draft_scaffold") return { error: "Only draft_scaffold literature projects can be restored." };
+  if (o.status !== "draft_scaffold") return { error: "Only draft literature projects can be restored." };
   if (!o.project_id || !o.search || !Array.isArray(o.claims)) {
     return { error: "Missing project_id, search, or claims." };
   }
@@ -899,7 +899,7 @@ export function exportProjectJson(project: LiteratureProject): string {
       ...refreshed,
       export: {
         curationManifest: exportCurationManifest(refreshed),
-        disclaimer: "Draft scaffold only — no approved graph writes.",
+        disclaimer: "Draft only. Import does not approve claims or write the knowledge graph.",
       },
     },
     null,

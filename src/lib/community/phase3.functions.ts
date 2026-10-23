@@ -544,7 +544,7 @@ export const listOpenCommunityAppeals = createServerFn({ method: "GET" })
   .middleware([requireNeonAuth])
   .handler(async ({ context }) => {
     const powers = await loadAccountPowers(context.userId);
-    if (!powers.moderator) throw new Error("Only moderators can decide an appeal. Signup does not grant moderator.");
+    if (!powers.moderator) throw new Error("Only moderators can decide an appeal.");
     const db = getDb();
     try {
       const appeals = await db

@@ -85,12 +85,15 @@ function ModerationPage() {
         lede="Moderators and administrators can hide or restore a post or comment. The reason is stored with the action. Signup does not make someone a moderator."
       />
       <p><Link to="/community">Back to topics</Link></p>
+      {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member === null ? <p><Link to="/auth" search={{ redirect: "/community/moderation" }}>Sign in</Link></p> : null}
-      {member === undefined ? <p className="xs muted">Checking access…</p> : null}
-      <label className="field">
-        Reason for the next action
-        <textarea className="community-input" value={reason} onChange={(e) => setReason(e.target.value)} minLength={8} maxLength={500} />
-      </label>
+      {member ? (
+        <label className="field">
+          Reason for the next action
+          <textarea className="community-input" value={reason} onChange={(e) => setReason(e.target.value)} minLength={8} maxLength={500} />
+          <span className="xs muted">Write at least 8 characters before hiding, restoring, or deciding an appeal.</span>
+        </label>
+      ) : null}
       {msg ? <p className="callout" role="status">{msg}</p> : null}
       {queue ? (
         <>
@@ -102,8 +105,8 @@ function ModerationPage() {
                   <p className="xs muted">{r.targetType} · {r.createdAt}</p>
                   <p>{r.reason}</p>
                   <p className="row">
-                    <button type="button" className="btn sm" disabled={busy} onClick={() => run(r.targetType === "comment" ? "comment" : "post", r.targetId, "hide")}>Hide</button>
-                    <button type="button" className="btn sm" disabled={busy} onClick={() => run(r.targetType === "comment" ? "comment" : "post", r.targetId, "restore")}>Restore</button>
+                    <button type="button" className="btn sm" disabled={busy || reason.trim().length < 8} onClick={() => run(r.targetType === "comment" ? "comment" : "post", r.targetId, "hide")}>Hide</button>
+                    <button type="button" className="btn sm" disabled={busy || reason.trim().length < 8} onClick={() => run(r.targetType === "comment" ? "comment" : "post", r.targetId, "restore")}>Restore</button>
                   </p>
                 </li>
               ))}
@@ -117,8 +120,8 @@ function ModerationPage() {
                   <p className="xs muted">{appeal.targetType} · {appeal.createdAt}</p>
                   <p>{appeal.reason}</p>
                   <p className="row">
-                    <button type="button" className="btn sm" disabled={busy} onClick={() => decideAppeal(appeal.id, "uphold")}>Uphold</button>
-                    <button type="button" className="btn sm" disabled={busy} onClick={() => decideAppeal(appeal.id, "restore")}>Restore</button>
+                    <button type="button" className="btn sm" disabled={busy || reason.trim().length < 8} onClick={() => decideAppeal(appeal.id, "uphold")}>Uphold</button>
+                    <button type="button" className="btn sm" disabled={busy || reason.trim().length < 8} onClick={() => decideAppeal(appeal.id, "restore")}>Restore</button>
                   </p>
                 </li>
               ))}
@@ -130,7 +133,7 @@ function ModerationPage() {
               {queue.hiddenPosts.map((p) => (
                 <li key={p.id} className="card community-card">
                   <p>{p.title}</p>
-                  <button type="button" className="btn sm" disabled={busy} onClick={() => run("post", p.id, "restore")}>Restore</button>
+                  <button type="button" className="btn sm" disabled={busy || reason.trim().length < 8} onClick={() => run("post", p.id, "restore")}>Restore</button>
                 </li>
               ))}
             </ul>

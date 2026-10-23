@@ -68,7 +68,7 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     maturity: "partially-reviewed",
     notes: [
       "CD8→PD-1 expression has approved support (Barber). Pembrolizumab→PD-1 block is approved off this shortest path (KEYNOTE).",
-      "Still open for Gate C on this path: PD-L1→CD8 suppress (Chemnitz mapped partial), PD-L1 expression measures PD-L1, PD-L1 expression predicts pembrolizumab response.",
+      "Still awaiting reviewed support on this path: PD-L1→CD8 suppress (Chemnitz mapped partial), PD-L1 expression measures PD-L1, PD-L1 expression predicts pembrolizumab response.",
       "Separate cell biology, tumour context, therapeutic mechanism and trial endpoints — do not overgeneralise response rates.",
     ],
   },
@@ -82,7 +82,7 @@ export const EXEMPLAR_PATHWAYS: ExemplarPathway[] = [
     notes: [
       "Shortest graph path Type-I IFN→SLE currently detours via BAFF/belimumab (Lopez / Shin / Navarra approved) — not a direct IFN→SLE claim review.",
       "Still open: pDC→IFN signalling, IFNAR→signalling, IFN↔IFNAR bind, Anifrolumab→SLE.",
-      "Show where the chain is direct, indirect or still under review — overall pathway remains scaffold-ish.",
+      "Show where the chain is direct, indirect or still under review. The pathway as a whole is still early.",
     ],
   },
 ];

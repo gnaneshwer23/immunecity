@@ -15,8 +15,8 @@ import LessonDiscussions from "@/components/immune/LessonDiscussions";
 import { useAcademyProgress } from "@/components/immune/useAcademyProgress";
 
 function trackStatusLabel(track: AcademyTrack): string {
-  if (track.status === "navigable") return "navigable scaffold";
-  return "in development · scaffold only";
+  if (track.status === "navigable") return "Open to read";
+  return "In development";
 }
 
 function QuizBlock({
@@ -208,9 +208,9 @@ export default function AcademyTrack({ lessonId }: { lessonId: string }) {
     <section className="section academy-track" aria-labelledby="academy-track-heading">
       <h2 id="academy-track-heading">Immunology Academy</h2>
       <p className="lede">
-        Foundation is navigable. Intermediate and advanced are unfinished scaffolds. Signed out, progress stays in
+        Foundation is open to read. Intermediate and advanced are still being written. Signed out, progress stays in
         this browser. Signed in, the same record is kept on your account when Academy storage is available. Not
-        certification and not Gate C evidence coverage.{" "}
+        a certificate, and not a count of reviewed evidence.{" "}
         <Link to="/academy">Academy overview</Link>
       </p>
       <p className="xs muted">

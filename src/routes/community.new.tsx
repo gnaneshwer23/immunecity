@@ -111,6 +111,7 @@ function NewPostPage() {
       />
       <CommunityNote />
       {!available ? <p className="callout">Community storage is not available on this database yet.</p> : null}
+      {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member === null ? (
         <p><Link to="/auth" search={{ redirect: "/community/new" }} onClick={() => {
           const id = concept.trim();

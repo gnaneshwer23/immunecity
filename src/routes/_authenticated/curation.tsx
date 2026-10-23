@@ -276,7 +276,7 @@ function Curation() {
     }
     setProgress(null);
     setMsg(
-      `Approved ${ok} claim-assessed record(s)${failed ? `; ${failed} rejected by server invariants` : ""}. Only approved + supports counts toward Gate C.`,
+      `Approved ${ok} claim-assessed record(s)${failed ? `; ${failed} could not be saved` : ""}. Only approved records that support the claim count as reviewed support.`,
     );
     await load();
   };
@@ -305,18 +305,17 @@ function Curation() {
       <p className="callout" style={{ marginBottom: 20 }} role="note">
         <strong>ID verify ≠ claim approve.</strong>{" "}
         “Identifier verified” / “One match found” means the bibliographic ID resolved — not that the paper supports the atlas claim.
-        Gate C coverage counts only <code>curation=approved</code> + <code>claim_support=supports</code> on a mapped <code>relationship_id</code>.
+        Reviewed support counts only records that are approved, marked as supporting the claim, and mapped to that relationship.
       </p>
       <p className="callout" style={{ marginBottom: 20 }} role="note">
-        <strong>Counterevidence path (not Gate C).</strong>{" "}
-        Set <code>claim_support</code> to <strong>partial</strong> or <strong>contradicts</strong> when the paper only partly supports or opposes the directional claim.
-        Those rows surface in Ask’s GroundingPanel counterevidence bucket — they never count as approved+supports.
-        Do <strong>not</strong> invent a contradicts row to “populate” the UI; leave empty when polarity is unclear.
-        Prod currently has Chemnitz as <code>partial</code> on <code>REL-R012-suppresses-C015</code> and <strong>0</strong> contradicts (honest empty).
+        <strong>Counterevidence stays separate from reviewed support.</strong>{" "}
+        Mark a paper partial or contradicts when it only partly supports or opposes the directional claim.
+        Those rows appear as counterevidence in Ask. They never count as approved support.
+        Do not invent a contradicts row. Leave the assessment empty when the direction is unclear.
       </p>
       {role && !canReview ? (
         <p className="callout" style={{ marginBottom: 20 }}>
-          <strong>Read-only view.</strong> The review queue is limited to scientific reviewers and administrators. Signup does not grant that role.
+          <strong>Read-only view.</strong> The review queue is limited to scientific reviewers and administrators.
         </p>
       ) : null}
 
@@ -353,9 +352,8 @@ function Curation() {
           </ol>
           <div style={{ marginTop: 14 }}>
             <p className="small" style={{ marginBottom: 8 }}>
-              <strong>P0 exemplar Gate C gaps</strong> ({EXEMPLAR_CURATOR_TARGETS.length} targets) — PubMed queries are search starts; verify identifiers before approve.
-              Do <strong>not</strong> invent PMIDs or auto-approve. Ordered human steps live in{" "}
-              <code>docs/CURATOR_EVIDENCE_QUEUE.md</code>.
+              <strong>Priority pathway gaps</strong> ({EXEMPLAR_CURATOR_TARGETS.length} targets). PubMed queries are search starts. Verify identifiers before you approve.
+              Do not invent PMIDs or approve in bulk.
             </p>
             <p className="xs muted" style={{ marginBottom: 8 }}>
               Focus filter: paste a <code>relId</code> from the list below into Search (e.g.{" "}
@@ -416,7 +414,7 @@ function Curation() {
         <div className="ev-stat"><b>{stats.total}</b><span>citation slots</span></div>
         <div className="ev-stat"><b>{stats.withSource}</b><span>name a source</span></div>
         <div className="ev-stat"><b>{stats.verified}</b><span>IDs verified (metadata only)</span></div>
-        <div className="ev-stat"><b>{claimMapped.length}</b><span>claim-assessed (not yet Gate C)</span></div>
+        <div className="ev-stat"><b>{claimMapped.length}</b><span>claim-assessed, not yet reviewed support</span></div>
         <div className="ev-stat"><b>{approvedClaimLinks}</b><span>approved + supports links</span></div>
         <div className="ev-stat"><b>{stats.approved}</b><span>approved rows</span></div>
       </div>
@@ -564,15 +562,15 @@ function RecordDetail({ r, isAdmin, onSave, onClaim }: { r: Rec; isAdmin: boolea
         <label className="field" style={{ marginTop: 8 }}>Claim support
           <select value={r.claim_support ?? "unassessed"} disabled={!isAdmin || !r.relationship_id} onChange={(e) => onClaim({ claim_support: e.target.value })}>
             <option value="unassessed">Not assessed</option>
-            <option value="supports">Supports (Gate C eligible when approved)</option>
-            <option value="partial">Partial — counterevidence path (not Gate C)</option>
-            <option value="contradicts">Contradicts — counterevidence path (not Gate C)</option>
+            <option value="supports">Supports (counts as reviewed support once approved)</option>
+            <option value="partial">Partial — counterevidence, not reviewed support</option>
+            <option value="contradicts">Contradicts — counterevidence, not reviewed support</option>
             <option value="unrelated">Does not address it</option>
           </select>
         </label>
         {(r.claim_support === "partial" || r.claim_support === "contradicts") && (
           <p className="xs muted" style={{ marginTop: 8 }} role="status">
-            This assessment is counterevidence for Ask / Inspector — it will not raise Gate C coverage even if curation is later approved.
+            This assessment is counterevidence for Ask and the inspector. It does not count as reviewed support, even if the record is later approved.
             Approve is blocked unless claim_support is supports.
           </p>
         )}

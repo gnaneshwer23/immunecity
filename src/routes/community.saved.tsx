@@ -36,7 +36,9 @@ function SavedPage() {
     <div className="page community-page">
       <PageHead kicker="Community" title="Saved" lede="Posts and replies you saved. Hidden items stay hidden." />
       <CommunityBar unread={unread} />
+      {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member === null ? <p><Link to="/auth" search={{ redirect: "/community/saved" }}>Sign in</Link></p> : null}
+      {member && !data && !msg ? <p className="small muted">Loading saved items.</p> : null}
       {msg ? <p className="callout" role="status">{msg}</p> : null}
       {data?.items.length ? (
         <ul className="community-stack">
