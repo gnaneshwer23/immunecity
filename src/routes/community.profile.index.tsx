@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { PageHead } from "@/components/immune/ui";
 import { CommunityBar, safeClientError, useMember, useUnreadCount } from "@/components/immune/community/chrome";
 import { appealCommunityTarget, editCommunityPost, getMyCommunityProfile, updateMyCommunityProfile } from "@/lib/community/phase3.functions";
+import { deleteMyData, exportMyData } from "@/lib/privacy.functions";
+import { DELETE_CONFIRMATION } from "@/lib/privacy";
 import { PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/community/profile/")({
@@ -27,6 +29,8 @@ function ProfileEditor() {
   const save = useServerFn(updateMyCommunityProfile);
   const appeal = useServerFn(appealCommunityTarget);
   const edit = useServerFn(editCommunityPost);
+  const download = useServerFn(exportMyData);
+  const remove = useServerFn(deleteMyData);
   const [mine, setMine] = useState<Mine | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
@@ -38,6 +42,7 @@ function ProfileEditor() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [appealReason, setAppealReason] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function refresh() {
     const data = await load();
@@ -178,6 +183,56 @@ function ProfileEditor() {
         <label className="field">Appeal reason
           <textarea className="community-input" value={appealReason} onChange={(e) => setAppealReason(e.target.value)} minLength={8} maxLength={500} />
         </label>
+      ) : null}
+      {member ? (
+        <section className="card community-card" aria-label="Your data">
+          <h2>Your data</h2>
+          <p className="xs muted">
+            Download a JSON file of your profile, posts, replies, saves, follows, notifications and concept saves.
+            This file does not include other people’s private data or evidence records.
+          </p>
+          <button type="button" className="btn sm" disabled={busy} onClick={async () => {
+            setBusy(true);
+            setMsg("");
+            try {
+              const data = await download();
+              const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "immune-super-intelligence-data.json";
+              link.click();
+              URL.revokeObjectURL(url);
+            } catch (err) {
+              setMsg(safeClientError(err));
+            } finally {
+              setBusy(false);
+            }
+          }}>Download my data</button>
+          <h3 style={{ marginTop: 18 }}>Delete personal data</h3>
+          <p className="xs muted">
+            This clears your display name, bio, affiliation and credential, and deletes your notifications, saves and follows.
+            Your posts stay in the community with the name removed. Evidence records, the knowledge graph and other members are left as they are.
+          </p>
+          {confirmDelete ? (
+            <button type="button" className="btn sm" disabled={busy} onClick={async () => {
+              setBusy(true);
+              setMsg("");
+              try {
+                await remove({ data: { confirm: DELETE_CONFIRMATION } });
+                setConfirmDelete(false);
+                setMsg("Personal data removed. Your posts remain, without your display name.");
+                await refresh();
+              } catch (err) {
+                setMsg(safeClientError(err));
+              } finally {
+                setBusy(false);
+              }
+            }}>Confirm deletion</button>
+          ) : (
+            <button type="button" className="btn sm" disabled={busy} onClick={() => setConfirmDelete(true)}>Delete my personal data</button>
+          )}
+        </section>
       ) : null}
       {msg ? <p className="callout" role="status">{msg}</p> : null}
     </div>

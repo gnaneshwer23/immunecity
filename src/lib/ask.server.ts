@@ -9,12 +9,14 @@ import {
   attachCounterEvidenceHarvest,
   attachProvisionalLiterature,
   attachReviewedCites,
+  classifyAskQuery,
   isAskEmergencyDisabled,
   prepareAsk,
   validateAnswerCitations,
   type AskGrounding,
   type PrepareAskResult,
 } from "@/lib/askGrounding";
+import { logAskGate } from "@/lib/askEvaluation.server";
 import { askRateLimited } from "@/lib/askRateLimit.server";
 import { clientIp } from "@/lib/clientIp";
 import { EvidenceServiceError } from "@/lib/citations.functions";
@@ -380,7 +382,14 @@ export async function handleAsk(request: Request): Promise<Response> {
     return textReply(EVIDENCE_OUTAGE_REPLY);
   }
   const { prepared } = serverPrep;
+  const personalHealth = classifyAskQuery(question) === "clinical_personal";
   if (!prepared.callModel && prepared.replyText) {
+    await logAskGate({
+      callModel: false,
+      abstentionReason: prepared.grounding.trace.abstentionReason,
+      personalHealth,
+      validation: null,
+    });
     return textReply(prepared.replyText);
   }
 
@@ -446,6 +455,13 @@ export async function handleAsk(request: Request): Promise<Response> {
   };
   // Structured log line for ops (no question text / no secrets).
   console.info("[ask.observability]", JSON.stringify(askObservabilityPublic(obs)));
+
+  await logAskGate({
+    callModel: true,
+    abstentionReason: null,
+    personalHealth,
+    validation,
+  });
 
   if (!validation.ok) {
     return textReply(validation.failReason ? `${CITATION_REJECT} (${validation.failReason})` : CITATION_REJECT);

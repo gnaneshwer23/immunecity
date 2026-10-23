@@ -30,6 +30,7 @@ import {
 import { STATUS_INFO } from "@/lib/immune/evidenceStatus";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { AiPrinciples, CapabilityRegistry, ResearchWorkspace } from "@/components/immune/ScientificAiPanel";
+import { SpecialistDrafts } from "@/components/immune/SpecialistDrafts";
 
 export const Route = createFileRoute("/reasoning")({
   validateSearch: zodValidator(z.object({ from: fallback(z.string(), "").default("") })),
@@ -99,6 +100,9 @@ function Reasoning() {
         </PhoneFold>
         <h3 style={{ marginTop: 24 }}>How we talk about AI</h3>
         <AiPrinciples />
+        <h3 style={{ marginTop: 24 }}>Specialist drafts</h3>
+        <p className="lede">These four drafts are waiting for a person to review them. None of them runs, publishes, or writes the graph.</p>
+        <SpecialistDrafts />
         <h3 style={{ marginTop: 24 }}>What is wired today</h3>
         <PhoneFold label="Show all capabilities">
           <CapabilityRegistry />

@@ -251,6 +251,15 @@ export const conceptSaves = pgTable(
   (t) => [unique("concept_saves_user_concept").on(t.userId, t.conceptId)],
 );
 
+/** Ask gate outcomes only. No question text and no confidence score. */
+export const aiEvaluationRuns = pgTable("ai_evaluation_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  outcome: text("outcome").notNull(),
+  reasonCode: text("reason_code").notNull(),
+  questionRedacted: boolean("question_redacted").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const communityModerationActions = pgTable("community_moderation_actions", {
   id: uuid("id").primaryKey().defaultRandom(),
   targetType: text("target_type").notNull(),
