@@ -1,7 +1,7 @@
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead } from "@/components/immune/ui";
-import { CommunityNote } from "@/components/immune/community/chrome";
+import { CommunityBar, CommunityNote, useMember, useUnreadCount } from "@/components/immune/community/chrome";
 import { listCommunityTopics } from "@/lib/community.functions";
 import { PRODUCT_NAME } from "@/lib/brand";
 
@@ -19,6 +19,8 @@ export const Route = createFileRoute("/community/")({
 
 function CommunityIndex() {
   const data = Route.useLoaderData();
+  const member = useMember();
+  const unread = useUnreadCount(member);
   return (
     <div className="page community-page">
       <PageHead
@@ -27,6 +29,7 @@ function CommunityIndex() {
         lede="Topic groups for questions, papers, hypotheses and resources. Nothing posted here is added to the knowledge graph."
       />
       <CommunityNote />
+      <CommunityBar unread={unread} />
       <p className="row" style={{ margin: "16px 0" }}>
         <Link className="btn sm primary" to="/community/new">New post</Link>
         <Link className="btn sm" to="/auth" search={{ redirect: "/community" }}>Sign in</Link>

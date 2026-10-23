@@ -630,7 +630,7 @@ html[data-theme][data-theme] {
 }
 
 /* Marketing IA — shared chrome + section rhythm */
-.marketing-topbar { gap: 12px; padding: 0 20px; border-bottom: 1px solid var(--border); position: relative; flex-wrap: nowrap; height: var(--top); min-height: var(--top); }
+.marketing-topbar { gap: 18px; padding: 0 24px; border-bottom: 1px solid var(--border); position: relative; flex-wrap: nowrap; height: var(--top); min-height: var(--top); background: var(--surface); color: var(--text); align-items: center; }
 .marketing-topbar.home-topbar { border-bottom-color: transparent; }
 .marketing-topbar .brand { gap: 12px; padding: 4px 0; flex-shrink: 0; min-width: max-content; }
 .marketing-topbar .brand:focus-visible { outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent); outline-offset: 6px; border-radius: 6px; }
@@ -2235,22 +2235,41 @@ html[data-theme='light'] body { background: var(--bg); color: var(--text); }
 html[data-theme='light'] .topbar { background: var(--surface); border-bottom: 1px solid var(--border); }
 html[data-theme='light'] .pillar-menu { background: var(--surface); box-shadow: var(--shadow-lg); border-radius: 8px; }
 
-/* Journey header — one row: primary destinations, then quieter organisation links. */
-.journey-nav { display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: nowrap; justify-content: flex-start; min-width: 0; }
-.journey-main, .journey-org { display: flex; align-items: center; flex-wrap: nowrap; min-width: 0; }
-.journey-org { padding-left: 10px; border-left: 1px solid var(--border); flex-shrink: 0; }
-.journey-nav .pillar-trigger { padding: 8px 8px; }
-.journey-nav .marketing-nav-link { color: var(--muted); padding: 8px 8px; }
-.journey-org .marketing-nav-link { font-size: 12.5px; font-weight: 500; padding: 8px 8px; }
+/* Journey header — one row matching the reference: icon links, divider, quieter org links, sign-in. */
+.journey-nav { display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: nowrap; justify-content: flex-start; min-width: 0; }
+.journey-main, .journey-org { display: flex; align-items: center; flex-wrap: nowrap; flex-shrink: 0; gap: 2px; }
+.journey-org { margin-left: 8px; padding-left: 14px; border-left: 1px solid var(--border-strong); flex-shrink: 0; }
+.nav-line { display: inline-flex; align-items: center; gap: 6px; }
+.journey-nav .pillar-trigger { padding: 8px 8px; color: var(--text); font-weight: 500; }
+.journey-nav .marketing-nav-link.journey-direct { color: var(--text); font-weight: 500; padding: 8px 8px; }
+.journey-org .marketing-nav-link { font-size: 13px; font-weight: 500; padding: 8px 8px; color: var(--muted); }
 .journey-nav .marketing-nav-link:hover, .journey-nav .marketing-nav-link.current { color: var(--text); }
 .journey-nav .youtube-nav-link { display: inline-flex; align-items: center; justify-content: center; padding: 8px 6px; line-height: 0; color: var(--muted); }
-.journey-sep { width: 1px; height: 16px; background: var(--border-strong); margin: 0 6px; flex-shrink: 0; }
-@media (max-width: 1360px) {
-  .journey-nav { gap: 6px; }
-  .journey-nav .pillar-trigger { padding: 8px 6px; font-size: 12.5px; }
-  .journey-nav .journey-direct { padding-left: 6px; padding-right: 6px; }
-  .journey-org { padding-left: 6px; }
-  .journey-org .marketing-nav-link { padding: 8px 6px; }
+.header-signin, .header-account {
+  display: inline-flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0;
+  padding: 8px 16px; border-radius: 999px; background: var(--primary); color: var(--primary-foreground);
+  font-size: 14px; font-weight: 600; line-height: 1; text-decoration: none; white-space: nowrap;
+}
+.header-signin:hover, .header-account:hover { background: var(--primary-hover); color: var(--primary-foreground); text-decoration: none; }
+.header-account { max-width: 180px; }
+.header-account span { overflow: hidden; text-overflow: ellipsis; }
+.community-unread-count {
+  display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: 10px; line-height: 1;
+}
+.marketing-compact-nav .header-signin, .marketing-compact-nav .header-account { margin: 8px 0 0; align-self: flex-start; }
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .marketing-topbar { gap: 8px; padding: 0 12px; }
+  .marketing-topbar .logo { width: 24px; height: 24px; }
+  .marketing-topbar .brand { gap: 8px; }
+  .marketing-topbar .brand-text strong { font-size: 13px; }
+  .journey-nav { gap: 0; }
+  .journey-main, .journey-org { gap: 0; }
+  .journey-nav .pillar-trigger, .journey-nav .journey-direct { padding: 6px 4px; font-size: 12px; gap: 3px; }
+  .journey-org { margin-left: 4px; padding-left: 8px; }
+  .journey-org .marketing-nav-link { padding: 6px 4px; font-size: 12px; }
+  .journey-nav .youtube-nav-link { padding: 6px 4px; }
+  .header-signin, .header-account { padding: 6px 10px; font-size: 12.5px; gap: 6px; }
 }
 @media (max-width: 1199px) { .journey-nav { display: none; } }
 .marketing-compact-group { display: grid; gap: 2px; margin-bottom: 14px; }

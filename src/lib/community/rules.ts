@@ -46,6 +46,9 @@ export function membershipRoleForNewMember(): "member" {
 export function postKindNote(kind: string): string | null {
   if (kind === "hypothesis") return "Community hypothesis. Not a reviewed claim and not added to the knowledge graph.";
   if (kind === "paper") return "Paper discussion. A resolved DOI or PMID is metadata only, not approval.";
+  if (kind === "journal_club") {
+    return "Journal club. The time is stored for this discussion thread. There is no live video room. A paper identifier stays unverified unless it already exists in approved evidence. This club does not change the knowledge graph.";
+  }
   return null;
 }
 
@@ -238,5 +241,323 @@ export function decideReferenceStorage(
     verificationDetail: lookup.status === "verified"
       ? "Identifier resolved. This is not a reviewed claim and is not in the knowledge graph."
       : "Identifier matched a metadata search. This is not a reviewed claim and is not in the knowledge graph.",
+  };
+}
+
+/** Phase 3 tables. 0008 does not create these. Community code may write them and must not write curated evidence. */
+export const COMMUNITY_PHASE3_WRITE_TABLES = [
+  "community_post_revisions",
+  "community_saves",
+  "community_post_follows",
+  "community_appeals",
+  "community_notifications",
+  "community_journal_clubs",
+] as const;
+
+export const JOURNAL_CLUB_POST_KIND = "journal_club" as const;
+
+export const PROFILE_VISIBILITIES = ["public", "members"] as const;
+export type ProfileVisibility = (typeof PROFILE_VISIBILITIES)[number];
+
+export const NOTIFICATION_KINDS = ["post_reply", "appeal_decision"] as const;
+export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
+
+export interface CommunityProfileFields {
+  userId: string;
+  displayName: string;
+  bio: string | null;
+  interests: string[];
+  affiliation: string | null;
+  visibility: ProfileVisibility;
+  credential: string | null;
+  credentialStatus: "unverified";
+  notificationsPaused: boolean;
+}
+
+export type SharedProfile = Omit<CommunityProfileFields, "notificationsPaused"> & {
+  notificationsPaused?: boolean;
+};
+
+export type ProfileView =
+  | { access: "full"; owner: boolean; profile: SharedProfile }
+  | { access: "restricted"; visibility: "members" };
+
+export function validateProfileDraft(input: {
+  displayName: string;
+  bio: string;
+  interests: readonly string[];
+  affiliation: string;
+  visibility: string;
+  credential: string;
+  notificationsPaused: boolean;
+  topicSlugs: ReadonlySet<string>;
+}):
+  | {
+      ok: true;
+      displayName: string;
+      bio: string | null;
+      interests: string[];
+      affiliation: string | null;
+      visibility: ProfileVisibility;
+      credential: string | null;
+      credentialStatus: "unverified";
+      notificationsPaused: boolean;
+    }
+  | { ok: false; error: string } {
+  const displayName = input.displayName.trim();
+  if (displayName.length < 1 || displayName.length > 80) {
+    return { ok: false, error: "Display name must be 1–80 characters." };
+  }
+  if (displayName.includes("@")) return { ok: false, error: "Display name cannot be an email address." };
+  const bio = input.bio.trim();
+  if (bio.length > 500) return { ok: false, error: "Bio must be 500 characters or fewer." };
+  const affiliation = input.affiliation.trim();
+  if (affiliation.length > 120) return { ok: false, error: "Affiliation must be 120 characters or fewer." };
+  const credential = input.credential.trim();
+  if (credential.length > 160) return { ok: false, error: "Credential must be 160 characters or fewer." };
+  if (input.visibility !== "public" && input.visibility !== "members") {
+    return { ok: false, error: "Visibility must be public or members-only." };
+  }
+  if (typeof input.notificationsPaused !== "boolean") {
+    return { ok: false, error: "Notification pause must be on or off." };
+  }
+  const interests: string[] = [];
+  for (const raw of input.interests) {
+    const slug = raw.trim();
+    if (!slug) continue;
+    if (!input.topicSlugs.has(slug)) return { ok: false, error: "Interests must be existing community topics." };
+    if (!interests.includes(slug)) interests.push(slug);
+    if (interests.length > 12) return { ok: false, error: "Choose at most 12 interests." };
+  }
+  const text = `${displayName}\n${bio}\n${affiliation}\n${credential}`;
+  if (PATIENT_DETAIL.test(text)) return { ok: false, error: "Remove identifiable patient details from your profile." };
+  if (isPersonalClinical(text)) {
+    return { ok: false, error: "Personal medical advice does not belong on a profile." };
+  }
+  return {
+    ok: true,
+    displayName,
+    bio: bio || null,
+    interests,
+    affiliation: affiliation || null,
+    visibility: input.visibility,
+    credential: credential || null,
+    credentialStatus: "unverified",
+    notificationsPaused: input.notificationsPaused,
+  };
+}
+
+/** Members-only profiles stay hidden from visitors. Pause state stays with the owner. Credential is never marked verified. */
+export function profileViewFor(
+  profile: CommunityProfileFields,
+  viewer: { signedIn: boolean; userId: string | null },
+): ProfileView {
+  const owner = Boolean(viewer.userId) && viewer.userId === profile.userId;
+  if (profile.visibility === "members" && !viewer.signedIn) {
+    return { access: "restricted", visibility: "members" };
+  }
+  const safe: CommunityProfileFields = { ...profile, credentialStatus: "unverified" };
+  if (!owner) {
+    const { notificationsPaused: _paused, ...shared } = safe;
+    return { access: "full", owner: false, profile: shared };
+  }
+  return { access: "full", owner: true, profile: safe };
+}
+
+function validatePostBody(body: string): { ok: true; body: string } | { ok: false; error: string } {
+  const text = body.trim();
+  if (text.length < 10 || text.length > 8000) return { ok: false, error: "Body must be 10–8000 characters." };
+  if (PATIENT_DETAIL.test(text)) return { ok: false, error: "Remove identifiable patient details. This was not published." };
+  if (isPersonalClinical(text)) {
+    return { ok: false, error: "Personal medical advice is not published here. Ask a clinician, or rephrase as a general educational question." };
+  }
+  return { ok: true, body: text };
+}
+
+/** Author-only body edit. Stores the previous body. Hidden posts stay hidden. */
+export function planPostEdit(input: {
+  actorId: string;
+  authorId: string;
+  currentBody: string;
+  nextBody: string;
+  status: string;
+}):
+  | { ok: true; previousBody: string; nextBody: string; status: "visible" | "hidden" }
+  | { ok: false; error: string } {
+  if (!input.actorId || input.actorId !== input.authorId) {
+    return { ok: false, error: "Only the author can edit this post." };
+  }
+  if (input.status !== "visible" && input.status !== "hidden") {
+    return { ok: false, error: "Post status is not editable." };
+  }
+  const next = validatePostBody(input.nextBody);
+  if (!next.ok) return next;
+  if (next.body === input.currentBody.trim()) return { ok: false, error: "Body is unchanged." };
+  return { ok: true, previousBody: input.currentBody, nextBody: next.body, status: input.status };
+}
+
+export function planSaveTarget(input: { signedIn: boolean; targetType: string }):
+  | { ok: true; targetType: "post" | "comment" }
+  | { ok: false; error: string } {
+  if (!input.signedIn) return { ok: false, error: "Sign in to save a post or reply." };
+  if (input.targetType !== "post" && input.targetType !== "comment") {
+    return { ok: false, error: "Save a post or a reply." };
+  }
+  return { ok: true, targetType: input.targetType };
+}
+
+export function planPostFollow(input: { signedIn: boolean }): { ok: true } | { ok: false; error: string } {
+  if (!input.signedIn) return { ok: false, error: "Sign in to follow a post." };
+  return { ok: true };
+}
+
+export function planAppeal(input: {
+  signedIn: boolean;
+  targetStatus: "visible" | "hidden" | "missing";
+  reason: string;
+  openAppealExists: boolean;
+}): { ok: true; reason: string } | { ok: false; error: string } {
+  if (!input.signedIn) return { ok: false, error: "Sign in to appeal. Visitors cannot appeal." };
+  if (input.targetStatus === "missing") return { ok: false, error: "That post or comment was not found." };
+  if (input.targetStatus !== "hidden") return { ok: false, error: "Only a hidden post or comment can be appealed." };
+  const reason = input.reason.trim();
+  if (reason.length < 8 || reason.length > 500) return { ok: false, error: "Appeal reason must be 8–500 characters." };
+  if (input.openAppealExists) return { ok: false, error: "You already have an open appeal for this item." };
+  return { ok: true, reason };
+}
+
+export function planAppealDecision(input: {
+  actorCanModerate: boolean;
+  decision: string;
+  reason: string;
+  appealOpen: boolean;
+}):
+  | { ok: true; decision: "uphold" | "restore"; reason: string; nextStatus: "hidden" | "visible" }
+  | { ok: false; error: string } {
+  if (!input.actorCanModerate) {
+    return { ok: false, error: "Only moderators can decide an appeal. Signup does not grant moderator." };
+  }
+  if (!input.appealOpen) return { ok: false, error: "That appeal is already decided." };
+  if (input.decision !== "uphold" && input.decision !== "restore") {
+    return { ok: false, error: "Decision must be uphold or restore." };
+  }
+  const reason = input.reason.trim();
+  if (reason.length < 8 || reason.length > 500) {
+    return { ok: false, error: "A decision reason (8–500 characters) is required." };
+  }
+  return {
+    ok: true,
+    decision: input.decision,
+    reason,
+    nextStatus: input.decision === "restore" ? "visible" : "hidden",
+  };
+}
+
+/** Followers of a post, except the person who replied and anyone who paused notifications. */
+export function replyNotificationRecipients(input: {
+  followerIds: readonly string[];
+  authorId: string;
+  pausedUserIds: ReadonlySet<string>;
+}): string[] {
+  const out: string[] = [];
+  for (const id of input.followerIds) {
+    if (!id || id === input.authorId) continue;
+    if (input.pausedUserIds.has(id)) continue;
+    if (out.includes(id)) continue;
+    out.push(id);
+  }
+  return out;
+}
+
+export function appealDecisionRecipient(input: { appellantId: string; paused: boolean }): string | null {
+  if (!input.appellantId || input.paused) return null;
+  return input.appellantId;
+}
+
+export function parseScheduledAt(raw: string): { ok: true; iso: string } | { ok: false; error: string } {
+  const ms = Date.parse(raw.trim());
+  if (!Number.isFinite(ms)) return { ok: false, error: "Scheduled time must be a real date." };
+  const year = new Date(ms).getUTCFullYear();
+  if (year < 2020 || year > 2100) return { ok: false, error: "Scheduled time is out of range." };
+  return { ok: true, iso: new Date(ms).toISOString() };
+}
+
+/** Facilitator is the creator, or another person who is already a moderator. This does not grant a role. */
+export function planJournalClub(input: {
+  actorCanModerate: boolean;
+  actorId: string;
+  title: string;
+  agenda: string;
+  scheduledAt: string;
+  requestedFacilitatorId: string | null;
+  requestedFacilitatorCanModerate: boolean;
+  pmid?: string | null;
+  doi?: string | null;
+}):
+  | {
+      ok: true;
+      title: string;
+      agenda: string;
+      scheduledAt: string;
+      facilitatorId: string;
+      membershipRole: "member";
+      postKind: typeof JOURNAL_CLUB_POST_KIND;
+      pmid: string | null;
+      doi: string | null;
+    }
+  | { ok: false; error: string } {
+  if (!input.actorCanModerate) {
+    return { ok: false, error: "Only moderators can create a journal club. Signup does not grant moderator." };
+  }
+  const title = input.title.trim();
+  const agenda = input.agenda.trim();
+  if (title.length < 3 || title.length > 180) return { ok: false, error: "Title must be 3–180 characters." };
+  if (agenda.length < 10 || agenda.length > 4000) return { ok: false, error: "Agenda must be 10–4000 characters." };
+  const when = parseScheduledAt(input.scheduledAt);
+  if (!when.ok) return when;
+  const text = `${title}\n${agenda}`;
+  if (PATIENT_DETAIL.test(text)) return { ok: false, error: "Remove identifiable patient details. This was not published." };
+  if (isPersonalClinical(text)) {
+    return { ok: false, error: "Personal medical advice is not published here. Ask a clinician, or rephrase as a general educational question." };
+  }
+  const citation = parseCitationFields({ pmid: input.pmid, doi: input.doi });
+  if (!citation.ok) return citation;
+  const requested = input.requestedFacilitatorId?.trim() || input.actorId;
+  if (requested !== input.actorId && !input.requestedFacilitatorCanModerate) {
+    return { ok: false, error: "Facilitator must already be a moderator. This does not assign a new role." };
+  }
+  return {
+    ok: true,
+    title,
+    agenda,
+    scheduledAt: when.iso,
+    facilitatorId: requested,
+    membershipRole: membershipRoleForNewMember(),
+    postKind: JOURNAL_CLUB_POST_KIND,
+    pmid: citation.pmid,
+    doi: citation.doi,
+  };
+}
+
+/** Match an approved evidence identifier only. Never invent a title or a PMID. */
+export function paperStatusForClub(input: {
+  pmid: string | null;
+  doi: string | null;
+  approvedMatch: boolean;
+}): { paperStatus: "unverified" | "matched"; detail: string; title: null } {
+  if (!input.pmid && !input.doi) {
+    return { paperStatus: "unverified", detail: "No paper identifier was supplied.", title: null };
+  }
+  if (input.approvedMatch) {
+    return {
+      paperStatus: "matched",
+      detail: "This identifier is already on an approved evidence record. The journal club does not change that record.",
+      title: null,
+    };
+  }
+  return {
+    paperStatus: "unverified",
+    detail: "Stored as unverified. It was not found on an approved evidence record, and no identifier was invented.",
+    title: null,
   };
 }

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { PageHead } from "@/components/immune/ui";
 import { safeClientError, useMember } from "@/components/immune/community/chrome";
 import { getCommunityModerationQueue, moderateCommunityTarget } from "@/lib/community.functions";
+import { decideCommunityAppeal, listOpenCommunityAppeals } from "@/lib/community/phase3.functions";
 import { PRODUCT_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/community/moderation")({
@@ -23,8 +24,11 @@ type Queue = Awaited<ReturnType<typeof getCommunityModerationQueue>>;
 function ModerationPage() {
   const member = useMember();
   const load = useServerFn(getCommunityModerationQueue);
+  const loadAppeals = useServerFn(listOpenCommunityAppeals);
   const act = useServerFn(moderateCommunityTarget);
+  const decide = useServerFn(decideCommunityAppeal);
   const [queue, setQueue] = useState<Queue | null>(null);
+  const [appeals, setAppeals] = useState<Awaited<ReturnType<typeof listOpenCommunityAppeals>>["appeals"]>([]);
   const [msg, setMsg] = useState("");
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
@@ -32,7 +36,9 @@ function ModerationPage() {
   async function refresh() {
     setMsg("");
     try {
-      setQueue(await load());
+      const [nextQueue, nextAppeals] = await Promise.all([load(), loadAppeals()]);
+      setQueue(nextQueue);
+      setAppeals(nextAppeals.appeals);
     } catch (err) {
       setQueue(null);
       setMsg(safeClientError(err));
@@ -42,6 +48,20 @@ function ModerationPage() {
   useEffect(() => {
     if (member) void refresh();
   }, [member]);
+
+  async function decideAppeal(appealId: string, decision: "uphold" | "restore") {
+    setBusy(true);
+    setMsg("");
+    try {
+      await decide({ data: { appealId, decision, reason } });
+      setReason("");
+      await refresh();
+    } catch (err) {
+      setMsg(safeClientError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function run(targetType: "post" | "comment", targetId: string, action: "hide" | "restore") {
     setBusy(true);
@@ -89,6 +109,21 @@ function ModerationPage() {
               ))}
             </ul>
           ) : <p className="small muted">No open reports.</p>}
+          <h2>Open appeals</h2>
+          {appeals.length ? (
+            <ul className="community-stack">
+              {appeals.map((appeal) => (
+                <li key={appeal.id} className="card community-card">
+                  <p className="xs muted">{appeal.targetType} · {appeal.createdAt}</p>
+                  <p>{appeal.reason}</p>
+                  <p className="row">
+                    <button type="button" className="btn sm" disabled={busy} onClick={() => decideAppeal(appeal.id, "uphold")}>Uphold</button>
+                    <button type="button" className="btn sm" disabled={busy} onClick={() => decideAppeal(appeal.id, "restore")}>Restore</button>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : <p className="small muted">No open appeals.</p>}
           <h2>Hidden posts</h2>
           {queue.hiddenPosts.length ? (
             <ul className="community-stack">

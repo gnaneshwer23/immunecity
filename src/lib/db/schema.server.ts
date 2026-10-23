@@ -1,4 +1,4 @@
-import { integer, jsonb, pgEnum, pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgEnum, pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
 
 export const appRoleEnum = pgEnum("app_role", ["admin", "user", "moderator", "reviewer"]);
 
@@ -79,6 +79,9 @@ export const communityProfiles = pgTable("community_profiles", {
   interests: text("interests").array(),
   affiliation: text("affiliation"),
   visibility: text("visibility").notNull().default("public"),
+  credential: text("credential"),
+  credentialStatus: text("credential_status").notNull().default("unverified"),
+  notificationsPaused: boolean("notifications_paused").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -166,6 +169,74 @@ export const academyMemberProgress = pgTable("academy_member_progress", {
   userId: uuid("user_id").primaryKey(),
   progress: jsonb("progress").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const communityPostRevisions = pgTable("community_post_revisions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").notNull(),
+  editorId: uuid("editor_id").notNull(),
+  previousBody: text("previous_body").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const communitySaves = pgTable(
+  "community_saves",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull(),
+    targetType: text("target_type").notNull(),
+    targetId: uuid("target_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("community_saves_user_target").on(t.userId, t.targetType, t.targetId)],
+);
+
+export const communityPostFollows = pgTable(
+  "community_post_follows",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id").notNull(),
+    userId: uuid("user_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("community_post_follows_post_user").on(t.postId, t.userId)],
+);
+
+export const communityAppeals = pgTable("community_appeals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  targetType: text("target_type").notNull(),
+  targetId: uuid("target_id").notNull(),
+  appellantId: uuid("appellant_id").notNull(),
+  reason: text("reason").notNull(),
+  status: text("status").notNull().default("open"),
+  decisionReason: text("decision_reason"),
+  decidedBy: uuid("decided_by"),
+  decidedAt: timestamp("decided_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const communityNotifications = pgTable("community_notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  kind: text("kind").notNull(),
+  body: text("body").notNull(),
+  href: text("href"),
+  readAt: timestamp("read_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const communityJournalClubs = pgTable("community_journal_clubs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  topicId: uuid("topic_id").notNull(),
+  postId: uuid("post_id").notNull().unique(),
+  title: text("title").notNull(),
+  agenda: text("agenda").notNull(),
+  scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+  facilitatorId: uuid("facilitator_id").notNull(),
+  pmid: text("pmid"),
+  doi: text("doi"),
+  paperStatus: text("paper_status").notNull().default("unverified"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const communityModerationActions = pgTable("community_moderation_actions", {

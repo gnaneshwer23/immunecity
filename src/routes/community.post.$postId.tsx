@@ -1,10 +1,11 @@
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PageHead } from "@/components/immune/ui";
-import { CommunityNote, kindLabel, safeClientError, useMember } from "@/components/immune/community/chrome";
+import { CommunityBar, CommunityNote, kindLabel, safeClientError, useMember, useUnreadCount } from "@/components/immune/community/chrome";
 import { createCommunityComment, getCommunityPost, reportCommunityTarget } from "@/lib/community.functions";
+import { editCommunityPost, getCommunityEngagement, toggleCommunityPostFollow, toggleCommunitySave } from "@/lib/community/phase3.functions";
 import { byId } from "@/lib/immune/engine";
 import { postKindNote } from "@/lib/community/rules";
 import { PRODUCT_NAME } from "@/lib/brand";
@@ -49,11 +50,15 @@ function CommentTree({
   parentId,
   depth,
   onReply,
+  onSave,
+  savedIds,
 }: {
   rows: CommentRow[];
   parentId: string | null;
   depth: number;
   onReply: (id: string) => void;
+  onSave?: (id: string) => void;
+  savedIds?: ReadonlySet<string>;
 }) {
   const items = thread(rows, parentId, depth);
   if (!items.length) return null;
@@ -64,7 +69,8 @@ function CommentTree({
           <p className="xs muted">{c.authorName}</p>
           <p className="community-body">{c.body}</p>
           <button type="button" className="btn sm" onClick={() => onReply(c.id)}>Reply</button>
-          <CommentTree rows={rows} parentId={c.id} depth={depth + 1} onReply={onReply} />
+          {onSave ? <button type="button" className="btn sm" onClick={() => onSave(c.id)}>{savedIds?.has(c.id) ? "Saved" : "Save reply"}</button> : null}
+          <CommentTree rows={rows} parentId={c.id} depth={depth + 1} onReply={onReply} onSave={onSave} savedIds={savedIds} />
         </li>
       ))}
     </ul>
@@ -74,14 +80,40 @@ function CommentTree({
 function PostPage() {
   const data = Route.useLoaderData();
   const member = useMember();
+  const unread = useUnreadCount(member);
   const router = useRouter();
   const commentFn = useServerFn(createCommunityComment);
   const reportFn = useServerFn(reportCommunityTarget);
+  const editFn = useServerFn(editCommunityPost);
+  const saveFn = useServerFn(toggleCommunitySave);
+  const followFn = useServerFn(toggleCommunityPostFollow);
+  const engagementFn = useServerFn(getCommunityEngagement);
   const [body, setBody] = useState("");
+  const [draft, setDraft] = useState("");
   const [parentId, setParentId] = useState<string | null>(null);
   const [report, setReport] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [savedPost, setSavedPost] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [savedComments, setSavedComments] = useState<string[]>([]);
+  const postId = data.post?.id ?? "";
+  const postBody = data.post?.body ?? "";
+
+  useEffect(() => {
+    setDraft(postBody);
+  }, [postId, postBody]);
+
+  useEffect(() => {
+    if (!member || !postId) return;
+    engagementFn({ data: { postId } })
+      .then((result) => {
+        setSavedPost(result.savedPost);
+        setFollowing(result.followingPost);
+        setSavedComments(result.savedCommentIds);
+      })
+      .catch(() => undefined);
+  }, [member, postId, engagementFn]);
 
   if (!data.available) {
     return (
@@ -111,6 +143,48 @@ function PostPage() {
     }
   }
 
+  async function runSave(targetType: "post" | "comment", targetId: string) {
+    setBusy(true);
+    setMsg("");
+    try {
+      const result = await saveFn({ data: { targetType, targetId } });
+      if (targetType === "post") setSavedPost(result.saved);
+      else setSavedComments((current) => result.saved ? [...current, targetId] : current.filter((id) => id !== targetId));
+    } catch (err) {
+      setMsg(safeClientError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function runFollow() {
+    setBusy(true);
+    setMsg("");
+    try {
+      const result = await followFn({ data: { postId: post.id } });
+      setFollowing(result.following);
+    } catch (err) {
+      setMsg(safeClientError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function sendEdit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setMsg("");
+    try {
+      await editFn({ data: { postId: post.id, body: draft } });
+      setMsg("Edit saved. Earlier text is kept in the history.");
+      await router.invalidate();
+    } catch (err) {
+      setMsg(safeClientError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function sendReport(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -128,15 +202,55 @@ function PostPage() {
 
   return (
     <div className="page community-page">
-      <PageHead kicker={`Community · ${post.topicTitle}`} title={post.title} lede={`${kindLabel(post.kind)} · ${post.authorName}`} />
+      <PageHead
+        kicker={`Community · ${post.topicTitle}`}
+        title={post.title}
+        lede={`${kindLabel(post.kind)} · ${post.authorName}`}
+      />
       <CommunityNote />
+      <CommunityBar unread={unread} />
       <p className="row" style={{ margin: "12px 0" }}>
         <Link className="btn sm" to="/community/topic/$slug" params={{ slug: post.topicSlug }}>Topic</Link>
+        {member ? (
+          <>
+            <button type="button" className="btn sm" disabled={busy} onClick={() => runSave("post", post.id)}>{savedPost ? "Saved" : "Save post"}</button>
+            <button type="button" className="btn sm" disabled={busy} onClick={runFollow}>{following ? "Following" : "Follow post"}</button>
+          </>
+        ) : null}
       </p>
+      {post.journalClub ? (
+        <p className="callout">
+          Scheduled {post.journalClub.scheduledAt}. Facilitator: {post.journalClub.facilitatorName}. Paper: {post.journalClub.paperStatus}. Stored time only — there is no live video room.
+        </p>
+      ) : null}
       {note ? <p className="callout">{note}</p> : null}
       <article className="card community-card">
+        <p className="xs muted">
+          <Link to="/community/profile/$userId" params={{ userId: post.authorId }}>{post.authorName}</Link>
+        </p>
         <p className="community-body">{post.body}</p>
+        {member?.id === post.authorId ? (
+          <form onSubmit={sendEdit}>
+            <label className="field">Edit body
+              <textarea className="community-input" value={draft} onChange={(e) => setDraft(e.target.value)} minLength={10} maxLength={8000} />
+            </label>
+            <button className="btn sm" type="submit" disabled={busy}>Save edit</button>
+          </form>
+        ) : null}
       </article>
+      {post.revisions.length ? (
+        <details className="card community-card">
+          <summary>Edit history ({post.revisions.length})</summary>
+          <ul>
+            {post.revisions.map((revision) => (
+              <li key={revision.id}>
+                <p className="xs muted">{revision.editorName} · {revision.createdAt}</p>
+                <p className="community-body">{revision.previousBody}</p>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
       {post.references.length ? (
         <section className="card community-card" aria-label="References">
           <h2>References</h2>
@@ -171,7 +285,14 @@ function PostPage() {
       ) : null}
       <section aria-label="Replies">
         <h2>Replies</h2>
-        <CommentTree rows={post.comments} parentId={null} depth={0} onReply={setParentId} />
+        <CommentTree
+          rows={post.comments}
+          parentId={null}
+          depth={0}
+          onReply={setParentId}
+          onSave={member ? (id) => runSave("comment", id) : undefined}
+          savedIds={new Set(savedComments)}
+        />
         {member ? (
           <form onSubmit={sendComment} className="card community-card">
             <label className="field">

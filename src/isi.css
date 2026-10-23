@@ -499,6 +499,9 @@ textarea.community-input, .community-form input, .community-form select {
 }
 textarea.community-input { min-height: 120px; padding: 10px; }
 .community-note { margin-top: 12px; }
+.community-bar { margin: 16px 0; flex-wrap: wrap; }
+.community-checks { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.community-checks label { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; }
 
 /* Grouped catalog search panel. Not mounted in the site header — Ask Immune is the ask entry. */
 .site-search { position: relative; flex: 0 1 220px; min-width: 140px; }

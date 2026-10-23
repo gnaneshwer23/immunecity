@@ -41,18 +41,23 @@ import { Route as TherapyRouteImport } from './routes/therapy'
 import { Route as VisionRouteImport } from './routes/vision'
 import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticated/curation'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
-import { Route as CommunityIndexRouteImport } from './routes/community.index'
-import { Route as CommunityModerationRouteImport } from './routes/community.moderation'
-import { Route as CommunityNewRouteImport } from './routes/community.new'
-import { Route as CommunityPostPostIdRouteImport } from './routes/community.post.$postId'
-import { Route as CommunityTopicSlugRouteImport } from './routes/community.topic.$slug'
 import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
 import { Route as AtlasIdRouteImport } from './routes/atlas.$id'
+import { Route as CommunityIndexRouteImport } from './routes/community.index'
+import { Route as CommunityJournalClubsRouteImport } from './routes/community.journal-clubs'
+import { Route as CommunityModerationRouteImport } from './routes/community.moderation'
+import { Route as CommunityNewRouteImport } from './routes/community.new'
+import { Route as CommunityNotificationsRouteImport } from './routes/community.notifications'
+import { Route as CommunitySavedRouteImport } from './routes/community.saved'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
 import { Route as MechanismIdRouteImport } from './routes/mechanism.$id'
 import { Route as PipelineIndexRouteImport } from './routes/pipeline.index'
 import { Route as PipelineDiseaseRouteImport } from './routes/pipeline.$disease'
 import { Route as ApiAskPrepareRouteImport } from './routes/api/ask.prepare'
+import { Route as CommunityPostPostIdRouteImport } from './routes/community.post.$postId'
+import { Route as CommunityProfileIndexRouteImport } from './routes/community.profile.index'
+import { Route as CommunityProfileUserIdRouteImport } from './routes/community.profile.$userId'
+import { Route as CommunityTopicSlugRouteImport } from './routes/community.topic.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -223,6 +228,36 @@ const AtlasIdRoute = AtlasIdRouteImport.update({
   path: '/atlas/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityIndexRoute = CommunityIndexRouteImport.update({
+  id: '/community/',
+  path: '/community/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityJournalClubsRoute = CommunityJournalClubsRouteImport.update({
+  id: '/community/journal-clubs',
+  path: '/community/journal-clubs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityModerationRoute = CommunityModerationRouteImport.update({
+  id: '/community/moderation',
+  path: '/community/moderation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityNewRoute = CommunityNewRouteImport.update({
+  id: '/community/new',
+  path: '/community/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityNotificationsRoute = CommunityNotificationsRouteImport.update({
+  id: '/community/notifications',
+  path: '/community/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunitySavedRoute = CommunitySavedRouteImport.update({
+  id: '/community/saved',
+  path: '/community/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MechanismIndexRoute = MechanismIndexRouteImport.update({
   id: '/mechanism/',
   path: '/mechanism/',
@@ -248,29 +283,24 @@ const ApiAskPrepareRoute = ApiAskPrepareRouteImport.update({
   path: '/prepare',
   getParentRoute: () => ApiAskRoute,
 } as any)
-const CommunityIndexRoute = CommunityIndexRouteImport.update({
-  id: '/community/',
-  path: '/community/',
+const CommunityPostPostIdRoute = CommunityPostPostIdRouteImport.update({
+  id: '/community/post/$postId',
+  path: '/community/post/$postId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommunityNewRoute = CommunityNewRouteImport.update({
-  id: '/community/new',
-  path: '/community/new',
+const CommunityProfileIndexRoute = CommunityProfileIndexRouteImport.update({
+  id: '/community/profile/',
+  path: '/community/profile/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommunityModerationRoute = CommunityModerationRouteImport.update({
-  id: '/community/moderation',
-  path: '/community/moderation',
-  getParentRoute: () => rootRouteImport,
+const CommunityProfileUserIdRoute = CommunityProfileUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => CommunityProfileRoute,
 } as any)
 const CommunityTopicSlugRoute = CommunityTopicSlugRouteImport.update({
   id: '/community/topic/$slug',
   path: '/community/topic/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunityPostPostIdRoute = CommunityPostPostIdRouteImport.update({
-  id: '/community/post/$postId',
-  path: '/community/post/$postId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -307,17 +337,22 @@ export interface FileRoutesByFullPath {
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
+  '/community/journal-clubs': typeof CommunityJournalClubsRoute
+  '/community/moderation': typeof CommunityModerationRoute
+  '/community/new': typeof CommunityNewRoute
+  '/community/notifications': typeof CommunityNotificationsRoute
+  '/community/saved': typeof CommunitySavedRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas/': typeof AtlasIndexRoute
+  '/community/': typeof CommunityIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
-  '/community/': typeof CommunityIndexRoute
-  '/community/new': typeof CommunityNewRoute
-  '/community/moderation': typeof CommunityModerationRoute
-  '/community/topic/$slug': typeof CommunityTopicSlugRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
+  '/community/profile/$userId': typeof CommunityProfileUserIdRoute
+  '/community/topic/$slug': typeof CommunityTopicSlugRoute
+  '/community/profile/': typeof CommunityProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -352,17 +387,22 @@ export interface FileRoutesByTo {
   '/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
+  '/community/journal-clubs': typeof CommunityJournalClubsRoute
+  '/community/moderation': typeof CommunityModerationRoute
+  '/community/new': typeof CommunityNewRoute
+  '/community/notifications': typeof CommunityNotificationsRoute
+  '/community/saved': typeof CommunitySavedRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas': typeof AtlasIndexRoute
+  '/community': typeof CommunityIndexRoute
   '/mechanism': typeof MechanismIndexRoute
   '/pipeline': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
-  '/community': typeof CommunityIndexRoute
-  '/community/new': typeof CommunityNewRoute
-  '/community/moderation': typeof CommunityModerationRoute
-  '/community/topic/$slug': typeof CommunityTopicSlugRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
+  '/community/profile/$userId': typeof CommunityProfileUserIdRoute
+  '/community/topic/$slug': typeof CommunityTopicSlugRoute
+  '/community/profile': typeof CommunityProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -399,17 +439,22 @@ export interface FileRoutesById {
   '/_authenticated/curation': typeof AuthenticatedCurationRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
+  '/community/journal-clubs': typeof CommunityJournalClubsRoute
+  '/community/moderation': typeof CommunityModerationRoute
+  '/community/new': typeof CommunityNewRoute
+  '/community/notifications': typeof CommunityNotificationsRoute
+  '/community/saved': typeof CommunitySavedRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas/': typeof AtlasIndexRoute
+  '/community/': typeof CommunityIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
-  '/community/': typeof CommunityIndexRoute
-  '/community/new': typeof CommunityNewRoute
-  '/community/moderation': typeof CommunityModerationRoute
-  '/community/topic/$slug': typeof CommunityTopicSlugRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
+  '/community/profile/$userId': typeof CommunityProfileUserIdRoute
+  '/community/topic/$slug': typeof CommunityTopicSlugRoute
+  '/community/profile/': typeof CommunityProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -446,17 +491,22 @@ export interface FileRouteTypes {
     | '/curation'
     | '/api/ask'
     | '/atlas/$id'
+    | '/community/journal-clubs'
+    | '/community/moderation'
+    | '/community/new'
+    | '/community/notifications'
+    | '/community/saved'
     | '/mechanism/$id'
     | '/pipeline/$disease'
     | '/atlas/'
+    | '/community/'
     | '/mechanism/'
     | '/pipeline/'
     | '/api/ask/prepare'
-    | '/community/'
-    | '/community/new'
-    | '/community/moderation'
-    | '/community/topic/$slug'
     | '/community/post/$postId'
+    | '/community/profile/$userId'
+    | '/community/topic/$slug'
+    | '/community/profile/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -491,17 +541,22 @@ export interface FileRouteTypes {
     | '/curation'
     | '/api/ask'
     | '/atlas/$id'
+    | '/community/journal-clubs'
+    | '/community/moderation'
+    | '/community/new'
+    | '/community/notifications'
+    | '/community/saved'
     | '/mechanism/$id'
     | '/pipeline/$disease'
     | '/atlas'
+    | '/community'
     | '/mechanism'
     | '/pipeline'
     | '/api/ask/prepare'
-    | '/community'
-    | '/community/new'
-    | '/community/moderation'
-    | '/community/topic/$slug'
     | '/community/post/$postId'
+    | '/community/profile/$userId'
+    | '/community/topic/$slug'
+    | '/community/profile'
   id:
     | '__root__'
     | '/'
@@ -537,17 +592,22 @@ export interface FileRouteTypes {
     | '/_authenticated/curation'
     | '/api/ask'
     | '/atlas/$id'
+    | '/community/journal-clubs'
+    | '/community/moderation'
+    | '/community/new'
+    | '/community/notifications'
+    | '/community/saved'
     | '/mechanism/$id'
     | '/pipeline/$disease'
     | '/atlas/'
+    | '/community/'
     | '/mechanism/'
     | '/pipeline/'
     | '/api/ask/prepare'
-    | '/community/'
-    | '/community/new'
-    | '/community/moderation'
-    | '/community/topic/$slug'
     | '/community/post/$postId'
+    | '/community/profile/$userId'
+    | '/community/topic/$slug'
+    | '/community/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -583,16 +643,20 @@ export interface RootRouteChildren {
   VisionRoute: typeof VisionRoute
   ApiAskRoute: typeof ApiAskRouteWithChildren
   AtlasIdRoute: typeof AtlasIdRoute
+  CommunityJournalClubsRoute: typeof CommunityJournalClubsRoute
+  CommunityModerationRoute: typeof CommunityModerationRoute
+  CommunityNewRoute: typeof CommunityNewRoute
+  CommunityNotificationsRoute: typeof CommunityNotificationsRoute
+  CommunitySavedRoute: typeof CommunitySavedRoute
   MechanismIdRoute: typeof MechanismIdRoute
   PipelineDiseaseRoute: typeof PipelineDiseaseRoute
   AtlasIndexRoute: typeof AtlasIndexRoute
+  CommunityIndexRoute: typeof CommunityIndexRoute
   MechanismIndexRoute: typeof MechanismIndexRoute
   PipelineIndexRoute: typeof PipelineIndexRoute
-  CommunityIndexRoute: typeof CommunityIndexRoute
-  CommunityNewRoute: typeof CommunityNewRoute
-  CommunityModerationRoute: typeof CommunityModerationRoute
-  CommunityTopicSlugRoute: typeof CommunityTopicSlugRoute
   CommunityPostPostIdRoute: typeof CommunityPostPostIdRoute
+  CommunityTopicSlugRoute: typeof CommunityTopicSlugRoute
+  CommunityProfileIndexRoute: typeof CommunityProfileIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -835,6 +899,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtlasIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community/': {
+      id: '/community/'
+      path: '/community'
+      fullPath: '/community/'
+      preLoaderRoute: typeof CommunityIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/journal-clubs': {
+      id: '/community/journal-clubs'
+      path: '/community/journal-clubs'
+      fullPath: '/community/journal-clubs'
+      preLoaderRoute: typeof CommunityJournalClubsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/moderation': {
+      id: '/community/moderation'
+      path: '/community/moderation'
+      fullPath: '/community/moderation'
+      preLoaderRoute: typeof CommunityModerationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/new': {
+      id: '/community/new'
+      path: '/community/new'
+      fullPath: '/community/new'
+      preLoaderRoute: typeof CommunityNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/notifications': {
+      id: '/community/notifications'
+      path: '/community/notifications'
+      fullPath: '/community/notifications'
+      preLoaderRoute: typeof CommunityNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community/saved': {
+      id: '/community/saved'
+      path: '/community/saved'
+      fullPath: '/community/saved'
+      preLoaderRoute: typeof CommunitySavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mechanism/': {
       id: '/mechanism/'
       path: '/mechanism'
@@ -870,39 +976,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAskPrepareRouteImport
       parentRoute: typeof ApiAskRoute
     }
-    '/community/': {
-      id: '/community/'
-      path: '/community'
-      fullPath: '/community/'
-      preLoaderRoute: typeof CommunityIndexRouteImport
+    '/community/post/$postId': {
+      id: '/community/post/$postId'
+      path: '/community/post/$postId'
+      fullPath: '/community/post/$postId'
+      preLoaderRoute: typeof CommunityPostPostIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/community/new': {
-      id: '/community/new'
-      path: '/community/new'
-      fullPath: '/community/new'
-      preLoaderRoute: typeof CommunityNewRouteImport
+    '/community/profile/': {
+      id: '/community/profile/'
+      path: '/community/profile'
+      fullPath: '/community/profile/'
+      preLoaderRoute: typeof CommunityProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/community/moderation': {
-      id: '/community/moderation'
-      path: '/community/moderation'
-      fullPath: '/community/moderation'
-      preLoaderRoute: typeof CommunityModerationRouteImport
-      parentRoute: typeof rootRouteImport
+    '/community/profile/$userId': {
+      id: '/community/profile/$userId'
+      path: '/$userId'
+      fullPath: '/community/profile/$userId'
+      preLoaderRoute: typeof CommunityProfileUserIdRouteImport
+      parentRoute: typeof CommunityProfileRoute
     }
     '/community/topic/$slug': {
       id: '/community/topic/$slug'
       path: '/community/topic/$slug'
       fullPath: '/community/topic/$slug'
       preLoaderRoute: typeof CommunityTopicSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/community/post/$postId': {
-      id: '/community/post/$postId'
-      path: '/community/post/$postId'
-      fullPath: '/community/post/$postId'
-      preLoaderRoute: typeof CommunityPostPostIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -963,16 +1062,20 @@ const rootRouteChildren: RootRouteChildren = {
   VisionRoute: VisionRoute,
   ApiAskRoute: ApiAskRouteWithChildren,
   AtlasIdRoute: AtlasIdRoute,
+  CommunityJournalClubsRoute: CommunityJournalClubsRoute,
+  CommunityModerationRoute: CommunityModerationRoute,
+  CommunityNewRoute: CommunityNewRoute,
+  CommunityNotificationsRoute: CommunityNotificationsRoute,
+  CommunitySavedRoute: CommunitySavedRoute,
   MechanismIdRoute: MechanismIdRoute,
   PipelineDiseaseRoute: PipelineDiseaseRoute,
   AtlasIndexRoute: AtlasIndexRoute,
+  CommunityIndexRoute: CommunityIndexRoute,
   MechanismIndexRoute: MechanismIndexRoute,
   PipelineIndexRoute: PipelineIndexRoute,
-  CommunityIndexRoute: CommunityIndexRoute,
-  CommunityNewRoute: CommunityNewRoute,
-  CommunityModerationRoute: CommunityModerationRoute,
-  CommunityTopicSlugRoute: CommunityTopicSlugRoute,
   CommunityPostPostIdRoute: CommunityPostPostIdRoute,
+  CommunityTopicSlugRoute: CommunityTopicSlugRoute,
+  CommunityProfileIndexRoute: CommunityProfileIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

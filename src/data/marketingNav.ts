@@ -149,12 +149,11 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
 ];
 
 /**
- * Visible primary destinations. They also stay inside Learn / Explore / Investigate
- * so those journeys remain the map. Community is listed only because /community exists.
+ * Direct header destinations beside the journey menus.
+ * Ask Immune stays inside Learn. It is not a top-level header item.
  * My Workspace is intentionally absent.
  */
 export const JOURNEY_PRIMARY = [
-  { label: "Ask Immune", path: "/ask" },
   { label: "Research", path: "/research" },
   { label: "Simulate", path: "/simulator" },
   { label: "Community", path: "/community" },

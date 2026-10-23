@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, Menu, MessageSquare, X, Youtube } from "lucide-react";
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { BookOpen, Box, ChevronDown, FlaskConical, Menu, MessageSquare, Network, Search, Shield, UserRound, Users, X, Youtube } from "lucide-react";
+import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useMember, useUnreadCount } from "@/components/immune/community/chrome";
 import { NAV_GROUPS } from "./nav";
 import {
   FOOTER_GROUPS,
@@ -26,6 +27,23 @@ import {
   YOUTUBE_CHANNEL_LABEL,
   YOUTUBE_CHANNEL_URL,
 } from "@/lib/brand";
+
+const JOURNEY_ICONS: Record<string, ComponentType<{ size?: number; "aria-hidden"?: boolean }>> = {
+  Learn: BookOpen,
+  Explore: Network,
+  Investigate: Search,
+  Trust: Shield,
+};
+
+const PRIMARY_ICONS: Record<string, ComponentType<{ size?: number; "aria-hidden"?: boolean }>> = {
+  "/research": FlaskConical,
+  "/simulator": Box,
+  "/community": Users,
+};
+
+function NavIcon({ icon: Icon }: { icon: ComponentType<{ size?: number; "aria-hidden"?: boolean }> }) {
+  return <Icon size={16} aria-hidden />;
+}
 
 function YouTubeNavIcon({ className }: { className?: string }) {
   return (
@@ -56,12 +74,33 @@ function Logo() {
   );
 }
 
+function HeaderAccount({ pathname }: { pathname: string }) {
+  const member = useMember();
+  if (member) {
+    const raw = (member.name ?? "").trim();
+    const label = raw && !raw.includes("@") ? raw.slice(0, 22) : "Account";
+    return (
+      <Link className="header-account" to="/community/profile">
+        <UserRound size={16} aria-hidden />
+        <span>{label}</span>
+      </Link>
+    );
+  }
+  return (
+    <Link className="header-signin" to="/auth" search={{ redirect: pathname || "/" }}>
+      <UserRound size={16} aria-hidden />
+      Sign in
+    </Link>
+  );
+}
+
 function PillarMenu({ label, items, pathname, onNavigate }: {
   label: string;
   items: readonly JourneyItem[];
   pathname: string;
   onNavigate: () => void;
 }) {
+  const Icon = JOURNEY_ICONS[label];
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -82,6 +121,7 @@ function PillarMenu({ label, items, pathname, onNavigate }: {
         aria-haspopup="true"
         onClick={() => setOpen(!open)}
       >
+        {Icon ? <NavIcon icon={Icon} /> : null}
         {label}<ChevronDown size={14} className="pillar-chevron" />
       </button>
       {open && (
@@ -138,10 +178,14 @@ function MarketingCompactNav({
   open,
   onClose,
   panelId,
+  pathname,
+  unread,
 }: {
   open: boolean;
   onClose: () => void;
   panelId: string;
+  pathname: string;
+  unread: number;
 }) {
   const panelRef = useRef<HTMLElement>(null);
 
@@ -192,24 +236,32 @@ function MarketingCompactNav({
           </Button>
         </div>
         <div className="marketing-compact-links">
+          {JOURNEY_NAV.map((g) => {
+            const Icon = JOURNEY_ICONS[g.label];
+            return (
+              <div key={g.label} className="marketing-compact-group">
+                <span className="marketing-compact-label nav-line">{Icon ? <NavIcon icon={Icon} /> : null}{g.label}</span>
+                {g.items.map((item) => (
+                  <Link key={journeyKey(item)} to={item.path as "/"} hash={item.hash} activeProps={{ className: "active" }} onClick={onClose}>
+                    {item.title}
+                  </Link>
+                ))}
+              </div>
+            );
+          })}
           <div className="marketing-compact-group">
-            <span className="marketing-compact-label">Primary</span>
-            {JOURNEY_PRIMARY.map((item) => (
-              <Link key={item.path} to={item.path} activeProps={{ className: "active" }} onClick={onClose}>
-                {item.label}
-              </Link>
-            ))}
-          </div>
-          {JOURNEY_NAV.map((g) => (
-            <div key={g.label} className="marketing-compact-group">
-              <span className="marketing-compact-label">{g.label}</span>
-              {g.items.map((item) => (
-                <Link key={journeyKey(item)} to={item.path as "/"} hash={item.hash} activeProps={{ className: "active" }} onClick={onClose}>
-                  {item.title}
+            <span className="marketing-compact-label">Tools</span>
+            {JOURNEY_PRIMARY.map((item) => {
+              const Icon = PRIMARY_ICONS[item.path];
+              return (
+                <Link key={item.path} to={item.path} className="nav-line" activeProps={{ className: "active" }} onClick={onClose}>
+                  {Icon ? <NavIcon icon={Icon} /> : null}
+                  {item.label}
+                  {item.path === "/community" && unread > 0 ? <span className="community-unread-count">{unread}</span> : null}
                 </Link>
-              ))}
-            </div>
-          ))}
+              );
+            })}
+          </div>
           <details className="marketing-compact-group marketing-compact-layers">
             <summary className="marketing-compact-label">All twelve science layers</summary>
             {NAV_GROUPS.flatMap((g) => [...g.items] as { n: string; path: string; title: string }[]).filter((l) => l.path !== "/").map((l) => (
@@ -238,6 +290,7 @@ function MarketingCompactNav({
                 {item.label}
               </Link>
             ))}
+            <HeaderAccount pathname={pathname} />
           </div>
         </div>
       </nav>
@@ -254,6 +307,8 @@ export default function Shell({ children }: { children: ReactNode }) {
   const showAskFab = pathname !== "/ask";
   const compactNavId = useId();
   const closeCompact = () => setOpen(false);
+  const member = useMember();
+  const unread = useUnreadCount(member);
 
   useEffect(() => { setAskOpen(false); setOpen(false); }, [pathname]);
   useEffect(() => {
@@ -295,18 +350,22 @@ export default function Shell({ children }: { children: ReactNode }) {
             {JOURNEY_NAV.map((g) => (
               <PillarMenu key={g.label} label={g.label} items={g.items} pathname={pathname} onNavigate={() => setOpen(false)} />
             ))}
-            <span className="journey-sep" aria-hidden />
-            {JOURNEY_PRIMARY.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="marketing-nav-link journey-direct"
-                activeOptions={{ exact: item.path !== "/community" }}
-                activeProps={{ className: "marketing-nav-link journey-direct current" }}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {JOURNEY_PRIMARY.map((item) => {
+              const Icon = PRIMARY_ICONS[item.path];
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="marketing-nav-link journey-direct nav-line"
+                  activeOptions={{ exact: item.path !== "/community" }}
+                  activeProps={{ className: "marketing-nav-link journey-direct nav-line current" }}
+                >
+                  {Icon ? <NavIcon icon={Icon} /> : null}
+                  {item.label}
+                  {item.path === "/community" && unread > 0 ? <span className="community-unread-count">{unread}</span> : null}
+                </Link>
+              );
+            })}
           </div>
           <div className="journey-org">
             <YouTubeNavIcon className="marketing-nav-link youtube-nav-link" />
@@ -328,6 +387,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               {MARKETING_NAV_ACTION.label}
             </Link>
           </div>
+          <HeaderAccount pathname={pathname} />
         </nav>
       </header>
         {(
@@ -335,6 +395,8 @@ export default function Shell({ children }: { children: ReactNode }) {
             open={open}
             onClose={closeCompact}
             panelId={compactNavId}
+            pathname={pathname}
+            unread={unread}
           />
         )}
       {showAskFab ? (

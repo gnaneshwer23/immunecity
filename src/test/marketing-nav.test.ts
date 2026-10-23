@@ -60,12 +60,20 @@ describe("marketing IA wiring", () => {
     expect(isMarketingPath("/research")).toBe(false);
   });
 
-  it("keeps Ask in the header and leaves search and the explore pill off the chrome", () => {
+  it("matches the reference header and leaves search and the explore pill off the chrome", () => {
     const shell = readFileSync(resolve(process.cwd(), "src/components/immune/Shell.tsx"), "utf8");
+    const header = shell.slice(shell.indexOf("<header"), shell.indexOf("</header>"));
     expect(shell).not.toContain("SiteSearch");
     expect(shell).not.toContain("topbar-cta");
     expect(shell).not.toContain("marketing-compact-cta");
     expect(shell).not.toContain("EXPLORE_CTA");
+    expect(shell).not.toContain("My Workspace");
+    expect(header).not.toContain("Ask Immune");
+    expect(header).toContain("HeaderAccount");
+    expect(shell).toContain("header-signin");
+    for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box", "Users"]) {
+      expect(shell).toContain(icon);
+    }
     expect(shell).toContain("journey-main");
     expect(shell).toContain("journey-org");
     expect(shell).toContain("AskAtlas");

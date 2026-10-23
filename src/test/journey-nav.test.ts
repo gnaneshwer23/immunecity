@@ -20,13 +20,13 @@ describe("merged pages", () => {
 });
 
 describe("primary entries", () => {
-  it("shows Ask, Research, Simulate and Community beside the journeys", () => {
+  it("shows Research, Simulate and Community beside the journeys", () => {
     expect(JOURNEY_PRIMARY.map((i) => [i.label, i.path])).toEqual([
-      ["Ask Immune", "/ask"],
       ["Research", "/research"],
       ["Simulate", "/simulator"],
       ["Community", "/community"],
     ]);
+    expect(JOURNEY_PRIMARY.some((i) => i.label === "Ask Immune")).toBe(false);
     expect(JOURNEY_PRIMARY.some((i) => i.label === "My Workspace")).toBe(false);
   });
   it("keeps those tools inside Learn, Explore and Investigate", () => {

@@ -18,11 +18,14 @@ import {
   type CitationLookup,
 } from "@/lib/community/rules";
 import { getDb } from "@/lib/db.server";
+import { notifyFollowersOfReply } from "@/lib/community/phase3.functions";
 import {
   communityComments,
   communityEntityLinks,
+  communityJournalClubs,
   communityMemberships,
   communityModerationActions,
+  communityPostRevisions,
   communityPosts,
   communityProfiles,
   communityReferences,
@@ -163,6 +166,7 @@ export const getCommunityPost = createServerFn({ method: "GET" })
         .select({
           id: communityPosts.id,
           topicId: communityPosts.topicId,
+          authorId: communityPosts.authorId,
           kind: communityPosts.kind,
           title: communityPosts.title,
           body: communityPosts.body,
@@ -191,10 +195,72 @@ export const getCommunityPost = createServerFn({ method: "GET" })
         .orderBy(asc(communityComments.createdAt));
       const references = await db.select().from(communityReferences).where(eq(communityReferences.postId, row.id));
       const links = await db.select().from(communityEntityLinks).where(eq(communityEntityLinks.postId, row.id));
+      let revisions: { id: string; previousBody: string; createdAt: string; editorName: string }[] = [];
+      try {
+        const history = await db
+          .select({
+            id: communityPostRevisions.id,
+            previousBody: communityPostRevisions.previousBody,
+            createdAt: communityPostRevisions.createdAt,
+            editorName: communityProfiles.displayName,
+          })
+          .from(communityPostRevisions)
+          .leftJoin(communityProfiles, eq(communityPostRevisions.editorId, communityProfiles.userId))
+          .where(eq(communityPostRevisions.postId, row.id))
+          .orderBy(desc(communityPostRevisions.createdAt))
+          .limit(30);
+        revisions = history.map((item) => ({
+          id: item.id,
+          previousBody: item.previousBody,
+          createdAt: iso(item.createdAt),
+          editorName: item.editorName ?? "Member",
+        }));
+      } catch (err) {
+        if (!missingCommunity(err)) console.error("community_history_failed", (err as { code?: string })?.code ?? "error");
+      }
+      let journalClub: {
+        title: string;
+        agenda: string;
+        scheduledAt: string;
+        facilitatorName: string;
+        paperStatus: string;
+        pmid: string | null;
+        doi: string | null;
+      } | null = null;
+      try {
+        const [club] = await db
+          .select({
+            title: communityJournalClubs.title,
+            agenda: communityJournalClubs.agenda,
+            scheduledAt: communityJournalClubs.scheduledAt,
+            paperStatus: communityJournalClubs.paperStatus,
+            pmid: communityJournalClubs.pmid,
+            doi: communityJournalClubs.doi,
+            facilitatorName: communityProfiles.displayName,
+          })
+          .from(communityJournalClubs)
+          .leftJoin(communityProfiles, eq(communityJournalClubs.facilitatorId, communityProfiles.userId))
+          .where(eq(communityJournalClubs.postId, row.id))
+          .limit(1);
+        if (club) {
+          journalClub = {
+            title: club.title,
+            agenda: club.agenda,
+            scheduledAt: iso(club.scheduledAt),
+            facilitatorName: club.facilitatorName ?? "Moderator",
+            paperStatus: club.paperStatus,
+            pmid: club.pmid,
+            doi: club.doi,
+          };
+        }
+      } catch (err) {
+        if (!missingCommunity(err)) console.error("community_club_failed", (err as { code?: string })?.code ?? "error");
+      }
       return {
         available: true as const,
         post: {
           id: row.id,
+          authorId: row.authorId,
           kind: row.kind,
           title: row.title,
           body: row.body,
@@ -219,6 +285,8 @@ export const getCommunityPost = createServerFn({ method: "GET" })
             verificationDetail: r.verificationDetail,
           })),
           conceptIds: links.map((l) => l.conceptId),
+          revisions,
+          journalClub,
         },
       };
     } catch (err) {
@@ -367,7 +435,7 @@ export const createCommunityComment = createServerFn({ method: "POST" })
     const db = getDb();
     try {
       const [post] = await db
-        .select({ id: communityPosts.id, topicId: communityPosts.topicId })
+        .select({ id: communityPosts.id, topicId: communityPosts.topicId, title: communityPosts.title })
         .from(communityPosts)
         .where(and(eq(communityPosts.id, data.postId), eq(communityPosts.status, "visible")))
         .limit(1);
@@ -401,6 +469,7 @@ export const createCommunityComment = createServerFn({ method: "POST" })
         return comment?.id ?? null;
       });
       if (!commentId) throw new Error("Community request failed.");
+      await notifyFollowersOfReply({ postId: post.id, postTitle: post.title, authorId: member.userId });
       return { id: commentId };
     } catch (err) {
       if (err instanceof Error && /Post not found|Reply target|Community request failed/.test(err.message)) throw err;
