@@ -124,45 +124,71 @@ describe("ask evaluation log", () => {
       abstentionReason: "clinical_personal",
       personalHealth: true,
       validation: null,
+      promptVersion: "ask-grounding-v10",
     });
-    expect(personal).toEqual({ outcome: "abstained", reasonCode: "clinical_personal", questionRedacted: true });
-    expect(Object.keys(personal)).toEqual(["outcome", "reasonCode", "questionRedacted"]);
+    expect(personal).toEqual({
+      outcome: "abstained",
+      reasonCode: "clinical_personal",
+      questionRedacted: true,
+      promptVersion: "ask-grounding-v10",
+    });
+    expect(Object.keys(personal).sort()).toEqual(
+      ["outcome", "promptVersion", "questionRedacted", "reasonCode"].sort(),
+    );
     expect(askEvaluationFromGate({
       callModel: false,
       abstentionReason: "no_graph_match",
       personalHealth: false,
       validation: null,
+      promptVersion: "ask-grounding-v10",
     }).reasonCode).toBe("no_graph_match");
     expect(askEvaluationFromGate({
       callModel: true,
       abstentionReason: null,
       personalHealth: false,
       validation: { ok: false, contextMismatches: ["species"], conflictCollapses: ["conflict-not-surfaced"] },
-    })).toEqual({ outcome: "context_mismatch", reasonCode: "context_mismatch", questionRedacted: false });
+      promptVersion: "ask-grounding-v10",
+    })).toEqual({
+      outcome: "context_mismatch",
+      reasonCode: "context_mismatch",
+      questionRedacted: false,
+      promptVersion: "ask-grounding-v10",
+    });
     expect(askEvaluationFromGate({
       callModel: true,
       abstentionReason: null,
       personalHealth: false,
       validation: { ok: false, contextMismatches: [], conflictCollapses: ["conflict-not-surfaced"] },
+      promptVersion: "ask-grounding-v10",
     }).outcome).toBe("conflict");
     expect(askEvaluationFromGate({
       callModel: true,
       abstentionReason: null,
       personalHealth: false,
       validation: { ok: false, contextMismatches: [], conflictCollapses: [] },
+      promptVersion: "ask-grounding-v10",
     }).outcome).toBe("citation_rejected");
     expect(askEvaluationFromGate({
       callModel: true,
       abstentionReason: null,
       personalHealth: false,
       validation: { ok: true, contextMismatches: [], conflictCollapses: [] },
-    })).toEqual({ outcome: "allowed", reasonCode: "allowed", questionRedacted: false });
+      promptVersion: "ask-grounding-v10",
+    })).toEqual({
+      outcome: "allowed",
+      reasonCode: "allowed",
+      questionRedacted: false,
+      promptVersion: "ask-grounding-v10",
+    });
     const logger = readFileSync(resolve(root, "src/lib/askEvaluation.server.ts"), "utf8");
     expect(logger).not.toMatch(/questionText|confidence|apiKey|DATABASE_URL/);
     expect(logger).toContain("questionRedacted: record.questionRedacted");
+    expect(logger).toContain("promptVersion: record.promptVersion");
     const sql = readFileSync(resolve(root, "drizzle/migrations/0013_ai_evaluation_runs.sql"), "utf8");
     expect(sql).toContain("ai_evaluation_runs");
     expect(sql).not.toMatch(/\b(evidence_records|question_text|confidence)\b/);
+    const sql14 = readFileSync(resolve(root, "drizzle/migrations/0014_ai_evaluation_prompt_version.sql"), "utf8");
+    expect(sql14).toContain("prompt_version");
   });
 });
 

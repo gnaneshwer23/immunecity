@@ -33,7 +33,16 @@ function LiveNeonCoverage() {
       <h3 id="live-neon-heading" style={{ fontSize: "1.05rem", marginBottom: 8 }}>Live claim-review coverage</h3>
       <dl className="grid g3" style={{ marginBottom: 8 }}>
         <div><dt className="xs muted">Reviewed claims / links</dt><dd><b>{`${data.distinctGateCRels} / ${data.runtimeRelationships}`}</b></dd></div>
-        <div><dt className="xs muted">Contradicts / partial</dt><dd><b>{`${data.contradicts} / ${data.partial}`}</b></dd></div>
+        <div>
+          <dt className="xs muted">Contradicts / partial</dt>
+          <dd>
+            <b>
+              {data.contradicts === 0 && data.partial === 0
+                ? "0 / 0 — empty set (not agreement)"
+                : `${data.contradicts} / ${data.partial}`}
+            </b>
+          </dd>
+        </div>
         <div><dt className="xs muted">Open priority pathway targets</dt><dd><b>{data.openP0Targets}</b></dd></div>
       </dl>
       <ul className="small" style={{ paddingLeft: 18, margin: "8px 0" }}>

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MAX_QUESTION_CHARS, isAskEmergencyDisabled, ASK_DISABLED_MESSAGE } from "@/lib/askGrounding";
 import { prepareAskServer } from "@/lib/ask.server";
+import { buildAskResponseContract } from "@/lib/askResponseContract";
 import { askObservabilityPublic } from "@/lib/askObservability";
 import { clientIp } from "@/lib/clientIp";
 
@@ -49,6 +50,7 @@ async function handlePrepare(request: Request): Promise<Response> {
     queryClass: prepared.queryClass,
     callModel: prepared.callModel,
     replyText: prepared.replyText,
+    responseContract: buildAskResponseContract(grounding, prepared.queryClass),
     grounding: {
       nodeIds: grounding.nodeIds,
       relIds: grounding.relIds,

@@ -49,12 +49,13 @@ export function CommunityBar({ unread = 0 }: { unread?: number }) {
   return (
     <p className="row community-bar">
       <Link className="btn sm" to="/community">Topics</Link>
-      <Link className="btn sm" to="/community/profile">Profile</Link>
+      <Link className="btn sm" to="/community/profile">Profile &amp; privacy</Link>
       <Link className="btn sm" to="/community/saved">Saved</Link>
       <Link className="btn sm" to="/community/notifications">
         Notifications{unread > 0 ? ` (${unread})` : ""}
       </Link>
       <Link className="btn sm" to="/community/journal-clubs">Journal clubs</Link>
+      <Link className="btn sm" to="/community/moderation">Moderation</Link>
     </p>
   );
 }

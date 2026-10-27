@@ -257,6 +257,8 @@ export const aiEvaluationRuns = pgTable("ai_evaluation_runs", {
   outcome: text("outcome").notNull(),
   reasonCode: text("reason_code").notNull(),
   questionRedacted: boolean("question_redacted").notNull(),
+  /** Ask PROMPT_VERSION at log time — for outcome rates by prompt; never question text. */
+  promptVersion: text("prompt_version").notNull().default("unknown"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

@@ -23,7 +23,7 @@ import {
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v9";
+export const PROMPT_VERSION = "ask-grounding-v10";
 
 /** Unreviewed literature hits (PubMed / Europe PMC). Never Gate C approved. */
 export interface ProvisionalLitItem {
@@ -1199,8 +1199,12 @@ Rules:
 - Ground every claim in the CONCEPT/LINK lines. If the extract says NO_MATCH or does not cover the question, say plainly "The Immune Super Intelligence graph does not cover this yet" and suggest a related covered concept if any. Never fill gaps from general knowledge. Never invent citations, PMIDs, DOIs or LINK IDs.
 - Prefer CAUSAL_CHAINS when explaining how two concepts connect. End with a short "Causal chain used:" section that lists the chain hops with [phrase](edge:REL_ID) links, or state that no chain was available.
 - Distinguish evidence tiers explicitly: established, evidence-supported, emerging, hypothesis, draft, missing-support. Say when a link is DRAFT, MISSING-SUPPORT or has no-source-link.
+- RESPONSE_CONTRACT (keep free-text streaming answer; honour these structured labels in prose):
+  (1) Name the retrieved concepts you used (from CONCEPT lines) near the start.
+  (2) Label support explicitly as one of: "Gate C reviewed support", "provisional unreviewed literature", or "graph teaching only — no reviewed cite" — never blur Gate C with provisional.
+  (3) If the extract forces abstention (NO_MATCH / clinical / omics), state the abstention reason in plain language and do not invent a synthesis.
 - REVIEWED_EVIDENCE lists Gate C rows only (approved + supports + verified identifier). If it says none, do not imply the claim is scientifically verified — say the atlas lacks reviewed support for that link.
-- COUNTER_EVIDENCE lists assessed contradicts/partial separately. Never present them as approved support. If it says none, that is an honest empty set — do not invent counterevidence.
+- COUNTER_EVIDENCE lists assessed contradicts/partial separately. Never present them as approved support. If it says none, that is an honest empty set — do not invent counterevidence and do not imply agreement.
 - COUNTEREVIDENCE_HARVEST (if present) is an unreviewed contradict-polarity search hint — not curated contradicts and not Gate C. Label as unreviewed harvest if mentioned.
 - PROVISIONAL_LITERATURE (if present) is unreviewed PubMed/Europe PMC search — never treat it as approved evidence or "supports". If you mention those items, label them explicitly as "unreviewed literature" / provisional. Do not invent extra PMIDs.
 - Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, COUNTER_EVIDENCE, COUNTEREVIDENCE_HARVEST, PROVISIONAL_LITERATURE, or on the LINK line itself.

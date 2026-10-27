@@ -3,7 +3,13 @@ import { ArrowRight, AlertTriangle, BookOpenCheck, BookMarked } from "lucide-rea
 import { byId, TYPES, human } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import type { AskGrounding, EvidenceTier } from "@/lib/askGrounding";
-import { countReviewedPapers, provisionalLitLabel, shouldFetchProvisionalLit } from "@/lib/askGrounding";
+import {
+  countReviewedPapers,
+  counterEvidenceBucketLabel,
+  provisionalLitLabel,
+  shouldFetchProvisionalLit,
+} from "@/lib/askGrounding";
+import { evidenceLabelFromGrounding } from "@/lib/askResponseContract";
 import EdgeReference from "./EdgeReference";
 import { edgeByRel } from "@/lib/immune/engine";
 
@@ -51,6 +57,7 @@ export type GroundingPanelProps = {
 
 export default function GroundingPanel({ grounding, provisionalNote }: GroundingPanelProps) {
   const classLabel = CLASS_LABEL[grounding.queryClass] ?? grounding.queryClass;
+  const evidenceLabel = evidenceLabelFromGrounding(grounding);
   if (!grounding.coverage.matched || grounding.trace.abstained) {
     return (
       <aside className="grounding-panel grounding-panel--gap" aria-label="Why there is no graph-based answer">
@@ -61,10 +68,13 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
           <AlertTriangle size={14} aria-hidden />
           <p>
             {grounding.trace.abstained
-              ? `${ABSTAIN_REASON[grounding.queryClass] ?? "This question is outside what Ask Immune answers from the graph"}, so nothing was generated and no sources were invented.`
+              ? `${ABSTAIN_REASON[grounding.queryClass] ?? grounding.trace.abstentionReason ?? "This question is outside what Ask Immune answers from the graph"}, so nothing was generated and no sources were invented.`
               : "Nothing in the knowledge graph matched this question, so Ask Immune did not write an answer rather than guess."}
           </p>
         </div>
+        {grounding.trace.abstentionReason ? (
+          <p className="xs muted">Abstention reason code: <code>{grounding.trace.abstentionReason}</code></p>
+        ) : null}
         <p className="xs muted">
           Try naming a cell, cytokine, receptor, disease or therapy — browse the{" "}
           <Link to="/atlas">Knowledge Atlas</Link> for ideas, or see <Link to="/methods">Methods</Link> for what is covered.
@@ -97,6 +107,17 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
       <div className="grounding-head">
         <strong>How well supported is this answer?</strong>
       </div>
+      <p className="xs muted" role="status">
+        Evidence label:{" "}
+        <b>
+          {evidenceLabel === "gate_c"
+            ? "Gate C reviewed support present"
+            : evidenceLabel === "provisional"
+              ? "Provisional unreviewed literature only"
+              : "Graph teaching only — no reviewed cite"}
+        </b>
+        {" · "}Educational beta, not CDS.
+      </p>
       <p className="grounding-summary">
         <b>{reviewedLinks} of {totalLinks}</b> graph link{totalLinks === 1 ? "" : "s"} used here {reviewedLinks === 1 ? "has" : "have"} an expert-reviewed supporting source.
       </p>
@@ -112,7 +133,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
       </div>
       <ul className="grounding-chips" aria-label="Evidence counts">
         <li><BookOpenCheck size={13} aria-hidden /> {reviewedPapers} reviewed supporting paper{reviewedPapers === 1 ? "" : "s"}</li>
-        <li><AlertTriangle size={13} aria-hidden /> {counterCount} conflicting finding{counterCount === 1 ? "" : "s"} on record</li>
+        <li><AlertTriangle size={13} aria-hidden /> Conflicting findings: {counterEvidenceBucketLabel(counterCount)}</li>
         <li><BookMarked size={13} aria-hidden /> {provisionalCount} unreviewed paper{provisionalCount === 1 ? "" : "s"}</li>
       </ul>
       {reviewedLinks === 0 ? (
@@ -200,7 +221,9 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         })}
       </ul>
 
-      <div className="grounding-label">Conflicting findings (reviewed)</div>
+      <div className="grounding-label">
+        Counterevidence bucket — contradicts / partial ({counterEvidenceBucketLabel(counterCount)})
+      </div>
       {counter.length > 0 ? (
         <ul className="grounding-links grounding-counter" aria-label="Counterevidence assessments">
           {counter.map((c) => (
@@ -212,8 +235,8 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
           ))}
         </ul>
       ) : (
-        <p className="xs muted grounding-soft-fail" role="status">
-          No conflicting findings have been reviewed for these links yet. That does not mean the literature agrees.
+        <p className="xs muted grounding-soft-fail grounding-counter-empty" role="status">
+          Counterevidence set is empty for these links (0 curated contradicts/partial). That is an empty set — not agreement, and not a claim that no conflicting literature exists.
         </p>
       )}
 
@@ -235,7 +258,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         </ul>
       ) : (
         <p className="xs muted grounding-soft-fail" role="status">
-          No possible conflicts found by search (the search runs only when a link has a reviewed source). That is not proof of agreement.
+          Unreviewed conflict-search harvest is empty (runs only when a link has a reviewed source). Empty harvest ≠ agreement.
         </p>
       )}
 

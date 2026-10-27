@@ -35,18 +35,33 @@ function CommunityIndex() {
         {member === null ? <Link className="btn sm" to="/auth" search={{ redirect: "/community" }}>Sign in</Link> : null}
       </p>
       {!data.available ? (
-        <p className="callout" role="status">Community storage is not available on this database yet.</p>
+        <p className="callout" role="status">Community storage is not available on this database yet. No seeded science posts are invented here.</p>
+      ) : data.topics.length === 0 ? (
+        <p className="callout" role="status">
+          No topics yet. Empty community — not a scientific finding. Sign in to post when topics exist; nothing here enters the knowledge graph.
+          Report misuse from a post page; moderators use <Link to="/community/moderation">Moderation</Link>.
+        </p>
       ) : (
         <ul className="community-stack">
           {data.topics.map((t) => (
             <li key={t.slug} className="card community-card">
               <h2><Link to="/community/topic/$slug" params={{ slug: t.slug }}>{t.title}</Link></h2>
               <p className="small">{t.description}</p>
-              <p className="xs muted">{t.visiblePosts} visible {t.visiblePosts === 1 ? "post" : "posts"}</p>
+              <p className="xs muted">
+                {t.visiblePosts === 0
+                  ? "No visible posts yet — empty topic, not reviewed evidence."
+                  : `${t.visiblePosts} visible ${t.visiblePosts === 1 ? "post" : "posts"}`}
+              </p>
             </li>
           ))}
         </ul>
       )}
+      <p className="xs muted" style={{ marginTop: 12 }}>
+        To report a post or reply, open it and use Report. Moderators review the queue at{" "}
+        <Link to="/community/moderation">/community/moderation</Link>. Journal clubs:{" "}
+        <Link to="/community/journal-clubs">scheduled threads only</Link> (no live video). Export or delete your data from{" "}
+        <Link to="/community/profile">Profile &amp; privacy</Link>.
+      </p>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { PROMPT_VERSION } from "@/lib/askGrounding";
 import { ASK_RATE_LIMIT_STATUS } from "@/lib/askRateLimitStatus";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
+import AskQualityDashboard from "@/components/immune/AskQualityDashboard";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { loadEvidenceCoverage } from "@/lib/citations.functions";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
@@ -55,7 +56,11 @@ function LiveEvidencePanel() {
         </div>
         <div>
           <dt>Contradicts / partial</dt>
-          <dd>{`${data.contradicts} / ${data.partial}`}</dd>
+          <dd>
+            {data.contradicts === 0 && data.partial === 0
+              ? "0 / 0 — empty set (not agreement)"
+              : `${data.contradicts} / ${data.partial}`}
+          </dd>
         </div>
         <div>
           <dt>Open priority pathway targets</dt>
@@ -84,6 +89,7 @@ function LiveEvidencePanel() {
 const METHODS_TOC = [
   { href: "#lifecycle", label: "Evidence lifecycle" },
   { href: "#live-ev-heading", label: "Live coverage" },
+  { href: "#ask-quality", label: "Ask quality (admin)" },
   { href: "#statuses", label: "Review statuses" },
   { href: "#ontology", label: "Graph ontology" },
   { href: "#models", label: "Model assumptions" },
@@ -186,6 +192,7 @@ function Methods() {
             </div>
             <LiveEvidencePanel />
           </div>
+          <AskQualityDashboard />
         </MarketingSection>
 
         <MarketingSection

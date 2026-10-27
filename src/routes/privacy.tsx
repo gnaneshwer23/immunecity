@@ -6,6 +6,7 @@ import { PageToc, Section } from "@/components/immune/page";
 const TOC = [
   { id: "what-we-process", label: "What we process" },
   { id: "browser-storage-and-external-services", label: "Browser storage and external services" },
+  { id: "export-and-delete", label: "Export and delete" },
   { id: "what-we-ask-you-not-to-send", label: "What we ask you not to send" },
   { id: "contact", label: "Contact" },
 ];
@@ -53,13 +54,22 @@ function Privacy() {
         <p>For details of the responsible operator, applicable data rights and retention periods, contact {CONTACT_EMAIL}.
           These operational details require confirmation by the operator before a broader production launch.</p>
       </Section>
-      <Section id="what-we-ask-you-not-to-send" n={3} title="What we ask you not to send">
+      <Section id="export-and-delete" n={3} title="Export and delete (signed-in members)">
+        <p>
+          If you have a member account, open{" "}
+          <Link to="/community/profile">Community → Profile &amp; privacy</Link> to download a JSON export of your
+          profile, posts, replies, saves, follows, notifications and concept saves, or to delete personal data (display
+          name cleared; posts stay with the name removed). Evidence records and the knowledge graph are not deleted.
+          Visitors without an account have nothing to export here.
+        </p>
+      </Section>
+      <Section id="what-we-ask-you-not-to-send" n={4} title="What we ask you not to send">
         <p>
           Do not upload or type patient-identifiable data, clinical notes or confidential proprietary datasets into Ask,
           the workbench or collaboration messages.
         </p>
       </Section>
-      <Section id="contact" n={4} title="Contact">
+      <Section id="contact" n={5} title="Contact">
         <p>
           Privacy questions: {CONTACT_EMAIL}. Also see the <Link to="/disclaimer">educational disclaimer</Link> and{" "}
           <Link to="/terms">terms</Link>.

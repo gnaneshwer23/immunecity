@@ -7,19 +7,29 @@ Targeted Vitest cases for Ask Immune retrieval, refusals, citation validation, a
 Prefer the PRD smoke harness (avoids hanging full Vitest / D-11):
 
 ```bash
-# Scientific eval set + Ask unit checks (preferred)
+# Ask quality harness (gold-set + retrieval + prompt contract; fails if broken)
+bun run ask:quality
+
+# Scientific eval set + Ask unit checks (preferred smoke)
 bun scripts/smoke-prd-a2.ts
 
 # SME sign-off status (unsigned until a human SME signs)
-bun scripts/sme-gold-set-status.ts
+bun run sme:status
+
+# Hybrid retrieval baseline (no vector DB)
+bun run benchmark:retrieval
 
 # Optional targeted Vitest (may hang in some environments — skip if stuck)
-# bunx vitest run src/test/ai-grounding.test.ts src/test/mechanism-reasoning.test.ts
+# bunx vitest run src/test/ask-quality-loop.test.ts src/test/ai-grounding.test.ts
 ```
 
 Do **not** rely on live PubMed/Europe PMC in CI — provisional fetch is soft-fail and rate-limited. Unit tests use `attachProvisionalLiterature` fixtures only.
 
-**SME:** `docs/SME_GOLD_SET_SIGNOFF.md` remains awaiting a named human expert. Engineering expansion of graph-true cases does **not** constitute sign-off.
+**SME / Gate C (human process — not automated in these phases):**
+
+- `docs/SME_GOLD_SET_SIGNOFF.md` remains awaiting a named human expert. Engineering expansion of graph-true cases does **not** constitute sign-off.
+- Gate C claim approvals stay curator-only (`docs/CURATOR_EVIDENCE_QUEUE.md`). Do not mass-approve or invent PMIDs.
+- Admin Ask quality dashboard on Methods shows redacted gate outcome rates by `PROMPT_VERSION` only — never personal-health question text.
 
 ## What the suite covers
 

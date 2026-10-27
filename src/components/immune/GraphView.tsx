@@ -4,11 +4,14 @@ import * as d3 from "d3";
 import { ZoomIn, ZoomOut, Scan, List, Network } from "lucide-react";
 import { KG, TYPES, byId, SEM, deg, out, inn, propagate, human, TISSUES, edgeTissues, type NodeType, type Tissue, type KGEdge } from "@/lib/immune/engine";
 import { filterGraphSlice } from "@/lib/immune/graphFilters";
-import { edgeDirectionLegend } from "@/lib/immune/graphPhase2";
+import { edgeDirectionLegend, graphHasDiseaseField } from "@/lib/immune/graphPhase2";
 import { PageHead, NodeLink } from "./ui";
 import GraphNodeDetail from "./GraphNodeDetail";
 import GraphEdgeDetail from "./GraphEdgeDetail";
 import GraphTable from "./GraphTable";
+
+/** Disease attribute filter only when KG rows carry a non-empty `disease` field (type DISEASE ≠ attribute). */
+const SHOW_DISEASE_ATTR_FILTER = graphHasDiseaseField(KG.nodes, KG.relationships);
 
 const DEFAULT_TYPES: NodeType[] = ["CELL", "MOLECULE", "RECEPTOR", "PATHWAY", "DISEASE", "INTERVENTION"];
 const ALL_TYPES = KG.node_types;
@@ -373,6 +376,12 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
               <p className="xs muted" style={{ marginTop: 6 }}>Filters links by the status stored on each graph edge. This is separate from reviewed claim coverage. An empty result is a filter, not evidence of absence.</p>
             </div>
           ) : null}
+          {SHOW_DISEASE_ATTR_FILTER ? (
+            <div className="card">
+              <h2 className="graph-panel-h">Disease attribute</h2>
+              <p className="xs muted">A disease-attribute filter would appear here when graph records carry a non-empty <code>disease</code> field. Node type Disease alone does not enable it.</p>
+            </div>
+          ) : null}
           <div className="card">
             <h3>Perturbation</h3>
             {simNode && simId ? (
@@ -412,10 +421,12 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
             {pick.ids.size ? <button className="chip on" onClick={clearPick}>{pick.ids.size} selected · clear</button> : null}
           </div>
           {!nodes.length ? (
-            <p className="empty" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
+            <p className="empty graph-stage-empty" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", padding: 24, textAlign: "center" }} role="status">
               {evidenceStatus
-                ? `No ${evidenceStatus.toLowerCase()} links among the selected concept types. This is a filter result, not evidence of absence.`
-                : "No concept types are selected. Choose at least one type in the panel to draw the graph."}
+                ? `No ${evidenceStatus.toLowerCase()} links among the selected concept types. This is a filter result, not evidence of absence — try clearing the evidence-status filter or enabling more concept types.`
+                : active.size === 0
+                  ? "No concept types are selected. Choose at least one type in the panel to draw the graph."
+                  : "No links match the current type and tissue filters. Empty filter — not a scientific finding."}
             </p>
           ) : null}
           <div className="graph-legend" aria-label="Graph legend">
@@ -432,8 +443,8 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
               return (
                 <span className="graph-legend-dir">
                   <span aria-hidden="true">→</span>
-                  {direction.key}
-                  {direction.example ? <span className="xs"> · {direction.example}</span> : null}
+                  Direction: {direction.key}
+                  {direction.example ? <span className="xs"> · e.g. {direction.example}</span> : <span className="xs"> · arrows run source → target</span>}
                 </span>
               );
             })()}

@@ -4,6 +4,7 @@ import { createOpenAIDirectCall, createResponsesCall } from "@/lib/ai/responses.
 import {
   ASK_DISABLED_MESSAGE,
   MAX_QUESTION_CHARS,
+  PROMPT_VERSION,
   SYSTEM,
   attachCounterEvidence,
   attachCounterEvidenceHarvest,
@@ -18,6 +19,10 @@ import {
 } from "@/lib/askGrounding";
 import { logAskGate } from "@/lib/askEvaluation.server";
 import { askRateLimited } from "@/lib/askRateLimit.server";
+import {
+  askResponseContractSystemLines,
+  buildAskResponseContract,
+} from "@/lib/askResponseContract";
 import { clientIp } from "@/lib/clientIp";
 import { EvidenceServiceError } from "@/lib/citations.functions";
 import { getDb } from "@/lib/db.server";
@@ -383,12 +388,14 @@ export async function handleAsk(request: Request): Promise<Response> {
   }
   const { prepared } = serverPrep;
   const personalHealth = classifyAskQuery(question) === "clinical_personal";
+  const promptVersion = prepared.grounding.trace.promptVersion || PROMPT_VERSION;
   if (!prepared.callModel && prepared.replyText) {
     await logAskGate({
       callModel: false,
       abstentionReason: prepared.grounding.trace.abstentionReason,
       personalHealth,
       validation: null,
+      promptVersion,
     });
     return textReply(prepared.replyText);
   }
@@ -404,11 +411,13 @@ export async function handleAsk(request: Request): Promise<Response> {
     );
   }
 
+  const responseContract = buildAskResponseContract(prepared.grounding, prepared.queryClass);
   const system =
     SYSTEM +
     prepared.grounding.text +
     (serverPrep.researchTraceText ? `\n\n${serverPrep.researchTraceText}` : "") +
-    `\n\nRESPONSE_TRACE prompt=${prepared.grounding.trace.promptVersion} graph=${prepared.grounding.trace.graphVersion} class=${prepared.queryClass}`;
+    `\n\n${askResponseContractSystemLines(responseContract)}` +
+    `\n\nRESPONSE_TRACE prompt=${promptVersion} graph=${prepared.grounding.trace.graphVersion} class=${prepared.queryClass}`;
   const modelMessages = await convertToModelMessages(messages);
 
   // Buffer model text so we can enforce citation validation before returning to the client.
@@ -461,6 +470,7 @@ export async function handleAsk(request: Request): Promise<Response> {
     abstentionReason: null,
     personalHealth,
     validation,
+    promptVersion,
   });
 
   if (!validation.ok) {

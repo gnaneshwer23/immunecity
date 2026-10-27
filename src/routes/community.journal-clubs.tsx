@@ -69,10 +69,14 @@ function JournalClubsPage() {
       <PageHead
         kicker="Community"
         title="Journal clubs"
-        lede="A moderator schedules a discussion in a topic. Members reply on that thread. There is no live video room."
+        lede="Entry: a moderator schedules a time and opens a normal discussion thread in a topic. Members reply there. There is no live video room, and clubs never write into the knowledge graph."
       />
       <CommunityNote />
       <CommunityBar unread={unread} />
+      <p className="xs muted">
+        How to join: open a scheduled club below → read the agenda on its post → reply in-thread. How to report: use Report on the post. Moderators:{" "}
+        <Link to="/community/moderation">moderation queue</Link>.
+      </p>
       {!data.available ? <p className="callout" role="status">Journal clubs are not available on this database yet.</p> : null}
       {data.clubs.length ? (
         <ul className="community-stack">
@@ -80,11 +84,15 @@ function JournalClubsPage() {
             <li key={club.id} className="card community-card">
               <p className="xs muted">{club.topicTitle} · {club.scheduledAt} · {club.facilitatorName}</p>
               <h2><Link to="/community/post/$postId" params={{ postId: club.postId }}>{club.title}</Link></h2>
-              <p className="xs muted">{paperLabel(club.paperStatus)}. The facilitator is a moderator.</p>
+              <p className="xs muted">{paperLabel(club.paperStatus)}. The facilitator is a moderator. Thread discussion only.</p>
             </li>
           ))}
         </ul>
-      ) : <p className="small muted">No visible journal clubs yet.</p>}
+      ) : data.available ? (
+        <p className="callout" role="status">
+          No visible journal clubs yet. Empty list — we do not invent clubs or papers. A moderator can schedule one below when signed in.
+        </p>
+      ) : null}
       {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member ? (
         <form onSubmit={onSubmit} className="card community-card community-form">

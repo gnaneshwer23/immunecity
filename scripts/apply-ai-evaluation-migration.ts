@@ -1,7 +1,7 @@
 /**
- * Applies drizzle/migrations/0013_ai_evaluation_runs.sql when DATABASE_URL in .env.local
- * points at the live host prefix and evidence_records already has rows.
- * Does not print the connection string. Does not change evidence rows or role rows.
+ * Applies 0013_ai_evaluation_runs.sql then 0014_ai_evaluation_prompt_version.sql
+ * when DATABASE_URL in .env.local points at the live host prefix and evidence_records
+ * already has rows. Does not print the connection string. Does not change evidence or roles.
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -65,10 +65,15 @@ if (prefix !== "ep-blue-salad") {
   process.exit(0);
 }
 
-const sqlText = readFileSync(resolve(process.cwd(), "drizzle/migrations/0013_ai_evaluation_runs.sql"), "utf8");
-if (/\b(evidence_records|evidence_audit_events|claim_candidates|user_roles)\b/.test(sqlText)) {
-  console.error("migration_refused=forbidden_table");
-  process.exit(1);
+const sqlTexts = [
+  readFileSync(resolve(process.cwd(), "drizzle/migrations/0013_ai_evaluation_runs.sql"), "utf8"),
+  readFileSync(resolve(process.cwd(), "drizzle/migrations/0014_ai_evaluation_prompt_version.sql"), "utf8"),
+];
+for (const sqlText of sqlTexts) {
+  if (/\b(evidence_records|evidence_audit_events|claim_candidates|user_roles)\b/.test(sqlText)) {
+    console.error("migration_refused=forbidden_table");
+    process.exit(1);
+  }
 }
 
 const sql = postgres(normalized, { prepare: false, max: 1 });
@@ -109,7 +114,9 @@ try {
     }
   }
 
-  await sql.unsafe(sqlText);
+  for (const sqlText of sqlTexts) {
+    await sql.unsafe(sqlText);
+  }
 
   const evidenceAfter = await sql<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM public.evidence_records`;
   if (Number(evidenceAfter[0]?.n ?? 0) !== evidenceBefore) {
@@ -125,8 +132,13 @@ try {
   }
 
   const tables = await sql<{ name: string | null }[]>`SELECT to_regclass('public.ai_evaluation_runs') AS name`;
+  const cols = await sql<{ col: string | null }[]>`
+    SELECT column_name::text AS col FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'ai_evaluation_runs' AND column_name = 'prompt_version'
+  `;
   console.log("migration=applied");
   console.log(`ai_evaluation_runs=${tables[0]?.name ? "present" : "missing"}`);
+  console.log(`prompt_version=${cols[0]?.col ? "present" : "missing"}`);
 } catch (err) {
   console.error(`migration_failed code=${(err as { code?: string }).code ?? "error"}`);
   process.exit(1);

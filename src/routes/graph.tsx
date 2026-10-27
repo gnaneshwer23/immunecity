@@ -19,25 +19,29 @@ export const Route = createFileRoute("/graph")({
   component: GraphPage,
 });
 
-/** Match GraphView chrome so ClientOnly → Suspense does not collapse the stage. */
+/** Match GraphView chrome so ClientOnly → Suspense does not collapse the stage (CWV-minded shell). */
 function Fallback() {
   return (
     <div className="page graph-explorer" aria-busy="true">
       <PageHead
         kicker="Explore · Knowledge graph"
         title="The causal map"
-        lede="Loading the graph…"
+        lede="Loading typed concepts and directional links — the first paint keeps this shell so the layout does not jump."
       />
       <div className="graph-layout">
         <aside className="graph-panel" aria-hidden="true">
           <div className="card">
             <h2 className="graph-panel-h">Find a concept</h2>
-            <p className="xs muted">Preparing filters…</p>
+            <p className="xs muted">Preparing search and filters…</p>
+          </div>
+          <div className="card">
+            <h2 className="graph-panel-h">Evidence status</h2>
+            <p className="xs muted">Edge evidence-status filter loads with the explorer.</p>
           </div>
         </aside>
         <div className="graph-stage graph-stage-loading">
           <p className="empty" role="status">
-            Preparing the explorer — typed concepts and directional links.
+            Preparing the explorer — arrows mean source → target. An empty filter later is not evidence of absence.
           </p>
         </div>
       </div>
