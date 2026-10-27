@@ -100,9 +100,22 @@ describe("post-auth landing", () => {
     expect(postAuthPath("/workspace")).toBe("/workspace");
     const auth = readFileSync(resolve(process.cwd(), "src/routes/auth.tsx"), "utf8");
     expect(auth).toContain("postAuthPath");
+    expect(auth).toContain("goPostAuth");
+    expect(auth).toContain("sessionReady");
     expect(auth).toContain('default("/workspace")');
     const client = readFileSync(resolve(process.cwd(), "src/integrations/neon/auth-client.ts"), "utf8");
     expect(client).toMatch(/if \(typeof window !== "undefined"\) return "\/api\/auth"/);
+    expect(client).toContain("NEON_AUTH_CHANGED_EVENT");
+  });
+
+  it("hard-navigates after auth so the header remounts with the session", () => {
+    const client = readFileSync(resolve(process.cwd(), "src/integrations/neon/auth-client.ts"), "utf8");
+    expect(client).toContain("function goPostAuth");
+    expect(client).toContain("window.location.assign(path)");
+    expect(client).toContain("notifyAuthChanged");
+    const auth = readFileSync(resolve(process.cwd(), "src/routes/auth.tsx"), "utf8");
+    expect(auth).toContain("goPostAuth(target)");
+    expect(auth).not.toMatch(/navigate\(\{\s*to:\s*target/);
   });
 });
 
@@ -123,5 +136,7 @@ describe("ivory header", () => {
     expect(account).toContain("My Workspace");
     expect(account).toContain("Logout");
     expect(account).toContain('to="/community/profile"');
+    const chrome = readFileSync(resolve(process.cwd(), "src/components/immune/community/chrome.tsx"), "utf8");
+    expect(chrome).toContain("NEON_AUTH_CHANGED_EVENT");
   });
 });

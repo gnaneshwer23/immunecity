@@ -58,6 +58,24 @@ export function postAuthPath(redirect: string): string {
   return path === "/" ? "/workspace" : path;
 }
 
+/** Browser event so Shell and page hooks re-read the session after login/logout. */
+export const NEON_AUTH_CHANGED_EVENT = "isi:neon-auth-changed";
+
+export function notifyAuthChanged(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(NEON_AUTH_CHANGED_EVENT));
+}
+
+/**
+ * Full page load after email/Google handoff so every `useMember` remounts with
+ * the new session cookie. Client-side navigate left the header on "Sign in".
+ */
+export function goPostAuth(redirect: string): void {
+  const path = postAuthPath(redirect);
+  notifyAuthChanged();
+  window.location.assign(path);
+}
+
 export function sessionRequestPath(verifier?: string): string {
   const token = verifier?.trim() ?? "";
   if (!token || token.length > VERIFIER_MAX) return "/get-session";
@@ -139,7 +157,9 @@ export const neonAuth = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
-    return parseJson(res);
+    const parsed = await parseJson<{ user: NeonAuthUser }>(res);
+    if (!parsed.error) notifyAuthChanged();
+    return parsed;
   },
 
   async signUpEmail(email: string, password: string, name?: string): Promise<AuthResult<{ user: NeonAuthUser; session?: NeonAuthSession | null }>> {
@@ -147,12 +167,15 @@ export const neonAuth = {
       method: "POST",
       body: JSON.stringify({ email, password, name: name || email.split("@")[0] || "User" }),
     });
-    return parseJson(res);
+    const parsed = await parseJson<{ user: NeonAuthUser; session?: NeonAuthSession | null }>(res);
+    if (!parsed.error) notifyAuthChanged();
+    return parsed;
   },
 
   async signOut(): Promise<AuthResult<{ success: boolean }>> {
     const res = await authFetch("/sign-out", { method: "POST", body: "{}" });
     if (!res.ok && res.status !== 204) return parseJson(res);
+    notifyAuthChanged();
     return { data: { success: true }, error: null };
   },
 

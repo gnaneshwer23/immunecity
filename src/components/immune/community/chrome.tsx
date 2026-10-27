@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { neonAuth, type NeonAuthUser } from "@/integrations/neon/auth-client";
+import { NEON_AUTH_CHANGED_EVENT, neonAuth, type NeonAuthUser } from "@/integrations/neon/auth-client";
 import { getCommunityUnreadCount } from "@/lib/community/phase3.functions";
 import { COMMUNITY_DISCLAIMER, JOURNAL_CLUB_POST_KIND, POST_KIND_LABEL, type PostKind } from "@/lib/community/rules";
 
@@ -12,7 +12,23 @@ export function CommunityNote() {
 export function useMember(): NeonAuthUser | null | undefined {
   const [user, setUser] = useState<NeonAuthUser | null | undefined>(undefined);
   useEffect(() => {
-    neonAuth.getUser().then(({ data }) => setUser(data?.user ?? null)).catch(() => setUser(null));
+    let cancelled = false;
+    const load = () => {
+      neonAuth.getUser().then(({ data }) => {
+        if (!cancelled) setUser(data?.user ?? null);
+      }).catch(() => {
+        if (!cancelled) setUser(null);
+      });
+    };
+    load();
+    const onAuth = () => load();
+    window.addEventListener(NEON_AUTH_CHANGED_EVENT, onAuth);
+    window.addEventListener("focus", onAuth);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(NEON_AUTH_CHANGED_EVENT, onAuth);
+      window.removeEventListener("focus", onAuth);
+    };
   }, []);
   return user;
 }

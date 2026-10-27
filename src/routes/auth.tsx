@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { NEON_AUTH_SESSION_VERIFIER, neonAuth, postAuthPath } from "@/integrations/neon/auth-client";
+import { NEON_AUTH_SESSION_VERIFIER, goPostAuth, neonAuth, postAuthPath } from "@/integrations/neon/auth-client";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +16,12 @@ export const Route = createFileRoute("/auth")({
   head: () => seoHead({ title: "Sign in — Immune Super Intelligence", description: "Sign in to Immune Super Intelligence. Educational account for community, workspace and saved concepts. Not clinical decision support.", path: "/auth", noIndex: true }),
   component: AuthPage,
 });
+
+/** Confirm the session cookie stuck before leaving /auth. */
+async function sessionReady(): Promise<boolean> {
+  const { data, error } = await neonAuth.getUser();
+  return !error && Boolean(data?.user);
+}
 
 function googleReturnMessage(code: string): string {
   if (code === "signup_disabled" || code === "unable_to_create_user") {
@@ -48,7 +54,7 @@ function AuthPage() {
       setAvailable(!error);
       if (error) setMsg(error.message);
       else if (data?.user) {
-        navigate({ to: target, replace: true });
+        goPostAuth(target);
         return;
       } else if (verifier) {
         setMsg("Google sign-in did not finish. Please try Continue with Google again.");
@@ -70,12 +76,14 @@ function AuthPage() {
     if (mode === "in") {
       const { error } = await neonAuth.signInEmail(email, password);
       if (error) setMsg(error.message);
-      else navigate({ to: target });
+      else if (!(await sessionReady())) setMsg("Signed in, but the browser did not keep the session. Allow cookies for this site and try again.");
+      else goPostAuth(target);
     } else {
       const { data, error } = await neonAuth.signUpEmail(email, password);
       if (error) setMsg(error.message);
       else if (!data?.session && !data?.user) setMsg("Account created. Sign in to continue.");
-      else navigate({ to: target });
+      else if (!(await sessionReady())) setMsg("Account created. Sign in to continue — the browser did not keep the session cookie.");
+      else goPostAuth(target);
     }
     } catch {
       setMsg("Sign-in could not be completed. Please try again later.");

@@ -15,9 +15,15 @@
 
 1. **Rotate** any Neon password that was pasted into chat; keep using Vercel Neon integration `DATABASE_URL*`.
 2. Neon Console → Auth → trusted domains (redirect whitelist). Already on production branch: `https://www.immune-super-intelligence.co.uk`, `https://immune-super-intelligence.co.uk`, and `https://immunecity.vercel.app` (plus localhost / Vercel preview hosts). Re-check after any new custom domain.
-3. Vercel Preview env for `DATABASE_URL*` + Neon Auth URLs was set via CLI (all preview branches). Prefer Neon’s Preview branch sync long-term so Preview DB matches `vercel-dev`.
-4. Redeploy Production after merge so Vite picks up `VITE_NEON_AUTH_URL`.
-5. Sign up once on `/auth`, then provision admin (0003 semantics — never auto-admin):
+3. **Apex DNS (production blocker if wrong):** Vercel expects the apex `A` record to point at Vercel (`76.76.21.21` or the current recommended IPs), with `www` as a CNAME to the Vercel DNS target. Today `www` works; the bare apex still points at a non-Vercel host and TLS fails — users who open `https://immune-super-intelligence.co.uk` never reach the app or auth. Fix at the domain registrar (LiveDNS): set apex `A` → `76.76.21.21` (or Vercel’s recommended values), keep `www` CNAME → `db36f9d258f9500b.vercel-dns-017.com` (or `cname.vercel-dns.com`). Vercel already 308-redirects apex → `www` once DNS is correct.
+4. **Google (Neon Console):** Auth → Providers → enable Google; Auth → Configuration → trusted origins must include exactly:
+   - `https://www.immune-super-intelligence.co.uk`
+   - `https://immune-super-intelligence.co.uk`
+   - (optional) `https://immunecity.vercel.app` and localhost for previews  
+   Neon’s own Google callback host is managed (`…/auth/oauth/callback/google` on the Neon Auth region host) — do not replace it with the app origin. App callback URL used by the client is `https://www.immune-super-intelligence.co.uk/auth?redirect=/workspace`.
+5. Vercel Preview env for `DATABASE_URL*` + Neon Auth URLs was set via CLI (all preview branches). Prefer Neon’s Preview branch sync long-term so Preview DB matches `vercel-dev`.
+6. Redeploy Production after merge so Vite picks up `VITE_NEON_AUTH_URL`.
+7. Sign up once on `/auth`, then provision admin (0003 semantics — never auto-admin):
 
 ```sql
 -- After you exist in neon_auth.user:
@@ -27,7 +33,7 @@ WHERE email = 'YOUR_EMAIL'
 ON CONFLICT (user_id, role) DO NOTHING;
 ```
 
-6. **Evidence data:** Neon tables start empty. No service-role key was available to auto-export Lovable Supabase. Export from Lovable Cloud SQL / Supabase dashboard and import into Neon, or re-import manifests via curation UI (does not invent citations).
+8. **Evidence data:** Neon tables start empty. No service-role key was available to auto-export Lovable Supabase. Export from Lovable Cloud SQL / Supabase dashboard and import into Neon, or re-import manifests via curation UI (does not invent citations).
 
 ## Install honesty
 
