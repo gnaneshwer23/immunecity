@@ -101,5 +101,12 @@ describe("workspace", () => {
     expect(lessons).toContain("Start a discussion");
     expect(lessons).toContain('to="/community/new"');
     expect(JOURNEY_PRIMARY.some((item) => item.label === "My Workspace" || item.path === "/workspace")).toBe(false);
+    const community = readFileSync(resolve(process.cwd(), "src/routes/community.index.tsx"), "utf8");
+    const workspace = readFileSync(resolve(process.cwd(), "src/routes/workspace.tsx"), "utf8");
+    expect(community).toContain("Start a discussion");
+    expect(community).toContain('redirect: "/community/new"');
+    expect(community).not.toMatch(/>New post</);
+    expect(workspace).toContain("personal dashboard");
+    expect(workspace).toContain('to="/community/new"');
   });
 });

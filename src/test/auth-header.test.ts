@@ -1,14 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { googleSignInBody, neonAuth, sessionRequestPath } from "@/integrations/neon/auth-client";
+import { googleSignInBody, neonAuth, postAuthPath, sessionRequestPath } from "@/integrations/neon/auth-client";
 import { authProxySuffix, rewriteAuthSetCookie } from "@/lib/authProxy.server";
 
 describe("Google sign-in handoff", () => {
   afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.unstubAllEnvs();
-    vi.restoreAllMocks();
+    vi.unstubAllGlobals?.();
+    vi.unstubAllEnvs?.();
+    vi.restoreAllMocks?.();
   });
 
   it("asks Neon to create a member account without granting a higher role", () => {
@@ -78,14 +78,31 @@ describe("Google sign-in handoff", () => {
 });
 
 describe("auth proxy cookies", () => {
-  it("stores Neon cookies on this host and refuses path escape", () => {
-    expect(rewriteAuthSetCookie("__Secure-neon-auth.session_challenge=1; Path=/; Domain=auth.example.test; Secure; HttpOnly; SameSite=None")).toBe(
-      "__Secure-neon-auth.session_challenge=1; Path=/; Secure; HttpOnly; SameSite=None",
-    );
+  it("stores Neon cookies as first-party Lax and refuses path escape", () => {
+    expect(
+      rewriteAuthSetCookie(
+        "__Secure-neon-auth.session_challenge=1; Path=/; Domain=auth.example.test; Secure; HttpOnly; SameSite=None; Partitioned",
+      ),
+    ).toBe("__Secure-neon-auth.session_challenge=1; Path=/; Secure; HttpOnly; SameSite=Lax");
     expect(authProxySuffix("/api/auth/get-session")).toBe("get-session");
     expect(authProxySuffix("/api/auth/sign-in/social")).toBe("sign-in/social");
     expect(authProxySuffix("/api/auth/../secret")).toBeNull();
     expect(authProxySuffix("/api/other")).toBeNull();
+  });
+});
+
+describe("post-auth landing", () => {
+  it("sends bare home redirects to My Workspace and keeps deep links", () => {
+    expect(postAuthPath("/")).toBe("/workspace");
+    expect(postAuthPath("")).toBe("/workspace");
+    expect(postAuthPath("//evil.example")).toBe("/workspace");
+    expect(postAuthPath("/community/new")).toBe("/community/new");
+    expect(postAuthPath("/workspace")).toBe("/workspace");
+    const auth = readFileSync(resolve(process.cwd(), "src/routes/auth.tsx"), "utf8");
+    expect(auth).toContain("postAuthPath");
+    expect(auth).toContain('default("/workspace")');
+    const client = readFileSync(resolve(process.cwd(), "src/integrations/neon/auth-client.ts"), "utf8");
+    expect(client).toMatch(/if \(typeof window !== "undefined"\) return "\/api\/auth"/);
   });
 });
 

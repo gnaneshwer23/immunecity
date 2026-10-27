@@ -37,7 +37,13 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
       { label: "Platform", path: "/overview" },
       { label: "Academy", path: "/academy" },
       { label: "Reasoning & AI", path: "/reasoning" },
-      { label: "Community", path: "/community" },
+    ],
+  },
+  {
+    label: "Community",
+    items: [
+      { label: "Discussions", path: "/community" },
+      { label: "Start a discussion", path: "/community/new" },
       { label: "Journal clubs", path: "/community/journal-clubs" },
     ],
   },
@@ -152,7 +158,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
 /**
  * Direct header destinations beside the journey menus.
  * Ask Immune stays inside Learn. It is not a top-level header item.
- * Community lives in the footer Explore column (home + journal clubs).
+ * Community lives in its own footer column (Discussions, Start a discussion, Journal clubs).
  * My Workspace stays out of this row. Signed-in members open it from the account menu.
  */
 export const JOURNEY_PRIMARY = [

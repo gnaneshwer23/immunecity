@@ -72,7 +72,11 @@ function TopicPage() {
       <CommunityBar unread={unread} />
       <p className="row" style={{ margin: "16px 0" }}>
         <Link className="btn sm" to="/community">All topics</Link>
-        <Link className="btn sm primary" to="/community/new" search={{ topic: topic.slug, concept: "" }}>New post</Link>
+        {member ? (
+          <Link className="btn sm primary" to="/community/new" search={{ topic: topic.slug, concept: "" }}>Start a discussion</Link>
+        ) : member === null ? (
+          <Link className="btn sm primary" to="/auth" search={{ redirect: `/community/new` }}>Sign in to start a discussion</Link>
+        ) : null}
         {member ? (
           <button type="button" className="btn sm" disabled={busy} onClick={join}>Join topic</button>
         ) : member === null ? (
@@ -117,7 +121,15 @@ function TopicPage() {
           ))}
         </ul>
       ) : (
-        <p className="small muted">No visible posts in this topic yet.</p>
+        <p className="small muted">
+          No visible posts in this topic yet.{" "}
+          {member ? (
+            <Link to="/community/new" search={{ topic: topic.slug, concept: "" }}>Start a discussion</Link>
+          ) : (
+            <Link to="/auth" search={{ redirect: "/community/new" }}>Sign in to start a discussion</Link>
+          )}
+          {" "}— posts stay in Community and never enter the knowledge graph.
+        </p>
       )}
     </div>
   );

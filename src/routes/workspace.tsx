@@ -52,10 +52,10 @@ function WorkspacePage() {
       <PageHead
         kicker="Account"
         title="My Workspace"
-        lede="Concepts you saved, community topics you follow, and discussions you wrote or follow. This list is yours alone. Saving a concept does not change the knowledge graph, and nothing here is clinical advice."
+        lede="This is your personal dashboard — concepts you saved, community topics you follow, and discussions you wrote or follow. This list is yours alone. Saving a concept does not change the knowledge graph, and nothing here is clinical advice."
       />
       {member === undefined ? <p className="small muted">Checking your account.</p> : null}
-      {member === null ? <p><Link to="/auth" search={{ redirect: "/workspace" }}>Sign in</Link></p> : null}
+      {member === null ? <p><Link to="/auth" search={{ redirect: "/workspace" }}>Sign in to open your personal dashboard</Link></p> : null}
       {member && !data && !msg ? <p className="small muted">Loading your workspace.</p> : null}
       {msg ? <p className="callout" role="alert">{msg}</p> : null}
       {data ? (
@@ -73,7 +73,7 @@ function WorkspacePage() {
                 ))}
               </ul>
             ) : (
-              <p className="small muted">You have not saved a concept yet. Open a concept and save it. Saving does not change the knowledge graph.</p>
+              <p className="small muted">You have not saved a concept yet. Open a concept in the Atlas and use Save. Saving does not change the knowledge graph.</p>
             )}
           </section>
           <section className="card community-card" aria-labelledby="workspace-topics">
@@ -89,7 +89,7 @@ function WorkspacePage() {
                 ))}
               </ul>
             ) : (
-              <p className="small muted">You are not following a topic yet.</p>
+              <p className="small muted">You are not following a topic yet. Open <Link to="/community">Community</Link> and join a topic.</p>
             )}
           </section>
           <section className="card community-card" aria-labelledby="workspace-discussions">
@@ -109,7 +109,10 @@ function WorkspacePage() {
                 ))}
               </ul>
             ) : (
-              <p className="small muted">You have no discussions yet.</p>
+              <p className="small muted">
+                You have no discussions yet.{" "}
+                <Link to="/community/new">Start a discussion</Link> — posts stay in Community and never enter the knowledge graph.
+              </p>
             )}
           </section>
         </div>

@@ -39,16 +39,23 @@ export function configuredAuthUrl(): string {
 /**
  * Browser calls go through the same-origin `/api/auth` proxy so the OAuth
  * challenge cookie is first-party. Server calls use the Neon Auth base URL.
+ * The browser path does not need VITE_NEON_AUTH_URL — the server proxy holds it.
  */
 function authBaseUrl(): string {
+  if (typeof window !== "undefined") return "/api/auth";
   const url = configuredAuthUrl();
   if (!url) {
     throw new Error(
       "Missing VITE_NEON_AUTH_URL (or NEON_AUTH_BASE_URL). Set from Neon Console → Auth → Configuration.",
     );
   }
-  if (typeof window !== "undefined") return "/api/auth";
   return url;
+}
+
+/** Home and empty redirects land on My Workspace so new members find their dashboard. */
+export function postAuthPath(redirect: string): string {
+  const path = redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/";
+  return path === "/" ? "/workspace" : path;
 }
 
 export function sessionRequestPath(verifier?: string): string {

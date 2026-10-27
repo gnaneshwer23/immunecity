@@ -114,8 +114,8 @@ function HeaderAccount({ pathname, variant = "bar", onNavigate }: {
             <UserRound size={16} aria-hidden />
             <span>{label}</span>
           </span>
-          <Link to="/community/profile" onClick={onNavigate}>Profile</Link>
           <Link to="/workspace" onClick={onNavigate}>My Workspace</Link>
+          <Link to="/community/profile" onClick={onNavigate}>Profile</Link>
           <button type="button" className="header-logout" onClick={logout}>Logout</button>
         </>
       );
@@ -127,6 +127,7 @@ function HeaderAccount({ pathname, variant = "bar", onNavigate }: {
           className="header-account"
           aria-expanded={menuOpen}
           aria-haspopup="menu"
+          aria-label="Account menu — My Workspace"
           onClick={() => setMenuOpen((open) => !open)}
         >
           <UserRound size={16} aria-hidden />
@@ -134,8 +135,8 @@ function HeaderAccount({ pathname, variant = "bar", onNavigate }: {
         </button>
         {menuOpen ? (
           <div className="header-account-menu" role="menu" aria-label="Account">
-            <Link role="menuitem" to="/community/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
             <Link role="menuitem" to="/workspace" onClick={() => setMenuOpen(false)}>My Workspace</Link>
+            <Link role="menuitem" to="/community/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
             <button type="button" role="menuitem" className="header-logout" onClick={logout}>Logout</button>
           </div>
         ) : null}
@@ -143,7 +144,7 @@ function HeaderAccount({ pathname, variant = "bar", onNavigate }: {
     );
   }
   return (
-    <Link className="header-signin" to="/auth" search={{ redirect: pathname || "/" }}>
+    <Link className="header-signin" to="/auth" search={{ redirect: pathname && pathname !== "/" ? pathname : "/workspace" }}>
       <UserRound size={16} aria-hidden />
       Sign in
     </Link>

@@ -3,13 +3,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { NEON_AUTH_SESSION_VERIFIER, neonAuth } from "@/integrations/neon/auth-client";
+import { NEON_AUTH_SESSION_VERIFIER, neonAuth, postAuthPath } from "@/integrations/neon/auth-client";
 import { PageHead } from "@/components/immune/ui";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: zodValidator(z.object({
-    redirect: fallback(z.string(), "/").default("/"),
+    redirect: fallback(z.string(), "/workspace").default("/workspace"),
     [NEON_AUTH_SESSION_VERIFIER]: fallback(z.string().max(8192), "").optional(),
     error: fallback(z.string().max(80), "").optional(),
   })),
@@ -17,11 +17,9 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-const safePath = (p: string) => (p.startsWith("/") && !p.startsWith("//") ? p : "/");
-
 function googleReturnMessage(code: string): string {
   if (code === "signup_disabled" || code === "unable_to_create_user") {
-    return "Google could not create the account. Try again, or register with email.";
+    return "Google could not create the account. Try email instead, or ask the site owner to enable Google sign-up and add this site as a trusted origin in Neon Auth → Configuration.";
   }
   if (code === "state_not_found" || code === "please_restart_the_process") {
     return "Google sign-in expired. Please try Continue with Google again.";
@@ -41,7 +39,7 @@ function AuthPage() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [available, setAvailable] = useState(true);
-  const target = safePath(redirect);
+  const target = postAuthPath(redirect);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,7 +107,7 @@ function AuthPage() {
       <PageHead
         kicker="Account"
         title={mode === "in" ? "Sign in" : "Create an account"}
-        lede="Sign in for community discussion, your workspace and saved concepts. New accounts are members. Review and moderation are granted separately, not at sign-up. This is an educational resource, not clinical decision support."
+        lede="Sign in for your personal workspace and community discussion. After sign-in you land on My Workspace. New accounts are members only — review and moderation are granted separately. This is an educational resource, not clinical decision support."
       />
       <div className="card">
         <Button variant="outline" className="w-full" disabled={busy || !available} onClick={google}>

@@ -647,7 +647,7 @@ html[data-theme][data-theme] {
 .marketing-nav-link.current::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 2px; height: 1.5px; background: var(--primary); border-radius: 1px; }
 .marketing-nav-link.collab-action { color: var(--primary); font-weight: 500; }
 .marketing-shell main { max-width: none; }
-.sf-grid-marketing { grid-template-columns: 1.5fr repeat(4, 1fr); }
+.sf-grid-marketing { grid-template-columns: 1.5fr repeat(5, 1fr); }
 .sf-grid-marketing .sf-col a { display: block; }
 
 /* Compact marketing panel — tablet + mobile (never leave a dead zone) */

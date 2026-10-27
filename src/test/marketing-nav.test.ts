@@ -38,8 +38,10 @@ describe("marketing IA wiring", () => {
     expect(FOOTER_GROUPS.some((g) => g.items.some((i) => "path" in i && i.path === "/insights"))).toBe(true);
     expect(MARKETING_NAV_ACTION.path).toBe("/collaborate");
     expect(FOOTER_GROUPS.some((g) => g.label === "Organisation" && g.items.some((i) => "path" in i && i.path === "/collaborate"))).toBe(true);
-    expect(FOOTER_GROUPS.some((g) => g.label === "Explore" && g.items.some((i) => "path" in i && i.path === "/community"))).toBe(true);
-    expect(FOOTER_GROUPS.some((g) => g.label === "Explore" && g.items.some((i) => "path" in i && i.path === "/community/journal-clubs"))).toBe(true);
+    expect(FOOTER_GROUPS.some((g) => g.label === "Community" && g.items.some((i) => "path" in i && i.path === "/community" && i.label === "Discussions"))).toBe(true);
+    expect(FOOTER_GROUPS.some((g) => g.label === "Community" && g.items.some((i) => "path" in i && i.path === "/community/new" && i.label === "Start a discussion"))).toBe(true);
+    expect(FOOTER_GROUPS.some((g) => g.label === "Community" && g.items.some((i) => "path" in i && i.path === "/community/journal-clubs"))).toBe(true);
+    expect(FOOTER_GROUPS.some((g) => g.label === "Explore" && g.items.some((i) => "path" in i && i.path === "/community"))).toBe(false);
     expect(JOURNEY_PRIMARY.some((i) => i.path === "/community")).toBe(false);
     expect(isMarketingPath("/collaborate")).toBe(true);
     expect(isMarketingPath("/academy")).toBe(true);

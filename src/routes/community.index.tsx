@@ -26,19 +26,25 @@ function CommunityIndex() {
       <PageHead
         kicker="Community"
         title="Discuss the science."
-        lede="Topic groups for questions, papers, hypotheses and resources. Nothing posted here is added to the knowledge graph."
+        lede="Topic groups for questions, papers, hypotheses and resources. Members can start a discussion here. Nothing posted here is added to the knowledge graph."
       />
       <CommunityNote />
       <CommunityBar unread={unread} />
       <p className="row" style={{ margin: "16px 0" }}>
-        <Link className="btn sm primary" to="/community/new">New post</Link>
-        {member === null ? <Link className="btn sm" to="/auth" search={{ redirect: "/community" }}>Sign in</Link> : null}
+        {member ? (
+          <Link className="btn sm primary" to="/community/new">Start a discussion</Link>
+        ) : member === null ? (
+          <Link className="btn sm primary" to="/auth" search={{ redirect: "/community/new" }}>Sign in to start a discussion</Link>
+        ) : (
+          <span className="btn sm primary" aria-disabled="true">Start a discussion</span>
+        )}
+        <Link className="btn sm" to="/community/journal-clubs">Journal clubs</Link>
       </p>
       {!data.available ? (
         <p className="callout" role="status">Community storage is not available on this database yet. No seeded science posts are invented here.</p>
       ) : data.topics.length === 0 ? (
         <p className="callout" role="status">
-          No topics yet. Empty community — not a scientific finding. Sign in to post when topics exist; nothing here enters the knowledge graph.
+          No topics yet. Empty community — not a scientific finding. When a topic exists, sign in and use Start a discussion; nothing here enters the knowledge graph.
           Report misuse from a post page; moderators use <Link to="/community/moderation">Moderation</Link>.
         </p>
       ) : (
@@ -49,7 +55,7 @@ function CommunityIndex() {
               <p className="small">{t.description}</p>
               <p className="xs muted">
                 {t.visiblePosts === 0
-                  ? "No visible posts yet — empty topic, not reviewed evidence."
+                  ? "No visible posts yet — open the topic and use Start a discussion for the first post. Empty topic, not reviewed evidence."
                   : `${t.visiblePosts} visible ${t.visiblePosts === 1 ? "post" : "posts"}`}
               </p>
             </li>

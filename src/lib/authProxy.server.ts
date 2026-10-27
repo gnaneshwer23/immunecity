@@ -14,13 +14,25 @@ export function authProxySuffix(pathname: string): string | null {
   return rest;
 }
 
-/** Drop Domain so the browser stores the cookie for this site. */
+/**
+ * Store Neon Auth cookies as first-party on this host.
+ * Drop Domain (Neon points at its own host) and CHIPS Partitioned + SameSite=None
+ * so browsers that restrict partitioned third-party-style cookies still keep the session.
+ */
 export function rewriteAuthSetCookie(cookie: string): string {
-  return cookie
+  const parts = cookie
     .split(";")
     .map((part) => part.trim())
-    .filter((part) => part && !part.toLowerCase().startsWith("domain="))
-    .join("; ");
+    .filter((part) => {
+      if (!part) return false;
+      const lower = part.toLowerCase();
+      if (lower.startsWith("domain=")) return false;
+      if (lower.startsWith("samesite=")) return false;
+      if (lower === "partitioned") return false;
+      return true;
+    });
+  parts.push("SameSite=Lax");
+  return parts.join("; ");
 }
 
 function authBase(): string {
