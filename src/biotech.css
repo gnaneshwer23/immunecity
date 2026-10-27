@@ -671,11 +671,11 @@ html[data-theme][data-theme] {
 .marketing-compact-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 500; }
 .marketing-compact-links a.collab-action { color: var(--primary); font-weight: 500; }
 
-/* Wide: one desktop bar once the words and Sign in fit. Narrower windows use the menu. */
-@media (min-width: 1280px) {
+/* Wide: one desktop bar from ~1200px once Community/Collaborate left the row. Narrower windows use the menu. */
+@media (min-width: 1200px) {
   .marketing-topbar .marketing-nav-toggle { display: none !important; }
 }
-@media (max-width: 1279px) {
+@media (max-width: 1199px) {
   .marketing-nav, .journey-nav { display: none; }
   /* Override atlas/biotech rule that hides .nav-toggle above 800px — keeps the menu through small laptops. */
   .marketing-topbar .marketing-nav-toggle { display: inline-grid !important; order: 4; margin-left: auto; }
@@ -2236,21 +2236,22 @@ html[data-theme='light'] .topbar { background: var(--surface); border-bottom: 1p
 html[data-theme='light'] .pillar-menu { background: var(--surface); box-shadow: var(--shadow-lg); border-radius: 8px; }
 
 /* Journey header — one row: words, divider, quieter org links, teal Sign in. */
-.journey-nav { display: flex; align-items: center; gap: 6px; flex: 1; flex-wrap: nowrap; justify-content: flex-start; min-width: 0; }
-.journey-main, .journey-org { display: flex; align-items: center; flex-wrap: nowrap; flex-shrink: 0; gap: 1px; }
-.journey-org { margin-left: 6px; padding-left: 10px; border-left: 1px solid var(--border-strong); flex-shrink: 0; align-self: center; }
+.journey-nav { display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: nowrap; justify-content: flex-start; min-width: 0; }
+.journey-main, .journey-org { display: flex; align-items: center; flex-wrap: nowrap; flex-shrink: 0; gap: 2px; }
+.journey-org { margin-left: 4px; padding-left: 12px; border-left: 1px solid var(--border-strong); flex-shrink: 0; align-self: center; }
 .nav-line { display: inline-flex; align-items: center; gap: 6px; }
+.journey-main .nav-label { white-space: nowrap; }
 .journey-nav .pillar-trigger,
 .journey-nav .marketing-nav-link.journey-direct,
 .journey-org .marketing-nav-link,
 .journey-nav .youtube-nav-link {
   display: inline-flex; align-items: center; justify-content: center; min-height: 36px; box-sizing: border-box;
 }
-.journey-nav .pillar-trigger { padding: 6px 8px; color: var(--text); font-weight: 500; gap: 6px; }
-.journey-nav .marketing-nav-link.journey-direct { color: var(--text); font-weight: 500; padding: 6px 8px; }
-.journey-org .marketing-nav-link { font-size: 13px; font-weight: 500; padding: 6px 8px; color: var(--muted); }
+.journey-nav .pillar-trigger { padding: 6px 10px; color: var(--text); font-weight: 500; gap: 6px; }
+.journey-nav .marketing-nav-link.journey-direct { color: var(--text); font-weight: 500; padding: 6px 10px; }
+.journey-org .marketing-nav-link { font-size: 13px; font-weight: 500; padding: 6px 10px; color: var(--muted); }
 .journey-nav .marketing-nav-link:hover, .journey-nav .marketing-nav-link.current { color: var(--text); }
-.journey-nav .youtube-nav-link { padding: 6px 8px; line-height: 0; color: var(--muted); }
+.journey-nav .youtube-nav-link { padding: 6px 10px; line-height: 0; color: var(--muted); }
 .header-signin, .header-account {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-left: auto; flex-shrink: 0;
   min-height: 36px; box-sizing: border-box;
@@ -2294,32 +2295,32 @@ button.header-account { border: 0; cursor: pointer; font: inherit; }
   margin: 10px 0 0; align-self: stretch; justify-content: center;
 }
 /* Laptop: keep the words and Sign in on one ivory row. Hide the tagline before the name. */
-@media (min-width: 1280px) and (max-width: 1479px) {
-  .marketing-topbar { gap: 8px; padding: 0 14px; }
+@media (min-width: 1200px) and (max-width: 1479px) {
+  .marketing-topbar { gap: 10px; padding: 0 16px; }
   .marketing-topbar .brand-text small { display: none; }
   .marketing-topbar .logo { width: 26px; height: 26px; }
   .marketing-topbar .brand { gap: 8px; }
   .marketing-topbar .brand-text strong { font-size: 14px; }
-  .journey-nav { gap: 2px; }
+  .journey-nav { gap: 4px; }
   .journey-nav .pillar-trigger,
   .journey-nav .journey-direct,
-  .journey-org .marketing-nav-link { padding: 6px 6px; font-size: 13px; }
-  .journey-org { margin-left: 4px; padding-left: 8px; }
+  .journey-org .marketing-nav-link { padding: 6px 8px; font-size: 13px; }
+  .journey-org { margin-left: 2px; padding-left: 10px; }
   .header-signin, .header-account { padding: 7px 12px; font-size: 13px; }
 }
-@media (min-width: 1280px) and (max-width: 1320px) {
-  .marketing-topbar { padding: 0 8px; gap: 4px; }
+@media (min-width: 1200px) and (max-width: 1279px) {
+  .marketing-topbar { padding: 0 12px; gap: 6px; }
   .marketing-topbar .brand { gap: 6px; }
-  .marketing-topbar .brand-text strong { font-size: 12.5px; }
-  .journey-nav { gap: 0; }
-  .journey-main, .journey-org { gap: 0; }
+  .marketing-topbar .brand-text strong { font-size: 13px; }
+  .journey-nav { gap: 2px; }
+  .journey-main, .journey-org { gap: 1px; }
   .journey-nav .pillar-trigger,
   .journey-nav .journey-direct,
-  .journey-org .marketing-nav-link { padding: 6px 3px; font-size: 12.5px; gap: 4px; }
-  .journey-org { margin-left: 2px; padding-left: 6px; }
-  .header-signin, .header-account { padding: 6px 8px; font-size: 12.5px; gap: 4px; }
+  .journey-org .marketing-nav-link { padding: 6px 6px; font-size: 12.5px; gap: 5px; }
+  .journey-org { margin-left: 2px; padding-left: 8px; }
+  .header-signin, .header-account { padding: 6px 10px; font-size: 12.5px; gap: 5px; }
 }
-@media (max-width: 1279px) { .journey-nav { display: none; } }
+@media (max-width: 1199px) { .journey-nav { display: none; } }
 .marketing-compact-group { display: grid; gap: 2px; margin-bottom: 14px; }
 .marketing-compact-group .marketing-compact-label { margin: 4px 0 6px; }
 

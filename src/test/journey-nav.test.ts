@@ -20,12 +20,12 @@ describe("merged pages", () => {
 });
 
 describe("primary entries", () => {
-  it("shows Research, Simulate and Community beside the journeys", () => {
+  it("shows Research and Simulate beside the journeys; Community stays footer-only", () => {
     expect(JOURNEY_PRIMARY.map((i) => [i.label, i.path])).toEqual([
       ["Research", "/research"],
       ["Simulate", "/simulator"],
-      ["Community", "/community"],
     ]);
+    expect(JOURNEY_PRIMARY.some((i) => i.label === "Community")).toBe(false);
     expect(JOURNEY_PRIMARY.some((i) => i.label === "Ask Immune")).toBe(false);
     expect(JOURNEY_PRIMARY.some((i) => i.label === "My Workspace")).toBe(false);
   });

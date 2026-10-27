@@ -93,8 +93,8 @@ describe("ivory header", () => {
   it("keeps the words and Sign in on the laptop bar", () => {
     const css = readFileSync(resolve(process.cwd(), "src/biotech.css"), "utf8");
     expect(css).not.toMatch(/\.journey-main \.nav-label \{[^}]*clip:/);
-    expect(css).toContain("min-width: 1280px) and (max-width: 1479px)");
-    expect(css).toContain("max-width: 1279px");
+    expect(css).toContain("min-width: 1200px) and (max-width: 1479px)");
+    expect(css).toContain("max-width: 1199px");
     expect(css).toContain(".header-signin, .header-account");
     const shell = readFileSync(resolve(process.cwd(), "src/components/immune/Shell.tsx"), "utf8");
     expect(shell).toContain("<Youtube size={16}");

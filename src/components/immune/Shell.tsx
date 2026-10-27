@@ -1,8 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { neonAuth } from "@/integrations/neon/auth-client";
-import { BookOpen, Box, ChevronDown, FlaskConical, Menu, MessageSquare, Network, Search, Shield, UserRound, Users, X, Youtube } from "lucide-react";
+import { BookOpen, Box, ChevronDown, FlaskConical, Menu, MessageSquare, Network, Search, Shield, UserRound, X, Youtube } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
-import { useMember, useUnreadCount } from "@/components/immune/community/chrome";
+import { useMember } from "@/components/immune/community/chrome";
 import { NAV_GROUPS } from "./nav";
 import {
   FOOTER_GROUPS,
@@ -12,7 +12,6 @@ import {
   journeyKey,
   type JourneyItem,
   JOURNEY_SECONDARY,
-  MARKETING_NAV_ACTION,
 } from "@/data/marketingNav";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -39,7 +38,6 @@ const JOURNEY_ICONS: Record<string, ComponentType<{ size?: number; "aria-hidden"
 const PRIMARY_ICONS: Record<string, ComponentType<{ size?: number; "aria-hidden"?: boolean }>> = {
   "/research": FlaskConical,
   "/simulator": Box,
-  "/community": Users,
 };
 
 function NavIcon({ icon: Icon }: { icon: ComponentType<{ size?: number; "aria-hidden"?: boolean }> }) {
@@ -240,13 +238,11 @@ function MarketingCompactNav({
   onClose,
   panelId,
   pathname,
-  unread,
 }: {
   open: boolean;
   onClose: () => void;
   panelId: string;
   pathname: string;
-  unread: number;
 }) {
   const panelRef = useRef<HTMLElement>(null);
 
@@ -318,7 +314,6 @@ function MarketingCompactNav({
                 <Link key={item.path} to={item.path} className="nav-line" activeProps={{ className: "active" }} onClick={onClose}>
                   {Icon ? <NavIcon icon={Icon} /> : null}
                   {item.label}
-                  {item.path === "/community" && unread > 0 ? <span className="community-unread-count">{unread}</span> : null}
                 </Link>
               );
             })}
@@ -341,7 +336,7 @@ function MarketingCompactNav({
             >
               {YOUTUBE_CHANNEL_LABEL}
             </a>
-            {[...JOURNEY_SECONDARY, MARKETING_NAV_ACTION].map((item) => (
+            {JOURNEY_SECONDARY.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -368,8 +363,6 @@ export default function Shell({ children }: { children: ReactNode }) {
   const showAskFab = pathname !== "/ask";
   const compactNavId = useId();
   const closeCompact = () => setOpen(false);
-  const member = useMember();
-  const unread = useUnreadCount(member);
 
   useEffect(() => { setAskOpen(false); setOpen(false); }, [pathname]);
   useEffect(() => {
@@ -418,13 +411,11 @@ export default function Shell({ children }: { children: ReactNode }) {
                   key={item.path}
                   to={item.path}
                   className="marketing-nav-link journey-direct nav-line"
-                  activeOptions={{ exact: item.path !== "/community" }}
                   activeProps={{ className: "marketing-nav-link journey-direct nav-line current" }}
                   title={item.label}
                 >
                   {Icon ? <NavIcon icon={Icon} /> : null}
                   <span className="nav-label">{item.label}</span>
-                  {item.path === "/community" && unread > 0 ? <span className="community-unread-count">{unread}</span> : null}
                 </Link>
               );
             })}
@@ -441,13 +432,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                 {item.label}
               </Link>
             ))}
-            <Link
-              to={MARKETING_NAV_ACTION.path}
-              className="marketing-nav-link"
-              activeProps={{ className: "marketing-nav-link current" }}
-            >
-              {MARKETING_NAV_ACTION.label}
-            </Link>
           </div>
           <HeaderAccount pathname={pathname} />
         </nav>
@@ -458,7 +442,6 @@ export default function Shell({ children }: { children: ReactNode }) {
             onClose={closeCompact}
             panelId={compactNavId}
             pathname={pathname}
-            unread={unread}
           />
         )}
       {showAskFab ? (

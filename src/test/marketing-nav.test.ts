@@ -29,7 +29,7 @@ describe("marketing IA wiring", () => {
     }
   });
 
-  it("puts Academy on /academy; Insights footer-only (no More menu); Collaborate distinct", () => {
+  it("puts Academy on /academy; Insights and Collaborate footer-only (no More menu)", () => {
     expect(MARKETING_NAV_PRIMARY.find((i) => i.label === "Academy")?.path).toBe("/academy");
     expect(FOOTER_GROUPS[0]?.items.find((i) => "path" in i && i.path === "/academy")?.label).toBe("Academy");
     expect(MARKETING_NAV_MORE).toHaveLength(0);
@@ -37,6 +37,10 @@ describe("marketing IA wiring", () => {
     expect(MARKETING_NAV.some((i) => (i.path as string) === "/insights")).toBe(false);
     expect(FOOTER_GROUPS.some((g) => g.items.some((i) => "path" in i && i.path === "/insights"))).toBe(true);
     expect(MARKETING_NAV_ACTION.path).toBe("/collaborate");
+    expect(FOOTER_GROUPS.some((g) => g.label === "Organisation" && g.items.some((i) => "path" in i && i.path === "/collaborate"))).toBe(true);
+    expect(FOOTER_GROUPS.some((g) => g.label === "Explore" && g.items.some((i) => "path" in i && i.path === "/community"))).toBe(true);
+    expect(FOOTER_GROUPS.some((g) => g.label === "Explore" && g.items.some((i) => "path" in i && i.path === "/community/journal-clubs"))).toBe(true);
+    expect(JOURNEY_PRIMARY.some((i) => i.path === "/community")).toBe(false);
     expect(isMarketingPath("/collaborate")).toBe(true);
     expect(isMarketingPath("/academy")).toBe(true);
   });
@@ -73,11 +77,15 @@ describe("marketing IA wiring", () => {
     expect(header).not.toContain("My Workspace");
     expect(header).not.toContain('to="/workspace"');
     expect(header).not.toContain("Ask Immune");
+    expect(header).not.toContain("/community");
+    expect(header).not.toContain("/collaborate");
+    expect(header).not.toContain("MARKETING_NAV_ACTION");
     expect(header).toContain("HeaderAccount");
     expect(shell).toContain("header-signin");
-    for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box", "Users"]) {
+    for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box"]) {
       expect(shell).toContain(icon);
     }
+    expect(shell).not.toMatch(/\bUsers\b/);
     expect(shell).toContain("journey-main");
     expect(shell).toContain("journey-org");
     expect(shell).toContain("AskAtlas");
@@ -102,6 +110,8 @@ describe("marketing IA wiring", () => {
           MARKETING_PATHS.has(item.path as never) ||
           atlasPaths.has(item.path as never) ||
           JOURNEY_PRIMARY.some((p) => p.path === item.path) ||
+          item.path === "/community" ||
+          item.path.startsWith("/community/") ||
           item.path === "/mechanism" ||
           item.path === "/academy" ||
           item.path.startsWith("/mechanism/");

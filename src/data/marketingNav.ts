@@ -20,10 +20,10 @@ export const MARKETING_NAV_PRIMARY = [
  */
 export const MARKETING_NAV_MORE = [] as const;
 
-/** Distinct collaborate action (not buried in a submenu). */
+/** Collaborate destination — footer Organisation only; not a header item. */
 export const MARKETING_NAV_ACTION = { label: "Collaborate", path: "/collaborate" } as const;
 
-/** Flat list for tests, mobile panel, and footer alignment checks. */
+/** Flat list for tests and footer alignment checks (Collaborate is footer-only). */
 export const MARKETING_NAV = [
   ...MARKETING_NAV_PRIMARY,
   ...MARKETING_NAV_MORE,
@@ -38,6 +38,7 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
       { label: "Academy", path: "/academy" },
       { label: "Reasoning & AI", path: "/reasoning" },
       { label: "Community", path: "/community" },
+      { label: "Journal clubs", path: "/community/journal-clubs" },
     ],
   },
   {
@@ -151,12 +152,12 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
 /**
  * Direct header destinations beside the journey menus.
  * Ask Immune stays inside Learn. It is not a top-level header item.
+ * Community lives in the footer Explore column (home + journal clubs).
  * My Workspace stays out of this row. Signed-in members open it from the account menu.
  */
 export const JOURNEY_PRIMARY = [
   { label: "Research", path: "/research" },
   { label: "Simulate", path: "/simulator" },
-  { label: "Community", path: "/community" },
 ] as const;
 
 /** Secondary header links shown after the journeys. */

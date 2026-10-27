@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const JOURNEYS = ["Learn", "Explore", "Investigate"];
-const DESTINATIONS = ["Platform", "Academy", "Cell atlas", "Knowledge graph", "Evidence", "Methods", "Reasoning & AI", "Research library", "Research", "Simulate", "Community", "Vision", "About", "Collaborate"];
+const JOURNEYS = ["Learn", "Explore", "Investigate", "Trust"];
+const DESTINATIONS = ["Platform", "Academy", "Cell atlas", "Knowledge graph", "Evidence", "Methods", "Reasoning & AI", "Research library", "Research", "Simulate", "Vision", "About"];
 
 async function expectDesktopNav(page: Page) {
   const nav = page.getByRole("navigation", { name: "Primary" });
@@ -9,10 +9,11 @@ async function expectDesktopNav(page: Page) {
   for (const label of JOURNEYS) {
     await expect(nav.getByRole("button", { name: label, exact: true })).toBeVisible();
   }
-  await expect(nav.getByRole("link", { name: "Ask Immune", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Ask Immune", exact: true })).toHaveCount(0);
   await expect(nav.getByRole("link", { name: "Research", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Simulate", exact: true })).toBeVisible();
-  await expect(nav.getByRole("link", { name: "Community", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Community", exact: true })).toHaveCount(0);
+  await expect(nav.getByRole("link", { name: "Collaborate", exact: true })).toHaveCount(0);
   await expect(nav.getByRole("link", { name: "Vision", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "About", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /More/i })).toHaveCount(0);
@@ -20,7 +21,7 @@ async function expectDesktopNav(page: Page) {
   await expect(header.getByRole("search")).toHaveCount(0);
   await expect(header.getByRole("link", { name: "Explore the Immune System" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Explore Immune City" }).first()).toBeVisible();
-  // Insights stays out of primary header
+  // Insights, Community, Collaborate stay out of primary header
   await expect(nav.getByRole("link", { name: "Insights" })).toHaveCount(0);
 }
 
@@ -71,10 +72,14 @@ test.describe("marketing navigation", () => {
     await expect(page.locator(".marketing-compact-nav")).toBeHidden();
   });
 
-  test("footer still exposes Insights", async ({ page }, testInfo) => {
+  test("footer still exposes Insights, Community and Collaborate", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "once is enough");
     await page.goto("/");
-    await page.getByRole("contentinfo").getByRole("link", { name: "Insights" }).click();
+    const footer = page.getByRole("contentinfo");
+    await expect(footer.getByRole("link", { name: "Community", exact: true })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Journal clubs", exact: true })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Collaborate", exact: true })).toBeVisible();
+    await footer.getByRole("link", { name: "Insights" }).click();
     await expect(page).toHaveURL(/\/insights/);
   });
 

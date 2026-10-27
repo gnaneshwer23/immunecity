@@ -100,8 +100,8 @@ describe("header", () => {
     expect(JOURNEY_PRIMARY.map((item) => [item.label, item.path])).toEqual([
       ["Research", "/research"],
       ["Simulate", "/simulator"],
-      ["Community", "/community"],
     ]);
+    expect(JOURNEY_PRIMARY.some((item) => item.path === "/community")).toBe(false);
     expect(JOURNEY_NAV.find((group) => group.label === "Learn")!.items.some((item) => item.path === "/ask")).toBe(true);
     const shell = readFileSync(resolve(process.cwd(), "src/components/immune/Shell.tsx"), "utf8");
     const header = shell.slice(shell.indexOf("<header"), shell.indexOf("</header>"));
@@ -134,9 +134,12 @@ describe("header", () => {
     expect(account).toContain('to="/workspace"');
     expect(header).not.toContain("My Workspace");
     expect(header).not.toContain('to="/workspace"');
-    for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box", "Users"]) {
+    for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box"]) {
       expect(shell).toContain(icon);
     }
+    expect(shell).not.toMatch(/\bUsers\b/);
+    expect(header).not.toContain("/community");
+    expect(header).not.toContain("/collaborate");
   });
 });
 
