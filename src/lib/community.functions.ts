@@ -12,6 +12,7 @@ import {
   planModeration,
   POST_KINDS,
   requireMember,
+  shouldAutoFollowPost,
   validateCommentBody,
   validatePostDraft,
   validateReportReason,
@@ -25,6 +26,7 @@ import {
   communityJournalClubs,
   communityMemberships,
   communityModerationActions,
+  communityPostFollows,
   communityPostRevisions,
   communityPosts,
   communityProfiles,
@@ -94,6 +96,45 @@ export const listCommunityTopics = createServerFn({ method: "GET" }).handler(asy
   }
 });
 
+/** Recent visible posts across topics. No author filter — every member and visitor sees the same feed. */
+export const listRecentCommunityPosts = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    const db = getDb();
+    const posts = await db
+      .select({
+        id: communityPosts.id,
+        kind: communityPosts.kind,
+        title: communityPosts.title,
+        createdAt: communityPosts.createdAt,
+        authorName: communityProfiles.displayName,
+        topicSlug: communityTopics.slug,
+        topicTitle: communityTopics.title,
+      })
+      .from(communityPosts)
+      .innerJoin(communityTopics, eq(communityPosts.topicId, communityTopics.id))
+      .leftJoin(communityProfiles, eq(communityPosts.authorId, communityProfiles.userId))
+      .where(eq(communityPosts.status, "visible"))
+      .orderBy(desc(communityPosts.createdAt))
+      .limit(20);
+    return {
+      available: true as const,
+      posts: posts.map((p) => ({
+        id: p.id,
+        kind: p.kind,
+        title: p.title,
+        createdAt: iso(p.createdAt),
+        authorName: p.authorName ?? "Member",
+        topicSlug: p.topicSlug,
+        topicTitle: p.topicTitle,
+      })),
+    };
+  } catch (err) {
+    if (missingCommunity(err)) return { available: false as const, posts: [] };
+    console.error("community_recent_failed", (err as { code?: string })?.code ?? "error");
+    return { available: false as const, posts: [] };
+  }
+});
+
 export const getCommunityTopic = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ slug: z.string().min(1).max(80) }).parse(d))
   .handler(async ({ data }) => {
@@ -101,6 +142,7 @@ export const getCommunityTopic = createServerFn({ method: "GET" })
       const db = getDb();
       const [topic] = await db.select().from(communityTopics).where(eq(communityTopics.slug, data.slug)).limit(1);
       if (!topic) return { available: true as const, topic: null, posts: [] };
+      // Visible to every visitor and member. Do not filter by author_id or membership.
       const posts = await db
         .select({
           id: communityPosts.id,
@@ -392,6 +434,13 @@ export const createCommunityPost = createServerFn({ method: "POST" })
           .insert(communityMemberships)
           .values({ topicId: topic.id, userId: member.userId, membershipRole: membershipRoleForNewMember() })
           .onConflictDoNothing({ target: [communityMemberships.topicId, communityMemberships.userId] });
+        // Author auto-follows so replies create notifications without an extra click.
+        if (post && shouldAutoFollowPost({ actorId: member.userId, postAuthorId: member.userId })) {
+          await tx
+            .insert(communityPostFollows)
+            .values({ postId: post.id, userId: member.userId })
+            .onConflictDoNothing({ target: [communityPostFollows.postId, communityPostFollows.userId] });
+        }
         if (stored && post) {
           await tx.insert(communityReferences).values({
             postId: post.id,
@@ -435,7 +484,12 @@ export const createCommunityComment = createServerFn({ method: "POST" })
     const db = getDb();
     try {
       const [post] = await db
-        .select({ id: communityPosts.id, topicId: communityPosts.topicId, title: communityPosts.title })
+        .select({
+          id: communityPosts.id,
+          topicId: communityPosts.topicId,
+          title: communityPosts.title,
+          authorId: communityPosts.authorId,
+        })
         .from(communityPosts)
         .where(and(eq(communityPosts.id, data.postId), eq(communityPosts.status, "visible")))
         .limit(1);
@@ -466,10 +520,20 @@ export const createCommunityComment = createServerFn({ method: "POST" })
           .insert(communityMemberships)
           .values({ topicId: post.topicId, userId: member.userId, membershipRole: membershipRoleForNewMember() })
           .onConflictDoNothing({ target: [communityMemberships.topicId, communityMemberships.userId] });
+        // Repliers follow the thread so later replies notify them too.
+        await tx
+          .insert(communityPostFollows)
+          .values({ postId: post.id, userId: member.userId })
+          .onConflictDoNothing({ target: [communityPostFollows.postId, communityPostFollows.userId] });
         return comment?.id ?? null;
       });
       if (!commentId) throw new Error("Community request failed.");
-      await notifyFollowersOfReply({ postId: post.id, postTitle: post.title, authorId: member.userId });
+      await notifyFollowersOfReply({
+        postId: post.id,
+        postTitle: post.title,
+        commentAuthorId: member.userId,
+        postAuthorId: post.authorId,
+      });
       return { id: commentId };
     } catch (err) {
       if (err instanceof Error && /Post not found|Reply target|Community request failed/.test(err.message)) throw err;

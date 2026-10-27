@@ -39,7 +39,11 @@ function NotificationsPage() {
 
   return (
     <div className="page community-page">
-      <PageHead kicker="Community" title="Notifications" lede="In-app only. Replies on posts you follow, and decisions on your appeals. No email is sent." />
+      <PageHead
+        kicker="Community"
+        title="Notifications"
+        lede="In-app only. You are notified when someone replies to a post you wrote or follow, and when a moderator decides an appeal. Authors and repliers are followed automatically. No email is sent."
+      />
       <CommunityBar unread={unread} />
       {member === undefined ? <p className="small muted">Checking your account.</p> : null}
       {member === null ? <p><Link to="/auth" search={{ redirect: "/community/notifications" }}>Sign in</Link></p> : null}

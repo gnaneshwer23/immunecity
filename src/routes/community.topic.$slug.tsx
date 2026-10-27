@@ -98,37 +98,40 @@ function TopicPage() {
         </section>
       ) : null}
       {data.posts.length ? (
-        <ul className="community-stack">
-          {data.posts.map((p) => (
-            <li key={p.id} className="card community-card">
-              <p className="xs muted community-meta">
-                <span className="badge">{kindLabel(p.kind)}</span>
-                <span>{p.authorName}</span>
-                {p.referenceStatus ? <span>Reference: {p.referenceStatus}</span> : null}
-              </p>
-              <h2><Link to="/community/post/$postId" params={{ postId: p.id }}>{p.title}</Link></h2>
-              {p.conceptIds.length ? (
-                <p className="small">
-                  Linked concepts:{" "}
-                  {p.conceptIds.map((id) => (
-                    <Link key={id} to="/atlas/$id" params={{ id }} style={{ marginRight: 8 }}>
-                      {byId[id]?.name ?? id}
-                    </Link>
-                  ))}
+        <>
+          <p className="xs muted">All visible posts in this topic — open to every visitor and member, not only the author.</p>
+          <ul className="community-stack">
+            {data.posts.map((p) => (
+              <li key={p.id} className="card community-card">
+                <p className="xs muted community-meta">
+                  <span className="badge">{kindLabel(p.kind)}</span>
+                  <span>{p.authorName}</span>
+                  {p.referenceStatus ? <span>Reference: {p.referenceStatus}</span> : null}
                 </p>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+                <h2><Link to="/community/post/$postId" params={{ postId: p.id }}>{p.title}</Link></h2>
+                {p.conceptIds.length ? (
+                  <p className="small">
+                    Linked concepts:{" "}
+                    {p.conceptIds.map((id) => (
+                      <Link key={id} to="/atlas/$id" params={{ id }} style={{ marginRight: 8 }}>
+                        {byId[id]?.name ?? id}
+                      </Link>
+                    ))}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </>
       ) : (
-        <p className="small muted">
-          No visible posts in this topic yet.{" "}
+        <p className="callout" role="status">
+          No visible posts in this topic yet — ready for the first member discussion.{" "}
           {member ? (
             <Link to="/community/new" search={{ topic: topic.slug, concept: "" }}>Start a discussion</Link>
           ) : (
             <Link to="/auth" search={{ redirect: "/community/new" }}>Sign in to start a discussion</Link>
           )}
-          {" "}— posts stay in Community and never enter the knowledge graph.
+          . Join topic to mark interest; posts stay in Community and never enter the knowledge graph.
         </p>
       )}
     </div>

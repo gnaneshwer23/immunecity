@@ -208,13 +208,28 @@ describe("appeal permissions", () => {
 });
 
 describe("notification creation", () => {
-  it("notifies followers except the author and anyone who paused", () => {
+  it("notifies the post author and followers, not the commenter or paused members", () => {
     expect(NOTIFICATION_KINDS).toEqual(["post_reply", "appeal_decision"]);
     expect(replyNotificationRecipients({
-      followerIds: ["author", "paused", "reader", "reader"],
-      authorId: "author",
+      followerIds: ["post-author", "paused", "reader", "reader"],
+      commentAuthorId: "commenter",
+      postAuthorId: "post-author",
       pausedUserIds: new Set(["paused"]),
-    })).toEqual(["reader"]);
+    })).toEqual(["post-author", "reader"]);
+    // Post author is notified even with zero follows.
+    expect(replyNotificationRecipients({
+      followerIds: [],
+      commentAuthorId: "commenter",
+      postAuthorId: "post-author",
+      pausedUserIds: new Set(),
+    })).toEqual(["post-author"]);
+    // Self-reply does not notify the same person.
+    expect(replyNotificationRecipients({
+      followerIds: ["post-author"],
+      commentAuthorId: "post-author",
+      postAuthorId: "post-author",
+      pausedUserIds: new Set(),
+    })).toEqual([]);
     expect(appealDecisionRecipient({ appellantId: "author", paused: false })).toBe("author");
     expect(appealDecisionRecipient({ appellantId: "author", paused: true })).toBeNull();
   });

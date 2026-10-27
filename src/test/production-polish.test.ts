@@ -39,7 +39,7 @@ describe("production polish", () => {
     expect(source("src/routes/reasoning.tsx")).not.toContain("{report.maturity}");
     expect(EXEMPLAR_MATURITY_SHORT.scaffold).toBe("Early");
     expect(source("src/routes/auth.tsx")).not.toContain("Curation · Access");
-    expect(source("src/routes/auth.tsx")).toContain('fallback(z.string(), "/")');
+    expect(source("src/routes/auth.tsx")).toContain('fallback(z.string(), "/workspace")');
   });
 
   it("asks for a moderation reason before the action can be sent", () => {

@@ -52,6 +52,8 @@ describe("robots.txt", () => {
     const robots = readFileSync(resolve(__dirname, "../../public/robots.txt"), "utf8");
     expect(robots.match(/^User-agent:/gim)).toHaveLength(1);
     expect(robots).toMatch(/User-agent: \*/);
-    for (const p of ["/auth", "/curation", "/api/"]) expect(robots).toContain(`Disallow: ${p}`);
+    for (const p of ["/auth", "/workspace", "/curation", "/community/new", "/community/notifications", "/community/moderation", "/community/profile", "/api/"]) {
+      expect(robots).toContain(`Disallow: ${p}`);
+    }
   });
 });

@@ -214,7 +214,9 @@ function PostPage() {
         {member ? (
           <>
             <button type="button" className="btn sm" disabled={busy} onClick={() => runSave("post", post.id)}>{savedPost ? "Saved" : "Save post"}</button>
-            <button type="button" className="btn sm" disabled={busy} onClick={runFollow}>{following ? "Following" : "Follow post"}</button>
+            <button type="button" className="btn sm" disabled={busy} onClick={runFollow} title="Get an in-app notice when someone replies">
+              {following ? "Following replies" : "Follow for reply notices"}
+            </button>
           </>
         ) : null}
       </p>

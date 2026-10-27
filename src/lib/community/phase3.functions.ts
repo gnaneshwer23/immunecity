@@ -102,21 +102,32 @@ async function topicSlugSet() {
 }
 
 /** In-app only. A missing table must not undo the reply that already saved. */
-export async function notifyFollowersOfReply(input: { postId: string; postTitle: string; authorId: string }) {
+export async function notifyFollowersOfReply(input: {
+  postId: string;
+  postTitle: string;
+  commentAuthorId: string;
+  postAuthorId: string;
+}) {
   try {
     const db = getDb();
     const follows = await db
       .select({ userId: communityPostFollows.userId })
       .from(communityPostFollows)
       .where(eq(communityPostFollows.postId, input.postId));
-    if (!follows.length) return;
     const ids = follows.map((row) => row.userId);
+    const recipientSeed = [...new Set([...ids, input.postAuthorId].filter(Boolean))];
+    if (!recipientSeed.length) return;
     const profiles = await db
       .select({ userId: communityProfiles.userId, paused: communityProfiles.notificationsPaused })
       .from(communityProfiles)
-      .where(inArray(communityProfiles.userId, ids));
+      .where(inArray(communityProfiles.userId, recipientSeed));
     const paused = new Set(profiles.filter((row) => row.paused).map((row) => row.userId));
-    const recipients = replyNotificationRecipients({ followerIds: ids, authorId: input.authorId, pausedUserIds: paused });
+    const recipients = replyNotificationRecipients({
+      followerIds: ids,
+      commentAuthorId: input.commentAuthorId,
+      postAuthorId: input.postAuthorId,
+      pausedUserIds: paused,
+    });
     if (!recipients.length) return;
     const title = input.postTitle.replace(/\s+/g, " ").trim().slice(0, 140) || "a post";
     await db.insert(communityNotifications).values(
@@ -800,6 +811,10 @@ export const createCommunityJournalClub = createServerFn({ method: "POST" })
           .insert(communityMemberships)
           .values({ topicId: topic.id, userId, membershipRole: plan.membershipRole })
           .onConflictDoNothing({ target: [communityMemberships.topicId, communityMemberships.userId] });
+        await tx
+          .insert(communityPostFollows)
+          .values({ postId: post.id, userId })
+          .onConflictDoNothing({ target: [communityPostFollows.postId, communityPostFollows.userId] });
         const [club] = await tx
           .insert(communityJournalClubs)
           .values({

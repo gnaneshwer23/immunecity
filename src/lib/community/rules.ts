@@ -454,19 +454,43 @@ export function planAppealDecision(input: {
 }
 
 /** Followers of a post, except the person who replied and anyone who paused notifications. */
+/**
+ * Who gets an in-app notice when someone replies.
+ * Always includes the post author (unless they wrote the reply or paused).
+ * Also includes anyone following the post. Never notifies the comment author.
+ * Visibility of the post itself is separate: every visible post is public to visitors and members.
+ */
 export function replyNotificationRecipients(input: {
   followerIds: readonly string[];
-  authorId: string;
+  /** Member who just published the reply. */
+  commentAuthorId: string;
+  /** Author of the parent post — notified even if they never clicked Follow. */
+  postAuthorId: string;
   pausedUserIds: ReadonlySet<string>;
 }): string[] {
+  const candidates = new Set<string>([...input.followerIds, input.postAuthorId].filter(Boolean));
   const out: string[] = [];
-  for (const id of input.followerIds) {
-    if (!id || id === input.authorId) continue;
+  for (const id of candidates) {
+    if (!id || id === input.commentAuthorId) continue;
     if (input.pausedUserIds.has(id)) continue;
-    if (out.includes(id)) continue;
     out.push(id);
   }
   return out;
+}
+
+/** Visible community posts are public. Author id never filters the feed. */
+export function postsVisibleToAnyViewer<T extends { status: string }>(
+  posts: readonly T[],
+): T[] {
+  return posts.filter((post) => post.status === "visible");
+}
+
+/** Author (and later commenters) follow their own thread so replies can notify them. */
+export function shouldAutoFollowPost(input: {
+  actorId: string;
+  postAuthorId: string;
+}): boolean {
+  return Boolean(input.actorId) && input.actorId === input.postAuthorId;
 }
 
 export function appealDecisionRecipient(input: { appellantId: string; paused: boolean }): string | null {

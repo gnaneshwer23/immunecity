@@ -3,7 +3,13 @@
 User-agent: *
 Allow: /
 Disallow: /auth
+Disallow: /workspace
 Disallow: /curation
+Disallow: /community/new
+Disallow: /community/notifications
+Disallow: /community/saved
+Disallow: /community/moderation
+Disallow: /community/profile
 Disallow: /api/
 
 Sitemap: https://www.immune-super-intelligence.co.uk/sitemap.xml
