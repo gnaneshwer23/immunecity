@@ -23,6 +23,7 @@
    Neon’s own Google callback host is managed (`…/auth/oauth/callback/google` on the Neon Auth region host) — do not replace it with the app origin. App callback URL used by the client is `https://www.immune-super-intelligence.co.uk/auth?redirect=/workspace`.
 5. Vercel Preview env for `DATABASE_URL*` + Neon Auth URLs was set via CLI (all preview branches). Prefer Neon’s Preview branch sync long-term so Preview DB matches `vercel-dev`.
 6. Redeploy Production after merge so Vite picks up `VITE_NEON_AUTH_URL`.
+6b. **Session cookies:** Browser auth goes through same-origin `/api/auth` (`src/lib/authProxy.server.ts`). The proxy rewrites Neon `Set-Cookie` to host-only `Path=/; Secure; SameSite=Lax` (never leave `SameSite=None; Partitioned` on www) and clears stale CHIPS copies when a `session_token` is set. Sign-in must round-trip `get-session` before `/workspace`.
 7. Sign up once on `/auth`, then provision admin (0003 semantics — never auto-admin):
 
 ```sql

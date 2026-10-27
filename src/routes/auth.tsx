@@ -17,11 +17,19 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-/** Confirm the session cookie stuck before leaving /auth. */
+/** Confirm the session cookie stuck before leaving /auth (short retries for jar settle). */
 async function sessionReady(): Promise<boolean> {
-  const { data, error } = await neonAuth.getUser();
-  return !error && Boolean(data?.user);
+  const delays = [0, 50, 150, 300];
+  for (const ms of delays) {
+    if (ms) await new Promise((r) => setTimeout(r, ms));
+    const { data, error } = await neonAuth.getUser();
+    if (!error && data?.user) return true;
+  }
+  return false;
 }
+
+const SESSION_COOKIE_MSG =
+  "Signed in on the server, but this browser did not store the session cookie. Open https://www.immune-super-intelligence.co.uk/auth (www, not the bare domain), allow cookies for this site, then try again. Embedded preview browsers often block login cookies — use Chrome or Safari.";
 
 function googleReturnMessage(code: string): string {
   if (code === "signup_disabled" || code === "unable_to_create_user") {
@@ -76,13 +84,13 @@ function AuthPage() {
     if (mode === "in") {
       const { error } = await neonAuth.signInEmail(email, password);
       if (error) setMsg(error.message);
-      else if (!(await sessionReady())) setMsg("Signed in, but the browser did not keep the session. Allow cookies for this site and try again.");
+      else if (!(await sessionReady())) setMsg(SESSION_COOKIE_MSG);
       else goPostAuth(target);
     } else {
       const { data, error } = await neonAuth.signUpEmail(email, password);
       if (error) setMsg(error.message);
       else if (!data?.session && !data?.user) setMsg("Account created. Sign in to continue.");
-      else if (!(await sessionReady())) setMsg("Account created. Sign in to continue — the browser did not keep the session cookie.");
+      else if (!(await sessionReady())) setMsg(SESSION_COOKIE_MSG);
       else goPostAuth(target);
     }
     } catch {

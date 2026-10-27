@@ -1,6 +1,6 @@
 import "./lib/error-capture";
 
-import { proxyNeonAuth } from "./lib/authProxy.server";
+import { collectSetCookies, proxyNeonAuth } from "./lib/authProxy.server";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
@@ -59,7 +59,9 @@ const SECURITY_HEADERS: Record<string, string> = {
 function withSecurityHeaders(response: Response): Response {
   const headers = new Headers(response.headers);
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) if (!headers.has(k)) headers.set(k, v);
-  const cookies = typeof response.headers.getSetCookie === "function" ? response.headers.getSetCookie() : [];
+  // Always re-attach Set-Cookie via collectSetCookies so a Headers copy
+  // cannot join or drop Neon session cookies.
+  const cookies = collectSetCookies(response.headers);
   if (cookies.length) {
     headers.delete("set-cookie");
     for (const cookie of cookies) headers.append("set-cookie", cookie);

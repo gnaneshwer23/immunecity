@@ -2,7 +2,12 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { googleSignInBody, neonAuth, postAuthPath, sessionRequestPath } from "@/integrations/neon/auth-client";
-import { authProxySuffix, rewriteAuthSetCookie } from "@/lib/authProxy.server";
+import {
+  authProxySuffix,
+  clearStalePartitionedAuthCookies,
+  collectSetCookies,
+  rewriteAuthSetCookie,
+} from "@/lib/authProxy.server";
 
 describe("Google sign-in handoff", () => {
   afterEach(() => {
@@ -81,9 +86,19 @@ describe("auth proxy cookies", () => {
   it("stores Neon cookies as first-party Lax and refuses path escape", () => {
     expect(
       rewriteAuthSetCookie(
-        "__Secure-neon-auth.session_challenge=1; Path=/; Domain=auth.example.test; Secure; HttpOnly; SameSite=None; Partitioned",
+        "__Secure-neon-auth.session_challenge=1; Path=/neondb/auth; Domain=auth.example.test; Secure; HttpOnly; SameSite=None; Partitioned",
       ),
-    ).toBe("__Secure-neon-auth.session_challenge=1; Path=/; Secure; HttpOnly; SameSite=Lax");
+    ).toBe("__Secure-neon-auth.session_challenge=1; HttpOnly; Path=/; Secure; SameSite=Lax");
+    expect(
+      rewriteAuthSetCookie("__Secure-neon-auth.session_token=abc; HttpOnly; SameSite=None; Partitioned"),
+    ).toBe("__Secure-neon-auth.session_token=abc; HttpOnly; Path=/; Secure; SameSite=Lax");
+    expect(clearStalePartitionedAuthCookies().some((c) => c.includes("session_token=") && c.includes("Partitioned"))).toBe(
+      true,
+    );
+    const headers = new Headers();
+    headers.append("set-cookie", "a=1");
+    headers.append("set-cookie", "b=2");
+    expect(collectSetCookies(headers)).toEqual(["a=1", "b=2"]);
     expect(authProxySuffix("/api/auth/get-session")).toBe("get-session");
     expect(authProxySuffix("/api/auth/sign-in/social")).toBe("sign-in/social");
     expect(authProxySuffix("/api/auth/../secret")).toBeNull();
@@ -102,6 +117,7 @@ describe("post-auth landing", () => {
     expect(auth).toContain("postAuthPath");
     expect(auth).toContain("goPostAuth");
     expect(auth).toContain("sessionReady");
+    expect(auth).toContain("SESSION_COOKIE_MSG");
     expect(auth).toContain('default("/workspace")');
     const client = readFileSync(resolve(process.cwd(), "src/integrations/neon/auth-client.ts"), "utf8");
     expect(client).toMatch(/if \(typeof window !== "undefined"\) return "\/api\/auth"/);
