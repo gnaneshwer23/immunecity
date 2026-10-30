@@ -20,7 +20,7 @@ Both use `/api/ask` + `/api/ask/prepare` and guardrails in `src/lib/askGrounding
 ## Voice
 
 - **Voice command** (mic + immune-cell avatar): browser Speech Recognition → fills the composer
-- **Immune cell speaker** (Hear): browser Speech Synthesis reads the last answer
+- **Immune cell speaker** (Hear): browser Speech Synthesis reads the last answer; the mascot animates idle / listen / speak (respects `prefers-reduced-motion`)
 - Audio stays in-browser; unsupported browsers show a short status note
 
 ## How users open the chatbot

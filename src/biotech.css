@@ -464,11 +464,141 @@ a.live-badge:hover { background: color-mix(in oklab, var(--primary) 18%, transpa
 .ask-msg.assistant .ask-body ul, .ask-msg.assistant .ask-body ol { margin: 0 0 8px; padding-left: 20px; }
 .ask-composer { display: flex; gap: 10px; align-items: flex-end; padding: 14px 20px; border-top: 1px solid var(--border); }
 .ask-id--cell { color: var(--primary); }
-.ask-cell-speaker { display: block; color: inherit; }
-.ask-cell-speaker--live { animation: ask-cell-pulse 1.2s ease-in-out infinite; }
-@keyframes ask-cell-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.06); opacity: 0.88; }
+.ask-cell-speaker {
+  display: block;
+  color: inherit;
+  overflow: visible;
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+  animation: ask-cell-bob 3.4s ease-in-out infinite;
+}
+.ask-cell-speaker .ask-cell-ear,
+.ask-cell-speaker .ask-cell-eye,
+.ask-cell-speaker .ask-cell-pupil,
+.ask-cell-speaker .ask-cell-mouth,
+.ask-cell-speaker .ask-cell-body {
+  transform-box: fill-box;
+}
+.ask-cell-speaker .ask-cell-ear--l { transform-origin: 100% 100%; animation: ask-cell-ear-l 4.2s ease-in-out infinite; }
+.ask-cell-speaker .ask-cell-ear--r { transform-origin: 0% 100%; animation: ask-cell-ear-r 4.2s ease-in-out infinite 0.35s; }
+.ask-cell-speaker .ask-cell-eye--l,
+.ask-cell-speaker .ask-cell-eye--r {
+  transform-origin: center;
+  animation: ask-cell-blink 5.6s ease-in-out infinite;
+}
+.ask-cell-speaker .ask-cell-eye--r { animation-delay: 0.08s; }
+.ask-cell-speaker .ask-cell-mouth--open { opacity: 0; transform: scaleY(0.2); transform-origin: center; }
+.ask-cell-speaker .ask-cell-mouth--smile { opacity: 1; }
+.ask-cell-speaker .ask-cell-waves,
+.ask-cell-speaker .ask-cell-dots { opacity: 0; pointer-events: none; }
+
+/* Listening: perk up, bounce a bit harder, ear flick + pupil lean */
+.ask-cell-speaker--listen {
+  animation: ask-cell-listen-bob 1.05s ease-in-out infinite;
+}
+.ask-cell-speaker--listen .ask-cell-ear--l { animation: ask-cell-ear-listen-l 0.9s ease-in-out infinite; }
+.ask-cell-speaker--listen .ask-cell-ear--r { animation: ask-cell-ear-listen-r 0.9s ease-in-out infinite 0.12s; }
+.ask-cell-speaker--listen .ask-cell-pupil { animation: ask-cell-pupil-listen 1.4s ease-in-out infinite; }
+.ask-cell-speaker--listen .ask-cell-dots { opacity: 0.75; animation: ask-cell-dots-pulse 1.1s ease-in-out infinite; }
+.ask-cell-speaker--listen .ask-cell-dot--b { animation-delay: 0.15s; }
+.ask-cell-speaker--listen .ask-cell-dot--c { animation-delay: 0.3s; }
+
+/* Speaking: talk cycle + ear bounce + sound waves */
+.ask-cell-speaker--speak {
+  animation: ask-cell-speak-bob 0.55s ease-in-out infinite;
+}
+.ask-cell-speaker--speak .ask-cell-ear--l { animation: ask-cell-ear-speak-l 0.55s ease-in-out infinite; }
+.ask-cell-speaker--speak .ask-cell-ear--r { animation: ask-cell-ear-speak-r 0.55s ease-in-out infinite 0.08s; }
+.ask-cell-speaker--speak .ask-cell-mouth--smile { opacity: 0; }
+.ask-cell-speaker--speak .ask-cell-mouth--open {
+  opacity: 0.85;
+  animation: ask-cell-talk 0.28s ease-in-out infinite;
+}
+.ask-cell-speaker--speak .ask-cell-waves { opacity: 0.9; animation: ask-cell-waves 0.7s ease-in-out infinite; }
+.ask-cell-speaker--speak.ask-cell-speaker--listen .ask-cell-dots { opacity: 0; }
+
+@keyframes ask-cell-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-1.4px) rotate(-1.2deg); }
+}
+@keyframes ask-cell-listen-bob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.04); }
+}
+@keyframes ask-cell-speak-bob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1.2px) scale(1.05); }
+}
+@keyframes ask-cell-ear-l {
+  0%, 78%, 100% { transform: rotate(0deg); }
+  84% { transform: rotate(-14deg); }
+  90% { transform: rotate(6deg); }
+}
+@keyframes ask-cell-ear-r {
+  0%, 78%, 100% { transform: rotate(0deg); }
+  84% { transform: rotate(14deg); }
+  90% { transform: rotate(-6deg); }
+}
+@keyframes ask-cell-ear-listen-l {
+  0%, 100% { transform: rotate(-18deg) translateY(-0.6px); }
+  50% { transform: rotate(-8deg) translateY(0); }
+}
+@keyframes ask-cell-ear-listen-r {
+  0%, 100% { transform: rotate(18deg) translateY(-0.6px); }
+  50% { transform: rotate(8deg) translateY(0); }
+}
+@keyframes ask-cell-ear-speak-l {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(8deg); }
+}
+@keyframes ask-cell-ear-speak-r {
+  0%, 100% { transform: rotate(10deg); }
+  50% { transform: rotate(-8deg); }
+}
+@keyframes ask-cell-blink {
+  0%, 42%, 48%, 100% { transform: scaleY(1); }
+  45% { transform: scaleY(0.08); }
+}
+@keyframes ask-cell-pupil-listen {
+  0%, 100% { transform: translate(0.35px, 0); }
+  50% { transform: translate(-0.45px, 0.2px); }
+}
+@keyframes ask-cell-talk {
+  0%, 100% { transform: scaleY(0.35) scaleX(0.92); }
+  35% { transform: scaleY(1.05) scaleX(1); }
+  70% { transform: scaleY(0.55) scaleX(0.96); }
+}
+@keyframes ask-cell-waves {
+  0%, 100% { opacity: 0.45; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(0.8px); }
+}
+@keyframes ask-cell-dots-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.95; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-cell-speaker,
+  .ask-cell-speaker--listen,
+  .ask-cell-speaker--speak,
+  .ask-cell-speaker .ask-cell-ear--l,
+  .ask-cell-speaker .ask-cell-ear--r,
+  .ask-cell-speaker .ask-cell-eye--l,
+  .ask-cell-speaker .ask-cell-eye--r,
+  .ask-cell-speaker .ask-cell-pupil,
+  .ask-cell-speaker .ask-cell-mouth--open,
+  .ask-cell-speaker .ask-cell-waves,
+  .ask-cell-speaker .ask-cell-dots {
+    animation: none !important;
+  }
+  .ask-cell-speaker { transform: none; }
+  /* Keep state readable without looping motion */
+  .ask-cell-speaker--listen .ask-cell-ear--l { transform: rotate(-12deg); }
+  .ask-cell-speaker--listen .ask-cell-ear--r { transform: rotate(12deg); }
+  .ask-cell-speaker--listen .ask-cell-dots { opacity: 0.7; }
+  .ask-cell-speaker--speak .ask-cell-mouth--smile { opacity: 0; }
+  .ask-cell-speaker--speak .ask-cell-mouth--open { opacity: 0.85; transform: scaleY(0.9); }
+  .ask-cell-speaker--speak .ask-cell-waves { opacity: 0.8; }
 }
 .ask-voice-btn {
   display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
