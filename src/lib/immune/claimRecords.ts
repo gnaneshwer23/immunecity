@@ -2,6 +2,11 @@
  * Phase C — Source-backed claim records + publication locators.
  * Browser-safe helpers over CitationLike / claim_candidates shape.
  * Never invents PMIDs, passage spans, or approvals. Unreviewed ≠ Gate C.
+ *
+ * Claim review kinds (explicit — never collapse to “verified”):
+ * - literature_candidate: durable locator and/or curated note; NOT claim-verified
+ * - extracted_claim: assertion + passage extracted for human review; still unreviewed
+ * - reviewed_claim: human decision recorded (approved or rejected) — never auto-promoted
  */
 import { byId, edgeByRel, edgeRef, type KGEdge } from "@/lib/immune/engine";
 import {
@@ -17,6 +22,18 @@ import {
   type ReviewStatus,
 } from "@/lib/immune/evidenceStatus";
 import { dimensionsAreOrthogonal, edgeEvidenceDimensions } from "@/lib/immune/evidenceDimensions";
+
+/**
+ * Explicit claim typing for brief/export/review surfaces.
+ * Source-backed ≠ reviewed. Pilot PMIDs are literature_candidate until a human decides.
+ */
+export type ClaimReviewKind = "literature_candidate" | "extracted_claim" | "reviewed_claim";
+
+export const CLAIM_REVIEW_KINDS: readonly ClaimReviewKind[] = [
+  "literature_candidate",
+  "extracted_claim",
+  "reviewed_claim",
+] as const;
 
 /** Exact publication locator when curator-recorded — never fabricated. */
 export interface PublicationLocator {
@@ -46,10 +63,56 @@ export interface SourceBackedClaim {
   claimSupport: string;
   curation: string;
   classification: ClaimEvidenceClass;
+  /**
+   * Lifecycle kind. literature_candidate / extracted_claim are never Gate C.
+   * reviewed_claim only after a human curation decision — never auto-promoted.
+   */
+  reviewKind: ClaimReviewKind;
   locator: PublicationLocator;
   reviewedAt: string | null;
   /** Orthogonal axes — must not collapse to one score. */
   dimensionsOk: boolean;
+}
+
+/**
+ * Infer review kind from row state. Never invents reviewed_claim from locators alone.
+ * Pass `explicit` when the producer already typed the candidate (e.g. melanoma pilot).
+ */
+export function inferClaimReviewKind(
+  c: CitationLike,
+  explicit?: ClaimReviewKind | null,
+): ClaimReviewKind {
+  if (explicit === "literature_candidate" || explicit === "extracted_claim" || explicit === "reviewed_claim") {
+    // Refuse silent promotion: explicit literature/extracted stays until curation says otherwise.
+    if (explicit === "reviewed_claim") return "reviewed_claim";
+    if (c.curation === "approved" || c.curation === "rejected") return "reviewed_claim";
+    return explicit;
+  }
+  if (c.curation === "approved" || c.curation === "rejected") return "reviewed_claim";
+  const hasPassage = Boolean(c.passage_span?.trim());
+  const hasAssertion = Boolean(c.claim_text?.trim());
+  if (hasPassage && hasAssertion) return "extracted_claim";
+  return "literature_candidate";
+}
+
+/**
+ * Human-only promotion gate. Locators / source-backed status never promote.
+ * Returns null when the row is not yet reviewed — callers must not invent reviewed_claim.
+ */
+export function asReviewedClaimKind(c: CitationLike): ClaimReviewKind | null {
+  if (c.curation === "approved" || c.curation === "rejected") return "reviewed_claim";
+  return null;
+}
+
+export function claimReviewKindLabel(kind: ClaimReviewKind): string {
+  switch (kind) {
+    case "literature_candidate":
+      return "Literature candidate (not claim-verified)";
+    case "extracted_claim":
+      return "Extracted claim (awaiting human review)";
+    case "reviewed_claim":
+      return "Reviewed claim (human decision recorded)";
+  }
 }
 
 export function publicationLocatorFromCite(c: CitationLike): PublicationLocator {
@@ -88,7 +151,11 @@ export function classifyClaimEvidence(c: CitationLike): ClaimEvidenceClass {
   return "unassessed";
 }
 
-export function toSourceBackedClaim(c: CitationLike, edge?: KGEdge | null): SourceBackedClaim {
+export function toSourceBackedClaim(
+  c: CitationLike,
+  edge?: KGEdge | null,
+  opts?: { reviewKind?: ClaimReviewKind | null },
+): SourceBackedClaim {
   const dims = edge
     ? edgeEvidenceDimensions(edge, relationshipStatus(edge, [c]))
     : [];
@@ -99,6 +166,7 @@ export function toSourceBackedClaim(c: CitationLike, edge?: KGEdge | null): Sour
     claimSupport: c.claim_support,
     curation: c.curation ?? "unreviewed",
     classification: classifyClaimEvidence(c),
+    reviewKind: inferClaimReviewKind(c, opts?.reviewKind),
     locator: publicationLocatorFromCite(c),
     reviewedAt: c.reviewed_at,
     dimensionsOk: edge ? dimensionsAreOrthogonal(dims) : true,

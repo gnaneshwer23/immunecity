@@ -30,8 +30,12 @@ export interface ReviewQueueItem {
   priority: ReviewQueuePriority;
   classification: ReturnType<typeof classifyClaimEvidence>;
   claim: SourceBackedClaim;
+  /** Source passage / notes when present — for reviewer inspection. */
+  sourcePassage: string | null;
   reason: string;
   requiresHumanReview: true;
+  /** Never auto-approve from queue presence. */
+  autoApprove: false;
 }
 
 export interface EvidenceAuditEventView {
@@ -162,6 +166,7 @@ export function buildScientificReviewQueue(rows: ReviewQueueRowInput[]): ReviewQ
       priority,
       classification: claim.classification,
       claim,
+      sourcePassage: row.passage_span?.trim() || row.claim_text?.trim() || null,
       reason: !gate.ok
         ? `Blocked inconsistent state: ${gate.reason}`
         : priority === "conflict"
@@ -172,6 +177,7 @@ export function buildScientificReviewQueue(rows: ReviewQueueRowInput[]): ReviewQ
               ? "Mapped claim awaiting identifier verification"
               : "Awaiting human claim assessment",
       requiresHumanReview: true,
+      autoApprove: false,
     });
   }
 

@@ -1160,7 +1160,10 @@ export function exportWorkbench(session: WorkbenchSession): string {
 export interface WorkbenchCurationHandoff {
   kind: "workbench_curation_queue_handoff";
   schemaVersion: typeof WORKBENCH_SCHEMA_VERSION;
-  /** True when candidateManifest passes validateManifestForImport (auth still required at /curation). */
+  /**
+   * True when a real submission path exists: candidateManifest passes validateManifestForImport
+   * for authenticated importManifest at /curation. Not claim-verified; never auto-approve.
+   */
   wired: boolean;
   kgWrite: false;
   autoPromote: false;
@@ -1249,7 +1252,7 @@ export function buildWorkbenchCurationHandoff(session: WorkbenchSession): Workbe
     exportedAt: new Date().toISOString(),
     openRoute: "/curation",
     note: wired
-      ? "Handoff wired: import candidateManifest at /curation (authenticated). Unreviewed stays unapproved. autoPromote=false. Not a KG write."
+      ? "Handoff wired: real submission path = authenticated importManifest at /curation. Candidates stay unreviewed. autoPromote=false. Not claim-verified. Not a KG write."
       : "No importable candidate manifest — download notes only. Nothing is written to the curated knowledge graph from the workbench.",
     draftNotes,
     hypothesisClaim: session.hypothesis.claim.trim(),

@@ -9,20 +9,46 @@ import {
   melanomaPilotSourceBackedCandidates,
 } from "@/lib/research/scientificBrief";
 import { validateManifestForImport } from "@/lib/research/literatureWorkflow";
+import { asReviewedClaimKind, inferClaimReviewKind } from "@/lib/immune/claimRecords";
 
 describe("Post-AF scientific brief — source-backed candidates", () => {
-  it("melanoma pilot candidates carry real PMID/DOI and stay unreviewed", () => {
+  it("melanoma pilot candidates are literature_candidate (not claim-verified)", () => {
     const rows = melanomaPilotSourceBackedCandidates();
     expect(rows.length).toBeGreaterThanOrEqual(2);
     for (const row of rows) {
       expect(row.curation).toBe("unreviewed");
+      expect(row.review_kind).toBe("literature_candidate");
       expect(Boolean(row.pmid || row.doi)).toBe(true);
       expect(row.claim_text).toBeTruthy();
       expect(row.claim_text).not.toMatch(/Candidate claim linked to brief export/);
+      // Source-backed eligibility ≠ reviewed
+      expect(
+        isSourceBackedCandidate({
+          evidence_id: row.evidence_id,
+          relationship_id: row.relationship_id ?? null,
+          claim_support: "unassessed",
+          curation: "unreviewed",
+          label: row.label ?? "",
+          url: "",
+          pmid: row.pmid ?? undefined,
+          doi: row.doi ?? undefined,
+          claim_text: row.claim_text ?? undefined,
+          reviewed_at: null,
+        }),
+      ).toBe(true);
+      expect(asReviewedClaimKind({
+        evidence_id: row.evidence_id,
+        relationship_id: null,
+        claim_support: "unassessed",
+        curation: "unreviewed",
+        label: "",
+        url: "",
+        reviewed_at: null,
+      })).toBeNull();
     }
   });
 
-  it("default melanoma brief wires curation handoff without auto-approve", () => {
+  it("default melanoma brief wires curation handoff without auto-approve or reviewed_claim", () => {
     const result = buildScientificBriefPackage({
       now: new Date("2026-10-30T15:00:00.000Z"),
     });
@@ -32,14 +58,34 @@ describe("Post-AF scientific brief — source-backed candidates", () => {
     expect(pkg.claimCandidates.length).toBeGreaterThan(0);
     expect(pkg.claimCandidates.every((c) => c.curation === "unreviewed")).toBe(true);
     expect(pkg.claimCandidates.every((c) => c.locator.hasDurableId)).toBe(true);
+    expect(pkg.claimCandidates.every((c) => c.reviewKind === "literature_candidate")).toBe(true);
+    expect(pkg.claimCandidates.some((c) => c.reviewKind === "reviewed_claim")).toBe(false);
     expect(pkg.handoff.autoPromote).toBe(false);
     expect(pkg.handoff.kgWrite).toBe(false);
     expect(pkg.handoff.wired).toBe(true);
+    expect(pkg.handoff.note).toMatch(/importManifest|submission path/i);
     expect(pkg.handoff.openRoute).toBe("/curation");
     expect(pkg.handoff.candidateManifest).not.toBeNull();
     const check = validateManifestForImport(pkg.handoff.candidateManifest!);
     expect(check.ok).toBe(true);
     expect(pkg.handoff.candidateManifest!.meta.curation).toBe("unreviewed");
+  });
+
+  it("isSourceBackedCandidate does not imply reviewed_claim", () => {
+    const cite = {
+      evidence_id: "EV-src",
+      relationship_id: null as string | null,
+      claim_support: "unassessed",
+      curation: "unreviewed" as const,
+      label: "x",
+      url: "",
+      pmid: "25891173",
+      claim_text: "Educational candidate",
+      reviewed_at: null,
+    };
+    expect(isSourceBackedCandidate(cite)).toBe(true);
+    expect(inferClaimReviewKind(cite)).toBe("literature_candidate");
+    expect(inferClaimReviewKind(cite)).not.toBe("reviewed_claim");
   });
 
   it("bare evidence ids without locators do not mint placeholder claims", () => {

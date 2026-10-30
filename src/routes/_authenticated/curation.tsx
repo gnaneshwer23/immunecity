@@ -16,6 +16,9 @@ import {
   updateRecord,
 } from "@/lib/evidence.functions";
 import HealthReport from "@/components/immune/HealthReport";
+import MelanomaPilotChecklist from "@/components/immune/MelanomaPilotChecklist";
+import OntologyMappingPanel from "@/components/immune/OntologyMappingPanel";
+import ScientificReviewQueuePanel from "@/components/immune/ScientificReviewQueuePanel";
 import manifest from "@/data/citation-manifest.json";
 import relationshipQueue from "@/data/relationship-evidence-queue.json";
 import { byId, human, inn, out, relId } from "@/lib/immune/engine";
@@ -323,6 +326,10 @@ function Curation() {
           <strong>Read-only view.</strong> The review queue is limited to scientific reviewers and administrators.
         </p>
       ) : null}
+
+      <MelanomaPilotChecklist />
+      <ScientificReviewQueuePanel canReview={canReview} />
+      <OntologyMappingPanel canReview={canReview} />
 
       {isAdmin ? (
         <div className="card" style={{ marginBottom: 16 }}>

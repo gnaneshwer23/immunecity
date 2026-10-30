@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq, gt, ilike, inArray, or } from "drizzle-orm";
+import { and, asc, eq, gt, ilike, inArray, or } from "drizzle-orm";
 import { z } from "zod";
 import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { assertAdministrator, assertCanReview, loadAccountPowers } from "@/lib/access/roles.server";
@@ -325,4 +325,160 @@ export const seedP0ExemplarDrafts = createServerFn({ method: "POST" })
     await assertAdministrator(context.userId);
     const { seedP0ExemplarPubmedDrafts } = await import("@/lib/p0ExemplarDrafts.server");
     return seedP0ExemplarPubmedDrafts();
+  });
+
+/**
+ * Persistent scientific review queue from Neon evidence_records.
+ * Builds prioritised work via buildScientificReviewQueue. Never auto-approves.
+ * Decisions still go through updateRecord (append-only audit).
+ */
+export const listScientificReviewQueue = createServerFn({ method: "GET" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        limit: z.number().int().min(1).max(200).optional(),
+        curation: z.enum(["unreviewed", "all"]).optional(),
+      })
+      .optional()
+      .parse(d ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    await assertCanReview(context.userId);
+    const { buildScientificReviewQueue } = await import("@/lib/immune/scientificReviewQueue");
+    const limit = data?.limit ?? 100;
+    const curationFilter = data?.curation ?? "unreviewed";
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(evidenceRecords)
+      .where(curationFilter === "all" ? undefined : eq(evidenceRecords.curation, "unreviewed"))
+      .orderBy(asc(evidenceRecords.evidenceId))
+      .limit(limit);
+    const queue = buildScientificReviewQueue(
+      rows.map((r) => ({
+        evidence_id: r.evidenceId,
+        node_id: r.nodeId,
+        relationship_id: r.relationshipId,
+        claim_support: r.claimSupport,
+        curation: r.curation,
+        check_status: r.checkStatus,
+        pmid: r.pmid,
+        doi: r.doi,
+        label: r.sourceRef ?? r.pmid ?? r.doi ?? r.evidenceId,
+        url: r.pmid ? `https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/` : undefined,
+        claim_text: r.notes,
+        passage_span: null,
+        reviewed_at: r.reviewedAt?.toISOString() ?? null,
+      })),
+    );
+    return {
+      queue,
+      autoApprove: false as const,
+      persistent: true as const,
+      note: "Queue is Neon-backed. Record decisions via updateRecord — never auto-approve.",
+    };
+  });
+
+/** Append-only audit trail for one evidence row (immutable history). */
+export const listEvidenceAuditTrail = createServerFn({ method: "GET" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) => z.object({ evidenceId: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertCanReview(context.userId);
+    const { summariseAuditHistory } = await import("@/lib/immune/scientificReviewQueue");
+    const db = getDb();
+    const events = await db
+      .select()
+      .from(evidenceAuditEvents)
+      .where(eq(evidenceAuditEvents.evidenceId, data.evidenceId))
+      .orderBy(asc(evidenceAuditEvents.createdAt))
+      .limit(200);
+    const views = events.map((e) => {
+      const prev = e.previousState as Record<string, unknown>;
+      const next = e.newState as Record<string, unknown>;
+      return {
+        evidenceId: e.evidenceId,
+        actor: e.actor,
+        reason: e.reason,
+        previousCuration: (prev.curation as string | null | undefined) ?? null,
+        newCuration: (next.curation as string | null | undefined) ?? null,
+        previousClaimSupport: (prev.claim_support as string | null | undefined) ?? null,
+        newClaimSupport: (next.claim_support as string | null | undefined) ?? null,
+        createdAt: e.createdAt.toISOString(),
+      };
+    });
+    return {
+      evidenceId: data.evidenceId,
+      events: views,
+      summary: summariseAuditHistory(views),
+      immutable: true as const,
+    };
+  });
+
+/**
+ * Record a human review decision on an evidence row.
+ * Thin wrapper over updateRecord semantics — no automatic approval path.
+ * Requires explicit curation + optional claim_support from the reviewer.
+ */
+export const recordScientificReviewDecision = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        curation: z.enum(["unreviewed", "approved", "rejected"]),
+        claim_support: z.enum(["unassessed", "supports", "partial", "contradicts", "unrelated"]).optional(),
+        notes: z.string().max(2000).nullable().optional(),
+        relationship_id: z
+          .string()
+          .max(200)
+          .nullable()
+          .optional()
+          .refine((v) => !v || !!edgeByRel[v], "Unknown relationship ID"),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertCanReview(context.userId);
+    // Reuse updateRecord path by invoking the same invariant + audit logic inline
+    // so there is exactly one write surface (no silent approve bypass).
+    const { id, ...patch } = data;
+    const db = getDb();
+    const [existing] = await db.select().from(evidenceRecords).where(eq(evidenceRecords.id, id)).limit(1);
+    if (!existing) throw new Error("Record not found.");
+    const actor = context.email ?? context.userId;
+    const result = computeEvidenceUpdate(
+      {
+        curation: existing.curation,
+        claimSupport: existing.claimSupport,
+        relationshipId: existing.relationshipId,
+        pmid: existing.pmid,
+        doi: existing.doi,
+        sourceRef: existing.sourceRef,
+        checkStatus: existing.checkStatus,
+      },
+      patch,
+      actor,
+    );
+    if (result.error) throw new Error(result.error);
+    if (!Object.keys(result.set).length) throw new Error("No evidence fields changed.");
+    const previous = auditSnapshot(existing);
+    await db.transaction(async (tx) => {
+      const [updated] = await tx
+        .update(evidenceRecords)
+        .set(result.set)
+        .where(eq(evidenceRecords.id, id))
+        .returning();
+      if (!updated) throw new Error("Evidence update failed — no row written.");
+      await tx.insert(evidenceAuditEvents).values({
+        evidenceRecordId: existing.id,
+        evidenceId: existing.evidenceId,
+        actor,
+        reason: `scientific_review_decision:${auditReason(patch as Record<string, unknown>, result.set as Record<string, unknown>)}`,
+        previousState: previous,
+        newState: auditSnapshot(updated),
+      });
+    });
+    return { ok: true as const, autoApprove: false as const };
   });

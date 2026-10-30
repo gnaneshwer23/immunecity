@@ -5,12 +5,22 @@
  *
  * Claim candidates must be source-backed (PMID/DOI and/or curator claim_text).
  * Bare evidence ids without locators never mint placeholder assertions.
+ *
+ * Typing:
+ * - literature_candidate — locator/note present; NOT claim-verified (melanoma pilot default)
+ * - extracted_claim — assertion + passage awaiting human review
+ * - reviewed_claim — human decision only; never auto-promoted from source-backed
+ *
+ * `isSourceBackedCandidate` means handoff-eligible locator/assertion only —
+ * it does NOT imply claim-verified, Gate C, or reviewed_claim.
  */
 import { byId, edgeByRel } from "@/lib/immune/engine";
 import {
   assertNoSilentApproval,
   claimRequiresHumanReview,
+  inferClaimReviewKind,
   toSourceBackedClaim,
+  type ClaimReviewKind,
   type SourceBackedClaim,
 } from "@/lib/immune/claimRecords";
 import {
@@ -48,7 +58,10 @@ export type ScientificBriefPackage = {
   clinicalConclusion: false;
   brief: ResearchBriefDraft;
   provenance: ExportProvenanceTrail;
-  /** Source-backed claim candidates — still unreviewed; never Gate C by export. */
+  /**
+   * Source-backed claim candidates — typed as literature_candidate / extracted_claim.
+   * Never Gate C by export; never auto-promoted to reviewed_claim.
+   */
   claimCandidates: SourceBackedClaim[];
   reviewQueue: ReviewQueueSnapshot | null;
   handoff: ScientificBriefReviewHandoff;
@@ -56,7 +69,11 @@ export type ScientificBriefPackage = {
 
 export type ScientificBriefReviewHandoff = {
   kind: typeof SCIENTIFIC_BRIEF_HANDOFF_KIND;
-  /** True when a curation-importable candidateManifest is attached (auth still required at /curation). */
+  /**
+   * True when a real curation submission path exists: importable candidateManifest
+   * for authenticated `importManifest` at /curation. Does NOT mean claims are verified
+   * or that Neon already holds the rows — only that the import path is wired.
+   */
   wired: boolean;
   kgWrite: false;
   autoPromote: false;
@@ -68,6 +85,11 @@ export type ScientificBriefReviewHandoff = {
   exportedAt: string;
   /** Importable as literature_candidate_export — curation stays unreviewed. */
   candidateManifest: CurationManifestExport | null;
+};
+
+/** Extended row input: optional explicit claim typing (defaults via inferClaimReviewKind). */
+export type BriefReviewRowInput = ReviewQueueRowInput & {
+  review_kind?: ClaimReviewKind | null;
 };
 
 function rowToCite(row: ReviewQueueRowInput): CitationLike {
@@ -86,7 +108,14 @@ function rowToCite(row: ReviewQueueRowInput): CitationLike {
   };
 }
 
-/** True when a candidate has a durable locator or an explicit curator assertion — never a synthetic stub. */
+/**
+ * True when a candidate has a durable locator or an explicit curator assertion —
+ * never a synthetic stub.
+ *
+ * IMPORTANT: source-backed ≠ claim-verified. Passing this check yields at most a
+ * literature_candidate / extracted_claim for human review — never reviewed_claim,
+ * Gate C, or experimental verification.
+ */
 export function isSourceBackedCandidate(c: CitationLike): boolean {
   const hasLocator = Boolean(c.pmid?.trim() || c.doi?.trim());
   const hasAssertion = Boolean(c.claim_text?.trim() || c.passage_span?.trim() || c.notes?.trim());
@@ -97,11 +126,11 @@ export function isSourceBackedCandidate(c: CitationLike): boolean {
 }
 
 /**
- * Melanoma pilot fixture → unreviewed candidate cites with real trial PMIDs/DOIs.
- * Educational draft only — never approved, never invented locators.
+ * Melanoma pilot fixture → unreviewed literature_candidate cites with real trial PMIDs/DOIs.
+ * Educational draft only — never approved, never invented locators, never reviewed_claim.
  */
-export function melanomaPilotSourceBackedCandidates(): ReviewQueueRowInput[] {
-  const out: ReviewQueueRowInput[] = [];
+export function melanomaPilotSourceBackedCandidates(): BriefReviewRowInput[] {
+  const out: BriefReviewRowInput[] = [];
   for (const trial of MELANOMA_PILOT_TRIALS) {
     const pmid = trial.primaryPmid?.trim();
     const doi = trial.primaryDoi?.trim();
@@ -125,16 +154,18 @@ export function melanomaPilotSourceBackedCandidates(): ReviewQueueRowInput[] {
       doi: doi || null,
       label: `${trial.acronym} primary report PMID ${pmid ?? "n/a"}`,
       url: pmid ? `https://pubmed.ncbi.nlm.nih.gov/${pmid}/` : undefined,
-      claim_text: `${trial.acronym} (${trial.nctId}): ${trial.populationSummary} Educational candidate — unreviewed; not Gate C.`,
+      claim_text: `${trial.acronym} (${trial.nctId}): ${trial.populationSummary} Educational literature_candidate — unreviewed; not Gate C; not experimentally verified.`,
       passage_span: null,
       reviewed_at: null,
+      /** Explicit: pilot PMIDs are literature candidates, not verified findings. */
+      review_kind: "literature_candidate",
     });
   }
   return out;
 }
 
 function buildCandidateManifest(
-  rows: readonly ReviewQueueRowInput[],
+  rows: readonly BriefReviewRowInput[],
   exportedAt: string,
 ): CurationManifestExport | null {
   const groups = new Map<string, CurationManifestExport["evidence_records"][number]>();
@@ -199,7 +230,7 @@ export function buildScientificBriefPackage(input: {
    * When omitted, melanoma pilot primary PMIDs/DOIs seed unreviewed candidates.
    * Bare evidenceIds alone never mint placeholder claims.
    */
-  reviewRows?: readonly ReviewQueueRowInput[];
+  reviewRows?: readonly BriefReviewRowInput[];
   now?: Date;
 }): { ok: true; package: ScientificBriefPackage } | { ok: false; reason: string } {
   const defaultConcepts = melanomaInvestigationConceptIds();
@@ -221,7 +252,7 @@ export function buildScientificBriefPackage(input: {
 
   const brief = briefResult.brief;
 
-  const seedRows: ReviewQueueRowInput[] =
+  const seedRows: BriefReviewRowInput[] =
     input.reviewRows && input.reviewRows.length
       ? [...input.reviewRows]
       : melanomaPilotSourceBackedCandidates().filter((row) => {
@@ -236,15 +267,15 @@ export function buildScientificBriefPackage(input: {
         });
 
   // Only source-backed rows become claim candidates — drop bare / placeholder stubs.
+  // Source-backed does not mean verified; refuse approved/reviewed inside draft packages.
   const candidateRows = seedRows.filter((row) => {
     const cite = rowToCite({ ...row, curation: "unreviewed" });
-    // Force unreviewed in draft package even if a row was passed as approved (refuse silent promote).
     return isSourceBackedCandidate(cite);
   });
 
   for (const row of candidateRows) {
-    if (row.curation === "approved") {
-      return { ok: false, reason: "Refuse approved claims inside draft brief package." };
+    if (row.curation === "approved" || row.review_kind === "reviewed_claim") {
+      return { ok: false, reason: "Refuse approved/reviewed claims inside draft brief package." };
     }
   }
 
@@ -258,14 +289,29 @@ export function buildScientificBriefPackage(input: {
     }
   }
 
-  const claimCandidates = candidateCites.map((c) => {
+  const claimCandidates = candidateRows.map((row, i) => {
+    const c = candidateCites[i]!;
     const edge = c.relationship_id ? edgeByRel[c.relationship_id] : null;
-    return toSourceBackedClaim(c, edge);
+    // Pilot / default rows stay literature_candidate; never promote to reviewed_claim here.
+    const explicit =
+      row.review_kind === "reviewed_claim"
+        ? "literature_candidate"
+        : (row.review_kind ?? inferClaimReviewKind(c, "literature_candidate"));
+    const kind: ClaimReviewKind =
+      explicit === "extracted_claim" ? "extracted_claim" : "literature_candidate";
+    return toSourceBackedClaim(c, edge, { reviewKind: kind });
   });
 
-  const reviewRows: ReviewQueueRowInput[] = candidateRows.map((row) => ({
+  // Hard invariant: draft package never emits reviewed_claim.
+  if (claimCandidates.some((c) => c.reviewKind === "reviewed_claim")) {
+    return { ok: false, reason: "Refuse auto-promotion to reviewed_claim in draft brief package." };
+  }
+
+  const reviewRows: BriefReviewRowInput[] = candidateRows.map((row) => ({
     ...row,
     curation: "unreviewed",
+    review_kind:
+      row.review_kind === "extracted_claim" ? "extracted_claim" : "literature_candidate",
     node_id: row.node_id ?? brief.graphConceptIds[0] ?? null,
   }));
 
@@ -294,6 +340,7 @@ export function buildScientificBriefPackage(input: {
   });
 
   const candidateManifest = buildCandidateManifest(reviewRows, brief.exportedAt);
+  // wired = real authenticated importManifest submission path is available (manifest attached).
   const wired = Boolean(candidateManifest);
 
   const handoff: ScientificBriefReviewHandoff = {
@@ -303,7 +350,7 @@ export function buildScientificBriefPackage(input: {
     autoPromote: false,
     openRoute: "/curation",
     note: wired
-      ? "Handoff wired: import candidateManifest at /curation (authenticated). Unreviewed stays unapproved. autoPromote=false. Not a KG write."
+      ? "Handoff wired: real submission path = authenticated importManifest at /curation. Candidates stay literature_candidate / unreviewed. autoPromote=false. Not claim-verified. Not a KG write."
       : "No importable source-backed candidates — nothing to hand off. Unreviewed stays unapproved. Not a KG write.",
     claimCount: claimCandidates.length,
     requiresHumanReview: true,
@@ -350,12 +397,13 @@ export function exportScientificBriefPackageMarkdown(pkg: ScientificBriefPackage
     ``,
     `## Human review handoff`,
     `- Route: ${pkg.handoff.openRoute}`,
-    `- Wired: ${pkg.handoff.wired}`,
+    `- Wired: ${pkg.handoff.wired} (importManifest path; not claim-verified)`,
     `- Claims: ${pkg.handoff.claimCount}`,
+    `- Claim kinds: ${[...new Set(pkg.claimCandidates.map((c) => c.reviewKind))].join(", ") || "(none)"}`,
     `- Requires human review: ${pkg.handoff.requiresHumanReview}`,
     `- Blocked silent approvals: ${pkg.handoff.blockedSilentApprovals}`,
     `- autoPromote: ${pkg.handoff.autoPromote}`,
-    `- Candidate manifest: ${pkg.handoff.candidateManifest ? "attached (unreviewed)" : "none"}`,
+    `- Candidate manifest: ${pkg.handoff.candidateManifest ? "attached (unreviewed literature_candidate)" : "none"}`,
     `- Note: ${pkg.handoff.note}`,
   ].join("\n");
 }
