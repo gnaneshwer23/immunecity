@@ -16,7 +16,6 @@ import {
   ACADEMY_TRACKS,
   type AcademyTrack,
 } from "@/data/academyCurriculum";
-import { CAPABILITY_STATUS_LABEL } from "@/data/capabilityStatus";
 import { byId } from "@/lib/immune/engine";
 import { LEARN_PATH, pageTitle, PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
@@ -47,12 +46,16 @@ function AcademyLanding() {
       <MarketingHero
         eyebrow="Immunology Academy"
         title="Learn mechanisms as connected systems."
-        lede="Academy is the learning overlay for Immune Super Intelligence — linked to the cell atlas, mechanisms, knowledge graph, disease, therapy and evidence layers. Completing a module is teaching progress, not claim review. Signed out, progress stays in this browser. Signed in, it is kept on your account when Academy storage is available."
+        lede="Structured lessons linked to the same atlas, mechanisms and evidence map. Completing a module is teaching progress, not claim review. Progress saves to your account when signed in; otherwise it stays in this browser."
         actions={
           <>
             <Button asChild className="bio-primary">
-              <Link to="/mechanism/$id" params={{ id: "tlr4" }}>
-                Start Foundation module 1 <ArrowUpRight />
+              <Link to="/mechanism/$id" params={{ id: progress.visitedLessonIds.at(-1) || "tlr4" }}>
+                {progress.visitedLessonIds.length ? (
+                  <>Resume learning <ArrowUpRight /></>
+                ) : (
+                  <>Start Foundation module 1 <ArrowUpRight /></>
+                )}
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary">
@@ -67,8 +70,8 @@ function AcademyLanding() {
         <MarketingSection
           id="course-map"
           eyebrow="Course map"
-          title="What is navigable, and what is unfinished."
-          lede="Prerequisites are the lesson titles already on the curriculum. Unfinished tracks are labelled. No extra modules are added here."
+          title="What is available now, and what is still in development."
+          lede="Prerequisites are the lesson titles already on the curriculum. Tracks in development are labelled. No extra modules are added here."
         >
           <p className="mkt-aside">
             Progress is kept in {storage === "account" ? "your account" : storage === "loading" ? "…" : "this browser"}.
@@ -95,7 +98,7 @@ function AcademyLanding() {
                 <div className="mkt-course-mod-body">
                   <div className="mkt-course-mod-head">
                     <span>{track.title}</span>
-                    <span className="mkt-course-mod-state">{track.unfinished ? "Unfinished" : "Navigable"}</span>
+                    <span className="mkt-course-mod-state">{track.unfinished ? "In development" : "Available now"}</span>
                   </div>
                   {track.modules.length === 0 ? (
                     <p>No modules on this track yet.</p>
@@ -281,14 +284,18 @@ function IncompleteTrack({ track, progress }: { track: AcademyTrack; progress: A
       </div>
       <p>{track.summary}</p>
       {empty ? (
-        <p className="mkt-empty">
-          No modules yet. {CAPABILITY_STATUS_LABEL.in_development} — not available as a finished track.
-        </p>
+        <div className="isi-empty mkt-empty">
+          <p>No modules yet — this track is still in development.</p>
+          <p>
+            <Link className="btn sm primary" to="/mechanism/$id" params={{ id: "tlr4" }}>
+              Open Foundation lesson
+            </Link>
+          </p>
+        </div>
       ) : (
         <>
           <p className="mkt-aside">
-            Reuses Mechanism lessons ({opened}/{track.modules.length} opened in this browser). Not a certification
-            programme.
+            Reuses Mechanism lessons ({opened}/{track.modules.length} started). Not a certification programme.
           </p>
           <ul className="mkt-scaffold-mods">
             {track.modules.map((m) => (

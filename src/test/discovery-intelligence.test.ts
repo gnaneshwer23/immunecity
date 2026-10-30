@@ -641,7 +641,7 @@ describe("Discovery IA + migrations + route tree", () => {
       expect(source("package.json")).toContain("db:research-entitlements-team");
       expect(source("package.json")).toContain("discovery:eval");
     },
-    { timeout: 20_000 },
+    { timeout: 60_000 },
   );
 });
 

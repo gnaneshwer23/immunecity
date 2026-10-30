@@ -42,7 +42,7 @@ export default function ScientificReviewQueuePanel({ canReview }: Props) {
       for (const r of page.items) map[r.evidence_id] = r.id;
       setIdByEvidence(map);
       setMsg(
-        `Loaded ${q.queue.items.length} queue item(s). persistent=${String(q.persistent)} autoApprove=false.`,
+        `Loaded ${q.queue.items.length} queue item(s) for review.`,
       );
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Review queue failed to load.");
@@ -66,7 +66,7 @@ export default function ScientificReviewQueuePanel({ canReview }: Props) {
   return (
     <div className="isi-auth-panel" data-testid="scientific-review-queue">
       <p className="isi-auth-lede">
-        Neon-backed unreviewed candidates. Inspect claim text / source passages, then record a human decision.
+        Unreviewed candidates for scientific review. Inspect claim text / source passages, then record a human decision.
         Audit events are append-only. <strong>No automatic approval.</strong>
       </p>
       <div className="isi-auth-btn-row">

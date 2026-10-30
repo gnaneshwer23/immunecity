@@ -111,7 +111,7 @@ export default function GroundingPanel({ grounding, provisionalNote }: Grounding
         Evidence label:{" "}
         <b>
           {evidenceLabel === "gate_c"
-            ? "Gate C reviewed support present"
+            ? "Expert-reviewed supporting sources present"
             : evidenceLabel === "provisional"
               ? "Provisional unreviewed literature only"
               : "Graph teaching only — no reviewed cite"}

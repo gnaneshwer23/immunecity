@@ -9,7 +9,7 @@ import { listDiscoveryRadar, listMyDiscoveryRadar, persistDetectedGapCandidates 
 import { recommendedBecauseLine, type RecommendReason } from "@/lib/discovery/recommend";
 import { shapeRadarFeed, type RadarFeedItem } from "@/lib/discovery/radar";
 import { seoHead } from "@/lib/seo";
-import { detectionSourceLabel, paidPlanAvailabilityCopy } from "@/lib/uxLanguage";
+import { detectionSourceLabel, paidPlanAvailabilityCopy, sanitizeDiscoveryFeedNote } from "@/lib/uxLanguage";
 
 const TOC = [
   { id: "radar", label: "Radar feed" },
@@ -150,7 +150,7 @@ function DiscoveryRadarPage() {
   return (
     <div className="page">
       <PageHead
-        kicker="Investigate · Research Radar"
+        kicker="Research · Research Radar"
         title="See what remains unknown inside ISI — and why that uncertainty matters."
         lede="Research Discovery Radar surfaces evidence-governed candidates from the curated graph, melanoma pilot matrix, and coverage honesty labels. It does not invent papers, PMIDs, or novel discoveries, and it never auto-promotes a reviewed gap."
       />
@@ -192,7 +192,7 @@ function DiscoveryRadarPage() {
           </button>
         </div>
         <p className="small muted">
-          {note} · {persistent ? "Workspace + detection" : "New research candidates"}
+          {sanitizeDiscoveryFeedNote(note)} · {persistent ? "Saved workspace + new candidates" : "New research candidates"}
           {personalised ? " · Personalised ordering" : ""}
         </p>
         {rankingDisclaimer ? <p className="small muted">{rankingDisclaimer}</p> : null}

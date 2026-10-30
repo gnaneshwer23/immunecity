@@ -58,7 +58,7 @@ function Patient() {
   return (
     <div className="page">
       <PageHead
-        kicker="Investigate · Patient and biomarkers"
+        kicker="Research · Patient and biomarkers"
         title="Precision immunology"
         lede="Select comorbidities, biomarkers and clinical state, then see which therapies the mechanism supports or cautions against. Scores are sums of explicit rules, each with its reason."
         stats={[

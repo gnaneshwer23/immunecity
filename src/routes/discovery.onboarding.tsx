@@ -68,7 +68,7 @@ function DiscoveryOnboardingPage() {
   return (
     <main className="page isi-auth-page">
       <PageHead
-        kicker="Investigate · Research Radar"
+        kicker="Research · Research Radar"
         title="Set a research focus"
         lede="Tell ISI which disease and modality lenses matter for your radar. We do not require sensitive personal data. Profiles never write the curated knowledge graph."
         stats={[

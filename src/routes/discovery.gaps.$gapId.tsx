@@ -26,6 +26,7 @@ import {
   opportunityStatusLabel,
   persistenceLabel,
   pilotLabel,
+  verificationProvenanceLabel,
 } from "@/lib/uxLanguage";
 
 const TOC = [
@@ -151,7 +152,7 @@ function DiscoveryGapDossierPage() {
   if (!dossier && err) {
     return (
       <div className="page">
-        <PageHead kicker="Investigate · Research Radar" title="Candidate not found" lede={err} />
+        <PageHead kicker="Research · Research Radar" title="Candidate not found" lede={err} />
         <Link to="/discovery/gaps">Back to research candidates</Link>
       </div>
     );
@@ -263,7 +264,7 @@ function DiscoveryGapDossierPage() {
 
   return (
     <div className="page isi-dossier-page">
-      <PageHead kicker="Investigate · Research Radar" title={dossier.title} lede={dossier.summary} />
+      <PageHead kicker="Research · Research Radar" title={dossier.title} lede={dossier.summary} />
       <PageToc items={TOC} />
 
       <div className="isi-radar-meta" style={{ marginBottom: 12 }}>
@@ -351,13 +352,13 @@ function DiscoveryGapDossierPage() {
 
         {dossier.verification ? (
           <div style={{ marginTop: 16 }}>
-            <h4 className="isi-dossier-subhead">Verification</h4>
+            <h4 className="isi-dossier-subhead">Check evidence scope</h4>
             <p className="small muted">{dossier.verification.note}</p>
             <ul className="isi-verify-list">
               {dossier.verification.provenance.map((p) => (
                 <li key={p.id}>
                   <span className={p.ok ? "isi-verify-ok" : "isi-verify-fail"}>
-                    {p.ok ? "OK" : "Issue"} · {p.id}
+                    {p.ok ? "OK" : "Issue"} · {verificationProvenanceLabel(p.id)}
                   </span>
                   <span className="small">{p.detail}</span>
                 </li>

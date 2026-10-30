@@ -26,7 +26,47 @@ export const UX_PRIMARY_FORBIDDEN_PHRASES = [
   "R001, P001, TR003",
   "No gapKey filter",
   "Focusing gap",
+  "Neon evidence_id",
+  "Neon-backed",
+  "this browser’s localStorage",
+  "E2E spine",
+  "kgWrite false",
+  "autoPromote false",
 ] as const;
+
+/** Human labels for dossier verification provenance ids (not snake_case in primary UI). */
+export function verificationProvenanceLabel(id: string): string {
+  switch (id) {
+    case "documented_search_scope":
+      return "Search scope documented";
+    case "subject_in_graph":
+      return "Subject concept in map";
+    case "object_in_graph":
+      return "Object concept in map";
+    case "relationship_in_graph":
+      return "Relationship in map";
+    case "no_fabricated_pmid":
+      return "No invented publication ids";
+    case "not_auto_reviewed":
+      return "Not auto-reviewed";
+    default:
+      return id.replace(/_/g, " ");
+  }
+}
+
+/** Workbench spine status for researchers (impl detail stays in expert panels). */
+export function spineUserStatusLabel(status: "implemented" | "partial" | "planned" | string): string {
+  switch (status) {
+    case "implemented":
+      return "Ready";
+    case "partial":
+      return "In progress";
+    case "planned":
+      return "Coming soon";
+    default:
+      return "Coming soon";
+  }
+}
 
 export function detectionSourceLabel(source: string): string {
   switch (source) {
@@ -95,6 +135,19 @@ export function reviewStatusUxLabel(
 /** Soft availability — not raw “billing not activated” product chrome. */
 export function paidPlanAvailabilityCopy(): string {
   return "Paid Discovery plans are not available yet";
+}
+
+/** Strip eng stub / billing chrome from server Radar feed notes before primary UI. */
+export function sanitizeDiscoveryFeedNote(note: string): string {
+  const cleaned = note
+    .replace(/\bresearcher_pro stub\b/gi, "paid plan")
+    .replace(/\bbilling not activated\b/gi, "not available yet")
+    .replace(/\bNeon\b/g, "workspace")
+    .trim();
+  if (/not available yet|paid plan/i.test(cleaned) && /stub|billing/i.test(note)) {
+    return paidPlanAvailabilityCopy();
+  }
+  return cleaned || note;
 }
 
 export function smeStatusLabel(status: SmeWorkItemStatus): string {

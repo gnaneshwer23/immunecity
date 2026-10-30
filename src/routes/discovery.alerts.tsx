@@ -51,9 +51,9 @@ function DiscoveryAlertsPage() {
   return (
     <main className="page isi-auth-page">
       <PageHead
-        kicker="Investigate · Research Radar"
+        kicker="Research · Research Radar"
         title="Discovery alerts"
-        lede="In-app notices when the monitor sees new or changed ISI signals for gaps you follow or interests on your research profile. These updates are engineering change signals — not automatic scientific review. Email is deferred."
+        lede="In-app notices when followed research questions or profile interests see new or changed ISI coverage signals. Updates are change notices — not automatic scientific review. Email is deferred."
         stats={
           data
             ? [
@@ -66,7 +66,7 @@ function DiscoveryAlertsPage() {
       />
       <PageToc items={TOC} />
 
-      <Section id="actions" title="Monitor" lede="Safe to re-run; alert dedupe is idempotent.">
+      <Section id="actions" title="Monitor" lede="Safe to re-run; duplicate alerts are not re-inserted.">
         <Toolbar count={data ? `${unread} unread` : undefined}>
           <div className="isi-auth-btn-row">
             <button
@@ -79,7 +79,7 @@ function DiscoveryAlertsPage() {
                 runMonitor({ data: {} })
                   .then(async (res) => {
                     setMsg(
-                      `Monitor complete · targets ${res.targets} · signals ${res.signals} · alerts inserted ${res.alertsInserted}. ${res.note}`,
+                      `Checked ${res.targets} questions · ${res.signals} updates · ${res.alertsInserted} new alerts. ${res.note}`,
                     );
                     await refresh();
                   })
@@ -87,7 +87,7 @@ function DiscoveryAlertsPage() {
                   .finally(() => setBusy(false));
               }}
             >
-              {busy ? "Running…" : "Run monitor now"}
+              {busy ? "Checking…" : "Check for updates"}
             </button>
             <button
               type="button"
@@ -118,9 +118,9 @@ function DiscoveryAlertsPage() {
       <Section
         id="inbox"
         title="In-app inbox"
-        lede="Email alerts are not sent. Human review is still required before any gap becomes reviewed_gap."
+        lede="Email alerts are not sent. Human review is still required before any candidate becomes a reviewed research gap."
       >
-        {!data ? <p className="muted">Loading alerts…</p> : null}
+        {!data ? <p className="isi-loading" role="status">Loading alerts…</p> : null}
         {data?.items.length ? (
           <ul className="isi-auth-queue">
             {data.items.map((item) => (

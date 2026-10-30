@@ -121,7 +121,7 @@ function PipelinePage() {
     <div className="page">
       <PageHead
         art={ART.diseaseArt}
-        kicker="Investigate · Disease pipeline"
+        kicker="Research · Disease pipeline"
         title={`${n.name}: from mechanism to active trials`}
         lede={<>Curated therapies grouped by the immune target they act on, with the landmark trials behind them, then what ClinicalTrials.gov lists as active now. <Link to="/atlas/$id" params={{ id }}>Read the {n.name} concept page</Link>.</>}
         stats={[

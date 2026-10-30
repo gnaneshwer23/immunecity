@@ -464,7 +464,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const progressIntent = progressQ ? classifyAskGatewayIntent(progressQ, grounding?.queryClass) : undefined;
   const statusLabel =
     status === "submitted"
-      ? askProgressLabel("retrieving", progressIntent)
+      ? askProgressLabel(grounding ? "reviewing" : "retrieving", progressIntent)
       : status === "streaming"
         ? askProgressLabel("writing", progressIntent)
         : null;
@@ -631,9 +631,9 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                         <details className="ask-research-trace">
                           <summary className="xs">How this answer was routed (optional)</summary>
                           <p className="xs muted">
-                            Intent: {classifyAskGatewayIntent(q, grounding.queryClass).replace(/_/g, " ")}.
-                            Agents and engineering steps stay in the background; this panel is for provenance only.
-                            Discovery tooling is not claimed as production-autonomous until evaluated.
+                            Surface focus: {classifyAskGatewayIntent(q, grounding.queryClass).replace(/_/g, " ")}.
+                            Follow-up links open Explore, Research, Academy or Methods — they do not run additional
+                            agents. Discovery Intel remains educational scaffolding until each path is evaluated.
                           </p>
                         </details>
                       ) : null}

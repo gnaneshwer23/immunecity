@@ -3,6 +3,8 @@
  * Export JSON/markdown with timestamp + source list. Cannot approve into the KG.
  */
 import { useMemo, useState } from "react";
+import ConceptIdPicker from "@/components/immune/ConceptIdPicker";
+import ExpertDetails from "@/components/immune/ExpertDetails";
 import { byId } from "@/lib/immune/engine";
 import {
   classifyEvidenceGap,
@@ -41,27 +43,32 @@ export default function ResearchBriefPanel({
   seedEvidenceIds = [],
   seedTrialIds = [],
 }: Props) {
-  const [question, setQuestion] = useState(seedQuestion || "How does PD-1 blockade relate to melanoma response?");
-  const [conceptText, setConceptText] = useState(
-    seedConceptIds.length ? seedConceptIds.join(", ") : "D012, I001, TR003, B011",
+  const defaultConcepts =
+    seedConceptIds.length > 0
+      ? seedConceptIds.filter((id) => byId[id])
+      : ["D012", "I001", "B011"].filter((id) => byId[id]);
+  const [question, setQuestion] = useState(
+    seedQuestion || "How does PD-1 blockade relate to melanoma response?",
   );
+  const [conceptIds, setConceptIds] = useState<string[]>(defaultConcepts);
   const [evidenceText, setEvidenceText] = useState(seedEvidenceIds.join(", "));
-  const [trialText, setTrialText] = useState(seedTrialIds.length ? seedTrialIds.join(", ") : "TR003");
+  const [trialText, setTrialText] = useState(
+    seedTrialIds.length ? seedTrialIds.join(", ") : "TR003",
+  );
   const [rationale, setRationale] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [brief, setBrief] = useState<ResearchBriefDraft | null>(null);
 
-  const conceptIds = useMemo(
-    () => conceptText.split(/[\s,;]+/).map((s) => s.trim()).filter((id) => byId[id]),
-    [conceptText],
+  const gaps = useMemo(
+    () => conceptIds.map((id) => ({ id, gap: classifyEvidenceGap(id) })),
+    [conceptIds],
   );
-  const gaps = useMemo(() => conceptIds.map((id) => ({ id, gap: classifyEvidenceGap(id) })), [conceptIds]);
 
   return (
     <div className="card" style={{ display: "grid", gap: 12 }}>
       <p className="small">
         <span className="chip">AI/draft · unreviewed</span> Generate a structured research brief from retrieved graph /
-        trial / evidence ids only. Unsupported ids fail closed. Exports stay unreviewed and{" "}
+        trial / evidence records only. Unsupported references fail closed. Exports stay unreviewed and{" "}
         <strong>cannot approve into the knowledge graph</strong>. No clinical recommendations.
       </p>
 
@@ -69,18 +76,26 @@ export default function ResearchBriefPanel({
         Research question
         <input value={question} onChange={(e) => setQuestion(e.target.value)} />
       </label>
-      <label className="field">
-        Retrieved concept ids
-        <input value={conceptText} onChange={(e) => setConceptText(e.target.value)} />
-      </label>
-      <label className="field">
-        Retrieved evidence ids (optional)
-        <input value={evidenceText} onChange={(e) => setEvidenceText(e.target.value)} placeholder="Neon evidence_id values" />
-      </label>
-      <label className="field">
-        Retrieved trial ids (optional)
-        <input value={trialText} onChange={(e) => setTrialText(e.target.value)} />
-      </label>
+      <ConceptIdPicker
+        label="Retrieved concepts"
+        selected={conceptIds}
+        onChange={setConceptIds}
+        placeholder="Search concepts (e.g. melanoma, PD-1)"
+      />
+      <ExpertDetails summary="Optional evidence and trial record ids" testId="brief-expert-panel">
+        <label className="field">
+          Evidence record ids (optional)
+          <input
+            value={evidenceText}
+            onChange={(e) => setEvidenceText(e.target.value)}
+            placeholder="Existing evidence record ids"
+          />
+        </label>
+        <label className="field">
+          Trial ids (optional)
+          <input value={trialText} onChange={(e) => setTrialText(e.target.value)} />
+        </label>
+      </ExpertDetails>
       <label className="field">
         Optional rationale (must not invent ids)
         <textarea rows={2} value={rationale} onChange={(e) => setRationale(e.target.value)} />
@@ -88,13 +103,13 @@ export default function ResearchBriefPanel({
 
       <div>
         <p className="xs muted" style={{ marginBottom: 6 }}>
-          Evidence-gap labels (ISI curated coverage / search date-scope · never invents Gate C density · not a claim
-          that no literature exists worldwide):
+          Evidence-gap labels (ISI curated coverage / search date-scope · never invents reviewed claim density · not a
+          claim that no literature exists worldwide):
         </p>
         <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
           {gaps.map(({ id, gap }) => (
-            <span key={id} className="chip" title={id}>
-              {id}: {gap ? evidenceGapLabelText(gap) : "no gap label"}
+            <span key={id} className="chip" title={byId[id]?.name ?? id}>
+              {byId[id]?.name ?? id}: {gap ? evidenceGapLabelText(gap) : "no gap label"}
             </span>
           ))}
         </div>
@@ -169,9 +184,13 @@ export default function ResearchBriefPanel({
       {brief ? (
         <article style={{ display: "grid", gap: 10 }}>
           <p className="xs muted">
-            {brief.label} · {brief.reviewStatus} · kgWrite={String(brief.kgWrite)} · canApproveIntoKg=
-            {String(brief.canApproveIntoKg)} · exported {brief.exportedAt}
+            {brief.label} · {brief.reviewStatus} · exported {brief.exportedAt}
           </p>
+          <ExpertDetails summary="Export safeguards" testId="brief-export-expert-panel">
+            <p className="xs muted">
+              kgWrite={String(brief.kgWrite)} · canApproveIntoKg={String(brief.canApproveIntoKg)}
+            </p>
+          </ExpertDetails>
           {brief.sections.map((s) => (
             <section key={s.id}>
               <h3 style={{ fontSize: "1rem" }}>{s.title}</h3>
@@ -185,7 +204,7 @@ export default function ResearchBriefPanel({
             <ul className="small">
               {brief.sourceList.map((s) => (
                 <li key={`${s.kind}-${s.id}`}>
-                  [{s.kind}] {s.id} — {s.name}
+                  [{s.kind}] {s.name}
                 </li>
               ))}
             </ul>

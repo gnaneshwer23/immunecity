@@ -12,7 +12,7 @@ import { PageToc, Section, Toolbar } from "@/components/immune/page";
 import { loadEvidenceCoverage } from "@/lib/citations.functions";
 
 const TOC = [
-  { id: "live-neon", label: "Live coverage" },
+  { id: "live-coverage", label: "Live coverage" },
   { id: "coverage", label: "Coverage" },
   { id: "timeline", label: "Timeline" },
   { id: "trials", label: "Landmark trials" },
@@ -29,8 +29,8 @@ function LiveNeonCoverage() {
     );
   }
   return (
-    <div className="card" aria-labelledby="live-neon-heading">
-      <h3 id="live-neon-heading" style={{ fontSize: "1.05rem", marginBottom: 8 }}>Live claim-review coverage</h3>
+    <div className="card" aria-labelledby="live-coverage-heading">
+      <h3 id="live-coverage-heading" style={{ fontSize: "1.05rem", marginBottom: 8 }}>Live claim-review coverage</h3>
       <dl className="grid g3" style={{ marginBottom: 8 }}>
         <div><dt className="xs muted">Reviewed claims / links</dt><dd><b>{`${data.distinctGateCRels} / ${data.runtimeRelationships}`}</b></dd></div>
         <div>
@@ -87,7 +87,7 @@ function Evidence() {
   return (
     <div className="page">
       <PageHead art={ART.researchArt}
-        kicker="Investigate · Evidence explorer"
+        kicker="Research · Evidence explorer"
         title="Trials as experiments"
         lede="Each trial tests a biological hypothesis in humans. Negative results often teach the most: a mechanism that is real in a dish can be irrelevant, redundant or protective in a tissue."
         stats={[
@@ -97,16 +97,16 @@ function Evidence() {
         ]}
       />
       <PageToc items={TOC} />
-      <Section id="live-neon" n={1} title="Live claim-review coverage"
-        lede="Counts come from the evidence database at fetch time. If the database is down, you see an error — not a fake zero.">
+      <Section id="live-coverage" n={1} title="Live claim-review coverage"
+        lede="Counts come from the evidence store at fetch time. If the service is down, you see an error — not a fake zero.">
         <LiveNeonCoverage />
       </Section>
       <Section id="coverage" n={2} title="How much of the graph is reviewed"
         lede="Approved claim support for graph links is still limited. These panels are the source of truth for what has been reviewed."
         aside={
           <div className="isi-sec-action">
-            <Link className="btn sm" to="/curation">Open citation curation</Link>
-            <span className="xs muted">Signed-in readers can browse citations. Approved curators import references, check them against PubMed and Crossref, and review support for individual claims.</span>
+            <Link className="btn sm" to="/methods" hash="live-ev-heading">Methods · live coverage</Link>
+            <span className="xs muted">Signed-in curators review claim support at Curation. Readers use Methods for live coverage honesty.</span>
           </div>
         }>
         <PhoneFold label="Show full coverage">

@@ -323,7 +323,7 @@ function Curation() {
   return (
     <main className="page isi-auth-page isi-curation-page">
       <PageHead
-        kicker="Investigate · Trust"
+        kicker="Research · Trust"
         title="Evidence curation"
         lede="Two separate gates: (1) identifier verification checks that a PMID/DOI resolves in PubMed or Crossref metadata; (2) claim approval maps that source to a directional relationship and assesses claim_support. Identifier verification alone never publishes a claim. Published cites support education — not treatment recommendations."
         stats={[

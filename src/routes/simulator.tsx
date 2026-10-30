@@ -24,7 +24,7 @@ function Simulator() {
   return (
     <div className="page">
       <PageHead
-        kicker="Investigate · System simulator"
+        kicker="Research · System simulator"
         title="Watch the system run"
         lede="A teaching model in normalised units. Pick a host state, then change the pathogen, the arms of immunity and the treatments, and see which outcome follows."
         stats={[

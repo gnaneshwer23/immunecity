@@ -23,7 +23,7 @@ function PipelineIndex() {
     <div className="page">
       <PageHead
         art={ART.therapyArt}
-        kicker="Investigate · Disease pipelines"
+        kicker="Research · Disease pipelines"
         title="Where each disease is heading"
         lede="Pick a disease to see the mechanisms its treatments act on, the trials that established them and what is in active clinical testing now. Educational — not treatment advice or a trial-matching service."
         stats={[

@@ -93,7 +93,7 @@ function DiscoveryProfilePage() {
   return (
     <main className="page isi-auth-page">
       <PageHead
-        kicker="Investigate · Research Radar"
+        kicker="Research · Research Radar"
         title="Research profile"
         lede="Account-isolated preferences for Discovery Radar. Sensitive PII is not required. Profiles never write the curated knowledge graph."
         stats={

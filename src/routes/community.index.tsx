@@ -45,16 +45,22 @@ function CommunityIndex() {
         {member ? <Link className="btn sm" to="/workspace">My Workspace</Link> : null}
       </p>
       <p className="xs muted" style={{ marginBottom: 16 }}>
-        Path: open a topic → Start a discussion → others reply on the post → Follow (authors and repliers are followed automatically) → check{" "}
-        <Link to="/community/notifications">Notifications</Link> for replies.
+        Pick a topic, then start a discussion. Replies appear in{" "}
+        <Link to="/community/notifications">Notifications</Link>.
       </p>
       {!data.available ? (
-        <p className="callout" role="status">Community storage is not available on this database yet. No seeded science posts are invented here.</p>
+        <p className="isi-empty" role="status">Community isn’t available on this deployment yet. No seeded science posts are invented here.</p>
       ) : data.topics.length === 0 ? (
-        <p className="callout" role="status">
-          No topics yet. Empty community — not a scientific finding. When a topic exists, sign in and use Start a discussion; nothing here enters the knowledge graph.
-          Report misuse from a post page; moderators use <Link to="/community/moderation">Moderation</Link>.
-        </p>
+        <div className="isi-empty" role="status">
+          <p>No topics yet. Empty community is not a scientific finding.</p>
+          <p>
+            {member ? (
+              <Link className="btn sm primary" to="/community/new">Start a discussion</Link>
+            ) : (
+              <Link className="btn sm primary" to="/auth" search={{ redirect: "/community/new" }}>Sign in to start a discussion</Link>
+            )}
+          </p>
+        </div>
       ) : (
         <>
           {recent.available && recent.posts.length > 0 ? (
@@ -75,10 +81,14 @@ function CommunityIndex() {
               </ul>
             </section>
           ) : recent.available ? (
-            <p className="callout" role="status" style={{ marginBottom: 24 }}>
-              No discussions yet — the community is ready for members. Sign in, pick a topic below, and use Start a discussion.
-              Empty feed is not a scientific finding; posts stay in Community and never enter the knowledge graph.
-            </p>
+            <div className="isi-empty" role="status" style={{ marginBottom: 24 }}>
+              <p>No discussions yet — pick a topic below and start one.</p>
+              {member ? (
+                <Link className="btn sm primary" to="/community/new">Start a discussion</Link>
+              ) : (
+                <Link className="btn sm primary" to="/auth" search={{ redirect: "/community/new" }}>Sign in to start a discussion</Link>
+              )}
+            </div>
           ) : null}
           <h2>Topics</h2>
           <ul className="community-stack">
@@ -88,7 +98,7 @@ function CommunityIndex() {
                 <p className="small">{t.description}</p>
                 <p className="xs muted">
                   {t.visiblePosts === 0
-                    ? "No visible posts yet — open the topic and use Start a discussion. Empty topic, not reviewed evidence."
+                    ? "No posts yet — open the topic and start a discussion."
                     : `${t.visiblePosts} visible ${t.visiblePosts === 1 ? "post" : "posts"}`}
                 </p>
               </li>
@@ -97,11 +107,11 @@ function CommunityIndex() {
         </>
       )}
       <p className="xs muted" style={{ marginTop: 12 }}>
-        To report a post or reply, open it and use Report. Moderators review the queue at{" "}
-        <Link to="/community/moderation">/community/moderation</Link>. Journal clubs:{" "}
+        Report misuse from a post page. Moderators use{" "}
+        <Link to="/community/moderation">Moderation</Link>. Journal clubs:{" "}
         <Link to="/community/journal-clubs">scheduled threads only</Link> (no live video). Export or delete your data from{" "}
-        <Link to="/community/profile">Profile &amp; privacy</Link>. Your private saves live in{" "}
-        <Link to="/workspace">My Workspace</Link>, not here.
+        <Link to="/community/profile">Profile &amp; privacy</Link>. Private saves live in{" "}
+        <Link to="/workspace">My Workspace</Link>.
       </p>
     </div>
   );

@@ -12,7 +12,10 @@ import {
   persistenceLabel,
   paidPlanAvailabilityCopy,
   reviewStatusUxLabel,
+  sanitizeDiscoveryFeedNote,
+  spineUserStatusLabel,
   UX_PRIMARY_FORBIDDEN_PHRASES,
+  verificationProvenanceLabel,
 } from "@/lib/uxLanguage";
 
 function source(rel: string) {
@@ -32,6 +35,13 @@ describe("uxLanguage helpers", () => {
     expect(opportunityStatusLabel("assessed")).toBe("Evidence assessment completed");
     expect(reviewStatusUxLabel(null)).toMatch(/New research candidate/i);
     expect(paidPlanAvailabilityCopy()).toMatch(/not available yet/i);
+  });
+
+  it("maps verification provenance ids and sanitizes Radar notes", () => {
+    expect(verificationProvenanceLabel("documented_search_scope")).toBe("Search scope documented");
+    expect(spineUserStatusLabel("implemented")).toBe("Ready");
+    expect(sanitizeDiscoveryFeedNote("researcher_pro stub — billing not activated")).toMatch(/not available yet/i);
+    expect(sanitizeDiscoveryFeedNote("researcher_pro stub — billing not activated")).not.toMatch(/stub|billing not activated/i);
   });
 });
 
@@ -82,5 +92,30 @@ describe("primary SME / dossier / collections copy", () => {
     expect(raw).not.toMatch(/useState\("checkpoint"\)/);
     expect(raw).not.toMatch(/useState\("pd1"\)/);
     expect(raw).toContain("ConceptIdPicker");
+  });
+
+  it("keeps forbidden eng phrases out of primary Research hub + workbench + brief", () => {
+    const researchRaw = source("src/routes/research.tsx");
+    const workbenchRaw = source("src/components/immune/ScientificWorkbench.tsx");
+    const briefRaw = source("src/components/immune/ResearchBriefPanel.tsx");
+    const research = primaryCopy(researchRaw);
+    const workbench = primaryCopy(workbenchRaw);
+    const brief = primaryCopy(briefRaw);
+    for (const phrase of UX_PRIMARY_FORBIDDEN_PHRASES) {
+      expect(research.includes(phrase)).toBe(false);
+      expect(workbench.includes(phrase)).toBe(false);
+      expect(brief.includes(phrase)).toBe(false);
+    }
+    expect(research).toMatch(/Open Research Radar/);
+    expect(workbenchRaw).toContain('testId="workbench-expert-panel"');
+    expect(briefRaw).toContain("ConceptIdPicker");
+    expect(briefRaw).toContain('testId="brief-expert-panel"');
+  });
+
+  it("dossier verification uses human provenance labels", () => {
+    const raw = source("src/routes/discovery.gaps.$gapId.tsx");
+    expect(raw).toContain("verificationProvenanceLabel");
+    expect(raw).not.toMatch(/OK"\s*:\s*"Issue"\}\s*·\s*\{p\.id\}/);
+    expect(raw).toMatch(/verificationProvenanceLabel\(p\.id\)/);
   });
 });

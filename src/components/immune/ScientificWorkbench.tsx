@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import ExpertDetails from "@/components/immune/ExpertDetails";
 import { byId } from "@/lib/immune/engine";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION } from "@/lib/immune/graphRelease";
 import { reasonMechanism } from "@/lib/immune/mechanismReasoning";
@@ -176,7 +177,7 @@ export default function ScientificWorkbench({
     try {
       localStorage.setItem(WORKBENCH_LOCAL_DRAFT_KEY, serializeLocalDraft(session));
       setDraftMsg(
-        "Saved local draft in this browser’s localStorage — stays on this device, does not sync to Neon or other devices. Not curated, not shared.",
+        "Saved local draft on this device — does not sync to your account or other devices. Not curated, not shared.",
       );
     } catch {
       setDraftMsg("Could not save local draft (storage blocked).");
@@ -209,7 +210,7 @@ export default function ScientificWorkbench({
     if (ids[2]) setMechOutcome(ids[2]);
     setMechMsg(
       ids.length
-        ? `Prefilled ${Math.min(3, ids.length)} Ask-matched concept ID(s) — still illustrative.`
+        ? `Prefilled ${Math.min(3, ids.length)} Ask-matched concept(s) — still illustrative.`
         : "No Ask-matched concepts yet — seed the question from Ask first.",
     );
   };
@@ -217,12 +218,12 @@ export default function ScientificWorkbench({
   return (
     <div className="scientific-workbench">
       <p className="lede">
-        E2E spine: Question → Search → Screen → Extract → Assess → Hypothesis → Export (with provenance).
-        Mapped onto question → evidence → mechanism → hypothesis → experiment → critical appraisal → contradiction → human review.
-        Every artefact is labelled <CandidateBadge />. Nothing here can be marked approved, and nothing auto-promotes into the curated graph.
+        Guided path: question → evidence → mechanism → hypothesis → experiment → critical appraisal →
+        contradiction → human review. Every artefact is labelled <CandidateBadge />. Nothing here can be
+        marked approved, and nothing is published to the curated graph automatically.
       </p>
 
-      <ol className="row" style={{ listStyle: "none", padding: 0, gap: 6, flexWrap: "wrap", marginTop: 10 }} aria-label="E2E research spine">
+      <ol className="row" style={{ listStyle: "none", padding: 0, gap: 6, flexWrap: "wrap", marginTop: 10 }} aria-label="Research workbench steps">
         {spine.map((st) => (
           <li key={st.id}>
             <span
@@ -235,11 +236,13 @@ export default function ScientificWorkbench({
           </li>
         ))}
       </ol>
-      <p className="xs muted" style={{ marginTop: 4 }}>
-        Provenance: session {provenance.sessionId.slice(0, 18)} · claims {provenance.claimCount} · notes{" "}
-        {provenance.evidenceNoteCount} · counterhints {provenance.counterevidenceCount} · kgWrite false ·
-        autoPromote false
-      </p>
+      <ExpertDetails summary="Session provenance" testId="workbench-expert-panel">
+        <p className="xs muted">
+          Session {provenance.sessionId.slice(0, 18)} · claims {provenance.claimCount} · notes{" "}
+          {provenance.evidenceNoteCount} · counterhints {provenance.counterevidenceCount} · kgWrite=
+          {String(provenance.kgWrite)} · autoPromote={String(provenance.autoPromote)}
+        </p>
+      </ExpertDetails>
 
       <p className="small muted" style={{ marginTop: 8 }}>
         Reuse outputs from{" "}

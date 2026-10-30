@@ -13,6 +13,7 @@ import {
   type CitationLike,
   type ReviewStatus,
 } from "@/lib/immune/evidenceStatus";
+import { lessonForGraphConcept, lessonTitle } from "@/lib/academy/graphBridge";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { formatNeighbourhoodEdge, getGraphNeighbourhood } from "@/lib/immune/neighbourhood";
 import { detectConflictingEvidence } from "@/lib/immune/claimRecords";
@@ -1335,24 +1336,51 @@ export function askProgressLabel(
   if (phase === "retrieving") {
     switch (intent) {
       case "evidence":
-        return "Reviewing scientific evidence…";
+        return "Gathering related evidence…";
       case "discovery":
-        return "Checking research coverage signals…";
+        return "Checking research coverage…";
       case "mechanism":
         return "Tracing mechanism links…";
       case "academy":
         return "Finding related lessons…";
+      case "methodology":
+        return "Checking methods and limits…";
+      case "research_profile":
+        return "Opening your research workspace…";
+      case "knowledge_graph":
+        return "Gathering related concepts…";
       default:
-        return "Retrieving graph context…";
+        return "Gathering related concepts…";
     }
   }
-  if (phase === "reviewing") return "Reviewing scientific evidence…";
-  return "Writing from retrieved graph context…";
+  if (phase === "reviewing") {
+    switch (intent) {
+      case "evidence":
+        return "Reviewing scientific evidence…";
+      case "discovery":
+        return "Reviewing coverage honesty…";
+      case "methodology":
+        return "Reviewing methods labels…";
+      default:
+        return "Reviewing scientific evidence…";
+    }
+  }
+  switch (intent) {
+    case "academy":
+      return "Writing a teaching-focused answer…";
+    case "mechanism":
+      return "Writing the mechanism explanation…";
+    case "discovery":
+      return "Writing from coverage signals…";
+    default:
+      return "Writing from retrieved concepts…";
+  }
 }
 
 /**
  * Structured follow-up actions that open Explore / Research / Academy surfaces
  * without losing the ability to return to Ask via prefill.
+ * Bounded: at most six chips; never fans out Discovery Intel agents.
  */
 export function suggestGatewayActions(
   grounding: AskGrounding,
@@ -1366,7 +1394,9 @@ export function suggestGatewayActions(
   const askPrefill =
     primary && q
       ? `/ask?about=${encodeURIComponent(primary.id)}&q=${encodeURIComponent(q)}`
-      : "/ask";
+      : q
+        ? `/ask?q=${encodeURIComponent(q)}`
+        : "/ask";
   const actions: AskGatewayAction[] = [];
 
   if (primary) {
@@ -1381,31 +1411,75 @@ export function suggestGatewayActions(
       label: "Highlight in knowledge graph",
       href: `/graph?focus=${encodeURIComponent(primary.id)}`,
     });
+    const lessonId = lessonForGraphConcept(primary.id);
+    if (lessonId) {
+      const title = lessonTitle(lessonId);
+      actions.push({
+        id: "lesson",
+        label: title ? `Academy: ${title}` : "Related Academy lesson",
+        href: `/mechanism/${encodeURIComponent(lessonId)}`,
+      });
+    }
   }
 
   switch (gw) {
     case "evidence":
-      actions.push({ id: "evidence", label: "Evidence explorer", href: "/evidence" });
+      actions.push({
+        id: "evidence",
+        label: "Evidence explorer",
+        href: primary
+          ? `/evidence?q=${encodeURIComponent(primary.name)}`
+          : "/evidence",
+      });
       actions.push({ id: "methods", label: "Methods & limitations", href: "/methods" });
+      if (grounding.counterEvidence.length > 0 || grounding.provisionalLiterature?.some((p) => p.role === "counterevidence_harvest")) {
+        actions.push({
+          id: "skeptic",
+          label: "Inspect opposing sources",
+          href: "/methods#live-ev-heading",
+        });
+      }
       break;
     case "discovery":
       actions.push({ id: "radar", label: "Research Radar", href: "/discovery" });
-      if (q) actions.push({ id: "library", label: "Journal metadata", href: `/research?lib=${encodeURIComponent(q)}#library` });
+      actions.push({ id: "gaps", label: "Research candidates", href: "/discovery/gaps" });
+      if (q) {
+        actions.push({
+          id: "library",
+          label: "Journal metadata",
+          href: `/research?lib=${encodeURIComponent(q)}#library`,
+        });
+        actions.push({
+          id: "dossier-prefill",
+          label: "Continue in Research hub",
+          href: `/research?q=${encodeURIComponent(q)}#discover`,
+        });
+      }
       break;
     case "methodology":
       actions.push({ id: "methods", label: "Methods & trust", href: "/methods" });
       actions.push({ id: "reasoning", label: "Scientific reasoning tools", href: "/reasoning" });
+      actions.push({
+        id: "skeptic",
+        label: "How evidence is labelled",
+        href: "/methods#live-ev-heading",
+      });
       break;
     case "academy":
       actions.push({ id: "academy", label: "Immunology Academy", href: "/academy" });
-      actions.push({ id: "mechanism", label: "Mechanism lessons", href: "/mechanism" });
+      if (!actions.some((a) => a.id === "lesson")) {
+        actions.push({ id: "mechanism", label: "Mechanism lessons", href: "/mechanism" });
+      }
       break;
     case "research_profile":
       actions.push({ id: "workspace", label: "My Workspace", href: "/workspace" });
       actions.push({ id: "profile", label: "Discovery profile", href: "/discovery/profile" });
+      actions.push({ id: "alerts", label: "Research alerts", href: "/discovery/alerts" });
       break;
     case "mechanism":
-      actions.push({ id: "mechanism", label: "Browse mechanisms", href: "/mechanism" });
+      if (!actions.some((a) => a.id === "lesson")) {
+        actions.push({ id: "mechanism", label: "Browse mechanisms", href: "/mechanism" });
+      }
       if (primary) {
         actions.push({
           id: "tracer",
@@ -1418,12 +1492,18 @@ export function suggestGatewayActions(
     default:
       actions.push({ id: "explore", label: "Explore hub", href: "/explore" });
       actions.push({ id: "radar", label: "Research Radar", href: "/discovery" });
-      if (q) actions.push({ id: "library", label: "Journal metadata", href: `/research?lib=${encodeURIComponent(q)}#library` });
+      if (q) {
+        actions.push({
+          id: "library",
+          label: "Journal metadata",
+          href: `/research?lib=${encodeURIComponent(q)}#library`,
+        });
+      }
       break;
   }
 
   actions.push({ id: "ask-continue", label: "Keep asking", href: askPrefill, keepAsk: true });
-  // Deduplicate by id; cap so the panel stays lean.
+  // Deduplicate by id; cap so the panel stays lean — no agent fan-out.
   const seen = new Set<string>();
   return actions.filter((a) => (seen.has(a.id) ? false : (seen.add(a.id), true))).slice(0, 6);
 }

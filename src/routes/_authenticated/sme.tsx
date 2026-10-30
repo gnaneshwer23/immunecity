@@ -52,7 +52,7 @@ function SmePage() {
   return (
     <main className="page isi-sme-page">
       <PageHead
-        kicker="Investigate · Trust"
+        kicker="Research · Trust"
         title="Scientific review workspace"
         lede="Human-only evidence decisions, citation rematch, relationship rewrite proposals, and expert labelling for the melanoma pilot. Every decision is audited. Educational beta — not clinical decision support."
         stats={[

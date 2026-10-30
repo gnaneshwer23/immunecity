@@ -66,7 +66,7 @@ function Reasoning() {
   return (
     <div className="page">
       <PageHead
-        kicker="Investigate · Scientific reasoning"
+        kicker="Research · Scientific reasoning"
         title="Reason through the biology"
         lede="Use Ask Immune as the chatbot for graph-grounded answers, then return here to inspect retrieval demos, walk curated pathways, trace any two concepts, and run start → perturbation → outcome reasoning. Rule-based walks are illustrative — not fully evidence-grounded AI."
         stats={[

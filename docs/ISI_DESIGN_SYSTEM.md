@@ -56,9 +56,9 @@
 
 | State | Pattern |
 | --- | --- |
-| Loading | Short biology-language status (`askProgressLabel`, “Loading review status…”) |
-| Empty | Honest empty (e.g. no curated counterevidence) — never invent |
-| Error | Plain language + retry / Methods link; no stack traces in UI |
+| Loading | `.isi-loading` + biology-language status (`askProgressLabel`, “Loading review status…”) |
+| Empty | `.isi-empty` on journey hubs; `.isi-auth-empty` on auth workspaces; `.mkt-empty` on marketing — honest empty (e.g. no curated counterevidence), never invent |
+| Error | `.isi-error` + plain language + retry / Methods link; no stack traces in UI |
 
 ## Responsive
 

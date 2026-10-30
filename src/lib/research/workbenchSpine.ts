@@ -189,7 +189,20 @@ export function spineProvenance(session: WorkbenchSession): SpineProvenance {
   };
 }
 
+/** Researcher-facing spine chip label (not eng impl status). */
 export function spineStatusLabel(status: SpineImplStatus): string {
+  switch (status) {
+    case "implemented":
+      return "Ready";
+    case "partial":
+      return "In progress";
+    case "planned":
+      return "Coming soon";
+  }
+}
+
+/** Expert/debug: raw implementation status. */
+export function spineImplStatusLabel(status: SpineImplStatus): string {
   switch (status) {
     case "implemented":
       return "implemented";

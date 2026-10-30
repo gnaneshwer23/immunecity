@@ -71,9 +71,9 @@ function DiscoveryGapsListPage() {
   return (
     <div className="page">
       <PageHead
-        kicker="Investigate · Research Radar"
+        kicker="Research · Research Radar"
         title="Research gaps"
-        lede="Deterministic candidates from the melanoma validation matrix and evidence-gap labels. Zero fabricated papers. Human review required before reviewed_gap."
+        lede="Deterministic candidates from the melanoma validation matrix and evidence-gap labels. Zero fabricated papers. Human review required before a candidate becomes a reviewed research gap."
       />
       <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
         <Link className="btn sm" to="/discovery/gaps" search={{ status: "all", pilot: search.pilot, source: search.source }}>
