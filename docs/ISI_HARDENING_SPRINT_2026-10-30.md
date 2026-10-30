@@ -59,3 +59,24 @@ Fill/confirm at ship time:
 | Optional smoke www key routes 200 | `/` `/research` `/ask` `/methods` `/atlas` → **200** |
 
 Backup / rollback: see `docs/ISI_AUDIT_BASELINE_2026-10-30.md` § Migration backup & rollback.
+
+---
+
+## Correction sprint (Architecture & Implementation Quality Audit §4)
+
+**Recommendation followed:** Focused engineering fixes only — **not** a rewrite, **not** a new PRD phase, **not** enabling `VITE_TRIAL_INTELLIGENCE` in production.
+
+| # | Fix | Status | Tests |
+| --- | --- | --- | --- |
+| 1 | Evidence-gap: `searchAttempted` + missing hit count → `unknown` (never coerce to zero); copy never implies worldwide literature absence | **Fixed** — `evidenceGap.ts` `classifySearchCoverage` | `correction-sprint.test.ts` |
+| 2 | Collection evidence refs verified against `evidence_records`; unknown ids rejected | **Fixed** — `assertEvidenceRefsKnown` + create/update server path | same |
+| 3 | Collection limit concurrency-safe (`pg_advisory_xact_lock` + transactional count); Research UI **Edit/Update** | **Fixed** — `collections.functions.ts` + `EvidenceCollectionsPanel` | same |
+| 4 | Treatment-line: explicit curated fields only; else “Not curated” (no free-text regex invent) | **Fixed** — `trialComparability.ts` + fixture `treatmentLine` | same |
+| 5 | Within-trial arm compare keys by full endpoint identity (type + analysis + timepoint/population) — no `endpointType`-only overwrite | **Fixed** — `endpointIdentityKey` / `endpointPairingKey` | same |
+| 6 | Regression suite (positive / negative / boundary per fix) | **Added** | `bun test src/test/correction-sprint.test.ts` |
+
+**Also (light):** Neon collections vs localStorage drafts copy retained; Trial Intelligence flag remains env-driven — runtime kill = unset/`0` + redeploy (`trialIntelligenceFlag.ts` + baseline §4). No remote config.
+
+**Still recommended (manual QA):** coherent journey smoke — lesson → graph → trial → collection → brief.
+
+**Still human/SME (unchanged):** Ask gold-set sign-off · Gate C (no mass approve) · Trial Intelligence prod enablement · no CDS claims.

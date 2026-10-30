@@ -33,7 +33,7 @@ export const EVIDENCE_GAP_UI: Record<EvidenceGapLabel, { label: string; desc: st
   },
   no_direct_evidence_after_search: {
     label: "No direct hits in ISI search scope",
-    desc: "An ISI/product search was attempted in the current date-scope and returned no usable hits for this concept — not a claim that no papers exist elsewhere.",
+    desc: "An ISI/product search was attempted in the current date-scope and returned a known empty hit count for this concept — not a claim that no papers exist elsewhere, and not used when hit count is missing/unknown.",
   },
   conflicting: {
     label: "Conflicting (ISI records)",
@@ -55,9 +55,28 @@ export type EvidenceGapSignals = {
   conflictingCount?: number;
   /** True when a literature/provisional search was actually run. */
   searchAttempted?: boolean;
-  /** Hit count from that search (0 = empty result, not “unknown”). */
+  /**
+   * Hit count from that search when known.
+   * `0` = empty result in scope. Omit / non-number = incomplete / unknown — never treat as zero.
+   */
   searchHitCount?: number;
 };
+
+/** Search coverage relative to an attempted product search — never invent worldwide absence. */
+export type SearchCoverageState = "not_attempted" | "zero_hits" | "has_hits" | "unknown";
+
+/**
+ * Classify product-search coverage. Missing hit count after an attempt stays `unknown`
+ * (incomplete search) — never coerced to zero hits.
+ */
+export function classifySearchCoverage(signals: EvidenceGapSignals = {}): SearchCoverageState {
+  if (signals.searchAttempted !== true) return "not_attempted";
+  if (typeof signals.searchHitCount !== "number" || !Number.isFinite(signals.searchHitCount)) {
+    return "unknown";
+  }
+  if (signals.searchHitCount <= 0) return "zero_hits";
+  return "has_hits";
+}
 
 function incidentEdges(conceptId: string): KGEdge[] {
   return [...(out[conceptId] ?? []), ...(inn[conceptId] ?? [])];
@@ -117,12 +136,12 @@ export function classifyEvidenceGap(
     return "awaiting_curation";
   }
 
-  if (signals.searchAttempted === true) {
-    const hits = signals.searchHitCount ?? 0;
-    if (hits === 0 && (approved === undefined || approved === 0)) {
-      return "no_direct_evidence_after_search";
-    }
+  // Only claim “no hits in search scope” when hit count is known zero — never coerce missing → 0.
+  const searchCoverage = classifySearchCoverage(signals);
+  if (searchCoverage === "zero_hits" && (approved === undefined || approved === 0)) {
+    return "no_direct_evidence_after_search";
   }
+  // searchCoverage === "unknown" → incomplete search; fall through without implying empty literature.
 
   if (hasDraftIncident(conceptId) || hasBibliographicRef(conceptId)) {
     // Draft edges or KG bibliographic refs without Gate C approval → awaiting curation.

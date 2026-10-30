@@ -13,6 +13,7 @@ import {
   createEvidenceCollection,
   deleteEvidenceCollection,
   listEvidenceCollections,
+  updateEvidenceCollection,
 } from "@/lib/research/collections.functions";
 import {
   classifyEvidenceGap,
@@ -29,8 +30,10 @@ export default function EvidenceCollectionsPanel() {
   const member = useMember();
   const listFn = useServerFn(listEvidenceCollections);
   const createFn = useServerFn(createEvidenceCollection);
+  const updateFn = useServerFn(updateEvidenceCollection);
   const deleteFn = useServerFn(deleteEvidenceCollection);
   const queryClient = useQueryClient();
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [conceptText, setConceptText] = useState("R001, P001");
   const [evidenceText, setEvidenceText] = useState("");
@@ -44,6 +47,13 @@ export default function EvidenceCollectionsPanel() {
     staleTime: 30_000,
     retry: false,
   });
+
+  function resetForm() {
+    setEditingId(null);
+    setName("");
+    setConceptText("R001, P001");
+    setEvidenceText("");
+  }
 
   if (member === undefined) {
     return <p className="small muted">Checking sign-in…</p>;
@@ -63,6 +73,7 @@ export default function EvidenceCollectionsPanel() {
 
   const collections = q.data?.collections ?? [];
   const available = q.data?.available !== false;
+  const isEditing = Boolean(editingId);
 
   return (
     <div className="card" style={{ display: "grid", gap: 12 }}>
@@ -70,7 +81,7 @@ export default function EvidenceCollectionsPanel() {
         Save a named collection of existing atlas concept ids and optional Neon <code>evidence_id</code> refs.
         Collections sync across devices for your signed-in account (Neon). Workbench local drafts stay in this
         browser’s localStorage and do not sync. <strong>kgWrite=false</strong> — this does not approve claims or
-        mutate the curated graph.
+        mutate the curated graph. Evidence refs must already exist in <code>evidence_records</code>.
       </p>
       <p className="xs muted">{EVIDENCE_GAP_PROVENANCE_NOTE}</p>
       {!available ? (
@@ -97,7 +108,7 @@ export default function EvidenceCollectionsPanel() {
           <input
             value={evidenceText}
             onChange={(e) => setEvidenceText(e.target.value)}
-            placeholder="EV-… ids only"
+            placeholder="Existing evidence_id only"
           />
         </label>
         <button
@@ -109,18 +120,26 @@ export default function EvidenceCollectionsPanel() {
             setMsg(null);
             const conceptIds = conceptText.split(/[\s,;]+/).filter(Boolean);
             const evidenceRefs = evidenceText.split(/[\s,;]+/).filter(Boolean);
-            createFn({ data: { name, conceptIds, evidenceRefs } })
+            const req = isEditing
+              ? updateFn({ data: { id: editingId!, name, conceptIds, evidenceRefs } })
+              : createFn({ data: { name, conceptIds, evidenceRefs } });
+            req
               .then(() => {
-                setName("");
-                setMsg("Collection saved (kgWrite=false).");
+                resetForm();
+                setMsg(isEditing ? "Collection updated (kgWrite=false)." : "Collection saved (kgWrite=false).");
                 return queryClient.invalidateQueries({ queryKey: ["evidence-collections", member.id] });
               })
               .catch((err) => setMsg(safeErr(err)))
               .finally(() => setBusy(false));
           }}
         >
-          Save collection
+          {isEditing ? "Update collection" : "Save collection"}
         </button>
+        {isEditing ? (
+          <button type="button" className="btn sm" disabled={busy} onClick={() => resetForm()}>
+            Cancel edit
+          </button>
+        ) : null}
       </div>
       {msg ? (
         <p className="xs muted" role="status">
@@ -136,20 +155,39 @@ export default function EvidenceCollectionsPanel() {
             <li key={c.id} className="card" style={{ padding: 12 }}>
               <div className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
                 <strong>{c.name}</strong>
-                <button
-                  type="button"
-                  className="btn sm"
-                  disabled={busy}
-                  onClick={() => {
-                    setBusy(true);
-                    deleteFn({ data: { id: c.id } })
-                      .then(() => queryClient.invalidateQueries({ queryKey: ["evidence-collections", member.id] }))
-                      .catch((err) => setMsg(safeErr(err)))
-                      .finally(() => setBusy(false));
-                  }}
-                >
-                  Delete
-                </button>
+                <div className="row" style={{ gap: 6 }}>
+                  <button
+                    type="button"
+                    className="btn sm"
+                    disabled={busy}
+                    onClick={() => {
+                      setEditingId(c.id);
+                      setName(c.name);
+                      setConceptText(c.conceptIds.join(", "));
+                      setEvidenceText(c.evidenceRefs.join(", "));
+                      setMsg(null);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="btn sm"
+                    disabled={busy}
+                    onClick={() => {
+                      setBusy(true);
+                      deleteFn({ data: { id: c.id } })
+                        .then(() => {
+                          if (editingId === c.id) resetForm();
+                          return queryClient.invalidateQueries({ queryKey: ["evidence-collections", member.id] });
+                        })
+                        .catch((err) => setMsg(safeErr(err)))
+                        .finally(() => setBusy(false));
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
               <p className="xs muted" style={{ marginTop: 4 }}>
                 Updated {new Date(c.updatedAt).toLocaleString()} · kgWrite={String(c.kgWrite)}

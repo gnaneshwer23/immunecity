@@ -55,7 +55,7 @@ Publication bibliography for pilots lives in fixtures (`src/data/trialIntelligen
 | --- | --- | --- | --- |
 | `VITE_TRIAL_INTELLIGENCE` (or `TRIAL_INTELLIGENCE`) | **OFF** | Gates Atlas Trial Intelligence panel | Unset / set `0` in Vercel Production → redeploy. No route removal. |
 
-Implementation: `src/lib/trialIntelligenceFlag.ts`. Panel early-returns when off.
+Implementation: `src/lib/trialIntelligenceFlag.ts`. Panel early-returns when off. **Env-driven only** — there is no remote/runtime config kill switch; production kill = unset or `0` + redeploy.
 
 **Production status (2026-10-30):** `VITE_TRIAL_INTELLIGENCE` / `TRIAL_INTELLIGENCE` **absent** from Vercel Production, Preview, and Development env lists for project `immunecity` → Trial Intelligence UI **OFF** in live production. Do not enable for general production until A01–A05 checks pass.
 
@@ -242,3 +242,7 @@ Phase 1–4 engineering checklists are below. **Audit roadmap engineering comple
 - Prod trial flag on, inventing PMIDs, auto-publish to graph, diagnosis/treatment advice, patient prediction, CDS claims, mass Gate C, full Workbench A12–A14 beyond this MVP.
 
 **Audit roadmap note:** Phase 0 inventory + Phases 1–4 engineering checklists are complete in this baseline. Remaining work is SME validation, Gate C curation, and controlled Trial Intelligence enablement — not a further numbered audit engineering phase in this document.
+
+### Correction sprint (post–hardening; Architecture & Implementation Quality Audit §4)
+
+Focused engineering fixes only (not a rewrite / new PRD phase / prod trial-flag enablement). See `docs/ISI_HARDENING_SPRINT_2026-10-30.md` § Correction sprint. Coverage: evidence-gap unknown≠zero · evidence_id verification on collection save · concurrency-safe collection limits + Edit UI · curated treatment-line fields · full endpoint identity keys · `src/test/correction-sprint.test.ts`. Manual next step: lesson → graph → trial → collection → brief coherent journey QA.

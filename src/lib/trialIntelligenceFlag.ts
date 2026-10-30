@@ -5,6 +5,10 @@
  * Enable with either:
  *   VITE_TRIAL_INTELLIGENCE=1   (build / Vite env)
  *   TRIAL_INTELLIGENCE=1       (SSR / Node process env)
+ *
+ * Runtime kill (P2): unset the env var (or set `0`) in the host (e.g. Vercel
+ * Production) and redeploy. There is no remote config / in-app kill switch —
+ * the flag is env-driven at build/SSR read time only.
  */
 
 const TRUTH = new Set(["1", "true", "yes", "on"]);

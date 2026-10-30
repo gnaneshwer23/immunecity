@@ -99,6 +99,39 @@ export function sanitizeEvidenceRefs(refs: readonly string[]): string[] {
   return out;
 }
 
+/**
+ * Server save path: every evidence ref must exist in authoritative `evidence_records`
+ * (or an approved/known set passed by the caller). Unknown ids are rejected — never invented.
+ */
+export function assertEvidenceRefsKnown(
+  refs: readonly string[],
+  knownIds: ReadonlySet<string>,
+): { ok: true } | { ok: false; error: string; unknownIds: string[] } {
+  const unknownIds: string[] = [];
+  const seen = new Set<string>();
+  for (const raw of refs) {
+    const id = typeof raw === "string" ? raw.trim() : "";
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    if (!knownIds.has(id)) unknownIds.push(id);
+  }
+  if (unknownIds.length === 0) return { ok: true };
+  return {
+    ok: false,
+    unknownIds,
+    error: `Unknown evidence id(s): ${unknownIds.join(", ")}. Refs must exist in evidence_records.`,
+  };
+}
+
+/** Pure limit check — used inside the transactional create path and unit tests. */
+export function collectionLimitReached(
+  existingCount: number,
+  max: number = MAX_COLLECTIONS_PER_MEMBER,
+): boolean {
+  if (!Number.isFinite(existingCount) || existingCount < 0) return true;
+  return existingCount >= max;
+}
+
 export function sanitizeCollectionName(name: string): string {
   return name.trim().replace(/\s+/g, " ").slice(0, MAX_COLLECTION_NAME);
 }

@@ -92,11 +92,13 @@ describe("Phase 2 ISI-A08 light comparability", () => {
     expect(JSON.stringify(peer)).not.toMatch(/superior to|better than|preferred regimen/i);
   });
 
-  it("derives facets from curated fields without inventing numerics", () => {
+  it("derives facets from curated fields without inventing numerics or free-text lines", () => {
     const facet = trialComparabilityFacet(MELANOMA_PILOT_TRIALS[0]!);
     expect(facet.diseaseStage).toMatch(/melanoma/i);
     expect(facet.endpointTypes.length).toBeGreaterThan(0);
     expect(facet.analysisPopulation.length).toBeGreaterThan(0);
+    expect(facet.treatmentLine).toBe(MELANOMA_PILOT_TRIALS[0]!.treatmentLine);
+    expect(facet.treatmentLine).not.toMatch(/as stated in curated summary/i);
   });
 
   it("UI never declares superiority and strengthens non-causal copy", () => {

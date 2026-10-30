@@ -52,7 +52,41 @@ const DIMENSION_LABEL: Record<ComparabilityDimension, string> = {
   analysis_population: "Analysis population",
 };
 
-/** Derive structured facets from curated trial text — no invented clinical claims. */
+export const TREATMENT_LINE_NOT_CURATED = "Not curated";
+
+/**
+ * Prefer explicit curated treatment-line fields on arm → trial.
+ * Never invent line from free-text population/title regexes.
+ */
+export function curatedTreatmentLine(trial: ClinicalTrialRecord, arm?: TrialArmRecord): string {
+  const fromArm = arm?.treatmentLine?.trim();
+  if (fromArm) return fromArm;
+  const fromTrial = trial.treatmentLine?.trim();
+  if (fromTrial) return fromTrial;
+  return TREATMENT_LINE_NOT_CURATED;
+}
+
+/**
+ * Full endpoint identity for within-trial maps — type alone overwrites peers of the same type.
+ * Includes analysis context so multiple endpoints of one type coexist.
+ */
+export function endpointIdentityKey(ep: EndpointResultRecord): string {
+  return [
+    ep.endpointType,
+    norm(ep.label),
+    norm(ep.analysisSet),
+    norm(ep.timepoint ?? ""),
+    norm(ep.followUp ?? ""),
+    norm(ep.populationNote ?? ""),
+  ].join("\u0001");
+}
+
+/** Soft pairing key (type + label + timepoint) so analysis-set diffs still surface across arms. */
+export function endpointPairingKey(ep: EndpointResultRecord): string {
+  return [ep.endpointType, norm(ep.label), norm(ep.timepoint ?? "")].join("\u0001");
+}
+
+/** Derive structured facets from curated trial fields — no invented clinical claims. */
 export function trialComparabilityFacet(trial: ClinicalTrialRecord): ComparabilityFacet {
   const endpointTypes = new Set<string>();
   const endpointLabels = new Set<string>();
@@ -67,27 +101,12 @@ export function trialComparabilityFacet(trial: ClinicalTrialRecord): Comparabili
   }
   return {
     diseaseStage: trial.conditionLabel.trim() || "Not recorded",
-    treatmentLine: inferTreatmentLine(trial),
+    treatmentLine: curatedTreatmentLine(trial),
     endpointTypes: [...endpointTypes].sort(),
     endpointLabels: [...endpointLabels].sort(),
     followUpNotes: [...followUpNotes].sort(),
     analysisPopulation: trial.analysisSetNote.trim() || "Not recorded",
   };
-}
-
-/**
- * Treatment-line facet from existing population / condition prose.
- * Only encodes distinctions already present in curated summaries.
- */
-function inferTreatmentLine(trial: ClinicalTrialRecord): string {
-  const blob = `${trial.populationSummary} ${trial.conditionLabel} ${trial.title}`.toLowerCase();
-  if (/previously untreated|treatment-naive|treatment naïve|first-line|no prior/.test(blob)) {
-    return "Previously untreated / first-line (as stated in curated summary)";
-  }
-  if (/prior systemic|up to one prior|previously treated|ipilimumab-naive|ipilimumab-naïve/.test(blob)) {
-    return "Prior systemic therapy allowed (as stated in curated summary)";
-  }
-  return "Not classified from curated summary";
 }
 
 function norm(s: string): string {
@@ -121,7 +140,7 @@ export function compareTrials(left: ClinicalTrialRecord, right: ClinicalTrialRec
       label: DIMENSION_LABEL.treatment_line,
       left: L.treatmentLine,
       right: R.treatmentLine,
-      detail: "Prior-therapy / line context differs across these trials.",
+      detail: "Prior-therapy / line context differs across these trials (curated fields only).",
     });
   }
   if (!setEqual(L.endpointTypes, R.endpointTypes)) {
@@ -164,7 +183,23 @@ export function compareTrials(left: ClinicalTrialRecord, right: ClinicalTrialRec
   };
 }
 
-/** Within-trial arm pairs: flag when shared endpoint types disagree on analysis set or follow-up. */
+function groupByPairing(arm: TrialArmRecord): Map<string, EndpointResultRecord[]> {
+  const m = new Map<string, EndpointResultRecord[]>();
+  const seenIdentity = new Set<string>();
+  for (const ep of arm.endpoints) {
+    const idKey = endpointIdentityKey(ep);
+    // Exact duplicates collapse; distinct analysis/timepoint contexts coexist.
+    if (seenIdentity.has(idKey)) continue;
+    seenIdentity.add(idKey);
+    const pair = endpointPairingKey(ep);
+    const list = m.get(pair) ?? [];
+    list.push(ep);
+    m.set(pair, list);
+  }
+  return m;
+}
+
+/** Within-trial arm pairs: full endpoint identity — never key only by endpointType. */
 export function compareArms(
   trial: ClinicalTrialRecord,
   leftArmId: string,
@@ -175,46 +210,58 @@ export function compareArms(
   if (!left || !right) return null;
 
   const mismatches: ComparabilityMismatch[] = [];
-  const byType = (arm: TrialArmRecord) => {
-    const m = new Map<string, EndpointResultRecord>();
-    for (const ep of arm.endpoints) m.set(ep.endpointType, ep);
-    return m;
-  };
-  const L = byType(left);
-  const R = byType(right);
-  const types = new Set([...L.keys(), ...R.keys()]);
-  for (const t of types) {
-    const le = L.get(t);
-    const re = R.get(t);
-    if (!le || !re) {
-      mismatches.push({
-        dimension: "endpoint_definition",
-        label: DIMENSION_LABEL.endpoint_definition,
-        left: le ? `${le.label} (${le.endpointType})` : `Missing ${t}`,
-        right: re ? `${re.label} (${re.endpointType})` : `Missing ${t}`,
-        detail: "Endpoint type is not present on both arms in the curated record.",
-      });
-      continue;
-    }
-    if (norm(le.analysisSet) !== norm(re.analysisSet)) {
-      mismatches.push({
-        dimension: "analysis_population",
-        label: DIMENSION_LABEL.analysis_population,
-        left: `${left.label}: ${le.analysisSet || "—"}`,
-        right: `${right.label}: ${re.analysisSet || "—"}`,
-        detail: `Analysis set differs for ${le.label}.`,
-      });
-    }
-    const lFu = [le.followUp, le.timepoint].filter(Boolean).join(" · ") || "—";
-    const rFu = [re.followUp, re.timepoint].filter(Boolean).join(" · ") || "—";
-    if (norm(lFu) !== norm(rFu)) {
-      mismatches.push({
-        dimension: "follow_up",
-        label: DIMENSION_LABEL.follow_up,
-        left: `${left.label}: ${lFu}`,
-        right: `${right.label}: ${rFu}`,
-        detail: `Follow-up / timepoint wording differs for ${le.label}.`,
-      });
+  const L = groupByPairing(left);
+  const R = groupByPairing(right);
+  const keys = new Set([...L.keys(), ...R.keys()]);
+
+  for (const k of keys) {
+    const leftEps = L.get(k) ?? [];
+    const rightEps = R.get(k) ?? [];
+    const n = Math.max(leftEps.length, rightEps.length);
+    for (let i = 0; i < n; i++) {
+      const le = leftEps[i];
+      const re = rightEps[i];
+      if (!le || !re) {
+        mismatches.push({
+          dimension: "endpoint_definition",
+          label: DIMENSION_LABEL.endpoint_definition,
+          left: le ? `${le.label} (${le.endpointType}${le.timepoint ? ` · ${le.timepoint}` : ""})` : `Missing peer for ${k.split("\u0001")[0]}`,
+          right: re
+            ? `${re.label} (${re.endpointType}${re.timepoint ? ` · ${re.timepoint}` : ""})`
+            : `Missing peer for ${k.split("\u0001")[0]}`,
+          detail: "Endpoint definition / analysis context is not present on both arms in the curated record.",
+        });
+        continue;
+      }
+      if (norm(le.analysisSet) !== norm(re.analysisSet)) {
+        mismatches.push({
+          dimension: "analysis_population",
+          label: DIMENSION_LABEL.analysis_population,
+          left: `${left.label}: ${le.analysisSet || "—"}`,
+          right: `${right.label}: ${re.analysisSet || "—"}`,
+          detail: `Analysis set differs for ${le.label}.`,
+        });
+      }
+      const lFu = [le.followUp, le.timepoint].filter(Boolean).join(" · ") || "—";
+      const rFu = [re.followUp, re.timepoint].filter(Boolean).join(" · ") || "—";
+      if (norm(lFu) !== norm(rFu)) {
+        mismatches.push({
+          dimension: "follow_up",
+          label: DIMENSION_LABEL.follow_up,
+          left: `${left.label}: ${lFu}`,
+          right: `${right.label}: ${rFu}`,
+          detail: `Follow-up / timepoint wording differs for ${le.label}.`,
+        });
+      }
+      if (norm(le.populationNote ?? "") !== norm(re.populationNote ?? "")) {
+        mismatches.push({
+          dimension: "analysis_population",
+          label: DIMENSION_LABEL.analysis_population,
+          left: `${left.label}: ${le.populationNote || "—"}`,
+          right: `${right.label}: ${re.populationNote || "—"}`,
+          detail: `Population note differs for ${le.label}.`,
+        });
+      }
     }
   }
 

@@ -59,6 +59,11 @@ export interface TrialArmRecord {
   enrolledN: number | null;
   treatedN: number | null;
   sortOrder: number;
+  /**
+   * Explicit curated treatment-line / prior-therapy label when known.
+   * Omit or null → comparability shows “Not curated” (never inferred from free text).
+   */
+  treatmentLine?: string | null;
   endpoints: EndpointResultRecord[];
 }
 
@@ -87,6 +92,11 @@ export interface ClinicalTrialRecord {
   conditionLabel: string;
   populationSummary: string;
   analysisSetNote: string;
+  /**
+   * Explicit curated treatment-line / prior-therapy facet for comparability.
+   * Omit or null → “Not curated” — never regex-inferred from free-text summaries.
+   */
+  treatmentLine?: string | null;
   verificationState: VerificationState;
   primaryPmid: string;
   primaryDoi: string;
@@ -193,6 +203,7 @@ export const MELANOMA_PILOT_TRIALS: ClinicalTrialRecord[] = [
       "834 adults randomised; ECOG 0–1; up to one prior systemic therapy; ipilimumab-naive; ocular melanoma excluded (per primary reports).",
     analysisSetNote:
       "Efficacy: all randomly assigned (ITT). Safety: patients who received ≥1 dose. Combined pembrolizumab arms are exploratory in the 5-year report.",
+    treatmentLine: "Prior systemic therapy allowed (≤1); ipilimumab-naive",
     verificationState: "verified",
     primaryPmid: "25891173",
     primaryDoi: "10.1056/NEJMoa1503093",
@@ -426,6 +437,7 @@ export const MELANOMA_PILOT_TRIALS: ClinicalTrialRecord[] = [
       "945 previously untreated patients with unresectable stage III or IV melanoma randomised 1:1:1 across three arms.",
     analysisSetNote:
       "Coprimary endpoints PFS and OS for nivolumab±ipilimumab versus ipilimumab. Safety among treated patients as reported in each publication.",
+    treatmentLine: "Previously untreated / first-line",
     verificationState: "verified",
     primaryPmid: "26027431",
     primaryDoi: "10.1056/NEJMoa1504030",

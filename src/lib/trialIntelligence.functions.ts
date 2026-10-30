@@ -147,6 +147,8 @@ export async function loadTrialIntelligenceFromDb(graphNodeId: string): Promise<
     conditionLabel: trialRow.conditionLabel ?? "",
     populationSummary: trialRow.populationSummary ?? "",
     analysisSetNote: trialRow.analysisSetNote ?? "",
+    // Fixture-curated treatmentLine (no DB column in 0015) — never infer from free text.
+    treatmentLine: MELANOMA_PILOT_TRIALS.find((t) => t.trialId === trialRow.trialId)?.treatmentLine ?? null,
     verificationState,
     primaryPmid: trialRow.primaryPmid ?? "",
     primaryDoi: trialRow.primaryDoi ?? "",

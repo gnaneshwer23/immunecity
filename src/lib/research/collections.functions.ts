@@ -5,17 +5,23 @@
  * Authorization: every list/create/update/delete is ownership-scoped to the
  * signed-in user_id (memberId). Admin role is never consulted — there is no
  * casual admin list-all path for other members' collections.
+ *
+ * Create uses a transaction-scoped advisory lock + count so concurrent creates
+ * cannot race past MAX_COLLECTIONS_PER_MEMBER. Evidence refs are verified
+ * against evidence_records.evidence_id before insert/update.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { requireMember } from "@/lib/community/rules";
 import { getDb } from "@/lib/db.server";
-import { evidenceCollections } from "@/lib/db/schema.server";
+import { evidenceCollections, evidenceRecords } from "@/lib/db/schema.server";
 import {
   COLLECTION_ACCESS,
   MAX_COLLECTIONS_PER_MEMBER,
+  assertEvidenceRefsKnown,
+  collectionLimitReached,
   collectionOwnershipSpec,
   planEvidenceCollection,
   type EvidenceCollectionRow,
@@ -66,6 +72,21 @@ function toRow(row: {
   };
 }
 
+/** Reject unknown evidence_id refs against authoritative evidence_records. */
+async function verifyEvidenceRefsExist(
+  db: ReturnType<typeof getDb>,
+  refs: readonly string[],
+): Promise<void> {
+  if (refs.length === 0) return;
+  const rows = await db
+    .select({ evidenceId: evidenceRecords.evidenceId })
+    .from(evidenceRecords)
+    .where(inArray(evidenceRecords.evidenceId, [...refs]));
+  const known = new Set(rows.map((r) => r.evidenceId));
+  const check = assertEvidenceRefsKnown(refs, known);
+  if (!check.ok) throw new Error(check.error);
+}
+
 const createInput = z.object({
   name: z.string().min(1).max(120),
   conceptIds: z.array(z.string().min(1).max(40)).min(1).max(40),
@@ -112,26 +133,35 @@ export const createEvidenceCollection = createServerFn({ method: "POST" })
     if (!plan.ok) throw new Error(plan.error);
     const db = getDb();
     try {
-      const existing = await db
-        .select({ id: evidenceCollections.id })
-        .from(evidenceCollections)
-        .where(eq(evidenceCollections.userId, userId));
-      if (existing.length >= MAX_COLLECTIONS_PER_MEMBER) {
-        throw new Error(`Limit of ${MAX_COLLECTIONS_PER_MEMBER} collections reached.`);
-      }
-      const [row] = await db
-        .insert(evidenceCollections)
-        .values({
-          userId,
-          name: plan.name,
-          conceptIds: plan.conceptIds,
-          evidenceRefs: plan.evidenceRefs,
-        })
-        .returning();
-      if (!row) throw new Error("Evidence collection could not be saved.");
+      await verifyEvidenceRefsExist(db, plan.evidenceRefs);
+      const row = await db.transaction(async (tx) => {
+        // Transaction-scoped lock per member — concurrent creates serialize on the count check.
+        await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${userId}))`);
+        const [agg] = await tx
+          .select({ n: count() })
+          .from(evidenceCollections)
+          .where(eq(evidenceCollections.userId, userId));
+        if (collectionLimitReached(Number(agg?.n ?? 0))) {
+          throw new Error(`Limit of ${MAX_COLLECTIONS_PER_MEMBER} collections reached.`);
+        }
+        const [inserted] = await tx
+          .insert(evidenceCollections)
+          .values({
+            userId,
+            name: plan.name,
+            conceptIds: plan.conceptIds,
+            evidenceRefs: plan.evidenceRefs,
+          })
+          .returning();
+        if (!inserted) throw new Error("Evidence collection could not be saved.");
+        return inserted;
+      });
       return { collection: toRow(row), kgWrite: false as const };
     } catch (err) {
-      if (err instanceof Error && /Sign in|Limit of|at least one|Collection name|Unknown concept/.test(err.message)) {
+      if (
+        err instanceof Error &&
+        /Sign in|Limit of|at least one|Collection name|Unknown concept|Unknown evidence id/.test(err.message)
+      ) {
         throw err;
       }
       console.error("evidence_collections_create_failed", (err as { code?: string })?.code ?? "error");
@@ -154,6 +184,7 @@ export const updateEvidenceCollection = createServerFn({ method: "POST" })
     if (!plan.ok) throw new Error(plan.error);
     try {
       const db = getDb();
+      await verifyEvidenceRefsExist(db, plan.evidenceRefs);
       const [row] = await db
         .update(evidenceCollections)
         .set({
@@ -167,7 +198,10 @@ export const updateEvidenceCollection = createServerFn({ method: "POST" })
       if (!row) throw new Error("Collection not found.");
       return { collection: toRow(row), kgWrite: false as const };
     } catch (err) {
-      if (err instanceof Error && /Sign in|Collection not found|at least one|Collection name/.test(err.message)) {
+      if (
+        err instanceof Error &&
+        /Sign in|Collection not found|at least one|Collection name|Unknown evidence id/.test(err.message)
+      ) {
         throw err;
       }
       console.error("evidence_collections_update_failed", (err as { code?: string })?.code ?? "error");

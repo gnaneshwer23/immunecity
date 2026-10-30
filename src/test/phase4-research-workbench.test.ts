@@ -81,6 +81,14 @@ describe("Phase 4 exit gate — reproducible, reviewable, source-traceable", () 
         unreviewedMappedCount: 0,
       }),
     ).toBe("no_direct_evidence_after_search");
+    // Missing hit count after searchAttempted must not coerce to zero / worldwide-absence claim.
+    expect(
+      classifyEvidenceGap("D012", {
+        searchAttempted: true,
+        approvedSupportsCount: 0,
+        unreviewedMappedCount: 0,
+      }),
+    ).not.toBe("no_direct_evidence_after_search");
     // Without Neon signals, bibliographic/draft edges → awaiting curation; never a fabricated Gate C count.
     const gap = classifyEvidenceGap("R001");
     expect(gap === "awaiting_curation" || gap === "no_mapped_evidence" || gap === "emerging").toBe(true);
