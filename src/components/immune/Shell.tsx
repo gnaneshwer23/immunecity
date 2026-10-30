@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { neonAuth } from "@/integrations/neon/auth-client";
-import { BookOpen, Box, ChevronDown, FlaskConical, Menu, Network, Search, Shield, UserRound, X, Youtube } from "lucide-react";
+import { BookOpen, ChevronDown, FlaskConical, Menu, MessageCircle, Network, Users, UserRound, X, Youtube } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { useMember } from "@/components/immune/community/chrome";
 import { NAV_GROUPS } from "./nav";
@@ -30,16 +30,14 @@ import {
 } from "@/lib/brand";
 
 const JOURNEY_ICONS: Record<string, ComponentType<{ size?: number; "aria-hidden"?: boolean }>> = {
-  Learn: BookOpen,
   Explore: Network,
-  Investigate: Search,
-  Trust: Shield,
+  Research: FlaskConical,
+  Academy: BookOpen,
+  Community: Users,
+  "Ask Immune": MessageCircle,
 };
 
-const PRIMARY_ICONS: Record<string, ComponentType<{ size?: number; "aria-hidden"?: boolean }>> = {
-  "/research": FlaskConical,
-  "/simulator": Box,
-};
+const PRIMARY_ICONS: Record<string, ComponentType<{ size?: number; "aria-hidden"?: boolean }>> = {};
 
 function NavIcon({ icon: Icon }: { icon: ComponentType<{ size?: number; "aria-hidden"?: boolean }> }) {
   return <Icon size={16} aria-hidden />;
@@ -117,6 +115,8 @@ function HeaderAccount({ pathname, variant = "bar", onNavigate }: {
           </span>
           <Link to="/workspace" onClick={onNavigate}>My Workspace</Link>
           <Link to="/community/profile" onClick={onNavigate}>Profile</Link>
+          <Link to="/community/saved" onClick={onNavigate}>Saved</Link>
+          <Link to="/sme" onClick={onNavigate}>Scientific review</Link>
           <button type="button" className="header-logout" onClick={logout}>Logout</button>
         </>
       );
@@ -138,6 +138,8 @@ function HeaderAccount({ pathname, variant = "bar", onNavigate }: {
           <div className="header-account-menu" role="menu" aria-label="Account">
             <Link role="menuitem" to="/workspace" onClick={() => setMenuOpen(false)}>My Workspace</Link>
             <Link role="menuitem" to="/community/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
+            <Link role="menuitem" to="/community/saved" onClick={() => setMenuOpen(false)}>Saved</Link>
+            <Link role="menuitem" to="/sme" onClick={() => setMenuOpen(false)}>Scientific review</Link>
             <button type="button" role="menuitem" className="header-logout" onClick={logout}>Logout</button>
           </div>
         ) : null}
@@ -308,18 +310,20 @@ function MarketingCompactNav({
               </div>
             );
           })}
-          <div className="marketing-compact-group">
-            <span className="marketing-compact-label">Tools</span>
-            {JOURNEY_PRIMARY.map((item) => {
-              const Icon = PRIMARY_ICONS[item.path];
-              return (
-                <Link key={item.path} to={item.path} className="nav-line" activeProps={{ className: "active" }} onClick={onClose}>
-                  {Icon ? <NavIcon icon={Icon} /> : null}
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
+          {JOURNEY_PRIMARY.length ? (
+            <div className="marketing-compact-group">
+              <span className="marketing-compact-label">Tools</span>
+              {JOURNEY_PRIMARY.map((item) => {
+                const Icon = PRIMARY_ICONS[item.path];
+                return (
+                  <Link key={item.path} to={item.path} className="nav-line" activeProps={{ className: "active" }} onClick={onClose}>
+                    {Icon ? <NavIcon icon={Icon} /> : null}
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          ) : null}
           <details className="marketing-compact-group marketing-compact-layers">
             <summary className="marketing-compact-label">All twelve science layers</summary>
             {NAV_GROUPS.flatMap((g) => [...g.items] as { n: string; path: string; title: string }[]).filter((l) => l.path !== "/").map((l) => (

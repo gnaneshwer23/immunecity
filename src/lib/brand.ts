@@ -17,8 +17,8 @@ export const PRODUCT_LINE = `${PRODUCT_NAME} — ${TAGLINE}`;
 export const ASK_NAME = "Ask Immune";
 export const CANONICAL_ORIGIN = "https://www.immune-super-intelligence.co.uk";
 export const CANONICAL_URL = `${CANONICAL_ORIGIN}/`;
-/** Primary marketing CTA → platform overview (flagship Immune City entry). */
-export const EXPLORE_PATH = "/overview" as const;
+/** Primary marketing CTA → Explore hub (atlas, graph, mechanisms). */
+export const EXPLORE_PATH = "/explore" as const;
 export const EXPLORE_CTA = "Explore the Immune System";
 /** Academy overview — learning entry (not a 13th atlas layer). */
 export const LEARN_PATH = "/academy" as const;

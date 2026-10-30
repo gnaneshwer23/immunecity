@@ -42,7 +42,8 @@ describe("marketing IA wiring", () => {
     expect(FOOTER_GROUPS.some((g) => g.label === "Community" && g.items.some((i) => "path" in i && i.path === "/community/new" && i.label === "Start a discussion"))).toBe(true);
     expect(FOOTER_GROUPS.some((g) => g.label === "Community" && g.items.some((i) => "path" in i && i.path === "/community/journal-clubs"))).toBe(true);
     expect(FOOTER_GROUPS.some((g) => g.label === "Explore" && g.items.some((i) => "path" in i && i.path === "/community"))).toBe(false);
-    expect(JOURNEY_PRIMARY.some((i) => i.path === "/community")).toBe(false);
+    expect(JOURNEY_PRIMARY).toEqual([]);
+    expect(isMarketingPath("/explore")).toBe(true);
     expect(isMarketingPath("/collaborate")).toBe(true);
     expect(isMarketingPath("/academy")).toBe(true);
   });
@@ -78,26 +79,24 @@ describe("marketing IA wiring", () => {
     expect(account).toContain('to="/workspace"');
     expect(header).not.toContain("My Workspace");
     expect(header).not.toContain('to="/workspace"');
-    expect(header).not.toContain("Ask Immune");
-    expect(header).not.toContain("/community");
+    expect(shell).toContain('"Ask Immune"');
     expect(header).not.toContain("/collaborate");
     expect(header).not.toContain("MARKETING_NAV_ACTION");
     expect(header).toContain("HeaderAccount");
     expect(shell).toContain("header-signin");
-    for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box"]) {
+    for (const icon of ["BookOpen", "Network", "FlaskConical", "Users", "MessageCircle"]) {
       expect(shell).toContain(icon);
     }
-    expect(shell).not.toMatch(/\bUsers\b/);
     expect(shell).toContain("journey-main");
     expect(shell).toContain("journey-org");
     expect(shell).toContain("AskAtlas");
     const home = readFileSync(resolve(process.cwd(), "src/routes/index.tsx"), "utf8");
-    expect(home).toContain("CITY_CTA");
-    expect(home).toContain("CITY_PATH");
+    expect(home).toContain('to="/ask"');
+    expect(home).toContain("EXPLORE_PATH");
   });
 
   it("wires Explore / Learn CTAs and footer destinations to known nav or marketing paths", () => {
-    expect(EXPLORE_PATH).toBe("/overview");
+    expect(EXPLORE_PATH).toBe("/explore");
     expect(EXPLORE_CTA).toBe("Explore the Immune System");
     expect(LEARN_PATH).toBe("/academy");
     expect(LEARN_CTA).toBe("Explore the Academy");
@@ -116,6 +115,13 @@ describe("marketing IA wiring", () => {
           item.path.startsWith("/community/") ||
           item.path === "/mechanism" ||
           item.path === "/academy" ||
+          item.path === "/explore" ||
+          item.path === "/ask" ||
+          item.path === "/research" ||
+          item.path === "/discovery" ||
+          item.path === "/reasoning" ||
+          item.path === "/atlas" ||
+          item.path === "/graph" ||
           item.path.startsWith("/mechanism/");
         expect(known, item.path).toBe(true);
       }

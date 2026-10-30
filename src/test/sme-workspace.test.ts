@@ -184,11 +184,10 @@ describe("SME rematch validation", () => {
 });
 
 describe("SME workspace wiring", () => {
-  it("registers Investigate I8 / Trust T5 and route module", () => {
-    const investigate = JOURNEY_NAV.find((g) => g.label === "Investigate")!;
-    expect(investigate.items.some((i) => i.path === "/sme" && i.n === "I8")).toBe(true);
-    const trust = JOURNEY_NAV.find((g) => g.label === "Trust")!;
-    expect(trust.items.some((i) => i.path === "/sme" && i.n === "T5")).toBe(true);
+  it("keeps SME as expert route (not a primary science pillar) and registers module", () => {
+    const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path));
+    expect(paths).not.toContain("/sme");
+    expect(source("src/components/immune/Shell.tsx")).toContain('to="/sme"');
     expect(source("src/routes/_authenticated/sme.tsx")).toContain("SmeReviewWorkspace");
     expect(source("src/lib/sme/sme.functions.ts")).toContain("recordSmeCitationRematch");
     expect(source("src/lib/sme/sme.functions.ts")).toContain("assertCanReview");

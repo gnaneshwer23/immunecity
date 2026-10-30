@@ -95,17 +95,20 @@ describe("profile visibility", () => {
 });
 
 describe("header", () => {
-  it("uses the reference row and keeps Ask inside Learn", () => {
-    expect(JOURNEY_NAV.map((group) => group.label)).toEqual(["Learn", "Explore", "Investigate", "Trust"]);
-    expect(JOURNEY_PRIMARY.map((item) => [item.label, item.path])).toEqual([
-      ["Research", "/research"],
-      ["Simulate", "/simulator"],
+  it("uses five primaries including Community and Ask Immune", () => {
+    expect(JOURNEY_NAV.map((group) => group.label)).toEqual([
+      "Explore",
+      "Research",
+      "Academy",
+      "Community",
+      "Ask Immune",
     ]);
-    expect(JOURNEY_PRIMARY.some((item) => item.path === "/community")).toBe(false);
-    expect(JOURNEY_NAV.find((group) => group.label === "Learn")!.items.some((item) => item.path === "/ask")).toBe(true);
+    expect(JOURNEY_PRIMARY).toEqual([]);
+    expect(JOURNEY_NAV.find((group) => group.label === "Community")!.items.some((item) => item.path === "/community")).toBe(true);
+    expect(JOURNEY_NAV.find((group) => group.label === "Ask Immune")!.items.some((item) => item.path === "/ask")).toBe(true);
     const shell = readFileSync(resolve(process.cwd(), "src/components/immune/Shell.tsx"), "utf8");
     const header = shell.slice(shell.indexOf("<header"), shell.indexOf("</header>"));
-    expect(header).not.toContain("Ask Immune");
+    expect(shell).toContain('"Ask Immune"');
     expect(header).toContain("HeaderAccount");
     expect(shell).toContain("header-signin");
     expect(shell).toContain("AskAtlas");
@@ -134,11 +137,9 @@ describe("header", () => {
     expect(account).toContain('to="/workspace"');
     expect(header).not.toContain("My Workspace");
     expect(header).not.toContain('to="/workspace"');
-    for (const icon of ["BookOpen", "Network", "Search", "Shield", "FlaskConical", "Box"]) {
+    for (const icon of ["BookOpen", "Network", "FlaskConical", "Users", "MessageCircle"]) {
       expect(shell).toContain(icon);
     }
-    expect(shell).not.toMatch(/\bUsers\b/);
-    expect(header).not.toContain("/community");
     expect(header).not.toContain("/collaborate");
   });
 });

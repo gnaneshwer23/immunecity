@@ -8,7 +8,7 @@ function source(path: string): string {
 }
 
 describe("production polish", () => {
-  it("keeps Logout in the account menu and leaves search and Ask out of the header", () => {
+  it("keeps Logout in the account menu; Ask Immune is a primary header pillar", () => {
     const shell = source("src/components/immune/Shell.tsx");
     const account = shell.slice(shell.indexOf("function HeaderAccount"), shell.indexOf("function PillarMenu"));
     const header = shell.slice(shell.indexOf("<header"), shell.indexOf("</header>"));
@@ -16,7 +16,7 @@ describe("production polish", () => {
     expect(account).toContain("Profile");
     expect(account).toContain("My Workspace");
     expect(header).not.toContain("Logout");
-    expect(header).not.toContain("Ask Immune");
+    expect(shell).toContain('"Ask Immune"');
     expect(header).not.toContain("SiteSearch");
     expect(shell).toContain('className="nav-label"');
     expect(source("src/biotech.css")).toContain(".journey-main .nav-label");

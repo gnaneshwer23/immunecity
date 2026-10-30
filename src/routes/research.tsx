@@ -10,6 +10,7 @@ import { PageHead, NodeChip } from "@/components/immune/ui";
 import { PageToc, Section } from "@/components/immune/page";
 
 const TOC = [
+  { id: "hub", label: "Research tools" },
   { id: "library", label: "Library" },
   { id: "literature", label: "Literature" },
   { id: "collections", label: "Collections" },
@@ -20,6 +21,15 @@ const TOC = [
   { id: "phases", label: "Phases" },
   { id: "roadmap", label: "Roadmap" },
 ];
+
+const RESEARCH_HUB = [
+  { to: "/discovery" as const, title: "Research Radar", desc: "Evidence-governed unknowns and next questions from ISI coverage." },
+  { to: "/evidence" as const, title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
+  { to: "/reasoning" as const, title: "Scientific reasoning", desc: "Path tracing and retrieval demos — tools, not a second chatbot." },
+  { to: "/simulator" as const, title: "System simulator", desc: "Illustrative teaching model — not a patient prediction." },
+  { to: "/pipeline" as const, title: "Disease pipelines", desc: "Therapies by mechanism with landmark and active trials." },
+  { to: "/ask" as const, title: "Ask Immune", desc: "Start an investigation in the conversational gateway." },
+] as const;
 import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ResearchLibrary from "@/components/immune/ResearchLibrary";
@@ -73,9 +83,9 @@ function Research() {
   return (
     <div className="page">
       <PageHead art={ART.researchArt}
-        kicker="Investigate · Research library"
+        kicker="Research"
         title="Turn a research question into a reviewable investigation."
-        lede="Organise evidence collections, classify gaps from real coverage signals, draft AI/unreviewed research briefs, and keep candidate hypotheses separate from approved scientific knowledge. Literature candidates stay local until imported at Curation. Nothing from this page writes the curated knowledge graph."
+        lede="Organise evidence collections, classify gaps from real coverage signals, draft AI/unreviewed research briefs, and keep candidate hypotheses separate from approved scientific knowledge. From here, open Research Radar, evidence coverage, reasoning tools and teaching simulators. Literature candidates stay local until imported at Curation. Nothing from this page writes the curated knowledge graph."
         stats={[
           { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },
@@ -83,6 +93,19 @@ function Research() {
         ]}
       />
       <PageToc items={TOC} />
+
+      <Section id="hub" title="Research tools" lede="Specialised surfaces stay available as contextual tools — not extra top-level destinations.">
+        <ul className="isi-library-list">
+          {RESEARCH_HUB.map((item) => (
+            <li key={item.to}>
+              <Link to={item.to}>
+                <strong>{item.title}</strong>
+              </Link>
+              <p className="isi-radar-why">{item.desc}</p>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
       <Section
         id="library"

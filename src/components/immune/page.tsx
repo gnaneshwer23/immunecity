@@ -152,7 +152,7 @@ type Flat = JourneyItem & { group: string; index: number; total: number };
 const JOURNEY_FLAT: Flat[] = (() => {
   const seen = new Set<string>();
   const out: Flat[] = [];
-  JOURNEY_NAV.filter((g) => g.label !== "Trust").forEach((g) => {
+  JOURNEY_NAV.forEach((g) => {
     const items = g.items.filter((i) => !i.hash);
     items.forEach((i, index) => {
       if (seen.has(i.path)) return;
@@ -171,7 +171,7 @@ function journeyPosition(pathname: string) {
   return { current: JOURNEY_FLAT[at]!, prev: JOURNEY_FLAT[at - 1], next: JOURNEY_FLAT[at + 1] };
 }
 
-/** "Continue the journey" band: previous and next page in Learn → Explore → Investigate order. */
+/** "Continue the journey" band: previous and next page in Explore → Research → Academy → Community → Ask order. */
 export function JourneyNext() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const pos = journeyPosition(pathname);

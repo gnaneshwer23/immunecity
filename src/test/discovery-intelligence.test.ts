@@ -615,10 +615,10 @@ describe("Discovery Phase 6 monitor idempotency + alert dedupe", () => {
 
 describe("Discovery IA + migrations + route tree", () => {
   it(
-    "adds Investigate Research Radar without inventing a second KG",
+    "adds Research Radar under Research without inventing a second KG",
     () => {
-      const investigate = JOURNEY_NAV.find((g) => g.label === "Investigate")!;
-      expect(investigate.items.some((i) => i.path === "/discovery" && i.title === "Research Radar")).toBe(true);
+      const research = JOURNEY_NAV.find((g) => g.label === "Research")!;
+      expect(research.items.some((i) => i.path === "/discovery" && i.title === "Research Radar")).toBe(true);
       const agents = source("src/lib/discovery/AGENTS.md");
       expect(agents).toMatch(/never a second graph/i);
       expect(agents).toMatch(/reviewed_gap/i);

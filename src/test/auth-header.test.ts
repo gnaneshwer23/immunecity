@@ -147,7 +147,7 @@ describe("ivory header", () => {
     const header = shell.slice(shell.indexOf("<header"), shell.indexOf("</header>"));
     expect(header).toContain("HeaderAccount");
     expect(header).not.toContain("My Workspace");
-    expect(header).not.toContain("Ask Immune");
+    expect(shell).toContain('"Ask Immune"');
     const account = shell.slice(shell.indexOf("function HeaderAccount"), shell.indexOf("function PillarMenu"));
     expect(account).toContain("My Workspace");
     expect(account).toContain("Logout");

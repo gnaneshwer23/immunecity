@@ -38,9 +38,9 @@ function AskPage() {
   return (
     <div className="page isi-ask-page">
       <PageHead
-        kicker={`Learn · ${ASK_NAME}`}
+        kicker={`Ask Immune`}
         title="Ask about the immune system."
-        lede={`${ASK_PUBLIC_LINE} Missing evidence is stated clearly. ${ASK_EVIDENCE_LIMIT} This is the primary chatbot for graph-grounded answers and the starting point for Atlas, Discovery, dossiers and the research workbench. Your conversation stays in this browser.`}
+        lede={`${ASK_PUBLIC_LINE} Missing evidence is stated clearly. ${ASK_EVIDENCE_LIMIT} Ask Immune is the intelligence gateway — graph-grounded answers that open Atlas, Research Radar, dossiers and lessons without leaving the conversation. Your conversation stays in this browser.`}
       />
       {ctx ? (
         <p className="isi-ask-context" role="status">

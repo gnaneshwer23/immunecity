@@ -1,6 +1,6 @@
 # Ask Immune — entry points
 
-Ask Immune is **only the chatbot** — not a Learn menu item or homepage marketing section.
+Ask Immune is the **primary conversational intelligence gateway** and a top-level header destination. It remains **one chatbot** — not multiple embedded assistants.
 
 ## Canonical surfaces
 
@@ -8,14 +8,19 @@ Ask Immune is **only the chatbot** — not a Learn menu item or homepage marketi
 |---------|-------------|-------------|------|
 | Full Ask page | `/ask` (`AskAtlas` + `persistKey=isi-ask-conversation`) | Browser localStorage | **Main chatbot** — type or voice; immune-cell speaker can read answers aloud |
 | Corner assistant | Shell FAB → non-modal dialog (`AskAtlas` without persist) | Unpersisted | Same chatbot transport; opens `/ask` via “Continue in Ask Immune” |
+| Header pillar | `JOURNEY_NAV` → Ask Immune → `/ask` | — | Primary destination alongside Explore / Research / Academy / Community |
 
-Both use `/api/ask` + `/api/ask/prepare` and guardrails in `src/lib/askGrounding.ts`.
+Both chat hosts use `/api/ask` + `/api/ask/prepare` and guardrails / intent routing in `src/lib/askGrounding.ts`.
 
-## Not in journeys / homepage
+## Homepage
 
-- **Not** listed under Learn / Explore / Investigate / Trust
-- **Not** featured in homepage hero, “three ways in”, trust strip, or final CTA
-- Prefill links from Atlas / Discovery / Workbench / Reasoning may still open `/ask` (they open the chatbot, they do not embed a second chat)
+- Featured as the intelligence gateway (Ask entry in hero / early CTA)
+- Still a single AskAtlas — homepage links to `/ask`; it does not embed a second chat
+
+## Prefills (not second chatbots)
+
+- Prefill links from Atlas / Discovery / Workbench / Reasoning may open `/ask?about=&q=`
+- Do not add AskAtlas embeds on other pages
 
 ## Voice
 
@@ -25,8 +30,10 @@ Both use `/api/ask` + `/api/ask/prepare` and guardrails in `src/lib/askGrounding
 
 ## How users open the chatbot
 
-1. Corner **Ask Immune** FAB (hidden on `/ask`)
-2. Direct URL `/ask`
-3. Prefill CTA → `/ask?about=<conceptId>&q=<question>`
+1. Header **Ask Immune** pillar → `/ask`
+2. Corner **Ask Immune** FAB (hidden on `/ask`)
+3. Direct URL `/ask`
+4. Prefill CTA → `/ask?about=<conceptId>&q=<question>`
+5. Homepage Ask entry
 
-Do not add AskAtlas embeds on other pages. Do not re-add Ask Immune to `JOURNEY_NAV` or homepage marketing blocks.
+Do not add AskAtlas embeds on other pages. Reasoning remains tools under Research — not a second chat.

@@ -22,6 +22,7 @@ import { Route as DiseaseRouteImport } from './routes/disease'
 import { Route as DynamicsRouteImport } from './routes/dynamics'
 import { Route as EvidenceRouteImport } from './routes/evidence'
 import { Route as EvidenceMethodsRouteImport } from './routes/evidence-methods'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as LearnRouteImport } from './routes/learn'
@@ -129,6 +130,11 @@ const EvidenceRoute = EvidenceRouteImport.update({
 const EvidenceMethodsRoute = EvidenceMethodsRouteImport.update({
   id: '/evidence-methods',
   path: '/evidence-methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GraphRoute = GraphRouteImport.update({
@@ -365,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/dynamics': typeof DynamicsRoute
   '/evidence': typeof EvidenceRoute
   '/evidence-methods': typeof EvidenceMethodsRoute
+  '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
@@ -423,6 +430,7 @@ export interface FileRoutesByTo {
   '/dynamics': typeof DynamicsRoute
   '/evidence': typeof EvidenceRoute
   '/evidence-methods': typeof EvidenceMethodsRoute
+  '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
@@ -483,6 +491,7 @@ export interface FileRoutesById {
   '/dynamics': typeof DynamicsRoute
   '/evidence': typeof EvidenceRoute
   '/evidence-methods': typeof EvidenceMethodsRoute
+  '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
@@ -543,6 +552,7 @@ export interface FileRouteTypes {
     | '/dynamics'
     | '/evidence'
     | '/evidence-methods'
+    | '/explore'
     | '/graph'
     | '/insights'
     | '/learn'
@@ -601,6 +611,7 @@ export interface FileRouteTypes {
     | '/dynamics'
     | '/evidence'
     | '/evidence-methods'
+    | '/explore'
     | '/graph'
     | '/insights'
     | '/learn'
@@ -660,6 +671,7 @@ export interface FileRouteTypes {
     | '/dynamics'
     | '/evidence'
     | '/evidence-methods'
+    | '/explore'
     | '/graph'
     | '/insights'
     | '/learn'
@@ -720,6 +732,7 @@ export interface RootRouteChildren {
   DynamicsRoute: typeof DynamicsRoute
   EvidenceRoute: typeof EvidenceRoute
   EvidenceMethodsRoute: typeof EvidenceMethodsRoute
+  ExploreRoute: typeof ExploreRoute
   GraphRoute: typeof GraphRoute
   InsightsRoute: typeof InsightsRoute
   LearnRoute: typeof LearnRoute
@@ -854,6 +867,13 @@ declare module '@tanstack/react-router' {
       path: '/evidence-methods'
       fullPath: '/evidence-methods'
       preLoaderRoute: typeof EvidenceMethodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/graph': {
@@ -1205,6 +1225,7 @@ const rootRouteChildren: RootRouteChildren = {
   DynamicsRoute: DynamicsRoute,
   EvidenceRoute: EvidenceRoute,
   EvidenceMethodsRoute: EvidenceMethodsRoute,
+  ExploreRoute: ExploreRoute,
   GraphRoute: GraphRoute,
   InsightsRoute: InsightsRoute,
   LearnRoute: LearnRoute,

@@ -34,9 +34,19 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
   {
     label: "Explore",
     items: [
-      { label: "Platform", path: "/overview" },
+      { label: "Explore hub", path: "/explore" },
+      { label: "Knowledge atlas", path: "/atlas" },
+      { label: "Knowledge graph", path: "/graph" },
       { label: "Academy", path: "/academy" },
-      { label: "Reasoning & AI", path: "/reasoning" },
+    ],
+  },
+  {
+    label: "Research",
+    items: [
+      { label: "Research library", path: "/research" },
+      { label: "Research Radar", path: "/discovery" },
+      { label: "Ask Immune", path: "/ask" },
+      { label: "Scientific reasoning", path: "/reasoning" },
     ],
   },
   {
@@ -48,20 +58,13 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
     ],
   },
   {
-    label: "Science",
-    items: [
-      { label: "Evidence & Methods", path: "/methods" },
-      { label: "Insights", path: "/insights" },
-      { label: "Evidence coverage", path: "/evidence" },
-    ],
-  },
-  {
     label: "Organisation",
     items: [
       { label: "Vision", path: "/vision" },
       { label: "About", path: "/about" },
       { label: "Collaborate", path: "/collaborate" },
-      { label: "Research library", path: "/research" },
+      { label: "Methods", path: "/methods" },
+      { label: "Insights", path: "/insights" },
     ],
   },
   {
@@ -78,6 +81,7 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
 /** Exact paths that use marketing chrome (nav + no layer sidebar). */
 export const MARKETING_PATHS = new Set([
   "/",
+  "/explore",
   "/overview",
   "/academy",
   "/methods",
@@ -102,8 +106,8 @@ export function isMarketingPath(pathname: string): boolean {
 }
 
 /**
- * Global header IA: the three ISI user journeys (Learn / Explore / Investigate).
- * Separate from NAV_GROUPS, which is the twelve-layer Immune City map.
+ * Global header IA: five ISI destinations (Explore / Research / Academy / Community / Ask Immune).
+ * Separate from NAV_GROUPS, which is the twelve-layer Immune City science model.
  */
 export type JourneyItem = { n: string; path: string; hash?: string; title: string; desc: string };
 
@@ -112,61 +116,60 @@ export function journeyKey(i: { path: string; hash?: string }): string {
   return i.hash ? `${i.path}#${i.hash}` : i.path;
 }
 
+/**
+ * Five primary pillars. Expert workspaces (SME/curation) and Trust/Methods live in
+ * secondary/account/footer chrome — not competing science destinations.
+ */
 export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[] }[] = [
-  {
-    label: "Learn",
-    items: [
-      { n: "L1", path: "/atlas", title: "Knowledge atlas", desc: "Concepts across eight domains, each with its own page." },
-      { n: "L2", path: "/overview", title: "Overview", desc: "Causal spine and twelve layers in one view." },
-      { n: "L3", path: "/learn", title: "Cell atlas", desc: "Immune cells, roles and where metaphors break." },
-      { n: "L4", path: "/academy", title: "Immune system foundations", desc: "Guided foundation track through core immunology." },
-      { n: "L5", path: "/mechanism", title: "Mechanisms and pathways", desc: "Step-by-step cascades and perturbations." },
-    ],
-  },
   {
     label: "Explore",
     items: [
-      { n: "E1", path: "/graph", title: "Knowledge graph", desc: "Typed concepts and directional causal links." },
-      { n: "E2", path: "/dynamics", title: "Immune dynamics", desc: "Tissues, metabolism and genetics." },
-      { n: "E3", path: "/disease", title: "Disease explorer", desc: "Hypersensitivity and the cancer immunity cycle." },
-      { n: "E4", path: "/therapy", title: "Therapy explorer", desc: "Interventions, targets and linked trials." },
+      { n: "E0", path: "/explore", title: "Explore hub", desc: "Atlas, graph, mechanisms and biological explorers in one place." },
+      { n: "E1", path: "/atlas", title: "Knowledge atlas", desc: "Concepts across eight domains, each with its own page." },
+      { n: "E2", path: "/graph", title: "Knowledge graph", desc: "Typed concepts and directional causal links." },
+      { n: "E3", path: "/mechanism", title: "Mechanisms and pathways", desc: "Step-by-step cascades and perturbations." },
+      { n: "E4", path: "/dynamics", title: "Immune dynamics", desc: "Tissues, metabolism and genetics." },
+      { n: "E5", path: "/disease", title: "Disease explorer", desc: "Hypersensitivity and the cancer immunity cycle." },
+      { n: "E6", path: "/therapy", title: "Therapy explorer", desc: "Interventions, targets and linked trials." },
+      { n: "E7", path: "/learn", title: "Cell atlas", desc: "Immune cells, roles and where metaphors break." },
+      { n: "E8", path: "/overview", title: "System overview", desc: "Causal spine and twelve layers in one view." },
     ],
   },
   {
-    label: "Investigate",
+    label: "Research",
     items: [
-      { n: "I1", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
-      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Retrieval grounding, curated pathways and path tracing." },
-      { n: "I3", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench." },
-      { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
-      { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Rule-based teaching — not medical advice." },
-      { n: "I6", path: "/pipeline", title: "Disease pipelines", desc: "Therapies by mechanism, landmark and active trials." },
-      {
-        n: "I7",
-        path: "/discovery",
-        title: "Research Radar",
-        desc: "Evidence-governed unknowns and defensible next questions — ISI coverage, not worldwide absence.",
-      },
-      {
-        n: "I8",
-        path: "/sme",
-        title: "SME review workspace",
-        desc: "Gate C, melanoma pilot, KEYNOTE rematch and gold-set labelling — human scientific review only.",
-      },
+      { n: "R1", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench." },
+      { n: "R2", path: "/discovery", title: "Research Radar", desc: "Evidence-governed unknowns and defensible next questions — ISI coverage, not worldwide absence." },
+      { n: "R3", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
+      { n: "R4", path: "/reasoning", title: "Scientific reasoning", desc: "Retrieval grounding, curated pathways and path tracing — tools, not a second chatbot." },
+      { n: "R5", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
+      { n: "R6", path: "/patient", title: "Patient and biomarkers", desc: "Rule-based teaching — not medical advice." },
+      { n: "R7", path: "/pipeline", title: "Disease pipelines", desc: "Therapies by mechanism, landmark and active trials." },
     ],
   },
   {
-    label: "Trust",
+    label: "Academy",
     items: [
-      { n: "T1", path: "/methods", title: "Methods", desc: "Evidence lifecycle, live coverage and model limits." },
-      { n: "T2", path: "/methods", hash: "live-ev-heading", title: "Live coverage", desc: "How many relationship claims have been reviewed." },
-      { n: "T3", path: "/methods", hash: "statuses", title: "Evidence standards", desc: "What each review status means." },
-      { n: "T4", path: "/methods", hash: "limitations", title: "Data sources and limitations", desc: "Where the evidence stops." },
+      { n: "A1", path: "/academy", title: "Immunology Academy", desc: "Guided foundation track through core immunology." },
+      { n: "A2", path: "/mechanism", title: "Foundation lessons", desc: "Open a mechanism lesson from the curriculum." },
+    ],
+  },
+  {
+    label: "Community",
+    items: [
+      { n: "C1", path: "/community", title: "Discussions", desc: "Educational immunology discussion — not clinical advice." },
+      { n: "C2", path: "/community/new", title: "Start a discussion", desc: "Open a new community post." },
+      { n: "C3", path: "/community/journal-clubs", title: "Journal clubs", desc: "Shared reading and discussion threads." },
+    ],
+  },
+  {
+    label: "Ask Immune",
+    items: [
       {
-        n: "T5",
-        path: "/sme",
-        title: "SME workspace",
-        desc: "Reviewer-gated Gate C and gold-set tooling — educational, not CDS.",
+        n: "Q1",
+        path: "/ask",
+        title: "Ask Immune",
+        desc: "Graph-grounded answers with reviewed and provisional sources labelled. Starting point for atlas, dossiers and research.",
       },
     ],
   },
@@ -174,17 +177,14 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
 
 /**
  * Direct header destinations beside the journey menus.
- * Ask Immune is chatbot-only (corner FAB + /ask page) — not a journey menu or top-level header item.
- * Community lives in its own footer column (Discussions, Start a discussion, Journal clubs).
- * My Workspace stays out of this row. Signed-in members open it from the account menu.
+ * Empty by design: the five primaries live in JOURNEY_NAV pillars.
+ * Account / workspace stay in the account menu; Methods in JOURNEY_SECONDARY.
  */
-export const JOURNEY_PRIMARY = [
-  { label: "Research", path: "/research" },
-  { label: "Simulate", path: "/simulator" },
-] as const;
+export const JOURNEY_PRIMARY = [] as const;
 
-/** Secondary header links shown after the journeys. */
+/** Secondary header links shown after the journeys (org / trust). */
 export const JOURNEY_SECONDARY = [
+  { label: "Methods", path: "/methods" },
   { label: "Vision", path: "/vision" },
   { label: "About", path: "/about" },
 ] as const;

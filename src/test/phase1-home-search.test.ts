@@ -54,11 +54,14 @@ describe("catalog search groups", () => {
 });
 
 describe("homepage phase 1 routes", () => {
-  it("uses the blueprint headline and real audience destinations", () => {
+  it("uses the blueprint headline; Ask-first home keeps brand CTAs available", () => {
     expect(HERO_HEADLINE).toBe("Understand the Immune System Like Never Before");
     expect(CITY_CTA).toBe("Explore Immune City");
     expect(CITY_PATH).toBe("/graph");
     expect(COMMUNITY_PATH).toBe("/community");
+    const home = readFileSync(resolve(process.cwd(), "src/routes/index.tsx"), "utf8");
+    expect(home).toContain('to="/ask"');
+    expect(home).toContain("EXPLORE_PATH");
     expect(AUDIENCES.map((item) => item.to)).toEqual([
       "/academy",
       "/learn",

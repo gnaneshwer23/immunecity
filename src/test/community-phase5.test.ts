@@ -61,7 +61,7 @@ describe("logout", () => {
     expect(account).toContain('window.location.assign("/")');
     expect(header).not.toContain("Logout");
     expect(header).not.toContain("SiteSearch");
-    expect(header).not.toContain("Ask Immune");
+    expect(shell).toContain('"Ask Immune"');
   });
 });
 

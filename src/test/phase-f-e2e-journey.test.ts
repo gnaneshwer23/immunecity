@@ -31,13 +31,20 @@ function source(rel: string): string {
   return readFileSync(resolve(process.cwd(), rel), "utf8");
 }
 
-describe("Phase F1 — Journey IA (Learn / Explore / Investigate)", () => {
-  it("positive: journey nav covers Ask, Atlas, Evidence, Research, Methods", () => {
-    expect(JOURNEY_NAV.map((g) => g.label)).toEqual(["Learn", "Explore", "Investigate", "Trust"]);
+describe("Phase F1 — Journey IA (Explore / Research / Academy / Community / Ask)", () => {
+  it("positive: journey nav covers Ask, Atlas, Evidence, Research; Methods is secondary", () => {
+    expect(JOURNEY_NAV.map((g) => g.label)).toEqual([
+      "Explore",
+      "Research",
+      "Academy",
+      "Community",
+      "Ask Immune",
+    ]);
     const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path as string));
-    for (const p of ["/ask", "/atlas", "/evidence", "/research", "/methods", "/graph"]) {
+    for (const p of ["/ask", "/atlas", "/evidence", "/research", "/graph", "/explore", "/community", "/academy"]) {
       expect(paths.some((x) => x === p || x.startsWith(`${p}/`))).toBe(true);
     }
+    expect(paths).not.toContain("/methods");
   });
 });
 
