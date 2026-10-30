@@ -3,7 +3,8 @@
  * Persistence lives in Neon via schema.server.ts + *.functions.ts.
  */
 
-export const RESEARCH_ENTITLEMENTS = ["free", "researcher_pro"] as const;
+/** Discovery plan stubs on research_profiles.entitlement — not user_roles. */
+export const RESEARCH_ENTITLEMENTS = ["free", "researcher_pro", "team", "enterprise"] as const;
 export type ResearchEntitlement = (typeof RESEARCH_ENTITLEMENTS)[number];
 
 export const RESEARCH_GAP_STATUSES = [

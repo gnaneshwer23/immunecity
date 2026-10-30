@@ -26,9 +26,13 @@ import {
   normalizeEntitlement,
   radarListLimit,
   assertEntitlementAllows,
+  assertQuotaAllows,
+  createDiscoveryRateLimitStub,
   personalisedFeedLimit,
+  planQuotas,
   FREE_PERSONALISED_PREVIEW,
 } from "@/lib/discovery/entitlements";
+import { planDossierExport } from "@/lib/discovery/export";
 import { applyGapReviewDecision, assertDetectionEmitStatus, isResearchGapStatus } from "@/lib/discovery/gapStatus";
 import { mergeDetectionWithPersisted, shapeRadarFeed } from "@/lib/discovery/radar";
 import {
@@ -40,6 +44,27 @@ import {
 } from "@/lib/discovery/recommend";
 import { verifyGapCandidate } from "@/lib/discovery/verify";
 import type { ResearchGapCandidate, ResearchGapStatus } from "@/lib/discovery/types";
+
+/** Per-process export counter stub (resets on cold start — honest prep, not billing). */
+const exportUsageByUser = new Map<string, { day: string; count: number }>();
+const discoveryActionRateLimit = createDiscoveryRateLimitStub({ windowMs: 60_000, maxPerWindow: 40 });
+
+function utcDayKey(d = new Date()): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function exportsUsedToday(userId: string): number {
+  const row = exportUsageByUser.get(userId);
+  if (!row || row.day !== utcDayKey()) return 0;
+  return row.count;
+}
+
+function bumpExportUsage(userId: string): void {
+  const day = utcDayKey();
+  const row = exportUsageByUser.get(userId);
+  if (!row || row.day !== day) exportUsageByUser.set(userId, { day, count: 1 });
+  else row.count += 1;
+}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const FREE_DEFAULT_LIMIT = 25;
@@ -808,7 +833,7 @@ export const recordGapReviewDecision = createServerFn({ method: "POST" })
     }
   });
 
-/** In-app follow subscription — entitlement stub (researcher_pro). Email deferred. */
+/** In-app follow subscription — entitlement + followed-gap quota (server-side). Email deferred. */
 export const toggleGapSubscription = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .inputValidator((d: unknown) =>
@@ -821,6 +846,8 @@ export const toggleGapSubscription = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const userId = memberId(context.userId);
+    const rate = discoveryActionRateLimit.check(`follow:${userId}`);
+    if (!rate.ok) throw new Error(rate.error);
     let entitlement = normalizeEntitlement("free");
     const db = getDb();
     try {
@@ -854,6 +881,19 @@ export const toggleGapSubscription = createServerFn({ method: "POST" })
 
       if (data.follow) {
         if (!existing.length) {
+          const followed = await db
+            .select({ id: researchGapSubscriptions.id })
+            .from(researchGapSubscriptions)
+            .where(
+              and(
+                eq(researchGapSubscriptions.userId, userId),
+                eq(researchGapSubscriptions.channel, "in_app"),
+              ),
+            );
+          const quota = assertQuotaAllows(entitlement, "followed_gaps", {
+            followedGaps: followed.length,
+          });
+          if (!quota.ok) throw new Error(quota.error);
           await db.insert(researchGapSubscriptions).values({
             userId,
             gapId: gap.id,
@@ -865,6 +905,7 @@ export const toggleGapSubscription = createServerFn({ method: "POST" })
           channel: "in_app" as const,
           emailAlerts: false as const,
           paymentActivation: false as const,
+          quotas: planQuotas(entitlement),
         };
       }
       if (existing[0]) {
@@ -877,12 +918,90 @@ export const toggleGapSubscription = createServerFn({ method: "POST" })
         channel: "in_app" as const,
         emailAlerts: false as const,
         paymentActivation: false as const,
+        quotas: planQuotas(entitlement),
       };
     } catch (err) {
-      if (err instanceof Error && /researcher_pro|Persist the gap|Sign in/.test(err.message)) throw err;
+      if (
+        err instanceof Error &&
+        /researcher_pro|Researcher Pro|billing not activated|quota|Persist the gap|Sign in|rate limit/i.test(
+          err.message,
+        )
+      ) {
+        throw err;
+      }
       if (missingRelation(err)) {
         throw new Error("Research gap subscriptions are not available yet (apply migration 0020).");
       }
       throw new Error("Gap subscription update failed.");
+    }
+  });
+
+/**
+ * Dossier export stub — Researcher Pro+ quota enforced server-side.
+ * Body mirrors known gap fields only; never fabricates PMIDs.
+ */
+export const exportDiscoveryDossier = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        gapKey: z.string().min(1).max(160),
+        format: z.enum(["markdown", "json"]).default("markdown"),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const userId = memberId(context.userId);
+    const rate = discoveryActionRateLimit.check(`export:${userId}`);
+    if (!rate.ok) throw new Error(rate.error);
+    let entitlement = normalizeEntitlement("free");
+    const db = getDb();
+    try {
+      const [profile] = await db
+        .select()
+        .from(researchProfiles)
+        .where(eq(researchProfiles.userId, userId))
+        .limit(1);
+      if (profile) entitlement = normalizeEntitlement(profile.entitlement);
+      const feature = assertEntitlementAllows(entitlement, "dossier_export");
+      if (!feature.ok) throw new Error(feature.error);
+      const quota = assertQuotaAllows(entitlement, "exports", {
+        exportsToday: exportsUsedToday(userId),
+      });
+      if (!quota.ok) throw new Error(quota.error);
+
+      const detected = detectDiscoveryCandidates() as ResearchGapCandidate[];
+      const gap = detected.find((g) => g.gapKey === data.gapKey);
+      if (!gap) throw new Error("Unknown gap key — export only covers detected ISI candidates.");
+
+      const [persisted] = await db
+        .select()
+        .from(researchGaps)
+        .where(eq(researchGaps.gapKey, data.gapKey))
+        .limit(1);
+
+      const planned = planDossierExport({
+        gap,
+        persistedStatus: persisted?.status ?? null,
+        format: data.format,
+      });
+      bumpExportUsage(userId);
+      return {
+        ...planned,
+        entitlement,
+        remainingExportsToday: quota.remaining - 1,
+        paymentActivation: false as const,
+      };
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        /Researcher Pro|billing not activated|quota|Unknown gap|Sign in|rate limit/i.test(err.message)
+      ) {
+        throw err;
+      }
+      if (missingRelation(err)) {
+        throw new Error("Discovery export is not available yet (apply migrations 0019/0020).");
+      }
+      throw new Error("Discovery dossier export failed.");
     }
   });

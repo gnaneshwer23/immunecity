@@ -79,14 +79,16 @@ Implementations: stubs + fixtures + optional live PubMed/CT.gov behind `DISCOVER
 - Always append `research_gap_reviews` + bump `research_gap_versions`.  
 - Engineering refuses bulk/auto approve (mirror evidence path).
 
-## Entitlements (stub)
+## Entitlements (stub — Phase 7)
 
 | Plan | Server behaviour |
 | --- | --- |
-| `free` | Own profile; limited radar list (e.g. pilot gaps); no subscription spam |
-| `researcher_pro` | Broader filters / more dossiers — **flag only**, no Stripe |
+| `free` | Own profile; limited radar + personalised preview; 0 followed gaps; 1 monitor run/day; no export |
+| `researcher_pro` | Broader filters / feed / follows / export — **flag only**, no Stripe |
+| `team` | Higher quotas stub; shared profiles / collab **scaffolding only** (not activated) |
+| `enterprise` | Highest quotas stub; same collab scaffolding hold |
 
-Checks live in server functions; UI may hint but never trust client.
+Quotas (followed gaps, monitor runs/day, exports/day) are enforced in server functions (`assertQuotaAllows`), not by hiding UI alone. Honest copy: “Researcher Pro — billing not activated”. Orthogonal to `user_roles`. Checks live in server functions; UI may hint but never trust client.
 
 ## Observability
 

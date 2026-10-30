@@ -22,12 +22,17 @@ export const Route = createFileRoute("/discovery/profile")({
   component: DiscoveryProfilePage,
 });
 
+type EntitlementSummary = Awaited<ReturnType<typeof getMyResearchProfile>>["entitlement"];
+type TeamSummary = Awaited<ReturnType<typeof getMyResearchProfile>>["team"];
+
 function DiscoveryProfilePage() {
   const member = useMember();
   const load = useServerFn(getMyResearchProfile);
   const upsert = useServerFn(upsertMyResearchProfile);
   const [profile, setProfile] = useState<ResearchProfileRow | null>(null);
   const [radarLimit, setRadarLimit] = useState(25);
+  const [entitlement, setEntitlement] = useState<EntitlementSummary | null>(null);
+  const [team, setTeam] = useState<TeamSummary | null>(null);
   const [label, setLabel] = useState("");
   const [diseases, setDiseases] = useState("");
   const [msg, setMsg] = useState("");
@@ -40,6 +45,8 @@ function DiscoveryProfilePage() {
         if (cancel) return;
         setProfile(res.profile);
         setRadarLimit(res.radarLimit);
+        setEntitlement(res.entitlement);
+        setTeam(res.team);
         if (res.profile) {
           setLabel(res.profile.displayLabel ?? "");
           setDiseases(res.profile.focusDiseases.join(", "));
@@ -73,6 +80,8 @@ function DiscoveryProfilePage() {
     }
   }
 
+  const quotas = entitlement?.quotas;
+
   return (
     <div className="page">
       <PageHead
@@ -90,8 +99,25 @@ function DiscoveryProfilePage() {
       {member ? (
         <>
           <p className="small muted">
-            Plan: <code>{profile?.entitlement ?? "free"}</code> · Radar limit: {radarLimit} · Billing: not activated
+            Plan: <code>{entitlement?.label ?? profile?.entitlement ?? "free"}</code> · Radar limit:{" "}
+            {radarLimit} · {entitlement?.billingCopy ?? "Researcher Pro — billing not activated"}
           </p>
+          {quotas ? (
+            <ul className="small muted" style={{ margin: "8px 0 16px", paddingLeft: 18 }}>
+              <li>
+                Followed gaps: up to {quotas.maxFollowedGaps} (server-enforced; UI hide is not enough)
+              </li>
+              <li>Monitor runs / day: up to {quotas.maxMonitorRunsPerDay}</li>
+              <li>Dossier exports / day: up to {quotas.maxExportsPerDay}</li>
+              <li>
+                Team shared profiles:{" "}
+                {team?.policy.activated ? "active" : "scaffolding only — billing not activated"}
+              </li>
+              <li>
+                Account roles (<code>user_roles</code>) stay orthogonal to Discovery plans
+              </li>
+            </ul>
+          ) : null}
           <form className="isi-form" onSubmit={save} style={{ maxWidth: 520 }}>
             <label>
               Display label
@@ -108,6 +134,8 @@ function DiscoveryProfilePage() {
           {msg ? <p className="callout">{msg}</p> : null}
           <p style={{ marginTop: 16 }}>
             <Link to="/discovery">Back to Radar</Link>
+            {" · "}
+            <Link to="/discovery/alerts">Alerts</Link>
           </p>
         </>
       ) : null}

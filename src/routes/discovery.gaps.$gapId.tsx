@@ -166,7 +166,7 @@ function DiscoveryGapDossierPage() {
       const res = await followFn({ data: { gapKey: gapId, follow } });
       setActionMsg(
         res.following
-          ? "Following in-app (email alerts deferred; researcher_pro stub)."
+          ? "Following in-app (email deferred; Researcher Pro — billing not activated)."
           : "Unfollowed.",
       );
     } catch (e) {
@@ -212,7 +212,7 @@ function DiscoveryGapDossierPage() {
           Run verification
         </button>
         <button type="button" className="btn sm" onClick={() => void runFollow(true)}>
-          Follow (pro stub)
+          Follow (Researcher Pro — billing not activated)
         </button>
         <button type="button" className="btn sm" onClick={() => void runFollow(false)}>
           Unfollow

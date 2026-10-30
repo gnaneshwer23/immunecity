@@ -11,12 +11,17 @@ import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { requireMember } from "@/lib/community/rules";
 import { getDb } from "@/lib/db.server";
 import { researchProfiles } from "@/lib/db/schema.server";
-import { normalizeEntitlement, radarListLimit } from "@/lib/discovery/entitlements";
+import {
+  entitlementSummary,
+  normalizeEntitlement,
+  radarListLimit,
+} from "@/lib/discovery/entitlements";
 import {
   PROFILE_ACCESS,
   planResearchProfile,
   profileOwnershipSpec,
 } from "@/lib/discovery/profiles";
+import { teamReadinessSummary } from "@/lib/discovery/team";
 import type { ResearchEntitlement, ResearchProfileRow } from "@/lib/discovery/types";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -85,17 +90,25 @@ export const getMyResearchProfile = createServerFn({ method: "GET" })
         .where(eq(researchProfiles.userId, userId))
         .limit(1);
       if (!row) {
+        const plan = normalizeEntitlement("free");
         return {
           profile: null as ResearchProfileRow | null,
-          radarLimit: radarListLimit("free"),
+          radarLimit: radarListLimit(plan),
+          entitlement: entitlementSummary(plan),
+          team: teamReadinessSummary(plan),
           ownership: profileOwnershipSpec("get"),
+          /** user_roles stay orthogonal — never elevated here. */
+          rolesOrthogonal: true as const,
         };
       }
       const profile = toRow(row);
       return {
         profile,
         radarLimit: radarListLimit(profile.entitlement),
+        entitlement: entitlementSummary(profile.entitlement),
+        team: teamReadinessSummary(profile.entitlement),
         ownership: profileOwnershipSpec("get"),
+        rolesOrthogonal: true as const,
       };
     } catch (err) {
       throw mapError(err);

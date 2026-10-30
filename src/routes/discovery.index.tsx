@@ -245,7 +245,11 @@ function DiscoveryRadarPage() {
         </p>
       </Section>
 
-      <Section id="next" title="Get started" lede="Profiles stay ownership-scoped. Entitlements are stubs — billing is not activated.">
+      <Section
+        id="next"
+        title="Get started"
+        lede="Profiles stay ownership-scoped. Free / Researcher Pro / Team / Enterprise are server-checked stubs — Researcher Pro — billing not activated. Quotas are not UI-only."
+      >
         <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
           <Link className="btn primary" to="/discovery/onboarding">
             Onboarding

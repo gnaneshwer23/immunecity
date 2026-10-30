@@ -139,7 +139,10 @@ function DiscoveryAlertsPage() {
             ))}
           </ul>
         ) : data ? (
-          <p className="muted">No Discovery alerts yet. Follow a persisted gap (researcher_pro stub) or set profile interests, then run the monitor.</p>
+          <p className="muted">
+            No Discovery alerts yet. Follow a persisted gap (Researcher Pro — billing not activated; server quota
+            enforced) or set profile interests, then run the monitor.
+          </p>
         ) : null}
         <p className="small muted" style={{ marginTop: 12 }}>
           {data?.note ?? "Scientific review is never implied by monitor updates."}

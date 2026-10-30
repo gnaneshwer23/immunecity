@@ -29,12 +29,13 @@ research_profiles
   focus_domains TEXT[]        -- atlas/domain keys
   modalities TEXT[]           -- e.g. checkpoint, cellular, biomarker
   interests_json JSONB        -- free-form preferences (topics, rel types)
-  entitlement TEXT NOT NULL DEFAULT 'free'  -- 'free' | 'researcher_pro' stub
+  entitlement TEXT NOT NULL DEFAULT 'free'  -- 'free' | 'researcher_pro' | 'team' | 'enterprise' stubs (0022)
   entitlement_notes TEXT      -- ops-only note; never payment tokens
   created_at / updated_at
 ```
 
-Constraints: one profile per user; arrays length-bounded; entitlement checked server-side.
+Constraints: one profile per user; arrays length-bounded; entitlement checked server-side.  
+Plans are orthogonal to `user_roles`. Team/Enterprise shared-profile tables are **not** created — scaffolding lives in `src/lib/discovery/team.ts` only.
 
 ### 0020 — Discovery gap suite (may ship as one migration)
 

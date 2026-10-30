@@ -21,8 +21,16 @@ import {
 } from "@/lib/db/schema.server";
 import { resolveMonitorAdapters } from "@/lib/discovery/adapters";
 import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
+import {
+  assertQuotaAllows,
+  createDiscoveryRateLimitStub,
+  normalizeEntitlement,
+  planQuotas,
+} from "@/lib/discovery/entitlements";
 import { planMonitorRun, MONITOR_POLICY, type MonitorRunPlan } from "@/lib/discovery/monitor";
 import type { ResearchGapCandidate, ResearchProfileDraft } from "@/lib/discovery/types";
+
+const monitorActionRateLimit = createDiscoveryRateLimitStub({ windowMs: 60_000, maxPerWindow: 20 });
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -256,6 +264,8 @@ export const runMyDiscoveryMonitor = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const userId = memberId(context.userId);
     const actor = context.email ?? userId;
+    const rate = monitorActionRateLimit.check(`monitor:${userId}`);
+    if (!rate.ok) throw new Error(rate.error);
     try {
       const db = getDb();
       const [profileRow] = await db
@@ -263,6 +273,18 @@ export const runMyDiscoveryMonitor = createServerFn({ method: "POST" })
         .from(researchProfiles)
         .where(eq(researchProfiles.userId, userId))
         .limit(1);
+      const entitlement = normalizeEntitlement(profileRow?.entitlement);
+      const dayStart = new Date();
+      dayStart.setUTCHours(0, 0, 0, 0);
+      const recentRuns = await db.select().from(researchMonitorRuns).limit(500);
+      const monitorRunsToday = recentRuns.filter((r) => {
+        const detail = r.detail && typeof r.detail === "object" ? (r.detail as Record<string, unknown>) : {};
+        const runUser = typeof detail.userId === "string" ? detail.userId : null;
+        return runUser === userId && r.startedAt >= dayStart;
+      }).length;
+      const quota = assertQuotaAllows(entitlement, "monitor_runs", { monitorRunsToday });
+      if (!quota.ok) throw new Error(quota.error);
+
       const profile = profileDraftFromRow(profileRow);
       const { keys: followed, gapIdByKey } = await loadFollowedGapKeys(userId);
 
@@ -354,9 +376,19 @@ export const runMyDiscoveryMonitor = createServerFn({ method: "POST" })
         autoApprove: false as const,
         scientificReviewImplied: false as const,
         emailAlerts: false as const,
+        paymentActivation: false as const,
+        entitlement,
+        quotas: planQuotas(entitlement),
+        monitorRunsRemainingToday: Math.max(0, quota.remaining - 1),
         note: MONITOR_POLICY.note,
       };
     } catch (err) {
+      if (
+        err instanceof Error &&
+        /quota|billing not activated|Researcher Pro|rate limit|Sign in/i.test(err.message)
+      ) {
+        throw err;
+      }
       if (missingRelation(err)) {
         throw new Error(
           "Discovery monitor tables are not available yet (apply migrations 0020/0021).",

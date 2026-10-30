@@ -25,6 +25,9 @@
 | CT.gov continuous ingest | TI fixtures | Adapter interface | **Defer** scale |
 | Email / push alerts | No | Subscriptions table stub | **Defer** senders |
 | Stripe / researcher_pro billing | No | Entitlement stub server-side | **No payment activation** |
+| Team / Enterprise plan stubs | — | Quotas + team scaffolding (0022) | **Phase 7** — collab not activated |
+| Discovery quotas (follow/monitor/export) | Partial | Server `assertQuotaAllows` | **Phase 7** |
+| Discovery gold-set harness | — | Structure only (`eval/goldSet`) | **Phase 8** — no SME scores |
 | Ontology crosswalk fill | Empty seed + curator UI | Not used to invent gaps | **SME-blocked** |
 | Assay cut-offs | Empty stub | Out of scope | **SME-blocked** |
 | Gold-set SME scores | Framework docs | Empty eval harness OK | **Defer scoring** |

@@ -403,8 +403,9 @@ export type OntologyMappingRow = typeof ontologyMappings.$inferSelect;
 export type GraphProvenanceEventRow = typeof graphProvenanceEvents.$inferSelect;
 
 /**
- * Discovery Intelligence — research profiles (migration 0019).
- * Ownership-scoped; entitlement stub only (no Stripe). No required sensitive PII.
+ * Discovery Intelligence — research profiles (migration 0019 + 0022 entitlement check).
+ * Ownership-scoped; entitlement stub free|researcher_pro|team|enterprise (no Stripe).
+ * Orthogonal to user_roles. No required sensitive PII.
  */
 export const researchProfiles = pgTable("research_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),

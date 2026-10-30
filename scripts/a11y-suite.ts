@@ -44,6 +44,32 @@ const methods = readFileSync(resolve(root, "src/routes/methods.tsx"), "utf8");
 if (/text table|keyboard focus|Escape/i.test(methods)) pass("Methods a11y disclosure");
 else fail("Methods a11y disclosure", "methods page missing keyboard/table note");
 
+console.log("\n1b. Discovery Radar source invariants");
+const discoveryPages = [
+  "src/routes/discovery.index.tsx",
+  "src/routes/discovery.gaps.index.tsx",
+  "src/routes/discovery.gaps.$gapId.tsx",
+  "src/routes/discovery.profile.tsx",
+  "src/routes/discovery.alerts.tsx",
+  "src/routes/discovery.onboarding.tsx",
+];
+for (const rel of discoveryPages) {
+  const path = resolve(root, rel);
+  if (!existsSync(path)) {
+    fail(`Discovery page ${rel}`, "missing");
+    continue;
+  }
+  const src = readFileSync(path, "utf8");
+  if (/PageHead|createFileRoute/.test(src)) pass(`Discovery structure ${rel.split("/").pop()}`);
+  else fail(`Discovery structure ${rel}`, "missing PageHead / route");
+}
+const profileSrc = readFileSync(resolve(root, "src/routes/discovery.profile.tsx"), "utf8");
+if (/billing not activated/i.test(profileSrc)) pass("Discovery profile honest billing copy");
+else fail("Discovery profile honest billing copy", "missing billing-not-activated copy");
+const dossierSrc = readFileSync(resolve(root, "src/routes/discovery.gaps.$gapId.tsx"), "utf8");
+if (/Researcher Pro — billing not activated/i.test(dossierSrc)) pass("Discovery dossier follow gate copy");
+else fail("Discovery dossier follow gate copy", "missing Researcher Pro billing copy");
+
 const ask = readFileSync(resolve(root, "src/components/immune/AskAtlas.tsx"), "utf8");
 if (/aria-label=\{`(Ask )?\$\{ASK_NAME\} (a )?question`\}|aria-label=\"Ask Immune (a )?question\"/.test(ask)) pass("Ask input label");
 else fail("Ask input label", "textbox missing aria-label");

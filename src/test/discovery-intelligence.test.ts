@@ -1,5 +1,5 @@
 /**
- * Discovery Intelligence — Research Radar (Phase 1–6).
+ * Discovery Intelligence — Research Radar (Phase 1–8).
  * Run: bun test src/test/discovery-intelligence.test.ts
  */
 import { describe, expect, it } from "bun:test";
@@ -14,11 +14,18 @@ import {
 import { buildGapDossier, dossierAskPrefill, gapStatusBadge } from "@/lib/discovery/dossier";
 import {
   ENTITLEMENT_ACCESS,
+  PLAN_QUOTAS,
   assertEntitlementAllows,
+  assertQuotaAllows,
+  billingNotActivatedMessage,
+  createDiscoveryRateLimitStub,
+  entitlementSummary,
   normalizeEntitlement,
   personalisedFeedLimit,
+  planQuotas,
   radarListLimit,
 } from "@/lib/discovery/entitlements";
+import { EXPORT_POLICY, planDossierExport } from "@/lib/discovery/export";
 import {
   GAP_STATUS_ACCESS,
   applyGapReviewDecision,
@@ -44,6 +51,12 @@ import {
   planMonitorRun,
 } from "@/lib/discovery/monitor";
 import {
+  TEAM_COLLAB_POLICY,
+  planSharedTeamProfile,
+  planTeamCollabInvite,
+  teamReadinessSummary,
+} from "@/lib/discovery/team";
+import {
   VERIFICATION_POLICY,
   draftSearchCoverage,
   refuseAutoReviewedGap,
@@ -55,6 +68,8 @@ import {
   stubLiteratureSearchAdapter,
   withRetries,
 } from "@/lib/discovery/adapters";
+import { accountPowers } from "@/lib/access/roles";
+import { RESEARCH_ENTITLEMENTS } from "@/lib/discovery/types";
 import { JOURNEY_NAV } from "@/data/marketingNav";
 
 const root = (...p: string[]) => resolve(process.cwd(), ...p);
@@ -171,6 +186,8 @@ describe("Discovery entitlement server stubs", () => {
     expect(ENTITLEMENT_ACCESS.serverCheckedOnly).toBe(true);
     expect(ENTITLEMENT_ACCESS.paymentActivation).toBe(false);
     expect(ENTITLEMENT_ACCESS.stripeWired).toBe(false);
+    expect(ENTITLEMENT_ACCESS.pricesPublished).toBe(false);
+    expect(ENTITLEMENT_ACCESS.collectPayments).toBe(false);
     expect(normalizeEntitlement("hacker")).toBe("free");
     expect(radarListLimit("free")).toBeLessThan(radarListLimit("researcher_pro"));
     expect(assertEntitlementAllows("free", "extended_filters").ok).toBe(false);
@@ -184,6 +201,86 @@ describe("Discovery entitlement server stubs", () => {
     expect(gapsFns).toContain("toggleGapSubscription");
     expect(gapsFns).toMatch(/Never overwrite human decisions|reviewed_gap|rejected/);
     expect(gapsFns).toMatch(/neon_merged_detection|mergeDetectionWithPersisted/);
+  });
+});
+
+describe("Discovery Phase 7 entitlements + quotas + team scaffolding", () => {
+  it("defines Free / Researcher Pro / Team / Enterprise matrix with server quotas", () => {
+    expect([...RESEARCH_ENTITLEMENTS]).toEqual(["free", "researcher_pro", "team", "enterprise"]);
+    expect(ENTITLEMENT_ACCESS.orthogonalToUserRoles).toBe(true);
+    expect(billingNotActivatedMessage("researcher_pro")).toMatch(/billing not activated/i);
+
+    // Reviewer role ≠ researcher_pro plan.
+    const reviewer = accountPowers(["reviewer"], true);
+    expect(reviewer.reviewer).toBe(true);
+    expect(normalizeEntitlement(undefined)).toBe("free");
+
+    expect(planQuotas("free").maxFollowedGaps).toBe(0);
+    expect(planQuotas("researcher_pro").maxFollowedGaps).toBeGreaterThan(0);
+    expect(planQuotas("team").radarListLimit).toBeGreaterThan(planQuotas("researcher_pro").radarListLimit);
+    expect(planQuotas("enterprise").maxExportsPerDay).toBeGreaterThan(planQuotas("team").maxExportsPerDay);
+
+    expect(assertEntitlementAllows("free", "gap_subscribe").ok).toBe(false);
+    expect(assertEntitlementAllows("researcher_pro", "gap_subscribe").ok).toBe(true);
+    expect(assertEntitlementAllows("team", "advanced_feed").ok).toBe(true);
+    expect(assertEntitlementAllows("enterprise", "dossier_export").ok).toBe(true);
+
+    expect(assertQuotaAllows("free", "followed_gaps", { followedGaps: 0 }).ok).toBe(false);
+    expect(assertQuotaAllows("researcher_pro", "followed_gaps", { followedGaps: 0 }).ok).toBe(true);
+    expect(
+      assertQuotaAllows("researcher_pro", "followed_gaps", {
+        followedGaps: PLAN_QUOTAS.researcher_pro.maxFollowedGaps,
+      }).ok,
+    ).toBe(false);
+    expect(assertQuotaAllows("free", "monitor_runs", { monitorRunsToday: 0 }).ok).toBe(true);
+    expect(assertQuotaAllows("free", "monitor_runs", { monitorRunsToday: 1 }).ok).toBe(false);
+    expect(assertQuotaAllows("free", "exports", { exportsToday: 0 }).ok).toBe(false);
+    expect(assertQuotaAllows("researcher_pro", "exports", { exportsToday: 0 }).ok).toBe(true);
+
+    // Team features stay scaffolding-only even on team/enterprise plans.
+    expect(TEAM_COLLAB_POLICY.activated).toBe(false);
+    expect(TEAM_COLLAB_POLICY.multiTenantBilling).toBe(false);
+    expect(assertEntitlementAllows("team", "team_shared_profile").ok).toBe(false);
+    expect(assertEntitlementAllows("enterprise", "team_collab").ok).toBe(false);
+    expect(planSharedTeamProfile({ plan: "team", draft: { orgLabel: "Lab", focusDiseases: [], focusDomains: [], modalities: [] } }).ok).toBe(false);
+    expect(planTeamCollabInvite({ plan: "enterprise", invite: { inviteeEmail: "a@b.co", roleHint: "viewer" } }).wouldSend).toBe(false);
+    expect(teamReadinessSummary("team").billingCopy).toMatch(/billing not activated/i);
+    expect(entitlementSummary("free").billingCopy).toMatch(/Researcher Pro/i);
+
+    const exportPlan = planDossierExport({
+      gap: detectDiscoveryCandidates()[0]!,
+      format: "markdown",
+    });
+    expect(EXPORT_POLICY.fabricatesPmids).toBe(false);
+    expect(exportPlan.fabricatesPmids).toBe(false);
+    expect(exportPlan.paymentActivation).toBe(false);
+    expect(exportPlan.body).toContain(detectDiscoveryCandidates()[0]!.gapKey);
+
+    const rl = createDiscoveryRateLimitStub({ windowMs: 60_000, maxPerWindow: 2 });
+    expect(rl.check("u").ok).toBe(true);
+    expect(rl.check("u").ok).toBe(true);
+    expect(rl.check("u").ok).toBe(false);
+
+    const gapsFns = source("src/lib/discovery/gaps.functions.ts");
+    expect(gapsFns).toContain("assertQuotaAllows");
+    expect(gapsFns).toContain("exportDiscoveryDossier");
+    expect(gapsFns).toMatch(/Entitlement is never taken from the client|never taken from the client|exportsUsedToday/i);
+    expect(source("src/lib/discovery/monitor.functions.ts")).toContain("assertQuotaAllows");
+    expect(source("src/lib/discovery/profiles.functions.ts")).toContain("entitlementSummary");
+    expect(source("src/lib/discovery/profiles.functions.ts")).toContain("rolesOrthogonal");
+    expect(source("drizzle/migrations/0022_research_entitlements_team.sql")).toContain("enterprise");
+    expect(source("src/routes/discovery.profile.tsx")).toMatch(/billing not activated/i);
+    expect(source("src/routes/discovery.gaps.$gapId.tsx")).toMatch(/Researcher Pro — billing not activated/);
+  });
+
+  it("refuses client entitlement elevation and keeps owner isolation", () => {
+    const profiles = source("src/lib/discovery/profiles.functions.ts");
+    expect(profiles).toMatch(/void data\.entitlement/);
+    expect(profiles).toMatch(/entitlement:\s*"free"/);
+    expect(profiles).toMatch(/where\(eq\(researchProfiles\.userId,\s*userId\)\)/);
+    expect(actorOwnsProfile("owner", "intruder")).toBe(false);
+    expect(normalizeEntitlement("enterprise")).toBe("enterprise");
+    expect(normalizeEntitlement({ plan: "enterprise" })).toBe("free");
   });
 });
 
@@ -390,12 +487,14 @@ describe("Discovery IA + migrations + route tree", () => {
       expect(agents).toMatch(/never a second graph/i);
       expect(agents).toMatch(/reviewed_gap/i);
       expect(agents).toMatch(/Phase 5 ranking/i);
+      expect(agents).toMatch(/team|enterprise/i);
       expect(source("drizzle/migrations/0019_research_profiles.sql")).toContain("research_profiles");
       expect(source("drizzle/migrations/0020_research_discovery_gaps.sql")).toContain("research_gaps");
       expect(source("drizzle/migrations/0020_research_discovery_gaps.sql")).toContain("coverage_insufficient");
       expect(source("drizzle/migrations/0021_research_discovery_monitor.sql")).toContain(
         "research_discovery_alerts",
       );
+      expect(source("drizzle/migrations/0022_research_entitlements_team.sql")).toContain("team");
       const tree = source("src/routeTree.gen.ts");
       expect(tree).toContain("discovery.index");
       expect(tree).toContain("/discovery/gaps/$gapId");
@@ -403,7 +502,31 @@ describe("Discovery IA + migrations + route tree", () => {
       expect(source("src/lib/db/schema.server.ts")).toContain("researchProfiles");
       expect(source("src/lib/db/schema.server.ts")).toContain("researchGaps");
       expect(source("src/lib/db/schema.server.ts")).toContain("researchDiscoveryAlerts");
+      expect(source("package.json")).toContain("db:research-entitlements-team");
+      expect(source("package.json")).toContain("discovery:eval");
     },
     { timeout: 20_000 },
   );
+});
+
+describe("Discovery Phase 8 security + isolation invariants", () => {
+  it("keeps owner isolation, no client elevation path, and rate-limit stubs", () => {
+    expect(PROFILE_ACCESS.ownerScopedOnly).toBe(true);
+    expect(PROFILE_ACCESS.allowAdminBypass).toBe(false);
+    const mon = source("src/lib/discovery/monitor.functions.ts");
+    expect(mon).toMatch(/eq\(researchDiscoveryAlerts\.userId,\s*userId\)/);
+    expect(mon).toContain("createDiscoveryRateLimitStub");
+    const gaps = source("src/lib/discovery/gaps.functions.ts");
+    expect(gaps).toContain("createDiscoveryRateLimitStub");
+    expect(gaps).toMatch(/eq\(researchGapSubscriptions\.userId,\s*userId\)/);
+    // Status taxonomy still blocks auto reviewed_gap.
+    expect(assertDetectionEmitStatus("reviewed_gap").ok).toBe(false);
+    expect(
+      applyGapReviewDecision({
+        from: "candidate",
+        decision: "promote_reviewed",
+        actorIsReviewer: false,
+      }).ok,
+    ).toBe(false);
+  });
 });

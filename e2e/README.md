@@ -35,6 +35,11 @@ When credentials are **missing**, auth tests call `test.skip` with an explicit `
 Specs:
 - `marketing-nav.spec.ts` — header IA / compact nav
 - `isi-journeys.spec.ts` — public journeys + authenticated flows (skip without creds)
+- `discovery-intelligence.spec.ts` — Discovery Radar public + auth (skip≠pass without `E2E_USER_*`)
 - `auth-helpers.ts` — shared sign-in / credential detection
+
+Discovery auth skips (profile quotas, monitor) are **not** entitlement security proof — only server unit tests + credentialed runs count.
+
+If local Vite preview OOMs, set `E2E_BASE_URL` to a production/preview URL and document any remaining gaps; focused `bun test src/test/discovery-intelligence.test.ts` must still pass.
 
 **Note:** `src/test/phase-f-e2e-journey.test.ts` is a **source-contract** suite, not browser E2E.
