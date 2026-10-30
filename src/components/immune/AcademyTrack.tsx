@@ -157,9 +157,12 @@ function TrackPanel({
               : "None recorded on this module."}
           </p>
           <h4>Graph concepts</h4>
+          <p className="xs muted">
+            Opens the Knowledge Atlas for an existing graph id, then return here — Academy progress is not reset.
+          </p>
           <div className="row" style={{ marginTop: 8 }}>
             {hit.graphIds.filter((id) => byId[id]).map((id) => (
-              <NodeChip key={id} id={id} />
+              <NodeChip key={id} id={id} fromLesson={hit.lessonId} />
             ))}
           </div>
           <MisconceptionCheck lessonId={hit.lessonId} />

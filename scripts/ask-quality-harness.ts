@@ -31,6 +31,13 @@ check("scientific eval set non-empty", SCIENTIFIC_EVAL_SET.length >= 10, String(
 
 const pathCases = SCIENTIFIC_EVAL_SET.filter((c) => c.kind === "path" || c.kind === "multi-concept");
 check("path/multi-concept cases exist", pathCases.length >= 1);
+const academyCases = SCIENTIFIC_EVAL_SET.filter((c) => typeof c.id === "string" && c.id.startsWith("academy-"));
+check("academy neighbourhood gold cases", academyCases.length >= 3, String(academyCases.length));
+check(
+  "eval set stays fail-closed honest",
+  SCIENTIFIC_EVAL_SET.some((c) => c.kind === "clinical-refusal") &&
+    SCIENTIFIC_EVAL_SET.some((c) => c.kind === "unsupported"),
+);
 
 const sample = prepareAsk("How does TNF relate to rheumatoid arthritis?");
 check("TNF/RA retrieves graph", sample.grounding.coverage.matched && sample.grounding.nodes.length > 0);

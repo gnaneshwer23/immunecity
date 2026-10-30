@@ -29,6 +29,7 @@ import {
   reportExemplar,
 } from "@/lib/immune/exemplarPathways";
 import { STATUS_INFO } from "@/lib/immune/evidenceStatus";
+import { saveResearchPath } from "@/lib/research/savedPaths";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { AiPrinciples, CapabilityRegistry, ResearchWorkspace } from "@/components/immune/ScientificAiPanel";
 import { SpecialistDrafts } from "@/components/immune/SpecialistDrafts";
@@ -55,6 +56,11 @@ function Reasoning() {
   useEffect(() => { if (urlFrom && byId[urlFrom]) setFrom(urlFrom); }, [urlFrom]);
 
   const path = useMemo(() => (!byId[from] || !byId[to] || from === to ? null : shortestPath(from, to, false)), [from, to]);
+  const pathConceptIds = useMemo(() => {
+    if (!path?.length) return [] as string[];
+    return [from, ...path.map((s) => s.to)].filter((id) => byId[id]);
+  }, [from, path]);
+  const [pathSavedMsg, setPathSavedMsg] = useState("");
   const { data: approvedCites = [], isError: evidenceUnavailable } = useQuery(approvedQuery);
   const c = CONTENT.cases[openCase]!;
 
@@ -207,6 +213,7 @@ function Reasoning() {
           {from === to ? (
             <p className="empty">Choose two different concepts.</p>
           ) : path && path.length ? (
+            <>
             <div className="trace-chain">
               <div className="pn"><NodeChip id={from} /></div>
               {path.map((s, i) => (
@@ -224,6 +231,26 @@ function Reasoning() {
                 </Fragment>
               ))}
             </div>
+            <div className="row" style={{ marginTop: 12, gap: 8, flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className="btn sm"
+                onClick={() => {
+                  const saved = saveResearchPath(pathConceptIds);
+                  setPathSavedMsg(
+                    saved
+                      ? `Saved “${saved.title}” in this browser. Open My Workspace to revisit — ids only, not a second science store.`
+                      : "Need at least two known graph concepts to save a path.",
+                  );
+                }}
+              >
+                Save research path
+              </button>
+              <Link className="btn sm" to="/workspace">My Workspace</Link>
+              <Link className="btn sm" to="/graph" search={{ focus: from }}>Open start in graph</Link>
+            </div>
+            {pathSavedMsg ? <p className="xs muted" role="status" style={{ marginTop: 8 }}>{pathSavedMsg}</p> : null}
+            </>
           ) : (
             <p className="empty">No causal path connects these two concepts in the current graph. That may reflect a missing curation or a genuinely absent link.</p>
           )}

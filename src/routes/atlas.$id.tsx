@@ -1,6 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { BookOpen, Check, Copy, MessageSquare, Network } from "lucide-react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { TYPES, byId, human, relId, spineLabel, type NodeType } from "@/lib/immune/engine";
 import {
   askShortcuts,
@@ -21,8 +23,15 @@ import TranslationalPath from "@/components/immune/TranslationalPath";
 import { TrialIntelligenceConceptNav, TrialIntelligencePanel } from "@/components/immune/TrialIntelligence";
 import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
 import EntityActions from "@/components/immune/EntityActions";
+import LessonReturn from "@/components/immune/LessonReturn";
+import { resolveLessonId } from "@/lib/academy/graphBridge";
 
 export const Route = createFileRoute("/atlas/$id")({
+  validateSearch: zodValidator(
+    z.object({
+      fromLesson: fallback(z.string(), "").default(""),
+    }),
+  ),
   loader: ({ params }) => {
     const n = byId[params.id];
     if (!n) throw notFound();
@@ -150,6 +159,8 @@ function firstSentence(s: string) {
 
 function ConceptPage() {
   const { id } = Route.useLoaderData();
+  const { fromLesson: fromLessonRaw } = Route.useSearch();
+  const fromLesson = resolveLessonId(fromLessonRaw) ?? undefined;
   const n = byId[id]!;
   const x = conceptExtras(n);
   const groups = neighboursByType(id);
@@ -189,6 +200,8 @@ function ConceptPage() {
         </ol>
       </nav>
 
+      <LessonReturn fromLesson={fromLesson} />
+
       <ExplainHero
         art={art}
         kicker={<><span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} /> {TYPES[n.node_type].label}</>}
@@ -200,9 +213,15 @@ function ConceptPage() {
         {!n.draft && total < 2 ? <p className="si-warn" role="note">Sparsely connected — only {total} link{total === 1 ? "" : "s"} recorded so far.</p> : null}
         <div className="isi-concept-actions">
           <Link className="btn sm primary" to="/ask" search={{ about: n.id }}><MessageSquare size={14} /> Ask about {n.name}</Link>
-          <Link className="btn sm" to="/graph" search={{ focus: n.id }}><Network size={14} /> See in graph</Link>
+          <Link
+            className="btn sm"
+            to="/graph"
+            search={fromLesson ? { focus: n.id, fromLesson } : { focus: n.id }}
+          >
+            <Network size={14} /> See in graph
+          </Link>
           <SourcesPill count={src.isLoading || src.isError ? null : src.items.length} />
-          <EntityActions id={n.id} showAsk={false} />
+          <EntityActions id={n.id} showAsk={false} fromLesson={fromLesson} />
         </div>
       </ExplainHero>
 
@@ -231,7 +250,13 @@ function ConceptPage() {
                       <button type="button" className="isi-rel-btn" onClick={() => inspect({ kind: "relationship", id: relId(r.edge) })}>
                         {r.dir === "out" ? <>{human(r.edge.relation)}</> : <>{human(r.edge.relation)} (by)</>}
                       </button>{" "}
-                      <Link to="/atlas/$id" params={{ id: r.node.id }}>{r.node.name}</Link>{" "}
+                      <Link
+                        to="/atlas/$id"
+                        params={{ id: r.node.id }}
+                        search={fromLesson ? { fromLesson } : undefined}
+                      >
+                        {r.node.name}
+                      </Link>{" "}
                       <StatusBadge edge={r.edge} />
                     </li>
                   ))}

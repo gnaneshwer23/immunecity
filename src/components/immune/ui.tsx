@@ -20,17 +20,23 @@ export function PageHead({ kicker, title, lede, stats, art }: { kicker: ReactNod
   );
 }
 
-export function NodeChip({ id, label }: { id: string; label?: string }) {
+/** Concept chip. Prefer `/atlas/$id` when linking from lessons (`fromLesson`) so journeys share one id scheme. */
+export function NodeChip({
+  id,
+  label,
+  fromLesson,
+}: {
+  id: string;
+  label?: string;
+  /** When set (known lesson id), deep-link to Atlas with return search — progress stays in Academy storage. */
+  fromLesson?: string;
+}) {
   const n = byId[id];
   if (!n) return null;
   const draft = Boolean(n.draft);
-  return (
-    <Link
-      className="chip"
-      to="/graph"
-      search={{ focus: id }}
-      title={`${n.name} · ${TYPES[n.node_type].label}${draft ? " · draft extension (not curated core)" : ""}`}
-    >
+  const title = `${n.name} · ${TYPES[n.node_type].label}${draft ? " · draft extension (not curated core)" : ""}`;
+  const body = (
+    <>
       <span className="dot" style={{ background: `var(${TYPES[n.node_type].c})` }} />
       {label || n.name}
       {draft ? (
@@ -38,6 +44,24 @@ export function NodeChip({ id, label }: { id: string; label?: string }) {
           draft
         </span>
       ) : null}
+    </>
+  );
+  if (fromLesson) {
+    return (
+      <Link
+        className="chip"
+        to="/atlas/$id"
+        params={{ id }}
+        search={{ fromLesson }}
+        title={`${title} · return to lesson`}
+      >
+        {body}
+      </Link>
+    );
+  }
+  return (
+    <Link className="chip" to="/graph" search={{ focus: id }} title={title}>
+      {body}
     </Link>
   );
 }

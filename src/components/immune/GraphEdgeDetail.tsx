@@ -5,11 +5,21 @@ import { inspect } from "@/lib/immune/inspector";
 import EdgeReference from "./EdgeReference";
 import { NodeLink } from "./ui";
 
-export default function GraphEdgeDetail({ edge, onClose }: { edge: KGEdge; onClose: () => void }) {
+export default function GraphEdgeDetail({
+  edge,
+  onClose,
+  relatedConceptId,
+}: {
+  edge: KGEdge;
+  onClose: () => void;
+  /** Concept still open in the detail slot — keeps evidence exploration continuous. */
+  relatedConceptId?: string | null;
+}) {
   const s = byId[edge.subject_id];
   const o = byId[edge.object_id];
   if (!s || !o) return null;
   const fields = edgePanelFields(edge, s.name, o.name);
+  const related = relatedConceptId ? byId[relatedConceptId] : null;
   return (
     <div className="inline-detail">
       <div className="id-head">
@@ -19,6 +29,11 @@ export default function GraphEdgeDetail({ edge, onClose }: { edge: KGEdge; onClo
         </div>
         <button className="id-close" onClick={onClose} aria-label="Close connection detail"><X size={14} /></button>
       </div>
+      {related ? (
+        <p className="xs muted" style={{ marginTop: 8 }} role="status">
+          Linked from open concept <b>{related.name}</b> — concept and edge panels stay together while you inspect evidence.
+        </p>
+      ) : null}
       <div className="id-section" style={{ marginTop: 10 }}>
         <h5 className="id-sub">Relationship</h5>
         <p className="small">

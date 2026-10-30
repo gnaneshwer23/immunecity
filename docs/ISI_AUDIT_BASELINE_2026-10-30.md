@@ -106,7 +106,7 @@ AI agents expansion, new diseases, Research Workbench MVP, full review workflow 
 
 ## 9. Next audit phase
 
-Phase 1 and Phase 2 engineering checklists are below. **Next:** Phase 3 — Integrated education and research. Production Trial Intelligence flag stays off until SME sign-off.
+Phase 1–3 engineering checklists are below. **Next:** Phase 4 — Research Workbench MVP. Production Trial Intelligence flag stays off until SME sign-off.
 
 ---
 
@@ -172,3 +172,27 @@ Phase 1 and Phase 2 engineering checklists are below. **Next:** Phase 3 — Inte
 - Full comparison engine / superiority analytics, biomarker assay DB tables (beyond stubs), Research Workbench MVP (Phase 4), Phase 3 education↔research integration, new disease areas, mass Gate C.
 
 **Next:** Phase 3 — Integrated education and research (OS ↔ graph, Ask evals, saved paths; flag still off until SME).
+
+---
+
+## 12. Phase 3 — Integrated education and research (exit checklist)
+
+**Status:** Engineering exit criteria met in code; **human SME sign-off still required** before enabling `VITE_TRIAL_INTELLIGENCE` in production or claiming Ask is fully evidence-grounded.
+
+**Exit gate:** Learning and research journeys share scientific data without duplication.
+
+| # | Criterion | Status | Evidence |
+| --- | --- | --- | --- |
+| P3-1 | Academy / Immunology OS concepts link to existing Immune City graph nodes only | Met | `knownGraphIdsForLesson` · `academyCurriculum.graphIds` filtered by `byId` · never invents biology |
+| P3-2 | Lesson → graph (Atlas) deep links and return to lesson with progress preserved | Met | `NodeChip` + `fromLesson` → `/atlas/$id` · `LessonReturn` → `/mechanism/$id` · Academy localStorage/server progress untouched |
+| P3-3 | Graph evidence exploration UX: empty filters + panel continuity | Met | `GraphTable` / `GraphView` empty-filter copy · concept+edge detail slot continuity |
+| P3-4 | Saved research paths reuse workspace / concept ids — no second science store | Met | `src/lib/research/savedPaths.ts` (ordered existing ids in localStorage) · My Workspace deep links to Atlas/graph/lesson |
+| P3-5 | Ask retrieval eval light: gold-set Academy neighbourhoods + dashboard fail-closed clarity | Met | `scientific-eval-set` academy-* cases · `ask:quality` harness · Ask quality dashboard note — status remains **not fully evidence-grounded** |
+| P3-6 | Docs + focused tests | Met | This checklist · `bun test src/test/phase3-education-research.test.ts` |
+| P3-7 | Production Trial Intelligence flag remains OFF | Required | Do **not** set `VITE_TRIAL_INTELLIGENCE` in Vercel Production until SME review |
+
+### Explicitly out of Phase 3
+
+- Research Workbench MVP (Phase 4), prod trial flag on, inventing lessons/science, community→KG writes, CDS claims, mass Gate C.
+
+**Next:** Phase 4 — Research Workbench MVP (flag still off until SME).

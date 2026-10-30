@@ -6,11 +6,20 @@ import { NodeLink } from "./ui";
 import { inspect } from "@/lib/immune/inspector";
 import EntityActions from "./EntityActions";
 
-export default function GraphNodeDetail({ id, onClose }: { id: string; onClose: () => void }) {
+export default function GraphNodeDetail({
+  id,
+  onClose,
+  fromLesson,
+}: {
+  id: string;
+  onClose: () => void;
+  fromLesson?: string;
+}) {
   const n = byId[id];
   if (!n) return null;
   const outs = out[id] || [];
   const ins = inn[id] || [];
+  const atlasSearch = fromLesson ? { fromLesson } : undefined;
   return (
     <div className="inline-detail">
       <div className="id-head">
@@ -32,17 +41,22 @@ export default function GraphNodeDetail({ id, onClose }: { id: string; onClose: 
         <p className="xs muted">
           Coverage is incomplete. Missing neighbours or unreviewed edges are gaps in this educational
           model — not evidence that a relationship does not exist. Citations support a link only after
-          claim-level review.
+          claim-level review. An empty citation list is a curation gap, not proof of absence.
         </p>
       </div>
       <div className="row" style={{ marginTop: 12, gap: 6 }}>
-        <Link className="btn sm primary" to="/atlas/$id" params={{ id }}>Concept page</Link>
-        <Link className="btn sm" to="/graph" search={{ focus: id, sim: id, mode: "inhibit" }}>Simulate blocking</Link>
-        <Link className="btn sm" to="/graph" search={{ focus: id, sim: id, mode: "activate" }}>Simulate giving</Link>
+        <Link className="btn sm primary" to="/atlas/$id" params={{ id }} search={atlasSearch}>Concept page</Link>
+        <Link className="btn sm" to="/graph" search={fromLesson ? { focus: id, sim: id, mode: "inhibit", fromLesson } : { focus: id, sim: id, mode: "inhibit" }}>Simulate blocking</Link>
+        <Link className="btn sm" to="/graph" search={fromLesson ? { focus: id, sim: id, mode: "activate", fromLesson } : { focus: id, sim: id, mode: "activate" }}>Simulate giving</Link>
         <Link className="btn sm" to="/reasoning" search={{ from: id }}>Trace from here</Link>
         <button className="btn sm" onClick={() => inspect({ kind: "concept", id })}>Full scientific detail</button>
       </div>
-      <EntityActions id={id} />
+      <EntityActions id={id} fromLesson={fromLesson} />
+      {!outs.length && !ins.length ? (
+        <p className="xs muted" style={{ marginTop: 12 }} role="status">
+          No typed links are recorded for this concept yet. Empty neighbourhood — not a scientific negative finding.
+        </p>
+      ) : null}
       {outs.length ? (
         <div className="id-section">
           <h5 className="id-sub">Acts on ({outs.length})</h5>

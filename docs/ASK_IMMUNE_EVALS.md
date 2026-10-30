@@ -42,6 +42,7 @@ Do **not** rely on live PubMed/Europe PMC in CI — provisional fetch is soft-fa
 | `classification` | Query classes (source_lookup, comparison, perturbation, …) |
 | `citation-validation` | Invented PMIDs/IDs rejected; provisional PMIDs allowed only when attached |
 | `provisional-labelling` | Source-lookup / empty-reviewed path triggers provisional policy + SYSTEM honesty |
+| Academy neighbourhoods (Phase 3) | TLR4↔NF-κB, IL-6↔tocilizumab, NLRP3↔IL-1β, PD-1↔pembrolizumab — existing graph ids only |
 
 ## Honesty constraints (do not regress)
 

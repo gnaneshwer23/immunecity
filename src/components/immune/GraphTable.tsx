@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { KG, byId, human, relId, TYPES } from "@/lib/immune/engine";
+import { KG, byId, human, relId, TYPES, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
 import { StatusBadge } from "./ScientificInspector";
 
@@ -8,12 +8,14 @@ type Props = {
   embedded?: boolean;
   /** Focus a subject concept in the graph (list → graph handoff). */
   onFocusConcept?: (id: string) => void;
+  /** Open edge in the graph detail slot (keeps evidence panel continuous). */
+  onInspectEdge?: (edge: KGEdge) => void;
   /** Edge evidence_status from the KG. Empty shows every status. */
   evidenceStatus?: string;
 };
 
 /* Keyboard- and screen-reader-friendly alternative to the force graph. */
-export default function GraphTable({ embedded = false, onFocusConcept, evidenceStatus = "" }: Props) {
+export default function GraphTable({ embedded = false, onFocusConcept, onInspectEdge, evidenceStatus = "" }: Props) {
   const [q, setQ] = useState("");
   const [limit, setLimit] = useState(50);
   const rows = useMemo(() => {
@@ -26,6 +28,20 @@ export default function GraphTable({ embedded = false, onFocusConcept, evidenceS
         .includes(t);
     });
   }, [q, evidenceStatus]);
+
+  const emptyMessage = (() => {
+    if (rows.length > 0) return `${rows.length} links match.`;
+    if (evidenceStatus && q.trim()) {
+      return `No ${evidenceStatus.toLowerCase()} links match “${q.trim()}”. Filter miss — not evidence of absence. Clear text or evidence-status filters to widen.`;
+    }
+    if (evidenceStatus) {
+      return `No links with evidence status “${evidenceStatus.toLowerCase()}” in this release. Empty filter — not a scientific finding. Clear the evidence-status filter to see other statuses.`;
+    }
+    if (q.trim()) {
+      return `No links match “${q.trim()}”. This is a filter miss — not a scientific negative finding.`;
+    }
+    return "No links in the current graph release.";
+  })();
 
   const body = (
     <>
@@ -41,12 +57,8 @@ export default function GraphTable({ embedded = false, onFocusConcept, evidenceS
           aria-label="Filter causal links"
         />
       </label>
-      <p className="xs muted" aria-live="polite">
-        {rows.length === 0
-          ? q.trim()
-            ? `No links match “${q.trim()}”. This is a filter miss — not a scientific negative finding.`
-            : "No links in the current graph release."
-          : `${rows.length} links match.`}
+      <p className="xs muted" aria-live="polite" role={rows.length === 0 ? "status" : undefined}>
+        {emptyMessage}
       </p>
       <div className="gt-scroll">
         <table className="rs-table gt">
@@ -106,7 +118,10 @@ export default function GraphTable({ embedded = false, onFocusConcept, evidenceS
                     <button
                       type="button"
                       className="si-open"
-                      onClick={() => inspect({ kind: "relationship", id: relId(r) })}
+                      onClick={() => {
+                        onInspectEdge?.(r);
+                        inspect({ kind: "relationship", id: relId(r) });
+                      }}
                     >
                       details
                     </button>

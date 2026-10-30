@@ -4,6 +4,8 @@ import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { PageHead } from "@/components/immune/ui";
+import LessonReturn from "@/components/immune/LessonReturn";
+import { resolveLessonId } from "@/lib/academy/graphBridge";
 
 const GraphView = lazy(() => import("@/components/immune/GraphView"));
 
@@ -13,6 +15,7 @@ export const Route = createFileRoute("/graph")({
       focus: fallback(z.string(), "").default(""),
       sim: fallback(z.string(), "").default(""),
       mode: fallback(z.string(), "").default(""),
+      fromLesson: fallback(z.string(), "").default(""),
     }),
   ),
   head: () => seoHead({ title: "Knowledge graph: the causal map — Immune Super Intelligence", description: "Explore typed immune concepts and directional causal links, and simulate blocking or activating a node.", path: "/graph" }),
@@ -67,13 +70,15 @@ function GraphGuide() {
 }
 
 function GraphPage() {
-  const { focus, sim, mode } = Route.useSearch();
+  const { focus, sim, mode, fromLesson: fromLessonRaw } = Route.useSearch();
+  const fromLesson = resolveLessonId(fromLessonRaw) ?? undefined;
   return (
     <>
     <GraphGuide />
+    <LessonReturn fromLesson={fromLesson} />
     <ClientOnly fallback={<Fallback />}>
       <Suspense fallback={<Fallback />}>
-        <GraphView focusId={focus || null} simId={sim || null} modeParam={mode} />
+        <GraphView focusId={focus || null} simId={sim || null} modeParam={mode} fromLesson={fromLesson} />
       </Suspense>
     </ClientOnly>
     </>

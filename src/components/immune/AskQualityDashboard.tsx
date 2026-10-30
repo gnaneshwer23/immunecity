@@ -49,9 +49,10 @@ export default function AskQualityDashboard() {
     <div className="mkt-ev-panel" aria-labelledby="ask-quality-heading" id="ask-quality">
       <h3 id="ask-quality-heading">Ask quality loop (admin)</h3>
       <p className="mkt-aside">
-        Gate outcome rates by prompt version from <code>ai_evaluation_runs</code>. Personal-health questions are
-        stored as a redacted flag only — full question text is never logged here. Current prompt{" "}
-        <code>{PROMPT_VERSION}</code>. Educational beta — not CDS; not fully evidence-grounded AI.
+        Gate outcome rates by prompt version from <code>ai_evaluation_runs</code>. Fail closed: abstains and
+        citation rejects count as honest outcomes. Personal-health questions are a redacted flag only — full
+        question text is never logged here. Current prompt <code>{PROMPT_VERSION}</code>. Educational beta —
+        not CDS; not fully evidence-grounded AI.
       </p>
       {error ? (
         <p role="alert">{error}</p>

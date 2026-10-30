@@ -5,6 +5,7 @@ import { useState } from "react";
 import { askPrefill } from "@/lib/immune/concepts";
 import { byId, lessonsForNode } from "@/lib/immune/engine";
 import { discussionStartSearch } from "@/lib/academy/progress";
+import { lessonForGraphConcept, resolveLessonId } from "@/lib/academy/graphBridge";
 import { listConceptDiscussions } from "@/lib/community.functions";
 import { getConceptSaved, toggleConceptSave } from "@/lib/workspace.functions";
 import { safeClientError, useMember } from "@/components/immune/community/chrome";
@@ -87,15 +88,27 @@ function ConceptSave({ id }: { id: string }) {
 }
 
 /** Real routes only. Start a discussion opens the new-post form and does not publish. */
-export default function EntityActions({ id, showAsk = true }: { id: string; showAsk?: boolean }) {
+export default function EntityActions({
+  id,
+  showAsk = true,
+  fromLesson,
+}: {
+  id: string;
+  showAsk?: boolean;
+  /** Prefer this Academy lesson for return when arriving from a lesson deep link. */
+  fromLesson?: string;
+}) {
   const n = byId[id];
   if (!n) return null;
-  const lessonId = lessonsForNode[id]?.[0];
+  const lessonId =
+    resolveLessonId(fromLesson) ?? lessonForGraphConcept(id) ?? lessonsForNode[id]?.[0] ?? null;
   const question = askPrefill(id, "");
   return (
     <div className="row entity-actions">
       {lessonId ? (
-        <Link className="btn sm" to="/mechanism/$id" params={{ id: lessonId }}>Explore mechanism</Link>
+        <Link className="btn sm" to="/mechanism/$id" params={{ id: lessonId }}>
+          {fromLesson ? "Back to lesson" : "Explore mechanism"}
+        </Link>
       ) : (
         <Link className="btn sm" to="/reasoning" search={{ from: id }}>Explore mechanism</Link>
       )}

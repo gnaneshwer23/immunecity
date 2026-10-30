@@ -91,7 +91,7 @@ export function summariseAskEvaluations(rows: readonly AskEvalRow[]): AskQuality
     byPromptVersion,
     overall: toRates(tally(rows), rows.length),
     note:
-      "Rates are gate outcomes only (allowed / abstained / citation_rejected / conflict / context_mismatch). Personal-health questions are stored as redacted flags — never as full question text. Educational beta — not CDS.",
+      "Rates are gate outcomes only (allowed / abstained / citation_rejected / conflict / context_mismatch). Fail closed: abstained and citation_rejected are expected honesty, not product bugs. Personal-health questions are stored as redacted flags — never as full question text. Educational beta — not CDS; not fully evidence-grounded AI. Expand gold-set with graph-true ids only (`bun run ask:quality`); SME sign-off stays human.",
   };
 }
 

@@ -38,7 +38,18 @@ function buildStartingPoints() {
 
 const STARTING_POINTS = buildStartingPoints();
 
-export default function GraphView({ focusId, simId, modeParam }: { focusId: string | null; simId: string | null; modeParam: string }) {
+export default function GraphView({
+  focusId,
+  simId,
+  modeParam,
+  fromLesson,
+}: {
+  focusId: string | null;
+  simId: string | null;
+  modeParam: string;
+  /** Known Academy lesson id for return deep links in the evidence panel. */
+  fromLesson?: string;
+}) {
   const stageRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const nodeSel = useRef<any>(null);
@@ -50,6 +61,7 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
     const start = focusId && byId[focusId] ? focusId : null;
     return { ids: new Set<string>(start ? [start] : []), detail: start as string | null };
   });
+  const [edgePick, setEdgePick] = useState<KGEdge | null>(null);
 
   const togglePick = useCallback((id: string) => {
     setPick((prev) => {
@@ -61,11 +73,19 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
       } else { ids.add(id); detail = id; }
       return { ids, detail };
     });
+    // Keep an edge panel only when it still touches the focused concept (continuity).
+    setEdgePick((edge) => {
+      if (!edge) return null;
+      if (edge.subject_id === id || edge.object_id === id) return edge;
+      return null;
+    });
   }, []);
-  const clearPick = useCallback(() => setPick({ ids: new Set(), detail: null }), []);
+  const clearPick = useCallback(() => {
+    setPick({ ids: new Set(), detail: null });
+    setEdgePick(null);
+  }, []);
   const hideDetail = useCallback(() => setPick((p) => ({ ids: p.ids, detail: null })), []);
   const [active, setActive] = useState<Set<NodeType>>(() => new Set(DEFAULT_TYPES));
-  const [edgePick, setEdgePick] = useState<KGEdge | null>(null);
   const [mode, setMode] = useState<"activate" | "inhibit">(() => {
     if (modeParam === "activate" || modeParam === "inhibit") return modeParam;
     const n = simId ? byId[simId] : null;
@@ -106,7 +126,19 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
     const hit = root.append("g").selectAll("line").data(links).join("line")
       .attr("stroke", "transparent").attr("stroke-width", 16).style("cursor", "pointer")
       .attr("pointer-events", "stroke")
-      .on("click", (_e: any, d: any) => setEdgePick(d));
+      .on("click", (_e: any, d: any) => {
+        // Keep concept detail when the edge touches the current focus (panel continuity).
+        setEdgePick(d);
+        setPick((prev) => {
+          const focus = prev.detail && (prev.detail === d.subject_id || prev.detail === d.object_id)
+            ? prev.detail
+            : d.subject_id;
+          const ids = new Set(prev.ids);
+          ids.add(d.subject_id);
+          ids.add(d.object_id);
+          return { ids, detail: byId[focus] ? focus : d.subject_id };
+        });
+      });
     hit.append("title").text((d: any) => `${byId[d.subject_id]?.name ?? d.subject_id} — ${human(d.relation)} → ${byId[d.object_id]?.name ?? d.object_id}. Click for details.`);
     const node = root.append("g").selectAll("circle").data(nodes).join("circle")
       .attr("tabindex", 0).attr("role", "button")
@@ -281,12 +313,30 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
             onFocusConcept={(id) => {
               findGo(id);
             }}
+            onInspectEdge={(edge) => {
+              setEdgePick(edge);
+              setPick((prev) => {
+                const ids = new Set(prev.ids);
+                ids.add(edge.subject_id);
+                ids.add(edge.object_id);
+                const focus = prev.detail && (prev.detail === edge.subject_id || prev.detail === edge.object_id)
+                  ? prev.detail
+                  : edge.subject_id;
+                return { ids, detail: focus };
+              });
+            }}
           />
           {pick.detail && byId[pick.detail] ? (
-            <div className="graph-detail"><GraphNodeDetail id={pick.detail} onClose={hideDetail} /></div>
+            <div className="graph-detail"><GraphNodeDetail id={pick.detail} onClose={hideDetail} fromLesson={fromLesson} /></div>
           ) : null}
           {edgePick ? (
-            <div className="graph-detail graph-edge-detail"><GraphEdgeDetail edge={edgePick} onClose={() => setEdgePick(null)} /></div>
+            <div className="graph-detail graph-edge-detail">
+              <GraphEdgeDetail
+                edge={edgePick}
+                onClose={() => setEdgePick(null)}
+                relatedConceptId={pick.detail && (edgePick.subject_id === pick.detail || edgePick.object_id === pick.detail) ? pick.detail : null}
+              />
+            </div>
           ) : null}
         </div>
       ) : null}
@@ -454,12 +504,18 @@ export default function GraphView({ focusId, simId, modeParam }: { focusId: stri
           </div>
         </div>
         {(pick.detail && byId[pick.detail]) || edgePick ? (
-          <div className="graph-detail-slot">
+          <div className="graph-detail-slot" aria-live="polite">
             {pick.detail && byId[pick.detail] ? (
-              <div className="graph-detail"><GraphNodeDetail id={pick.detail} onClose={hideDetail} /></div>
+              <div className="graph-detail"><GraphNodeDetail id={pick.detail} onClose={hideDetail} fromLesson={fromLesson} /></div>
             ) : null}
             {edgePick ? (
-              <div className="graph-detail graph-edge-detail"><GraphEdgeDetail edge={edgePick} onClose={() => setEdgePick(null)} /></div>
+              <div className="graph-detail graph-edge-detail">
+                <GraphEdgeDetail
+                  edge={edgePick}
+                  onClose={() => setEdgePick(null)}
+                  relatedConceptId={pick.detail && (edgePick.subject_id === pick.detail || edgePick.object_id === pick.detail) ? pick.detail : null}
+                />
+              </div>
             ) : null}
           </div>
         ) : null}

@@ -165,7 +165,7 @@ function AcademyLanding() {
                           .filter((id) => byId[id])
                           .slice(0, 5)
                           .map((id) => (
-                            <NodeChip key={id} id={id} />
+                            <NodeChip key={id} id={id} fromLesson={m.lessonId} />
                           ))}
                       </div>
                     </div>

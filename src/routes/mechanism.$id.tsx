@@ -115,7 +115,7 @@ function Mechanism() {
         aside={
           <Facts items={[
             ...(cellNames.length ? [{ label: "Cells involved", children: <div className="row">{cellNames.map((n) => <span className="chip" key={n}>{n}</span>)}</div> }] : []),
-            ...((lesson.nodes || []).some((nid: string) => byId[nid]) ? [{ label: "Graph concepts", children: <div className="row">{(lesson.nodes || []).filter((nid: string) => byId[nid]).map((nid: string) => <NodeChip key={nid} id={nid} />)}</div> }] : []),
+            ...((lesson.nodes || []).some((nid: string) => byId[nid]) ? [{ label: "Graph concepts", children: <div className="row">{(lesson.nodes || []).filter((nid: string) => byId[nid]).map((nid: string) => <NodeChip key={nid} id={nid} fromLesson={lesson.id} />)}</div> }] : []),
           ]} />
         }>
       {steps.length ? (
