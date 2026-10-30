@@ -1,6 +1,10 @@
 /**
  * Neon-backed evidence collections for the Research Workbench.
  * Writes never touch evidence_records curation, roles, or the knowledge graph.
+ *
+ * Authorization: every list/create/update/delete is ownership-scoped to the
+ * signed-in user_id (memberId). Admin role is never consulted — there is no
+ * casual admin list-all path for other members' collections.
  */
 import { createServerFn } from "@tanstack/react-start";
 import { and, desc, eq } from "drizzle-orm";
@@ -10,12 +14,17 @@ import { requireMember } from "@/lib/community/rules";
 import { getDb } from "@/lib/db.server";
 import { evidenceCollections } from "@/lib/db/schema.server";
 import {
+  COLLECTION_ACCESS,
   MAX_COLLECTIONS_PER_MEMBER,
+  collectionOwnershipSpec,
   planEvidenceCollection,
   type EvidenceCollectionRow,
 } from "@/lib/research/collections";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/** Re-export for source/contract tests. */
+export { COLLECTION_ACCESS, collectionOwnershipSpec };
 
 function memberId(userId: string | null | undefined): string {
   const member = requireMember(userId);
@@ -63,9 +72,14 @@ const createInput = z.object({
   evidenceRefs: z.array(z.string().min(1).max(80)).max(40).optional(),
 });
 
+const updateInput = createInput.extend({
+  id: z.string().uuid(),
+});
+
 export const listEvidenceCollections = createServerFn({ method: "GET" })
   .middleware([requireNeonAuth])
   .handler(async ({ context }) => {
+    void collectionOwnershipSpec("list");
     const userId = memberId(context.userId);
     try {
       const db = getDb();
@@ -87,6 +101,7 @@ export const createEvidenceCollection = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => createInput.parse(d))
   .handler(async ({ data, context }) => {
+    void collectionOwnershipSpec("create");
     const userId = memberId(context.userId);
     const plan = planEvidenceCollection({
       userId,
@@ -124,17 +139,55 @@ export const createEvidenceCollection = createServerFn({ method: "POST" })
     }
   });
 
+export const updateEvidenceCollection = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) => updateInput.parse(d))
+  .handler(async ({ data, context }) => {
+    void collectionOwnershipSpec("update");
+    const userId = memberId(context.userId);
+    const plan = planEvidenceCollection({
+      userId,
+      name: data.name,
+      conceptIds: data.conceptIds,
+      evidenceRefs: data.evidenceRefs,
+    });
+    if (!plan.ok) throw new Error(plan.error);
+    try {
+      const db = getDb();
+      const [row] = await db
+        .update(evidenceCollections)
+        .set({
+          name: plan.name,
+          conceptIds: plan.conceptIds,
+          evidenceRefs: plan.evidenceRefs,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(evidenceCollections.id, data.id), eq(evidenceCollections.userId, userId)))
+        .returning();
+      if (!row) throw new Error("Collection not found.");
+      return { collection: toRow(row), kgWrite: false as const };
+    } catch (err) {
+      if (err instanceof Error && /Sign in|Collection not found|at least one|Collection name/.test(err.message)) {
+        throw err;
+      }
+      console.error("evidence_collections_update_failed", (err as { code?: string })?.code ?? "error");
+      throw mapError(err);
+    }
+  });
+
 export const deleteEvidenceCollection = createServerFn({ method: "POST" })
   .middleware([requireNeonAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
+    void collectionOwnershipSpec("delete");
     const userId = memberId(context.userId);
     try {
       const db = getDb();
-      await db
+      const removed = await db
         .delete(evidenceCollections)
-        .where(and(eq(evidenceCollections.id, data.id), eq(evidenceCollections.userId, userId)));
-      return { deleted: true as const, kgWrite: false as const };
+        .where(and(eq(evidenceCollections.id, data.id), eq(evidenceCollections.userId, userId)))
+        .returning({ id: evidenceCollections.id });
+      return { deleted: removed.length > 0, kgWrite: false as const };
     } catch (err) {
       console.error("evidence_collections_delete_failed", (err as { code?: string })?.code ?? "error");
       throw mapError(err);

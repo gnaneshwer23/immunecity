@@ -129,7 +129,7 @@ function Research() {
         id="collections"
         n={3}
         title="Evidence collections"
-        lede="Signed-in members can save named sets of existing graph concept ids plus optional evidence record refs. Additive Neon storage only — never a knowledge-graph write."
+        lede="Signed-in members can save named sets of existing graph concept ids plus optional evidence record refs. Neon-backed — syncs across devices for your account. Additive storage only — never a knowledge-graph write. Gap labels describe ISI curated coverage, not worldwide literature absence."
       >
         <EvidenceCollectionsPanel />
       </Section>
@@ -140,9 +140,10 @@ function Research() {
         title="Workbench"
         lede={
           <>
-            Guided steps from question through search, extract, assess, hypothesis and export. Candidates and
-            counterevidence hints stay drafts until human review at{" "}
-            <Link to="/curation">Curation</Link>. Nothing is automatically published to the knowledge graph. See{" "}
+            Guided steps from question through search, extract, assess, hypothesis and export. Local drafts use this
+            browser’s localStorage (device-only — not Neon, not cross-device). Candidates and counterevidence hints
+            stay drafts until human review at <Link to="/curation">Curation</Link>. Nothing is automatically
+            published to the knowledge graph. See{" "}
             <Link to="/methods" hash="models">
               Methods · models
             </Link>

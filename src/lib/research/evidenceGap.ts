@@ -15,26 +15,33 @@ export const EVIDENCE_GAP_LABELS = [
 
 export type EvidenceGapLabel = (typeof EVIDENCE_GAP_LABELS)[number];
 
+/**
+ * UI copy must state ISI curated coverage / search date-scope.
+ * Never imply “no literature exists in the world.”
+ */
+export const EVIDENCE_GAP_PROVENANCE_NOTE =
+  "Gap labels reflect ISI curated graph coverage and any search you ran in this product’s date-scope — not a claim that no literature exists worldwide.";
+
 export const EVIDENCE_GAP_UI: Record<EvidenceGapLabel, { label: string; desc: string }> = {
   no_mapped_evidence: {
-    label: "No mapped evidence",
-    desc: "No Gate C–approved supporting cite and no bibliographic ref on incident edges.",
+    label: "No ISI-mapped evidence",
+    desc: "Within ISI curated coverage: no Gate C–approved supporting cite and no bibliographic ref on incident edges. Does not mean worldwide literature is absent.",
   },
   awaiting_curation: {
-    label: "Awaiting curation",
-    desc: "Mapped or draft material exists but is not yet approved as claim support.",
+    label: "Awaiting ISI curation",
+    desc: "Mapped or draft material exists in ISI but is not yet approved as claim support.",
   },
   no_direct_evidence_after_search: {
-    label: "No direct evidence after search",
-    desc: "A search was attempted and returned no usable hits for this concept.",
+    label: "No direct hits in ISI search scope",
+    desc: "An ISI/product search was attempted in the current date-scope and returned no usable hits for this concept — not a claim that no papers exist elsewhere.",
   },
   conflicting: {
-    label: "Conflicting",
-    desc: "Recorded counterevidence or conflicting review status for incident claims.",
+    label: "Conflicting (ISI records)",
+    desc: "ISI-recorded counterevidence or conflicting review status for incident claims.",
   },
   emerging: {
-    label: "Emerging",
-    desc: "Graph evidence_status is EMERGING or HYPOTHESIS (teaching class — not Gate C).",
+    label: "Emerging (ISI graph label)",
+    desc: "ISI graph evidence_status is EMERGING or HYPOTHESIS (teaching class — not Gate C).",
   },
 };
 
@@ -127,6 +134,10 @@ export function classifyEvidenceGap(
 
 export function evidenceGapLabelText(label: EvidenceGapLabel): string {
   return EVIDENCE_GAP_UI[label].label;
+}
+
+export function evidenceGapLabelDescription(label: EvidenceGapLabel): string {
+  return EVIDENCE_GAP_UI[label].desc;
 }
 
 /** Batch classify; drops unknown concept ids. */

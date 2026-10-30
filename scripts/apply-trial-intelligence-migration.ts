@@ -114,94 +114,97 @@ try {
     }
   }
 
-  await sql.unsafe(sqlText);
+  // Single transaction: DDL + seed fail closed together — mid-script abort leaves no partial seed.
+  await sql.begin(async (tx) => {
+    await tx.unsafe(sqlText);
 
-  for (const trial of MELANOMA_PILOT_TRIALS) {
-    await sql`
-      INSERT INTO public.clinical_trials (
-        trial_id, graph_node_id, nct_id, acronym, title, phase, design, sponsor, status,
-        condition_label, population_summary, analysis_set_note, verification_state,
-        primary_pmid, primary_doi, notes
-      ) VALUES (
-        ${trial.trialId}, ${trial.graphNodeId}, ${trial.nctId}, ${trial.acronym}, ${trial.title},
-        ${trial.phase}, ${trial.design}, ${trial.sponsor}, ${trial.status},
-        ${trial.conditionLabel}, ${trial.populationSummary}, ${trial.analysisSetNote},
-        ${trial.verificationState}, ${trial.primaryPmid}, ${trial.primaryDoi}, ${trial.notes}
-      )
-      ON CONFLICT (trial_id) DO UPDATE SET
-        graph_node_id = EXCLUDED.graph_node_id,
-        nct_id = EXCLUDED.nct_id,
-        acronym = EXCLUDED.acronym,
-        title = EXCLUDED.title,
-        phase = EXCLUDED.phase,
-        design = EXCLUDED.design,
-        sponsor = EXCLUDED.sponsor,
-        status = EXCLUDED.status,
-        condition_label = EXCLUDED.condition_label,
-        population_summary = EXCLUDED.population_summary,
-        analysis_set_note = EXCLUDED.analysis_set_note,
-        verification_state = EXCLUDED.verification_state,
-        primary_pmid = EXCLUDED.primary_pmid,
-        primary_doi = EXCLUDED.primary_doi,
-        notes = EXCLUDED.notes,
-        updated_at = now()
-    `;
-
-    for (const arm of trial.arms) {
-      await sql`
-        INSERT INTO public.trial_arms (
-          arm_id, trial_id, label, regimen, dose_schedule, comparator_role,
-          enrolled_n, treated_n, sort_order
+    for (const trial of MELANOMA_PILOT_TRIALS) {
+      await tx`
+        INSERT INTO public.clinical_trials (
+          trial_id, graph_node_id, nct_id, acronym, title, phase, design, sponsor, status,
+          condition_label, population_summary, analysis_set_note, verification_state,
+          primary_pmid, primary_doi, notes
         ) VALUES (
-          ${arm.armId}, ${trial.trialId}, ${arm.label}, ${arm.regimen}, ${arm.doseSchedule},
-          ${arm.comparatorRole}, ${arm.enrolledN}, ${arm.treatedN}, ${arm.sortOrder}
+          ${trial.trialId}, ${trial.graphNodeId}, ${trial.nctId}, ${trial.acronym}, ${trial.title},
+          ${trial.phase}, ${trial.design}, ${trial.sponsor}, ${trial.status},
+          ${trial.conditionLabel}, ${trial.populationSummary}, ${trial.analysisSetNote},
+          ${trial.verificationState}, ${trial.primaryPmid}, ${trial.primaryDoi}, ${trial.notes}
         )
-        ON CONFLICT (arm_id) DO UPDATE SET
-          trial_id = EXCLUDED.trial_id,
-          label = EXCLUDED.label,
-          regimen = EXCLUDED.regimen,
-          dose_schedule = EXCLUDED.dose_schedule,
-          comparator_role = EXCLUDED.comparator_role,
-          enrolled_n = EXCLUDED.enrolled_n,
-          treated_n = EXCLUDED.treated_n,
-          sort_order = EXCLUDED.sort_order
+        ON CONFLICT (trial_id) DO UPDATE SET
+          graph_node_id = EXCLUDED.graph_node_id,
+          nct_id = EXCLUDED.nct_id,
+          acronym = EXCLUDED.acronym,
+          title = EXCLUDED.title,
+          phase = EXCLUDED.phase,
+          design = EXCLUDED.design,
+          sponsor = EXCLUDED.sponsor,
+          status = EXCLUDED.status,
+          condition_label = EXCLUDED.condition_label,
+          population_summary = EXCLUDED.population_summary,
+          analysis_set_note = EXCLUDED.analysis_set_note,
+          verification_state = EXCLUDED.verification_state,
+          primary_pmid = EXCLUDED.primary_pmid,
+          primary_doi = EXCLUDED.primary_doi,
+          notes = EXCLUDED.notes,
+          updated_at = now()
       `;
 
-      for (const ep of arm.endpoints) {
-        await sql`
-          INSERT INTO public.endpoint_results (
-            result_id, arm_id, endpoint_type, label, value_num, value_text, unit,
-            ci_lower, ci_upper, p_value, timepoint, analysis_set, follow_up,
-            population_note, verification_state, source_pmid, source_doi, source_locator, notes
+      for (const arm of trial.arms) {
+        await tx`
+          INSERT INTO public.trial_arms (
+            arm_id, trial_id, label, regimen, dose_schedule, comparator_role,
+            enrolled_n, treated_n, sort_order
           ) VALUES (
-            ${ep.resultId}, ${arm.armId}, ${ep.endpointType}, ${ep.label}, ${ep.valueNum},
-            ${ep.valueText}, ${ep.unit}, ${ep.ciLower}, ${ep.ciUpper}, ${ep.pValue},
-            ${ep.timepoint}, ${ep.analysisSet}, ${ep.followUp}, ${ep.populationNote},
-            ${ep.verificationState}, ${ep.sourcePmid}, ${ep.sourceDoi}, ${ep.sourceLocator}, ${ep.notes}
+            ${arm.armId}, ${trial.trialId}, ${arm.label}, ${arm.regimen}, ${arm.doseSchedule},
+            ${arm.comparatorRole}, ${arm.enrolledN}, ${arm.treatedN}, ${arm.sortOrder}
           )
-          ON CONFLICT (result_id) DO UPDATE SET
-            arm_id = EXCLUDED.arm_id,
-            endpoint_type = EXCLUDED.endpoint_type,
+          ON CONFLICT (arm_id) DO UPDATE SET
+            trial_id = EXCLUDED.trial_id,
             label = EXCLUDED.label,
-            value_num = EXCLUDED.value_num,
-            value_text = EXCLUDED.value_text,
-            unit = EXCLUDED.unit,
-            ci_lower = EXCLUDED.ci_lower,
-            ci_upper = EXCLUDED.ci_upper,
-            p_value = EXCLUDED.p_value,
-            timepoint = EXCLUDED.timepoint,
-            analysis_set = EXCLUDED.analysis_set,
-            follow_up = EXCLUDED.follow_up,
-            population_note = EXCLUDED.population_note,
-            verification_state = EXCLUDED.verification_state,
-            source_pmid = EXCLUDED.source_pmid,
-            source_doi = EXCLUDED.source_doi,
-            source_locator = EXCLUDED.source_locator,
-            notes = EXCLUDED.notes
+            regimen = EXCLUDED.regimen,
+            dose_schedule = EXCLUDED.dose_schedule,
+            comparator_role = EXCLUDED.comparator_role,
+            enrolled_n = EXCLUDED.enrolled_n,
+            treated_n = EXCLUDED.treated_n,
+            sort_order = EXCLUDED.sort_order
         `;
+
+        for (const ep of arm.endpoints) {
+          await tx`
+            INSERT INTO public.endpoint_results (
+              result_id, arm_id, endpoint_type, label, value_num, value_text, unit,
+              ci_lower, ci_upper, p_value, timepoint, analysis_set, follow_up,
+              population_note, verification_state, source_pmid, source_doi, source_locator, notes
+            ) VALUES (
+              ${ep.resultId}, ${arm.armId}, ${ep.endpointType}, ${ep.label}, ${ep.valueNum},
+              ${ep.valueText}, ${ep.unit}, ${ep.ciLower}, ${ep.ciUpper}, ${ep.pValue},
+              ${ep.timepoint}, ${ep.analysisSet}, ${ep.followUp}, ${ep.populationNote},
+              ${ep.verificationState}, ${ep.sourcePmid}, ${ep.sourceDoi}, ${ep.sourceLocator}, ${ep.notes}
+            )
+            ON CONFLICT (result_id) DO UPDATE SET
+              arm_id = EXCLUDED.arm_id,
+              endpoint_type = EXCLUDED.endpoint_type,
+              label = EXCLUDED.label,
+              value_num = EXCLUDED.value_num,
+              value_text = EXCLUDED.value_text,
+              unit = EXCLUDED.unit,
+              ci_lower = EXCLUDED.ci_lower,
+              ci_upper = EXCLUDED.ci_upper,
+              p_value = EXCLUDED.p_value,
+              timepoint = EXCLUDED.timepoint,
+              analysis_set = EXCLUDED.analysis_set,
+              follow_up = EXCLUDED.follow_up,
+              population_note = EXCLUDED.population_note,
+              verification_state = EXCLUDED.verification_state,
+              source_pmid = EXCLUDED.source_pmid,
+              source_doi = EXCLUDED.source_doi,
+              source_locator = EXCLUDED.source_locator,
+              notes = EXCLUDED.notes
+          `;
+        }
       }
     }
-  }
+  });
 
   const evidenceAfter = await sql<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM public.evidence_records`;
   if (Number(evidenceAfter[0]?.n ?? 0) !== evidenceBefore) {
@@ -220,11 +223,13 @@ try {
   const arms = await sql<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM public.trial_arms`;
   const results = await sql<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM public.endpoint_results`;
   console.log("migration=applied");
+  console.log("transaction=committed");
   console.log(`clinical_trials=${trials[0]?.n ?? 0}`);
   console.log(`trial_arms=${arms[0]?.n ?? 0}`);
   console.log(`endpoint_results=${results[0]?.n ?? 0}`);
 } catch (err) {
   console.error(`migration_failed code=${(err as { code?: string }).code ?? "error"}`);
+  console.error("transaction=rolled_back_or_aborted");
   process.exit(1);
 } finally {
   await sql.end({ timeout: 5 });

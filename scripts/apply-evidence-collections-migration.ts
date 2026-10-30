@@ -112,7 +112,10 @@ try {
     }
   }
 
-  await sql.unsafe(sqlText);
+  // Single transaction: DDL fails closed — no partial table/index state from this script.
+  await sql.begin(async (tx) => {
+    await tx.unsafe(sqlText);
+  });
 
   const evidenceAfter = await sql<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM public.evidence_records`;
   if (Number(evidenceAfter[0]?.n ?? 0) !== evidenceBefore) {
@@ -129,9 +132,11 @@ try {
 
   const tables = await sql<{ name: string | null }[]>`SELECT to_regclass('public.evidence_collections') AS name`;
   console.log("migration=applied");
+  console.log("transaction=committed");
   console.log(`evidence_collections=${tables[0]?.name ? "present" : "missing"}`);
 } catch (err) {
   console.error(`migration_failed code=${(err as { code?: string }).code ?? "error"}`);
+  console.error("transaction=rolled_back_or_aborted");
   process.exit(1);
 } finally {
   await sql.end({ timeout: 5 });

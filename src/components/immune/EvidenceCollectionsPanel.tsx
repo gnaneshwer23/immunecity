@@ -16,6 +16,8 @@ import {
 } from "@/lib/research/collections.functions";
 import {
   classifyEvidenceGap,
+  EVIDENCE_GAP_PROVENANCE_NOTE,
+  evidenceGapLabelDescription,
   evidenceGapLabelText,
 } from "@/lib/research/evidenceGap";
 
@@ -65,9 +67,12 @@ export default function EvidenceCollectionsPanel() {
   return (
     <div className="card" style={{ display: "grid", gap: 12 }}>
       <p className="small">
-        Save a named collection of existing atlas concept ids and optional Neon <code>evidence_id</code> refs.{" "}
-        <strong>kgWrite=false</strong> — this does not approve claims or mutate the curated graph.
+        Save a named collection of existing atlas concept ids and optional Neon <code>evidence_id</code> refs.
+        Collections sync across devices for your signed-in account (Neon). Workbench local drafts stay in this
+        browser’s localStorage and do not sync. <strong>kgWrite=false</strong> — this does not approve claims or
+        mutate the curated graph.
       </p>
+      <p className="xs muted">{EVIDENCE_GAP_PROVENANCE_NOTE}</p>
       {!available ? (
         <p className="callout" role="status">
           Evidence collections are not available on this database yet (migration 0016 pending).
@@ -156,7 +161,10 @@ export default function EvidenceCollectionsPanel() {
                     <span key={id} className="row" style={{ gap: 4, alignItems: "center" }}>
                       {byId[id] ? <NodeChip id={id} /> : <code>{id}</code>}
                       {gap ? (
-                        <span className="chip" title="Evidence-gap classification from real graph/status signals">
+                        <span
+                          className="chip"
+                          title={`${evidenceGapLabelDescription(gap)} ${EVIDENCE_GAP_PROVENANCE_NOTE}`}
+                        >
                           {evidenceGapLabelText(gap)}
                         </span>
                       ) : null}

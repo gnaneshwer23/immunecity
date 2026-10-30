@@ -249,7 +249,7 @@ export function draftResearchBrief(input: {
         evidenceLines.length
           ? `Graph neighbourhood (retrieved ids only):\n${evidenceLines.map((l) => `- ${l}`).join("\n")}`
           : "No incident edges among retrieved concept ids were available to list.",
-        `Gap labels (real status only; Gate C density is never invented): ${gaps
+        `Gap labels (ISI curated coverage / search date-scope only; never invent Gate C density; not “no literature worldwide”): ${gaps
           .map((g) => `${g.conceptId}=${g.label ?? "supported/unknown"}`)
           .join("; ")}.`,
       ].join("\n"),

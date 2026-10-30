@@ -175,7 +175,9 @@ export default function ScientificWorkbench({
   const saveLocalDraft = () => {
     try {
       localStorage.setItem(WORKBENCH_LOCAL_DRAFT_KEY, serializeLocalDraft(session));
-      setDraftMsg("Saved local draft in this browser — not curated, not shared.");
+      setDraftMsg(
+        "Saved local draft in this browser’s localStorage — stays on this device, does not sync to Neon or other devices. Not curated, not shared.",
+      );
     } catch {
       setDraftMsg("Could not save local draft (storage blocked).");
     }

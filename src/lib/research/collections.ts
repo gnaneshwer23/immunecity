@@ -2,6 +2,9 @@
  * Evidence collections — named sets of existing graph concept ids + optional
  * evidence record refs. Browser-safe planning/sanitisation only.
  * Persistence is Neon via collections.functions.ts; never writes the KG.
+ *
+ * Access policy: every list/create/update/delete is ownership-scoped to the
+ * signed-in user_id. There is no casual admin list-all path.
  */
 import { byId } from "@/lib/immune/engine";
 
@@ -10,6 +13,45 @@ export const MAX_COLLECTION_NAME = 120;
 export const MAX_COLLECTION_CONCEPTS = 40;
 export const MAX_COLLECTION_EVIDENCE_REFS = 40;
 export const MAX_COLLECTIONS_PER_MEMBER = 40;
+
+/** Hardening contract — server handlers must honour this; tests assert it. */
+export const COLLECTION_ACCESS = {
+  ownerScopedOnly: true as const,
+  /** No casual admin read of other members' collections. */
+  adminListAllPath: null,
+  allowAdminBypass: false as const,
+  operations: ["list", "create", "update", "delete"] as const,
+};
+
+export type CollectionOperation = (typeof COLLECTION_ACCESS.operations)[number];
+
+/** Pure ownership check used by planning and tests (not role-aware). */
+export function actorOwnsCollection(ownerUserId: string, actorUserId: string): boolean {
+  const owner = ownerUserId.trim();
+  const actor = actorUserId.trim();
+  if (!owner || !actor) return false;
+  return owner === actor;
+}
+
+/**
+ * Spec every server op must satisfy. Admin roles never widen the filter.
+ * `adminListAllPath` stays null until an explicit, tested admin surface exists.
+ */
+export function collectionOwnershipSpec(op: CollectionOperation): {
+  op: CollectionOperation;
+  requireAuthUserId: true;
+  filterByUserId: true;
+  allowAdminBypass: false;
+  adminListAllPath: null;
+} {
+  return {
+    op,
+    requireAuthUserId: true,
+    filterByUserId: true,
+    allowAdminBypass: false,
+    adminListAllPath: null,
+  };
+}
 
 /** Opaque evidence_id-style refs (E… / EV-… / UUID-ish). Never invent PMIDs. */
 const EVIDENCE_REF_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{1,79}$/;

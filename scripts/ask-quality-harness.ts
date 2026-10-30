@@ -7,7 +7,13 @@
  * npm: bun run ask:quality
  */
 import { spawnSync } from "node:child_process";
-import { PROMPT_VERSION, classifyAskQuery, graphContext, prepareAsk } from "../src/lib/askGrounding";
+import {
+  PROMPT_VERSION,
+  classifyAskQuery,
+  graphContext,
+  prepareAsk,
+  validateAnswerCitations,
+} from "../src/lib/askGrounding";
 import { askEvaluationFromGate } from "../src/lib/askEvaluation";
 import { summariseAskEvaluations } from "../src/lib/askQualityDashboard";
 import {
@@ -51,6 +57,20 @@ check(
   "clinical abstains",
   !abstain.callModel && Boolean(abstain.grounding.trace.abstained),
   abstain.grounding.trace.abstentionReason ?? "",
+);
+
+const fabricated = validateAnswerCitations("See PMID 99999999.", sample.grounding);
+check(
+  "fabricated PMID rejected",
+  !fabricated.ok && fabricated.inventedRelIds.some((id) => /PMID.*99999999/i.test(id)),
+  fabricated.failReason ?? "",
+);
+const emptyUnsupported = prepareAsk("zzzzqyx unrelated nonsense token 998877");
+check(
+  "unsupported may abstain or low coverage",
+  Boolean(emptyUnsupported.grounding.trace.abstained) ||
+    !emptyUnsupported.grounding.coverage.matched ||
+    emptyUnsupported.grounding.nodes.length === 0,
 );
 const abstainEval = askEvaluationFromGate({
   callModel: false,

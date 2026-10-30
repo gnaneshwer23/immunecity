@@ -64,7 +64,8 @@ describe("Phase 4 exit gate — reproducible, reviewable, source-traceable", () 
       "conflicting",
       "emerging",
     ]);
-    expect(evidenceGapLabelText("conflicting")).toBe("Conflicting");
+    expect(evidenceGapLabelText("conflicting")).toMatch(/Conflicting/i);
+    expect(evidenceGapLabelText("no_mapped_evidence")).toMatch(/ISI/i);
 
     expect(classifyEvidenceGap("M017")).toBe("emerging");
     expect(classifyEvidenceGap("D012", { approvedSupportsCount: 2 })).toBeNull();

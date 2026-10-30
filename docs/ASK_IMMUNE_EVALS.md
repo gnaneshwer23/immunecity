@@ -7,7 +7,7 @@ Targeted Vitest cases for Ask Immune retrieval, refusals, citation validation, a
 Prefer the PRD smoke harness (avoids hanging full Vitest / D-11):
 
 ```bash
-# Ask quality harness (gold-set + retrieval + prompt contract; fails if broken)
+# Ask quality harness (gold-set + retrieval + prompt contract + fabricated PMID refusal; fails if broken)
 bun run ask:quality
 
 # Scientific eval set + Ask unit checks (preferred smoke)

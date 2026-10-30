@@ -75,6 +75,21 @@ Field-level fixture ↔ DB: **consistent** (`bun run db:trial-intelligence:check
 
 Seed / import SOT: `src/data/trialIntelligence.ts`. Apply: `bun run db:trial-intelligence`.
 
+### Migration backup & rollback (0015 / 0016)
+
+**Never print `DATABASE_URL`.** Prefer Neon console / CLI snapshots before apply.
+
+| Action | Guidance |
+| --- | --- |
+| Backup | Neon project branch snapshot or PITR before running `db:trial-intelligence` / `db:evidence-collections`. Confirm `evidence_records` count before/after (scripts refuse if count changes). |
+| Apply fail-safe | Apply scripts wrap DDL (+ 0015 seed) in `sql.begin` — mid-script failure aborts the transaction from the script path. Re-run is idempotent (`IF NOT EXISTS` / `ON CONFLICT`). |
+| Verify | `bun run db:hardening:verify` and/or `bun run db:trial-intelligence:check` on **ep-blue-salad** only. |
+| Rollback 0016 | `DROP TABLE IF EXISTS public.evidence_collections;` (additive member data only; does not touch curation). |
+| Rollback 0015 | Drop `endpoint_results`, `trial_arms`, `clinical_trials` in FK-safe order **only** after confirming no production dependency and restoring from snapshot if seed diverged. Prefer snapshot restore over manual DROP when unsure. |
+| Feature rollback | Unset `VITE_TRIAL_INTELLIGENCE` / set `0` in Vercel Production → redeploy (UI off; tables may remain). |
+
+Hardening sprint notes: `docs/ISI_HARDENING_SPRINT_2026-10-30.md`.
+
 ---
 
 ## 6. Numerics spot-check (A02)

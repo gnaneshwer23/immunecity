@@ -88,7 +88,8 @@ export default function ResearchBriefPanel({
 
       <div>
         <p className="xs muted" style={{ marginBottom: 6 }}>
-          Evidence-gap labels (real graph/status only · never invents Gate C density):
+          Evidence-gap labels (ISI curated coverage / search date-scope · never invents Gate C density · not a claim
+          that no literature exists worldwide):
         </p>
         <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
           {gaps.map(({ id, gap }) => (
