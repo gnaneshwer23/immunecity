@@ -148,6 +148,12 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
         title: "Research Radar",
         desc: "Evidence-governed unknowns and defensible next questions — ISI coverage, not worldwide absence.",
       },
+      {
+        n: "I8",
+        path: "/sme",
+        title: "SME review workspace",
+        desc: "Gate C, melanoma pilot, KEYNOTE rematch and gold-set labelling — human scientific review only.",
+      },
     ],
   },
   {
@@ -157,6 +163,12 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
       { n: "T2", path: "/methods", hash: "live-ev-heading", title: "Live coverage", desc: "How many relationship claims have been reviewed." },
       { n: "T3", path: "/methods", hash: "statuses", title: "Evidence standards", desc: "What each review status means." },
       { n: "T4", path: "/methods", hash: "limitations", title: "Data sources and limitations", desc: "Where the evidence stops." },
+      {
+        n: "T5",
+        path: "/sme",
+        title: "SME workspace",
+        desc: "Reviewer-gated Gate C and gold-set tooling — educational, not CDS.",
+      },
     ],
   },
 ];

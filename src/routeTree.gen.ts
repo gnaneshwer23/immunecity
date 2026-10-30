@@ -41,6 +41,7 @@ import { Route as TherapyRouteImport } from './routes/therapy'
 import { Route as VisionRouteImport } from './routes/vision'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as AuthenticatedCurationRouteImport } from './routes/_authenticated/curation'
+import { Route as AuthenticatedSmeRouteImport } from './routes/_authenticated/sme'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
 import { Route as AtlasIndexRouteImport } from './routes/atlas.index'
 import { Route as AtlasIdRouteImport } from './routes/atlas.$id'
@@ -225,6 +226,11 @@ const AuthenticatedCurationRoute = AuthenticatedCurationRouteImport.update({
   path: '/curation',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSmeRoute = AuthenticatedSmeRouteImport.update({
+  id: '/sme',
+  path: '/sme',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiAskRoute = ApiAskRouteImport.update({
   id: '/api/ask',
   path: '/api/ask',
@@ -378,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/vision': typeof VisionRoute
   '/workspace': typeof WorkspaceRoute
   '/curation': typeof AuthenticatedCurationRoute
+  '/sme': typeof AuthenticatedSmeRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/community/journal-clubs': typeof CommunityJournalClubsRoute
@@ -435,6 +442,7 @@ export interface FileRoutesByTo {
   '/vision': typeof VisionRoute
   '/workspace': typeof WorkspaceRoute
   '/curation': typeof AuthenticatedCurationRoute
+  '/sme': typeof AuthenticatedSmeRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/community/journal-clubs': typeof CommunityJournalClubsRoute
@@ -494,6 +502,7 @@ export interface FileRoutesById {
   '/vision': typeof VisionRoute
   '/workspace': typeof WorkspaceRoute
   '/_authenticated/curation': typeof AuthenticatedCurationRoute
+  '/_authenticated/sme': typeof AuthenticatedSmeRoute
   '/api/ask': typeof ApiAskRouteWithChildren
   '/atlas/$id': typeof AtlasIdRoute
   '/community/journal-clubs': typeof CommunityJournalClubsRoute
@@ -553,6 +562,7 @@ export interface FileRouteTypes {
     | '/vision'
     | '/workspace'
     | '/curation'
+    | '/sme'
     | '/api/ask'
     | '/atlas/$id'
     | '/community/journal-clubs'
@@ -610,6 +620,7 @@ export interface FileRouteTypes {
     | '/vision'
     | '/workspace'
     | '/curation'
+    | '/sme'
     | '/api/ask'
     | '/atlas/$id'
     | '/community/journal-clubs'
@@ -668,6 +679,7 @@ export interface FileRouteTypes {
     | '/vision'
     | '/workspace'
     | '/_authenticated/curation'
+    | '/_authenticated/sme'
     | '/api/ask'
     | '/atlas/$id'
     | '/community/journal-clubs'
@@ -977,6 +989,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCurationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/sme': {
+      id: '/_authenticated/sme'
+      path: '/sme'
+      fullPath: '/sme'
+      preLoaderRoute: typeof AuthenticatedSmeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/ask': {
       id: '/api/ask'
       path: '/api/ask'
@@ -1150,10 +1169,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCurationRoute: typeof AuthenticatedCurationRoute
+  AuthenticatedSmeRoute: typeof AuthenticatedSmeRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCurationRoute: AuthenticatedCurationRoute,
+  AuthenticatedSmeRoute: AuthenticatedSmeRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -560,6 +560,37 @@ export const researchMonitorRuns = pgTable("research_monitor_runs", {
   detail: jsonb("detail").notNull().default({}),
 });
 
+/**
+ * SME workspace — gold labels + work-item audit (migration 0023).
+ * Labels/scores stay null until a scientific reviewer fills them. Never Gate C auto-approve.
+ */
+export const smeGoldLabels = pgTable("sme_gold_labels", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: text("case_id").notNull().unique(),
+  workItemId: text("work_item_id"),
+  gapKey: text("gap_key"),
+  label: text("label"),
+  smeScore: doublePrecision("sme_score"),
+  notes: text("notes"),
+  reviewer: text("reviewer"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const smeWorkItemEvents = pgTable("sme_work_item_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workItemId: text("work_item_id").notNull(),
+  relationshipId: text("relationship_id"),
+  evidenceId: text("evidence_id"),
+  actor: text("actor").notNull(),
+  action: text("action").notNull(),
+  rationale: text("rationale").notNull(),
+  payloadJson: jsonb("payload_json").notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type ResearchProfileDbRow = typeof researchProfiles.$inferSelect;
 export type ResearchGapDbRow = typeof researchGaps.$inferSelect;
 export type ResearchDiscoveryAlertDbRow = typeof researchDiscoveryAlerts.$inferSelect;
+export type SmeGoldLabelDbRow = typeof smeGoldLabels.$inferSelect;

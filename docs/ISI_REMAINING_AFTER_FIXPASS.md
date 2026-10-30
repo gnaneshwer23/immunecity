@@ -6,7 +6,7 @@
 
 | Item | Why left incomplete |
 | --- | --- |
-| SME gold-set / Gate C human approvals | Approving melanoma pilot claims (including KEYNOTE-006 rematch of PMID `25891173` onto `REL-I008-demonstrates_in-TR003`, and S-P-O rewrite of `REL-R011-drives_immune_exhaustion_in-D012`) requires human scientific review. No bulk or auto-approve. Checklist UI surfaces flags only. |
+| SME gold-set / Gate C human approvals | Approving melanoma pilot claims (including KEYNOTE-006 rematch of PMID `25891173` onto `REL-I008-demonstrates_in-TR003`, and S-P-O rewrite of `REL-R011-drives_immune_exhaustion_in-D012`) requires human scientific review. No bulk or auto-approve. **Engineering aid shipped:** `/sme` workspace + priority `pending_sme` queues + rematch requiring PMID+DOI+passage + gold harness (`docs/ISI_SME_WORKSPACE.md`) — decisions still human-only. |
 | Filling `ontology_mappings` with real crosswalks | Table + curator entry UI exist; seed stays empty. External ontology IDs must be curator-supplied — fabricating crosswalks is forbidden. |
 | Assay cut-offs / companion-diagnostic thresholds | `biomarkerContext` remains an empty stub by design. Inventing TPS/CPS cut-offs would be scientific fabrication. |
 | Trial Intelligence production enable | Product flag stays **off**. Enabling TI in prod is an explicit ops decision, not part of this fix-pass. |
