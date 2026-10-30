@@ -18,11 +18,11 @@ In metastatic melanoma, which immune-escape mechanisms associate with PD-1 inhib
 | Phase | Title | Status | Report / notes |
 | --- | --- | --- | --- |
 | **A** | Immediate corrections | **Complete (engineering)** | `docs/ISI_PHASE_A_REPORT.md` · `40d9bbc` |
-| **B** | Scientific graph model | **Complete (engineering)** | `docs/ISI_PHASE_B_REPORT.md` |
-| **C** | Evidence intelligence | In progress / next | Claim records, conflict, review queue; quality ≠ status ≠ curation |
-| **D** | Ask Immune GraphRAG | Partial baseline exists (`askGrounding.ts`) | Entity resolve, bounded paths, abstain, evals |
-| **E** | Clinical / research workflows | Partial (Trial Intelligence P0–P2, Workbench MVP) | Biomarkers, mechanism↔trial links, brief handoff |
-| **F** | End-to-end QA | Not started | Full journey + a11y + isolation |
+| **B** | Scientific graph model | **Complete (engineering)** | `docs/ISI_PHASE_B_REPORT.md` · `1e48f1a` |
+| **C** | Evidence intelligence | **Complete (engineering)** | `docs/ISI_PHASE_C_REPORT.md` |
+| **D** | Ask Immune GraphRAG | **Partial** (neighbourhood + conflict lines; SME eval open) | `docs/ISI_PHASE_D_REPORT.md` |
+| **E** | Clinical / research workflows | Deferred / status note | `docs/ISI_PHASE_E_F_STATUS.md` |
+| **F** | End-to-end QA | Deferred / status note | `docs/ISI_PHASE_E_F_STATUS.md` |
 
 Prior hardening / correction sprints (2026-10-30) remain prerequisites: `docs/ISI_HARDENING_SPRINT_2026-10-30.md`, `docs/ISI_AUDIT_BASELINE_2026-10-30.md`.
 
@@ -49,16 +49,25 @@ Prior hardening / correction sprints (2026-10-30) remain prerequisites: `docs/IS
 5. Safe apply/backfill scripts — evidence count fail-closed; dry-run default
 6. Bounded neighbourhood — `neighbourhood.ts` + `neighbourhood.functions.ts`
 
-**Tests:** 15 Phase B + 9 Phase A pass. **SHA:** see Phase B report after commit.
+**Tests:** 15 Phase B + 9 Phase A pass. **SHA:** `1e48f1a`
 
 ---
 
-## Phase C–F (deferred detail)
+## Phase C exit (done, engineering)
 
-- **C:** Claim locators, conflict ledger, review audit; keep quality / evidence_status / curation separate (`EvidenceDimensionsStrip`).
-- **D:** GraphRAG on one Ask path; abstain on insufficient/ambiguous; eval harness (`ask:quality`, SME gold set).
-- **E:** Persist `treatment_line` if needed; biomarker models without invented assays; brief → human review handoff.
-- **F:** Journey smoke Immunology OS → Immune City → evidence → Trial Intelligence → Ask → Workbench → export.
+- Claim locators + classification (`claimRecords.ts`)
+- Conflict detection; silent non-supports approval blocked
+- Scientific review queue + audit summary (`scientificReviewQueue.ts`)
+- Three dimensions remain orthogonal
+
+## Phase D partial
+
+- Ask `GRAPH_NEIGHBOURHOOD` / `NPATH` + `EVIDENCE_CONFLICT` lines; `PROMPT_VERSION=ask-grounding-v11`
+- SME gold-set / full eval metrics still open
+
+## Phase E–F
+
+See `docs/ISI_PHASE_E_F_STATUS.md`.
 
 ---
 

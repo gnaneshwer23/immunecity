@@ -3,7 +3,7 @@
 **Date:** 2026-10-30  
 **Product:** Immune Super Intelligence (educational — not CDS)  
 **Baseline:** Phase A `40d9bbc`  
-**Phase B commit:** _(see Commit SHA below)_  
+**Phase B commit:** `1e48f1a`  
 
 ---
 
@@ -84,7 +84,7 @@ Not run here: live `bun run db:graph-ontology` (requires Neon ep-blue-salad + op
 | Item | Value |
 | --- | --- |
 | Phase A | `40d9bbc` |
-| Phase B HEAD | _(after commit)_ |
+| Phase B HEAD | `1e48f1a` |
 
 **Rollback:**
 

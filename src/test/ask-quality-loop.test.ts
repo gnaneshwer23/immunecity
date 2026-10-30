@@ -19,7 +19,7 @@ const root = resolve(import.meta.dirname, "../..");
 
 describe("Ask quality loop v1", () => {
   it("bumps prompt version and documents Gate C vs provisional contract in SYSTEM", () => {
-    expect(PROMPT_VERSION).toBe("ask-grounding-v10");
+    expect(PROMPT_VERSION).toBe("ask-grounding-v11");
     expect(SYSTEM).toMatch(/RESPONSE_CONTRACT/);
     expect(SYSTEM).toMatch(/Gate C reviewed support/);
     expect(SYSTEM).toMatch(/provisional unreviewed literature/);

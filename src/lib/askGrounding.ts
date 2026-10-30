@@ -11,6 +11,8 @@ import {
   type ReviewStatus,
 } from "@/lib/immune/evidenceStatus";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
+import { formatNeighbourhoodEdge, getGraphNeighbourhood } from "@/lib/immune/neighbourhood";
+import { detectConflictingEvidence } from "@/lib/immune/claimRecords";
 import {
   biologicalContextMismatches,
   CONTEXT_TRANSFER_QUALIFIER,
@@ -23,7 +25,7 @@ import {
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v10";
+export const PROMPT_VERSION = "ask-grounding-v11";
 
 /** Unreviewed literature hits (PubMed / Europe PMC). Never Gate C approved. */
 export interface ProvisionalLitItem {
@@ -600,6 +602,36 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
     }
   } else if (nodes.length >= 2) {
     lines.push("CAUSAL_CHAINS none among top matched concepts — explain via individual LINKs; do not invent a path.");
+  }
+
+  // Phase D — bounded neighbourhood paths from the top matched concept (one KG; capped).
+  const neighbourhoodSeed = nodes[0];
+  if (neighbourhoodSeed) {
+    const nb = getGraphNeighbourhood(neighbourhoodSeed.id, { depth: 1, maxEdges: 12, includeDraft: true });
+    if (nb && nb.edges.length) {
+      lines.push(
+        `GRAPH_NEIGHBOURHOOD seed=${nb.seedId} depth=${nb.depth} edges=${nb.edges.length}` +
+          `${nb.truncated ? " truncated=1" : ""} (cite NPATH / LINK ids only; do not invent hops):`,
+      );
+      for (const e of nb.edges) {
+        lines.push(
+          `NPATH ${e.relId} ${formatNeighbourhoodEdge(e)} (polarity:${e.polarity}, evidence:${e.evidenceStatus}` +
+            `${e.draft ? ", DRAFT" : ""})`,
+        );
+        if (!seen.has(e.relId) && edgeByRel[e.relId]) {
+          seen.add(e.relId);
+          links.push(groundLink(edgeByRel[e.relId]!, cites));
+        }
+      }
+      for (const rid of [...seen]) {
+        const conflict = detectConflictingEvidence(rid, cites);
+        if (conflict.conflicting) {
+          lines.push(
+            `EVIDENCE_CONFLICT relationship:${rid} supporting=${conflict.supportingIds.length} counter=${conflict.counterIds.length} — abstain from strong causal claims; surface both sides.`,
+          );
+        }
+      }
+    }
   }
 
   const forLinks = cites.filter((c) => c.relationship_id && seen.has(c.relationship_id));
