@@ -12,6 +12,7 @@ import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { MarketingBody, MarketingHero, MarketingSection } from "@/components/immune/marketing";
+import { TrialIntelligenceMethodsNote } from "@/components/immune/TrialIntelligence";
 import { ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/methods")({
@@ -92,6 +93,7 @@ const METHODS_TOC = [
   { href: "#ask-quality", label: "Ask quality (admin)" },
   { href: "#statuses", label: "Review statuses" },
   { href: "#ontology", label: "Graph ontology" },
+  { href: "#trial-intelligence", label: "Trial Intelligence" },
   { href: "#models", label: "Model assumptions" },
   { href: "#limitations", label: "Limitations" },
 ] as const;
@@ -239,6 +241,15 @@ function Methods() {
             </li>
             <li>Other predicates are descriptive only and are not used in simulations.</li>
           </ul>
+        </MarketingSection>
+
+        <MarketingSection
+          id="trial-intelligence"
+          eyebrow="Trials"
+          title="Trial Intelligence is educational, not CDS."
+          lede="Melanoma-pilot arm-level outcomes sit beside the graph — with non-causal warnings and source-verified numerics only."
+        >
+          <TrialIntelligenceMethodsNote />
         </MarketingSection>
 
         <MarketingSection

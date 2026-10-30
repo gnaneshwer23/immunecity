@@ -1,4 +1,4 @@
-import { boolean, integer, jsonb, pgEnum, pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
+import { boolean, doublePrecision, integer, jsonb, pgEnum, pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
 
 export const appRoleEnum = pgEnum("app_role", ["admin", "user", "moderator", "reviewer"]);
 
@@ -272,6 +272,70 @@ export const communityModerationActions = pgTable("community_moderation_actions"
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Melanoma-pilot Trial Intelligence (migration 0015). Additive; not claim approval. */
+export const clinicalTrials = pgTable("clinical_trials", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  trialId: text("trial_id").notNull().unique(),
+  graphNodeId: text("graph_node_id").notNull(),
+  nctId: text("nct_id"),
+  acronym: text("acronym").notNull(),
+  title: text("title").notNull(),
+  phase: text("phase"),
+  design: text("design"),
+  sponsor: text("sponsor"),
+  status: text("status"),
+  conditionLabel: text("condition_label"),
+  populationSummary: text("population_summary"),
+  analysisSetNote: text("analysis_set_note"),
+  verificationState: text("verification_state").notNull().default("unverified"),
+  primaryPmid: text("primary_pmid"),
+  primaryDoi: text("primary_doi"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const trialArms = pgTable("trial_arms", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  armId: text("arm_id").notNull().unique(),
+  trialId: text("trial_id").notNull(),
+  label: text("label").notNull(),
+  regimen: text("regimen").notNull(),
+  doseSchedule: text("dose_schedule"),
+  comparatorRole: text("comparator_role").notNull().default("experimental"),
+  enrolledN: integer("enrolled_n"),
+  treatedN: integer("treated_n"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const endpointResults = pgTable("endpoint_results", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  resultId: text("result_id").notNull().unique(),
+  armId: text("arm_id").notNull(),
+  endpointType: text("endpoint_type").notNull(),
+  label: text("label").notNull(),
+  valueNum: doublePrecision("value_num"),
+  valueText: text("value_text"),
+  unit: text("unit"),
+  ciLower: doublePrecision("ci_lower"),
+  ciUpper: doublePrecision("ci_upper"),
+  pValue: text("p_value"),
+  timepoint: text("timepoint"),
+  analysisSet: text("analysis_set"),
+  followUp: text("follow_up"),
+  populationNote: text("population_note"),
+  verificationState: text("verification_state").notNull().default("unverified"),
+  sourcePmid: text("source_pmid"),
+  sourceDoi: text("source_doi"),
+  sourceLocator: text("source_locator"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type EvidenceRecordRow = typeof evidenceRecords.$inferSelect;
 export type EvidenceAuditEventRow = typeof evidenceAuditEvents.$inferSelect;
 export type ClaimCandidateRow = typeof claimCandidates.$inferSelect;
+export type ClinicalTrialRow = typeof clinicalTrials.$inferSelect;
+export type TrialArmRow = typeof trialArms.$inferSelect;
+export type EndpointResultRow = typeof endpointResults.$inferSelect;
