@@ -1,0 +1,178 @@
+{
+  "generatedAt": "2026-10-30T19:02:53.302Z",
+  "intel4Version": "4.0.0",
+  "baselineTip": "a6de865b77ba1ba4ab0d93bb14afd127b32f16e3",
+  "sprintBaselineTip": "e626370",
+  "source": "docs/ISI_DISCOVERY_3_APPRAISAL_SPRINT_REPORT.json",
+  "policy": {
+    "version": "4.0.0",
+    "autoGateC": false,
+    "autoReviewedOpportunity": false,
+    "silentKgWrite": false,
+    "trialIntelligenceEnabled": false,
+    "stripe": false,
+    "unboundedScraping": false,
+    "fabricatesIdentifiers": false,
+    "fabricatesAccuracy": false
+  },
+  "metrics": {
+    "gapsRun": 5,
+    "supportTotal": 1,
+    "contradictTotal": 0,
+    "insufficientTotal": 37,
+    "abstainedTotal": 37,
+    "demotedFromPriorSupportTotal": 63,
+    "highRiskRoutedToSme": 5,
+    "opportunitiesEmitted": 5,
+    "autoApproveCount": 0,
+    "accuracyVsGold": null,
+    "accuracyDenominator": "no_gold_labels"
+  },
+  "perGap": [
+    {
+      "gapKey": "GAP-OPP-A-MHC-PD1-RESIST",
+      "priorAppraisalSupport": 13,
+      "priorScientificallyAppraised": 14,
+      "intel4": {
+        "support": 0,
+        "contradict": 0,
+        "background": 6,
+        "insufficient": 8,
+        "abstained": 8,
+        "demotedFromPriorSupport": 13,
+        "identifierValidated": 14
+      },
+      "falseSupportRisk": "flagged",
+      "route": {
+        "risk": "high",
+        "href": "/sme?gapKey=GAP-OPP-A-MHC-PD1-RESIST",
+        "autoApprove": false,
+        "reason": "High-risk scientific claim path: verified support/contradict, prior-support demotion, or adjudicator SME route. counts support=0 contradict=0 demoted=13. Auto-approve forbidden."
+      },
+      "opportunityEmit": true,
+      "opportunityReason": "Emitted scientific_evidence_gap candidate from documented uncertainty (not approved).",
+      "adjudicator": "Adjudicator uncertainty (not scientific truth): support=0, contradict=0, background=6, insufficient/abstained=8/8. Roles A/B/C are independently reasoned scaffolds — majority agreement ≠ truth. Advocate stance: No advocate-grade support after verification — do not promote as evidenced. Skeptic stance: Skeptic prevails on available record — insufficient direct support. Methodology stance: Methodology: insufficient direct alignment for confident claim support. Human SME review required before Gate C or reviewed_opportunity. No auto-approve.",
+      "smeStillNeeded": true
+    },
+    {
+      "gapKey": "GAP-OPP-A-LAG3-TIM3-EXHAUST",
+      "priorAppraisalSupport": 14,
+      "priorScientificallyAppraised": 16,
+      "intel4": {
+        "support": 0,
+        "contradict": 0,
+        "background": 7,
+        "insufficient": 9,
+        "abstained": 9,
+        "demotedFromPriorSupport": 14,
+        "identifierValidated": 16
+      },
+      "falseSupportRisk": "flagged",
+      "route": {
+        "risk": "high",
+        "href": "/sme?gapKey=GAP-OPP-A-LAG3-TIM3-EXHAUST",
+        "autoApprove": false,
+        "reason": "High-risk scientific claim path: verified support/contradict, prior-support demotion, or adjudicator SME route. counts support=0 contradict=0 demoted=14. Auto-approve forbidden."
+      },
+      "opportunityEmit": true,
+      "opportunityReason": "Emitted scientific_evidence_gap candidate from documented uncertainty (not approved).",
+      "adjudicator": "Adjudicator uncertainty (not scientific truth): support=0, contradict=0, background=7, insufficient/abstained=9/9. Roles A/B/C are independently reasoned scaffolds — majority agreement ≠ truth. Advocate stance: No advocate-grade support after verification — do not promote as evidenced. Skeptic stance: Skeptic prevails on available record — insufficient direct support. Methodology stance: Methodology: insufficient direct alignment for confident claim support. Human SME review required before Gate C or reviewed_opportunity. No auto-approve.",
+      "smeStillNeeded": true
+    },
+    {
+      "gapKey": "GAP-OPP-A-AGPRES-UPSTREAM",
+      "priorAppraisalSupport": 12,
+      "priorScientificallyAppraised": 13,
+      "intel4": {
+        "support": 0,
+        "contradict": 0,
+        "background": 7,
+        "insufficient": 6,
+        "abstained": 6,
+        "demotedFromPriorSupport": 12,
+        "identifierValidated": 13
+      },
+      "falseSupportRisk": "flagged",
+      "route": {
+        "risk": "high",
+        "href": "/sme?gapKey=GAP-OPP-A-AGPRES-UPSTREAM",
+        "autoApprove": false,
+        "reason": "High-risk scientific claim path: verified support/contradict, prior-support demotion, or adjudicator SME route. counts support=0 contradict=0 demoted=12. Auto-approve forbidden."
+      },
+      "opportunityEmit": true,
+      "opportunityReason": "Emitted scientific_evidence_gap candidate from documented uncertainty (not approved).",
+      "adjudicator": "Adjudicator uncertainty (not scientific truth): support=0, contradict=0, background=7, insufficient/abstained=6/6. Roles A/B/C are independently reasoned scaffolds — majority agreement ≠ truth. Advocate stance: No advocate-grade support after verification — do not promote as evidenced. Skeptic stance: Skeptic prevails on available record — insufficient direct support. Methodology stance: Methodology: insufficient direct alignment for confident claim support. Human SME review required before Gate C or reviewed_opportunity. No auto-approve.",
+      "smeStillNeeded": true
+    },
+    {
+      "gapKey": "GAP-OPP-B-CD28NULL-RA-AGE",
+      "priorAppraisalSupport": 12,
+      "priorScientificallyAppraised": 16,
+      "intel4": {
+        "support": 1,
+        "contradict": 0,
+        "background": 10,
+        "insufficient": 5,
+        "abstained": 5,
+        "demotedFromPriorSupport": 11,
+        "identifierValidated": 16
+      },
+      "falseSupportRisk": "flagged",
+      "route": {
+        "risk": "high",
+        "href": "/sme?gapKey=GAP-OPP-B-CD28NULL-RA-AGE",
+        "autoApprove": false,
+        "reason": "High-risk scientific claim path: verified support/contradict, prior-support demotion, or adjudicator SME route. counts support=1 contradict=0 demoted=11. Auto-approve forbidden."
+      },
+      "opportunityEmit": true,
+      "opportunityReason": "Emitted unreviewed research_opportunity candidate from verified assessment (not approved).",
+      "adjudicator": "Adjudicator uncertainty (not scientific truth): support=1, contradict=0, background=10, insufficient/abstained=5/5. Roles A/B/C are independently reasoned scaffolds — majority agreement ≠ truth. Advocate stance: Partial engineering support exists within documented scope — requires SME. Skeptic stance: Support remains contested — directness and confounders require SME. Methodology stance: Methodology: insufficient direct alignment for confident claim support. Human SME review required before Gate C or reviewed_opportunity. No auto-approve.",
+      "smeStillNeeded": true
+    },
+    {
+      "gapKey": "GAP-OPP-B-CD28NULL-SSC",
+      "priorAppraisalSupport": 13,
+      "priorScientificallyAppraised": 13,
+      "intel4": {
+        "support": 0,
+        "contradict": 0,
+        "background": 4,
+        "insufficient": 9,
+        "abstained": 9,
+        "demotedFromPriorSupport": 13,
+        "identifierValidated": 13
+      },
+      "falseSupportRisk": "flagged",
+      "route": {
+        "risk": "high",
+        "href": "/sme?gapKey=GAP-OPP-B-CD28NULL-SSC",
+        "autoApprove": false,
+        "reason": "High-risk scientific claim path: verified support/contradict, prior-support demotion, or adjudicator SME route. counts support=0 contradict=0 demoted=13. Auto-approve forbidden."
+      },
+      "opportunityEmit": true,
+      "opportunityReason": "Emitted scientific_evidence_gap candidate from documented uncertainty (not approved).",
+      "adjudicator": "Adjudicator uncertainty (not scientific truth): support=0, contradict=0, background=4, insufficient/abstained=9/9. Roles A/B/C are independently reasoned scaffolds — majority agreement ≠ truth. Advocate stance: No advocate-grade support after verification — do not promote as evidenced. Skeptic stance: Skeptic prevails on available record — insufficient direct support. Methodology stance: Methodology: insufficient direct alignment for confident claim support. Human SME review required before Gate C or reviewed_opportunity. No auto-approve.",
+      "smeStillNeeded": true
+    }
+  ],
+  "monitoringLog": [
+    "intel4:start gap=GAP-OPP-A-MHC-PD1-RESIST works=14 budgetMax=40",
+    "intel4:done gap=GAP-OPP-A-MHC-PD1-RESIST support=0 demoted=13 route=high emit=true",
+    "intel4:start gap=GAP-OPP-A-LAG3-TIM3-EXHAUST works=16 budgetMax=40",
+    "intel4:done gap=GAP-OPP-A-LAG3-TIM3-EXHAUST support=0 demoted=14 route=high emit=true",
+    "intel4:start gap=GAP-OPP-A-AGPRES-UPSTREAM works=13 budgetMax=40",
+    "intel4:done gap=GAP-OPP-A-AGPRES-UPSTREAM support=0 demoted=12 route=high emit=true",
+    "intel4:start gap=GAP-OPP-B-CD28NULL-RA-AGE works=16 budgetMax=40",
+    "intel4:done gap=GAP-OPP-B-CD28NULL-RA-AGE support=1 demoted=11 route=high emit=true",
+    "intel4:start gap=GAP-OPP-B-CD28NULL-SSC works=13 budgetMax=40",
+    "intel4:done gap=GAP-OPP-B-CD28NULL-SSC support=0 demoted=13 route=high emit=true"
+  ],
+  "whatStillNeedsSmeHumans": [
+    "All five dossiers remain unreviewed scientifically — Intel 4.0 is engineering reassessment only.",
+    "Gold-set expected labels / accuracy denominators stay null until SME fills them.",
+    "Any remaining verifier support items need full-text SME confirmation of proposition directness.",
+    "reviewed_opportunity / Gate C require human reviewer — never auto.",
+    "Confirm whether demoted prior-support PMIDs should stay linked as background vs excluded."
+  ],
+  "honesty": "accuracyVsGold=null; accuracyDenominator=no_gold_labels. Counts are engineering screens on sprint passages (often truncated abstracts). Not clinical conclusions."
+}

@@ -39,6 +39,18 @@
 | TI prod flag / Vercel deploy | Out of scope |
 | Live multi-account Playwright green | Needs `E2E_USER_*`; skips ≠ passes |
 
+## Evidence Intel 4.0 (shipped engineering — 2026-10-30)
+
+| Item | Notes |
+| --- | --- |
+| Audit / architecture / Phase 8 validation | `docs/ISI_EVIDENCE_INTEL_4_*.md` + JSON |
+| Scout / Claim Verifier / A–D cross-exam / routing | `src/lib/discovery/{scout,claimVerifier,crossExamine,verifiedGaps,reviewRouting,intel4}.ts` |
+| Migration 0026 | Additive; apply via `bun run db:evidence-intel-4` on ep-blue-salad |
+| Offline five-dossier reassess | `bun run discovery:intel4-validate` — accuracyVsGold=null |
+| Unit tests | `src/test/evidence-intel-4.test.ts` |
+
+**Still SME-human:** gold labels; confirm demotions; Gate C / `reviewed_opportunity`; full-text directness on any remaining support.
+
 ## Next engineering (when unblocked)
 
 1. ~~Curator UI panel for gap review queue~~ — **shipped** SME workspace `/sme` (Investigate I8 / Trust T5); dossier still has inline gap decisions.  
@@ -46,4 +58,7 @@
 3. Fill gold-set expected statuses only after SME review — never invent scores (`bun run sme:eval` reports honest denominators).  
 4. Persist-on-first-radar-load policy debate (today: explicit member action).  
 5. Optional scheduled cron wrapping `bun run discovery:monitor` (email still deferred).  
-6. Activate Team collab / Stripe only after explicit product + billing sign-off.
+6. Activate Team collab / Stripe only after explicit product + billing sign-off.  
+7. Apply **0026** on Neon when ops ready (`docs/ISI_NEON_0026_APPLY.md`); wire `getDiscoveryGap` to attach `intel4` panel from latest decisions (optional).  
+8. Bounded citation-chaining / new-evidence monitor hooks (scout hooks exist; not auto-scheduled).  
+9. SME review of five deep dossiers after Intel 4.0 demotion flags — required before any accuracy % or reviewed_opportunity.

@@ -73,6 +73,20 @@ export type GapDossierView = {
   noveltyLimitationNote: string;
   autoApprove: false;
   note: string;
+  /** Evidence Intel 4.0 panel — optional; absent when not reassessed. */
+  intel4: {
+    version: string;
+    claimSupport: number;
+    claimInsufficient: number;
+    claimAbstained: number;
+    demotedFromPriorSupport: number;
+    routeRisk: "low" | "moderate" | "high" | null;
+    routeHref: string | null;
+    adjudicatorUncertainty: string | null;
+    smeQueued: boolean;
+    accuracyVsGold: null;
+    honesty: string;
+  } | null;
 };
 
 export function gapStatusBadge(
@@ -156,6 +170,7 @@ export function buildGapDossier(input: {
   verification?: VerificationReport | null;
   coverageRows?: GapDossierView["coverageRows"];
   reviews?: GapDossierView["reviews"];
+  intel4?: GapDossierView["intel4"];
 }): GapDossierView {
   const { gap } = input;
   const status = (input.persistedStatus ?? gap.status) as ResearchGapStatus | ResearchGapCandidate["status"];
@@ -180,6 +195,23 @@ export function buildGapDossier(input: {
   if (gapClass === "isi_curation_gap") {
     links.push({ id: "sme", label: "SME review workspace", href: "/sme" });
     links.push({ id: "curation", label: "Evidence curation", href: "/curation" });
+  }
+  if (input.intel4?.routeHref) {
+    links.push({
+      id: "intel4-route",
+      label: input.intel4.smeQueued ? "Intel 4.0 · SME queue" : "Intel 4.0 · review route",
+      href: input.intel4.routeHref,
+    });
+  } else if (
+    gap.gapKey.startsWith("GAP-OPP-") ||
+    gapClass === "scientific_evidence_gap" ||
+    gapClass === "research_opportunity"
+  ) {
+    links.push({
+      id: "sme-opp",
+      label: "SME review workspace",
+      href: `/sme?gapKey=${encodeURIComponent(gap.gapKey)}`,
+    });
   }
 
   const classUi = gapClass ? GAP_CLASS_UI[gapClass] : null;
@@ -215,5 +247,6 @@ export function buildGapDossier(input: {
       "Novelty notes reflect documented ISI/product search scope and pilot corpora only — not a claim of global literature novelty. Incomplete retrieval blocks confident scientific-gap claims.",
     autoApprove: false,
     note: "Dossier reuses Ask, Atlas, Evidence, Workbench, and Trials — one knowledge graph. Gap class is orthogonal to review status; reviewed_gap / reviewed_opportunity require human review.",
+    intel4: input.intel4 ?? null,
   };
 }

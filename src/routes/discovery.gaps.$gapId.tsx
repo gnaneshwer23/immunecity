@@ -22,6 +22,7 @@ const TOC = [
   { id: "why", label: "Why it matters" },
   { id: "scope", label: "Search scope" },
   { id: "verification", label: "Verification" },
+  { id: "intel4", label: "Evidence Intel 4.0" },
   { id: "coverage", label: "Search coverage" },
   { id: "feedback", label: "Feedback" },
   { id: "review", label: "Review trail" },
@@ -288,6 +289,47 @@ function DiscoveryGapDossierPage() {
           </>
         ) : (
           <p className="muted">No verification report yet.</p>
+        )}
+      </Section>
+
+      <Section
+        id="intel4"
+        title="Evidence Intel 4.0"
+        lede="Claim verifier + cross-examination scaffolds. Title-only and keyword hits do not equal support. Accuracy vs gold labels is unknown until SME labels exist."
+      >
+        {dossier.intel4 ? (
+          <>
+            <p className="small" data-testid="intel4-counts">
+              v{dossier.intel4.version} · verified support={dossier.intel4.claimSupport} ·
+              insufficient={dossier.intel4.claimInsufficient} · abstained=
+              {dossier.intel4.claimAbstained} · demoted from prior support=
+              {dossier.intel4.demotedFromPriorSupport}
+            </p>
+            <p className="small muted">{dossier.intel4.honesty}</p>
+            {dossier.intel4.adjudicatorUncertainty ? (
+              <p className="small">{dossier.intel4.adjudicatorUncertainty}</p>
+            ) : null}
+            <p className="small">
+              Route risk: {dossier.intel4.routeRisk ?? "n/a"}
+              {dossier.intel4.smeQueued ? " · SME queued" : ""}
+              {dossier.intel4.routeHref ? (
+                <>
+                  {" "}
+                  ·{" "}
+                  <a href={dossier.intel4.routeHref}>Open review route</a>
+                </>
+              ) : null}
+            </p>
+            <p className="small muted">
+              Accuracy vs gold: null (no_gold_labels) — never invent accuracy %. Auto-approve: false.
+            </p>
+          </>
+        ) : (
+          <p className="muted">
+            Intel 4.0 reassessment not attached on this load. Run{" "}
+            <code>bun run discovery:intel4-validate</code> for the five deep dossiers, or open SME for
+            human review. No silent KG writes; candidate ≠ approved.
+          </p>
         )}
       </Section>
 
