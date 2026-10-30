@@ -8,9 +8,10 @@ import { PRODUCT_NAME } from "@/lib/brand";
 import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
 import { listDiscoveryRadar } from "@/lib/discovery/gaps.functions";
 import { shapeRadarFeed, type RadarFeedItem } from "@/lib/discovery/radar";
+import { detectionSourceLabel } from "@/lib/uxLanguage";
 import { seoHead } from "@/lib/seo";
 
-export const Route = createFileRoute("/discovery/gaps")({
+export const Route = createFileRoute("/discovery/gaps/")({
   validateSearch: zodValidator(
     z.object({
       status: fallback(
@@ -118,7 +119,7 @@ function DiscoveryGapsListPage() {
         </Link>
       </div>
       <p className="small muted">
-        {note} · {persistent ? "Neon statuses merged" : "Detection-only until persist"}
+        {note} · {persistent ? "Saved statuses included" : "New candidates — not yet saved to your workspace"}
       </p>
       <ul className="isi-library-list">
         {items.map((g) => (
@@ -127,14 +128,16 @@ function DiscoveryGapsListPage() {
               <span className="isi-gap-badge" data-tone={g.badge.tone}>
                 {g.badge.label}
               </span>
-              <span className="small muted">
-                {g.gapKey} · {g.detectionSource}
-              </span>
+              <span className="small muted">{detectionSourceLabel(g.detectionSource)}</span>
             </div>
             <Link to="/discovery/gaps/$gapId" params={{ gapId: g.gapKey }}>
               <strong>{g.title}</strong>
             </Link>
             <p className="isi-radar-why">{g.whySnippet}</p>
+            <details className="ask-research-trace" data-testid="expert-panel">
+              <summary className="xs">Technical details</summary>
+              <p className="xs mono muted">{g.gapKey}</p>
+            </details>
           </li>
         ))}
       </ul>

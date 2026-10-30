@@ -10,11 +10,14 @@ import { inspect } from "@/lib/immune/inspector";
 import { ASK_NAME } from "@/lib/brand";
 import { CAPABILITY_STATUS_LABEL } from "@/data/capabilityStatus";
 import {
+  askProgressLabel,
+  classifyAskGatewayIntent,
   hideGraphScorePhrases,
   matchConceptSuggestions,
   prepareAsk,
   runExplanationAction,
   shouldFetchProvisionalLit,
+  suggestGatewayActions,
   type AskGrounding,
   type ExplanationAction,
 } from "@/lib/askGrounding";
@@ -456,9 +459,14 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   };
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+  const lastUserForProgress = [...messages].reverse().find((x) => x.role === "user");
+  const progressQ = lastUserForProgress?.parts.map((p) => (p.type === "text" ? p.text : "")).join("").trim() ?? "";
+  const progressIntent = progressQ ? classifyAskGatewayIntent(progressQ, grounding?.queryClass) : undefined;
   const statusLabel =
-    status === "submitted" ? "Retrieving graph context…"
-      : status === "streaming" ? "Writing from retrieved graph context…"
+    status === "submitted"
+      ? askProgressLabel("retrieving", progressIntent)
+      : status === "streaming"
+        ? askProgressLabel("writing", progressIntent)
         : null;
 
   return (
@@ -597,30 +605,20 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                   const q = lastUser ? lastUser.parts.map((p) => (p.type === "text" ? p.text : "")).join("").slice(0, 200) : "";
                   const primaryId = grounding?.nodeIds.find((id) => byId[id]) ?? conceptsIn(text)[0];
                   const primary = primaryId ? byId[primaryId] : undefined;
+                  const gatewayActions =
+                    grounding?.coverage.matched && !grounding.trace.abstained
+                      ? suggestGatewayActions(grounding, q)
+                      : [];
                   return (
                     <>
-                      {grounding?.coverage.matched && !grounding.trace.abstained ? (
+                      {gatewayActions.length ? (
                         <div className="ask-followups ask-build-links" aria-label="Continue investigating">
-                          <span className="ask-insp-label">Build from this answer</span>
-                          {primary ? (
-                            <Link className="chip" to="/atlas/$id" params={{ id: primary.id }}>
-                              Atlas · {primary.name} <ArrowUpRight size={12} />
-                            </Link>
-                          ) : null}
-                          <Link className="chip" to="/discovery">
-                            Research Radar <ArrowUpRight size={12} />
-                          </Link>
-                          <Link className="chip" to="/research-workbench">
-                            Research Workbench <ArrowUpRight size={12} />
-                          </Link>
-                          <Link className="chip" to="/reasoning" hash="tracer" search={primary ? { from: primary.id } : undefined}>
-                            Path tracer <ArrowUpRight size={12} />
-                          </Link>
-                          {q ? (
-                            <Link className="chip" to="/research" search={{ lib: q }} hash="library">
-                              Journal metadata <ArrowUpRight size={12} />
-                            </Link>
-                          ) : null}
+                          <span className="ask-insp-label">Open next — chat context kept via Ask</span>
+                          {gatewayActions.map((a) => (
+                            <a key={a.id} className="chip" href={a.href}>
+                              {a.label} <ArrowUpRight size={12} />
+                            </a>
+                          ))}
                         </div>
                       ) : q ? (
                         <p className="xs muted">
@@ -628,6 +626,16 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                           <Link to="/research" search={{ lib: q }} hash="library">search journal metadata (Crossref)</Link>{" "}
                           (source records only — not reviewed evidence; no Nature Portfolio affiliation).
                         </p>
+                      ) : null}
+                      {primary && grounding?.coverage.matched ? (
+                        <details className="ask-research-trace">
+                          <summary className="xs">How this answer was routed (optional)</summary>
+                          <p className="xs muted">
+                            Intent: {classifyAskGatewayIntent(q, grounding.queryClass).replace(/_/g, " ")}.
+                            Agents and engineering steps stay in the background; this panel is for provenance only.
+                            Discovery tooling is not claimed as production-autonomous until evaluated.
+                          </p>
+                        </details>
                       ) : null}
                     </>
                   );

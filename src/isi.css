@@ -1,12 +1,14 @@
-/* ISI design foundation (brief v2).
+/* ISI design foundation (brief v2 + Ask-first simplification).
    Shared tokens and page patterns layered on top of biotech.css. Graph-specific
    styles stay in atlas.css / biotech.css. Colours are semantic variables only.
+   See docs/ISI_DESIGN_SYSTEM.md.
 
    Tokens
    - Spacing scale:  --isi-space-1..6  (4 / 8 / 12 / 20 / 32 / 56 px)
    - Radii:          --isi-radius-sm / --isi-radius (6 / 10 px)
    - Content widths: --isi-measure (reading) / --isi-wide (workspaces)
    - Dark band:      .isi-dark-band re-scopes surface/text tokens to midnight ink
+   - Five primaries: Explore / Research / Academy / Community / Ask Immune
 */
 html[data-theme] {
   --isi-navy: #081B2C;

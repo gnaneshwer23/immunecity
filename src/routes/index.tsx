@@ -1,24 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ART } from "@/components/immune/explain";
-import { ArrowRight, BookOpen, FlaskConical, Microscope, Network } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CausalSpine } from "@/components/immune/CausalSpine";
-import { IsiCityBand } from "@/components/immune/IsiCityBand";
 import { WontClaimList } from "@/components/immune/marketing";
 import { CONTENT } from "@/data/content";
 import { VISION_MOTTO } from "@/data/vision";
-import { AUDIENCES } from "@/data/audiences";
 import {
+  ASK_NAME,
+  ASK_PUBLIC_LINE,
   BRAND_EYEBROW,
-  CITY_CTA,
-  CITY_PATH,
-  COMMUNITY_CTA,
   COMMUNITY_PATH,
+  EXPLORE_PATH,
   HERO_HEADLINE,
   HERO_SUPPORT,
   HERO_TRUST,
   PRODUCT_NAME,
+  PRODUCT_SHORT,
   TAGLINE,
 } from "@/lib/brand";
 import { approvedQuery, loadEvidenceCoverage } from "@/lib/citations.functions";
@@ -69,12 +67,6 @@ export const Route = createFileRoute("/")({
     }),
   component: Home,
 });
-
-const INVESTIGATE_TOOLS = [
-  { to: "/simulator", icon: FlaskConical, title: "System simulator", can: "Run a 30-day infection and add treatments to see which outcome follows.", limit: "Teaching parameters only — not calibrated to patients." },
-  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect retrieval demos and walk curated pathways.", limit: "Illustrative walks with labelled sources — not fully evidence-grounded AI." },
-  { to: "/patient", icon: Microscope, title: "Patient and biomarkers", can: "See how biomarker thresholds map to educational rule flags.", limit: "Teaching rules only — not an individual assessment." },
-] as const;
 
 /** Home causal preview: TNF→RA exemplar (documented maturity; live cites still load in the graph). */
 const HOME_EXEMPLAR = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-tnf-ra")!;
@@ -238,7 +230,8 @@ function HomeCoverageGlance() {
 function Home() {
   return (
     <div className="home-page home-page-helix">
-      <section className="home-helix-hero" aria-label={PRODUCT_NAME}>
+      {/* 1 — Value prop: brand-first hero */}
+      <section className="home-helix-hero isi-dark-band" aria-label={PRODUCT_NAME}>
         <div className="home-helix-visual" aria-hidden="true">
           <img className="home-hero-art" src={ART.heroCity} alt="" width={1536} height={1024} />
         </div>
@@ -251,13 +244,13 @@ function Home() {
           <p className="hero-description">{HERO_SUPPORT}</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary home-helix-primary">
-              <Link to={CITY_PATH}>
-                {CITY_CTA} <ArrowRight />
+              <Link to="/ask">
+                {ASK_NAME} <ArrowRight />
               </Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
-              <Link to={COMMUNITY_PATH}>
-                {COMMUNITY_CTA} <ArrowRight />
+              <Link to={EXPLORE_PATH}>
+                Explore biology <ArrowRight />
               </Link>
             </Button>
           </div>
@@ -266,95 +259,66 @@ function Home() {
       </section>
 
       <div className="bio-content home-sections">
-        <nav className="home-audiences" aria-label="Start by audience">
-          {AUDIENCES.map((audience) => (
-            <Link key={audience.id} to={audience.to}>
-              <b>{audience.label}</b>
-              <span>{audience.note}</span>
-            </Link>
-          ))}
-        </nav>
-        <section className="bio-section" aria-labelledby="live-heading">
+        {/* 2 — Prominent Ask entry */}
+        <section className="bio-section" aria-labelledby="ask-gateway-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="mkt-section-label">On the platform</span>
-              <h2 id="live-heading">Academy, research, simulator, and community.</h2>
-            </div>
-            <p>Each card opens a live page. The review count below comes from the evidence service when it responds.</p>
-          </div>
-          <div className="home-live">
-            <Link to="/academy">
-              <b>Academy</b>
-              <span>Foundation lessons are open to read. Intermediate and advanced tracks are still being written, not finished courses.</span>
-            </Link>
-            <Link to="/research">
-              <b>Research</b>
-              <span>Journal metadata and candidate claims. Nothing enters the curated graph until a person reviews it.</span>
-            </Link>
-            <Link to="/simulator">
-              <b>Simulator</b>
-              <span>A 30-day teaching infection. Parameters are illustrative and not calibrated to patients.</span>
-            </Link>
-            <Link to="/community">
-              <b>Community</b>
-              <span>Educational discussion. Not clinical advice, and not part of the reviewed knowledge graph.</span>
-            </Link>
-          </div>
-          <HomeCoverageGlance />
-        </section>
-        <nav className="isi-three" aria-label="Three ways in">
-          <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Cells, molecules, diseases and therapies — one page per concept.</span></Link>
-          <Link to="/graph"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge graph</b><span>Typed concepts and directional causal links you can explore.</span></Link>
-          <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Journal metadata and candidate claims — reviewed before they enter the curated graph.</span></Link>
-        </nav>
-        {/* B — What ISI enables */}
-        <section className="bio-section" aria-labelledby="enables-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">Exploration</span>
-              <h2 id="enables-heading">From isolated facts to connected mechanisms.</h2>
+              <span className="mkt-section-label">{ASK_NAME}</span>
+              <h2 id="ask-gateway-heading">Ask first. Open the graph when you need depth.</h2>
             </div>
             <p>
-              A typical search returns definitions and papers. ISI shows what a concept connects to, in which direction,
-              and how far claim review has progressed.
+              {ASK_PUBLIC_LINE} Answers stay educational — missing evidence is stated clearly. From a reply you can open
+              Atlas, Research Radar or a lesson without losing the question.
+            </p>
+          </div>
+          <div className="bio-actions">
+            <Button asChild className="bio-primary">
+              <Link to="/ask">Open {ASK_NAME}</Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
+              <Link to="/ask" search={{ q: "How does TNF drive rheumatoid arthritis?" }}>
+                Try a mechanism question
+              </Link>
+            </Button>
+          </div>
+        </section>
+
+        {/* 3 — Biological exploration */}
+        <section className="bio-section" aria-labelledby="explore-heading">
+          <div className="bio-section-heading">
+            <div>
+              <span className="mkt-section-label">Explore</span>
+              <h2 id="explore-heading">From isolated facts to connected mechanisms.</h2>
+            </div>
+            <p>
+              The curated map shows what a concept connects to, in which direction, and how far claim review has
+              progressed — not a list of papers alone.
             </p>
           </div>
           <div className="home-compare">
             <div className="home-compare-col home-compare-flat">
               <span className="home-compare-label">A typical search</span>
-              <p className="home-compare-q">"What does TNF do?"</p>
+              <p className="home-compare-q">“What does TNF do?”</p>
               <ul>
                 <li>Lists of papers and definitions</li>
                 <li>Cause and effect look the same</li>
-                <li>No clear path to disease, target or therapy</li>
-                <li>Evidence quality left for you to judge</li>
+                <li>No clear path to disease or therapy</li>
               </ul>
             </div>
             <div className="home-compare-col home-compare-connected">
-              <span className="home-compare-label">In ISI</span>
+              <span className="home-compare-label">In {PRODUCT_SHORT}</span>
               <HomeCausalPathway />
             </div>
           </div>
+          <p className="home-causal-note">
+            <Link to={EXPLORE_PATH}>Explore hub</Link>
+            {" · "}
+            <Link to="/atlas">Knowledge Atlas</Link>
+            {" · "}
+            <Link to="/graph">Knowledge graph</Link>
+          </p>
         </section>
 
-        {/* C — Architecture */}
-        <section className="bio-section" aria-labelledby="home-spine-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">Architecture</span>
-              <h2 id="home-spine-heading">Fifteen stages from trigger to discovery.</h2>
-            </div>
-            <p>
-              Twelve layers organise the parts — cells, molecules, tissues, disease, therapy. Fifteen stages order
-              reasoning from trigger to discovery. Each link carries its own review status.{" "}
-              <Link to="/overview">See all twelve layers</Link>.
-            </p>
-          </div>
-          <CausalSpine compact />
-          <IsiCityBand />
-        </section>
-
-        {/* D — Explore a mechanism */}
         <section className="bio-section" aria-labelledby="mech-heading">
           <div className="bio-section-heading">
             <div>
@@ -363,67 +327,108 @@ function Home() {
             </div>
             <p>
               Graph links in order. Open a concept for detail, or an arrow for the evidence on that relationship.
-              Badges show what has been reviewed.
             </p>
           </div>
           <InteractiveMechanism />
           <p className="home-causal-note">
-            <Link to="/mechanism">More mechanisms</Link>{" · "}<Link to="/graph">Full knowledge graph</Link>
+            <Link to="/mechanism">More mechanisms</Link>
+            {" · "}
+            <Link to="/graph">Full knowledge graph</Link>
           </p>
         </section>
 
-        {/* E — Research intelligence */}
+        {/* 4 — Evidence to discovery */}
         <section className="bio-section isi-split" aria-labelledby="research-heading">
           <div>
             <span className="mkt-section-label">Research</span>
-            <h2 id="research-heading">From a paper to a reviewable claim.</h2>
+            <h2 id="research-heading">From evidence to the next defensible question.</h2>
             <p className="lede">
-              The Research Library searches Crossref metadata across Nature Portfolio immunology journals
-              (no affiliation implied). Proposing an article creates a local candidate only. Nothing enters the
-              curated graph until a human reviews the claim.
+              Search journal metadata, organise candidate claims, and open Research Radar for coverage-governed unknowns.
+              Nothing enters the curated graph until a person reviews it.
             </p>
             <div className="bio-actions">
               <Button asChild className="bio-primary">
-                <Link to="/research" hash="library"><BookOpen /> Browse the Research Library</Link>
+                <Link to="/research" hash="library">
+                  <BookOpen /> Research library
+                </Link>
               </Button>
               <Button asChild variant="ghost" className="bio-secondary">
-                <Link to="/research" hash="workbench">Open workbench</Link>
+                <Link to="/discovery">Research Radar</Link>
               </Button>
             </div>
+            <HomeCoverageGlance />
           </div>
           <ol className="isi-ladder" aria-label="How research material is labelled">
-            <li><b>Source material</b><span>Journal metadata or provisional literature hits — identity only until reviewed.</span></li>
-            <li><b>Candidate claim</b><span>A drafted statement mapped to a relationship — still unreviewed.</span></li>
-            <li><b>Counterevidence</b><span>Contradicts and partial assessments stay separate from approved support.</span></li>
-            <li><b>Hypothesis / export</b><span>Workbench drafts for curation — never auto-promoted to the curated graph.</span></li>
+            <li>
+              <b>Source material</b>
+              <span>Journal metadata or provisional literature — identity only until reviewed.</span>
+            </li>
+            <li>
+              <b>Candidate claim</b>
+              <span>A drafted statement mapped to a relationship — still unreviewed.</span>
+            </li>
+            <li>
+              <b>Counterevidence</b>
+              <span>Contradicts and partial assessments stay separate from approved support.</span>
+            </li>
+            <li>
+              <b>Research opportunity</b>
+              <span>Radar candidates from ISI coverage signals — not claimed worldwide absence.</span>
+            </li>
           </ol>
         </section>
 
-        {/* F — Investigate and simulate */}
-        <section className="bio-section" aria-labelledby="investigate-heading">
+        {/* 5 — Academy */}
+        <section className="bio-section" aria-labelledby="academy-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="mkt-section-label">Investigate</span>
-              <h2 id="investigate-heading">Test ideas with limits in view.</h2>
+              <span className="mkt-section-label">Academy</span>
+              <h2 id="academy-heading">Learn mechanisms as connected systems.</h2>
             </div>
-            <p>Each tool states what it can do — and what it is not.</p>
+            <p>
+              Foundation modules are open to read. Intermediate and advanced tracks are still being written — labelled
+              unfinished, not finished courses.
+            </p>
           </div>
-          <div className="isi-tools">
-            {INVESTIGATE_TOOLS.map((t) => (
-              <Link key={t.to} to={t.to} className="isi-tool">
-                <t.icon aria-hidden size={20} />
-                <h3>{t.title}</h3>
-                <p>{t.can}</p>
-                <p className="isi-tool-limit">{t.limit}</p>
+          <div className="bio-actions">
+            <Button asChild className="bio-primary">
+              <Link to="/academy">Open Academy</Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
+              <Link to="/mechanism/$id" params={{ id: "tlr4" }}>
+                Start a foundation lesson
               </Link>
-            ))}
+            </Button>
           </div>
         </section>
 
+        {/* 6 — Community */}
+        <section className="bio-section" aria-labelledby="community-heading">
+          <div className="bio-section-heading">
+            <div>
+              <span className="mkt-section-label">Community</span>
+              <h2 id="community-heading">Discuss immunology with clear limits.</h2>
+            </div>
+            <p>
+              Educational discussion and journal clubs. Not clinical advice, and not part of the reviewed knowledge
+              graph.
+            </p>
+          </div>
+          <div className="bio-actions">
+            <Button asChild className="bio-primary">
+              <Link to={COMMUNITY_PATH}>Join the conversation</Link>
+            </Button>
+            <Button asChild variant="ghost" className="bio-secondary">
+              <Link to="/community/journal-clubs">Journal clubs</Link>
+            </Button>
+          </div>
+        </section>
+
+        {/* 7 — Trust / governance */}
         <section className="bio-section" aria-labelledby="trust-heading">
           <div className="bio-section-heading">
             <div>
-              <span className="mkt-section-label">Evidence</span>
+              <span className="mkt-section-label">Trust</span>
               <h2 id="trust-heading">Review status stays visible.</h2>
             </div>
             <p>
@@ -441,30 +446,39 @@ function Home() {
               <span>Teaching links remain visible with clear status while review continues.</span>
             </li>
             <li>
-              <strong>Graph-grounded teaching</strong>
-              <span>Explanations stay tied to curated relationships; unsupported citation claims are rejected.</span>
+              <strong>Human scientific review</strong>
+              <span>No auto-approval into the curated graph. Expert workspaces stay behind account access.</span>
             </li>
           </ul>
           <WontClaimList />
           <p className="home-trust-link">
-            <Link to="/methods" hash="live-ev-heading">Live coverage</Link>
+            <Link to="/methods" hash="live-ev-heading">
+              Methods & live coverage
+            </Link>
             <Link to="/disclaimer">Educational disclaimer</Link>
           </p>
         </section>
 
+        {/* 8 — Simple CTA */}
         <section className="bio-banner home-final-cta" aria-labelledby="cta-heading">
           <div>
             <div className="bio-eyebrow">{VISION_MOTTO.join(" · ")}</div>
-            <h2 id="cta-heading">Start from a concept or pathway.</h2>
-            <p>
-              Follow the relationships that connect it to the wider immune system — with review status in view.
-            </p>
+            <h2 id="cta-heading">Start with a question.</h2>
+            <p>Ask Immune answers from the curated map — then open biology or research when you need more.</p>
           </div>
-          <nav className="isi-final-links" aria-label="Start exploring">
-            <Link to="/mechanism">Investigate a mechanism <ArrowRight size={16} /></Link>
-            <Link to="/graph">Open the knowledge graph <ArrowRight size={16} /></Link>
-            <Link to="/methods" hash="live-ev-heading">See live coverage <ArrowRight size={16} /></Link>
-            <Link to="/research" hash="library">Browse research <ArrowRight size={16} /></Link>
+          <nav className="isi-final-links" aria-label="Start">
+            <Link to="/ask">
+              {ASK_NAME} <ArrowRight size={16} />
+            </Link>
+            <Link to={EXPLORE_PATH}>
+              Explore biology <ArrowRight size={16} />
+            </Link>
+            <Link to="/research">
+              Research <ArrowRight size={16} />
+            </Link>
+            <Link to="/methods" hash="live-ev-heading">
+              Methods <ArrowRight size={16} />
+            </Link>
           </nav>
         </section>
       </div>

@@ -1271,6 +1271,163 @@ export function runExplanationAction(action: ExplanationAction, grounding: AskGr
   }
 }
 
+/**
+ * High-level Ask gateway intents — which scientific surfaces to emphasise.
+ * Bounded: classification is regex + graph match only; agents are never all invoked.
+ * Scaffolded Discovery/Intel agents stay optional follow-up links, not claimed autonomous.
+ */
+export type AskGatewayIntent =
+  | "knowledge_graph"
+  | "mechanism"
+  | "evidence"
+  | "discovery"
+  | "methodology"
+  | "academy"
+  | "research_profile"
+  | "general";
+
+export type AskGatewayAction = {
+  id: string;
+  label: string;
+  href: string;
+  /** Keep chat context via ask prefill when useful. */
+  keepAsk?: boolean;
+};
+
+const INTENT_DISCOVERY =
+  /\b(research gaps?|research radar|research opportunit\w*|unknown|what is missing|next (experiment|question)|coverage gaps?|dossier)\b/i;
+const INTENT_EVIDENCE =
+  /\b(evidence|citation|pmid|doi|gate c|reviewed|provisional|counterevidence|what supports)\b/i;
+const INTENT_METHOD =
+  /\b(methodolog\w*|limitations?|how (do|does) (ask|isi|this) work|skeptic|how (are|is) (claims?|evidence) (review|assess)|provenance)\b/i;
+const INTENT_ACADEMY =
+  /\b(lesson|learn(ing)?|academy|course|module|teach(ing)?|foundation track|quiz|assessment)\b/i;
+const INTENT_PROFILE =
+  /\b(my (research|profile|interests|saved)|follow(ed|ing)? (gaps?|alerts?)|workspace)\b/i;
+const INTENT_MECHANISM =
+  /\b(mechanism|pathway|signall?ing|cascade|downstream|perturb|how does .+ work)\b/i;
+
+/** Classify which ISI surface family the question leans toward (no agent fan-out). */
+export function classifyAskGatewayIntent(question: string, queryClass?: AskQueryClass): AskGatewayIntent {
+  const q = question.trim();
+  if (!q) return "general";
+  const cls = queryClass ?? classifyAskQuery(q);
+  // Clinical always abstains at the gateway layer.
+  if (cls === "clinical_personal") return "general";
+  // Surface intents before unsupported — “methodology” / Academy may not match KG nodes.
+  if (INTENT_PROFILE.test(q)) return "research_profile";
+  if (INTENT_ACADEMY.test(q)) return "academy";
+  if (INTENT_METHOD.test(q)) return "methodology";
+  if (INTENT_DISCOVERY.test(q) || cls === "hypothesis_request") return "discovery";
+  if (INTENT_EVIDENCE.test(q) || cls === "source_lookup") return "evidence";
+  if (INTENT_MECHANISM.test(q) || cls === "mechanism_perturbation") return "mechanism";
+  if (cls === "unsupported") return "general";
+  if (cls === "graph_explanation" || cls === "comparison") return "knowledge_graph";
+  return "general";
+}
+
+/** User-facing progress copy — biology language, not pipeline logs. */
+export function askProgressLabel(
+  phase: "retrieving" | "reviewing" | "writing" | "idle",
+  intent?: AskGatewayIntent,
+): string | null {
+  if (phase === "idle") return null;
+  if (phase === "retrieving") {
+    switch (intent) {
+      case "evidence":
+        return "Reviewing scientific evidence…";
+      case "discovery":
+        return "Checking research coverage signals…";
+      case "mechanism":
+        return "Tracing mechanism links…";
+      case "academy":
+        return "Finding related lessons…";
+      default:
+        return "Retrieving graph context…";
+    }
+  }
+  if (phase === "reviewing") return "Reviewing scientific evidence…";
+  return "Writing from retrieved graph context…";
+}
+
+/**
+ * Structured follow-up actions that open Explore / Research / Academy surfaces
+ * without losing the ability to return to Ask via prefill.
+ */
+export function suggestGatewayActions(
+  grounding: AskGrounding,
+  question: string,
+  intent?: AskGatewayIntent,
+): AskGatewayAction[] {
+  const gw = intent ?? classifyAskGatewayIntent(question, grounding.queryClass);
+  const primaryId = grounding.nodeIds.find((id) => byId[id]);
+  const primary = primaryId ? byId[primaryId] : undefined;
+  const q = question.trim().slice(0, 200);
+  const askPrefill =
+    primary && q
+      ? `/ask?about=${encodeURIComponent(primary.id)}&q=${encodeURIComponent(q)}`
+      : "/ask";
+  const actions: AskGatewayAction[] = [];
+
+  if (primary) {
+    actions.push({
+      id: "atlas",
+      label: `Open ${primary.name} in Atlas`,
+      href: `/atlas/${encodeURIComponent(primary.id)}`,
+      keepAsk: true,
+    });
+    actions.push({
+      id: "graph",
+      label: "Highlight in knowledge graph",
+      href: `/graph?focus=${encodeURIComponent(primary.id)}`,
+    });
+  }
+
+  switch (gw) {
+    case "evidence":
+      actions.push({ id: "evidence", label: "Evidence explorer", href: "/evidence" });
+      actions.push({ id: "methods", label: "Methods & limitations", href: "/methods" });
+      break;
+    case "discovery":
+      actions.push({ id: "radar", label: "Research Radar", href: "/discovery" });
+      if (q) actions.push({ id: "library", label: "Journal metadata", href: `/research?lib=${encodeURIComponent(q)}#library` });
+      break;
+    case "methodology":
+      actions.push({ id: "methods", label: "Methods & trust", href: "/methods" });
+      actions.push({ id: "reasoning", label: "Scientific reasoning tools", href: "/reasoning" });
+      break;
+    case "academy":
+      actions.push({ id: "academy", label: "Immunology Academy", href: "/academy" });
+      actions.push({ id: "mechanism", label: "Mechanism lessons", href: "/mechanism" });
+      break;
+    case "research_profile":
+      actions.push({ id: "workspace", label: "My Workspace", href: "/workspace" });
+      actions.push({ id: "profile", label: "Discovery profile", href: "/discovery/profile" });
+      break;
+    case "mechanism":
+      actions.push({ id: "mechanism", label: "Browse mechanisms", href: "/mechanism" });
+      if (primary) {
+        actions.push({
+          id: "tracer",
+          label: "Path tracer",
+          href: `/reasoning?from=${encodeURIComponent(primary.id)}#tracer`,
+        });
+      }
+      break;
+    case "knowledge_graph":
+    default:
+      actions.push({ id: "explore", label: "Explore hub", href: "/explore" });
+      actions.push({ id: "radar", label: "Research Radar", href: "/discovery" });
+      if (q) actions.push({ id: "library", label: "Journal metadata", href: `/research?lib=${encodeURIComponent(q)}#library` });
+      break;
+  }
+
+  actions.push({ id: "ask-continue", label: "Keep asking", href: askPrefill, keepAsk: true });
+  // Deduplicate by id; cap so the panel stays lean.
+  const seen = new Set<string>();
+  return actions.filter((a) => (seen.has(a.id) ? false : (seen.add(a.id), true))).slice(0, 6);
+}
+
 export const SYSTEM = `You are Ask Immune — the conversational assistant for Immune Super Intelligence, an AI-native educational causal immunology knowledge graph.
 Positioning: "Immune Super Intelligence — Where Immunology Meets Advanced AI." Answer using ONLY the graph extract below. Explain cells, molecules, pathways and causal connections clearly for a curious non-specialist.
 Rules:

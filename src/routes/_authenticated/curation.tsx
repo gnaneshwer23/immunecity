@@ -395,7 +395,7 @@ function Curation() {
       <Section
         id="review-queue"
         title="Scientific review queue"
-        lede="Neon-backed unreviewed candidates. Inspect claim text and source passages, then record a human decision. Audit events are append-only."
+        lede="Unreviewed evidence candidates awaiting scientific review. Inspect claim text and source passages, then record a human decision. Audit history is append-only."
       >
         <ScientificReviewQueuePanel canReview={canReview} />
       </Section>
@@ -700,7 +700,10 @@ function Curation() {
                       </td>
                       <td className="small">
                         {r.source_type}
-                        <div className="xs mono muted">{r.evidence_id}</div>
+                        <details className="ask-research-trace" data-testid="expert-panel">
+                          <summary className="xs">Record id</summary>
+                          <div className="xs mono muted">{r.evidence_id}</div>
+                        </details>
                       </td>
                       <td className="ev-cite">
                         {r.source_ref ?? <span className="muted">—</span>}
