@@ -35,3 +35,14 @@ export function isTrialIntelligenceEnabled(): boolean {
 }
 
 export const TRIAL_INTELLIGENCE_FLAG = "VITE_TRIAL_INTELLIGENCE" as const;
+
+/**
+ * How to enable later (product + SME sign-off required — keep OFF in production until then):
+ * 1. Confirm educational surfaces stay non-CDS and pilot fixtures reviewed.
+ * 2. Set `VITE_TRIAL_INTELLIGENCE=1` (and optionally `TRIAL_INTELLIGENCE=1`) in Vercel Preview first.
+ * 3. Redeploy; smoke Atlas melanoma / PD-1 trial panels.
+ * 4. Only then set the same vars in Vercel Production.
+ * Rollback: unset / set `0` + redeploy. No remote kill switch.
+ */
+export const TRIAL_INTELLIGENCE_ENABLEMENT_NOTE =
+  "Production TI stays off until explicit product/SME sign-off. Enable via VITE_TRIAL_INTELLIGENCE=1 + redeploy; never invent assay cut-offs.";

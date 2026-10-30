@@ -56,8 +56,9 @@ export default function OntologyMappingPanel({ canReview }: Props) {
     <div className="card" style={{ marginBottom: 16 }} data-testid="ontology-mapping-panel">
       <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Ontology mappings</h3>
       <p className="small muted" style={{ marginBottom: 10 }}>
-        Crosswalks retain ISI ids. <strong>Do not invent external accessions.</strong> New rows stay{" "}
-        <code>unreviewed</code> with curator verification required. Empty table is honest and OK.
+        Crosswalks retain ISI ids. <strong>External ontology IDs must be curator-supplied</strong> — never
+        invent MeSH / UBERON / Cell Ontology / other accessions. New rows stay <code>unreviewed</code> with
+        verification required. An empty table is the expected honest default until a curator fills rows.
       </p>
       {!available ? (
         <p className="callout">ontology_mappings not available (apply migration 0017).</p>

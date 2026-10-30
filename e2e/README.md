@@ -26,11 +26,21 @@ E2E_USER_B_EMAIL=… E2E_USER_B_PASSWORD=…   # required for cross-account isol
 # E2E_USER_EMAIL=… E2E_USER_PASSWORD=…
 ```
 
-When credentials are **missing**, auth tests call `test.skip` with an explicit `SKIP (not a pass): …` reason.
+When credentials are **missing**, auth tests call `test.skip` with an explicit `SKIP (not a pass): …` reason
+(`e2e/auth-helpers.ts` → `SKIP_AUTH_SINGLE` / `SKIP_AUTH_DUAL`).
 
 ### CI / reporting note
 
 **Skipped auth tests are not passes.** Playwright reports them as `skipped`, separate from `passed`. Do not treat a green public-journey run as coverage for sign-in, collection CRUD, isolation, or research export. Those remain **unproven** until credentials are present and the auth describe block runs.
+
+| Env | Required for |
+| --- | --- |
+| `E2E_USER_A_EMAIL` + `E2E_USER_A_PASSWORD` | Single-account auth journeys |
+| `E2E_USER_B_EMAIL` + `E2E_USER_B_PASSWORD` | Dual-account isolation (A cannot read B) |
+| `E2E_USER_EMAIL` + `E2E_USER_PASSWORD` | Optional fallback when A unset |
+| `E2E_BASE_URL` | Prefer live preview / local preview URL |
+
+Documented placeholders also live in `.env.example` (empty). **Never invent or commit credentials.**
 
 Specs:
 - `marketing-nav.spec.ts` — header IA / compact nav

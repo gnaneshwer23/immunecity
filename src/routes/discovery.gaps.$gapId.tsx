@@ -10,10 +10,12 @@ import {
   getDiscoveryGap,
   persistDetectedGapCandidates,
   recordGapReviewDecision,
+  recordOpportunityReviewDecision,
   submitGapFeedback,
   toggleGapSubscription,
   verifyPersistedGap,
 } from "@/lib/discovery/gaps.functions";
+import type { OpportunityReviewDecision } from "@/lib/discovery/opportunityReview";
 import { recommendGapsForProfile, type FeedbackRating } from "@/lib/discovery/recommend";
 import { verifyGapCandidate } from "@/lib/discovery/verify";
 import { seoHead } from "@/lib/seo";
@@ -46,6 +48,7 @@ function DiscoveryGapDossierPage() {
   const persistFn = useServerFn(persistDetectedGapCandidates);
   const verifyFn = useServerFn(verifyPersistedGap);
   const reviewFn = useServerFn(recordGapReviewDecision);
+  const opportunityFn = useServerFn(recordOpportunityReviewDecision);
   const followFn = useServerFn(toggleGapSubscription);
   const feedbackFn = useServerFn(submitGapFeedback);
 
@@ -158,6 +161,34 @@ function DiscoveryGapDossierPage() {
       setDossier(next.dossier);
     } catch (e) {
       setActionMsg(e instanceof Error ? e.message : "Review failed.");
+    }
+  }
+
+  async function runOpportunity(decision: OpportunityReviewDecision) {
+    setActionMsg("");
+    if (
+      decision === "promote_reviewed_opportunity" &&
+      !window.confirm(
+        "Promote to reviewed_opportunity? Human scientific decision only — never automatic. Does not approve Gate C.",
+      )
+    ) {
+      return;
+    }
+    try {
+      const res = await opportunityFn({
+        data: {
+          gapKey: gapId,
+          decision,
+          rationale: rationale || "Opportunity review recorded from dossier.",
+        },
+      });
+      setActionMsg(
+        `Opportunity ${res.previousOpportunityStatus} → ${res.newOpportunityStatus} (v${res.versionN}). ${res.note}`,
+      );
+      const next = await load({ data: { gapKey: gapId } });
+      setDossier(next.dossier);
+    } catch (e) {
+      setActionMsg(e instanceof Error ? e.message : "Opportunity review failed.");
     }
   }
 
@@ -444,6 +475,31 @@ function DiscoveryGapDossierPage() {
           <button type="button" className="btn sm" onClick={() => void runReview("demote")}>
             Demote
           </button>
+        </div>
+        <h4 style={{ fontSize: "0.95rem", marginTop: 16, marginBottom: 6 }}>
+          Opportunity review (Gate C unchanged)
+        </h4>
+        <p className="xs muted" style={{ marginBottom: 8 }}>
+          Current opportunity status: <code>{dossier.opportunityStatus ?? "none"}</code>. Promote only when
+          class is <code>research_opportunity</code> and status is assessed/draft. Never auto.
+        </p>
+        <div className="row" style={{ gap: 8, flexWrap: "wrap" }} data-testid="opportunity-review-actions">
+          <button
+            type="button"
+            className="btn sm"
+            onClick={() => void runOpportunity("promote_reviewed_opportunity")}
+          >
+            Promote reviewed_opportunity
+          </button>
+          <button type="button" className="btn sm" onClick={() => void runOpportunity("reject_opportunity")}>
+            Reject opportunity
+          </button>
+          <button type="button" className="btn sm" onClick={() => void runOpportunity("demote_opportunity")}>
+            Demote opportunity
+          </button>
+          <a className="btn sm" href={`/sme?gapKey=${encodeURIComponent(gapId)}`}>
+            Open in SME workspace
+          </a>
         </div>
       </Section>
 

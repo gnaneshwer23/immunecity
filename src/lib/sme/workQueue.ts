@@ -270,6 +270,6 @@ export function summariseSmeWorkQueue(items: readonly SmeWorkItem[] = buildSmeMe
     priorityPending: buildSmePriorityQueues().filter((i) => i.status === "pending_sme").length,
     autoApprove: false as const,
     autoRematch: false as const,
-    note: "All melanoma matrix rows remain pending_sme until a named scientific reviewer decides. KEYNOTE rematch and R011 S-P-O rewrite are explicit queues — no silent fix.",
+    note: "Matrix rows start pending_sme. Audited approve/reject may mark resolved_by_sme; rematch leaves pending until separate Gate C. KEYNOTE rematch and R011 S-P-O rewrite are explicit queues — no silent fix.",
   };
 }

@@ -5,7 +5,7 @@
 import { DISCOVERY_GOLD_SET_SCAFFOLD, type DiscoveryGoldCase } from "@/lib/discovery/eval/goldSet";
 import { SME_PRIORITY_QUEUE_IDS } from "@/lib/sme/workQueue";
 
-/** Closed set of expert labels SMEs may assign. */
+/** Closed set of expert labels SMEs may assign (Neon CHECK aligned in migration 0027). */
 export const SME_GOLD_LABELS = [
   "genuine_gap",
   "false_novelty",
@@ -24,6 +24,18 @@ export const SME_GOLD_LABELS = [
 ] as const;
 
 export type SmeGoldLabel = (typeof SME_GOLD_LABELS)[number];
+
+/** Labels safe to upsert before migration 0027 (original 0023 CHECK). Prefer full set after 0027. */
+export const SME_GOLD_LABELS_LEGACY = [
+  "genuine_gap",
+  "false_novelty",
+  "contradiction_with_context",
+  "coverage_insufficient",
+  "spo_mismatch",
+  "wrong_citation",
+  "acceptable_associative",
+  "needs_rewrite",
+] as const;
 
 export type SmeGoldCaseStatus = "pending_sme" | "scaffolded" | "labelled_by_sme";
 

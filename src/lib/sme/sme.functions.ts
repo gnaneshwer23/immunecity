@@ -25,17 +25,24 @@ import { runSmeEvalHarness } from "@/lib/sme/evalRunner";
 import {
   SME_GOLD_LABELS,
   SME_GOLD_SET_SCAFFOLD,
+  mergeDiscoveryGoldAsSmeView,
   summariseSmeGoldSet,
   type SmeGoldCase,
   type SmeGoldLabel,
 } from "@/lib/sme/goldSet";
 import { smeDecisionAuditReason, validateSmeCitationRematch } from "@/lib/sme/rematch";
 import {
+  applySmeWorkItemEventStatuses,
+  keynoteRematchChecklist,
+  r011SpoRewriteChecklist,
+} from "@/lib/sme/workItemStatus";
+import {
   buildSmeMelanomaWorkQueue,
   buildSmePriorityQueues,
   buildSmeUnifiedWorkQueue,
   summariseSmeWorkQueue,
 } from "@/lib/sme/workQueue";
+import { DISCOVERY_GOLD_SET_SCAFFOLD } from "@/lib/discovery/eval/goldSet";
 
 function auditSnapshot(r: typeof evidenceRecords.$inferSelect) {
   return {
@@ -121,12 +128,15 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
         return rank(a.gapClass) - rank(b.gapClass);
       })
       .slice(0, 25);
-    const workItems = buildSmeUnifiedWorkQueue({ discoveryGaps, includeMatrix: true });
-    const priority = buildSmePriorityQueues();
-    const goldSummary = summariseSmeGoldSet();
+    let workItems = buildSmeUnifiedWorkQueue({ discoveryGaps, includeMatrix: true });
+    let priority = buildSmePriorityQueues();
     const evalReport = runSmeEvalHarness({ workItems });
 
-    let neonGold: SmeGoldCase[] = [...SME_GOLD_SET_SCAFFOLD];
+    const discoveryGoldView = mergeDiscoveryGoldAsSmeView(DISCOVERY_GOLD_SET_SCAFFOLD);
+    let neonGold: SmeGoldCase[] = [
+      ...SME_GOLD_SET_SCAFFOLD,
+      ...discoveryGoldView.filter((d) => !SME_GOLD_SET_SCAFFOLD.some((s) => s.id === d.id)),
+    ];
     let workEvents: {
       workItemId: string;
       action: string;
@@ -142,7 +152,7 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
         const labels = await db.select().from(smeGoldLabels).orderBy(asc(smeGoldLabels.caseId)).limit(200);
         if (labels.length) {
           const byId = new Map(labels.map((l) => [l.caseId, l]));
-          neonGold = SME_GOLD_SET_SCAFFOLD.map((c) => {
+          neonGold = neonGold.map((c) => {
             const row = byId.get(c.id);
             if (!row || !row.label) return { ...c };
             return {
@@ -171,7 +181,7 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
           .select()
           .from(smeWorkItemEvents)
           .orderBy(desc(smeWorkItemEvents.createdAt))
-          .limit(80);
+          .limit(200);
         workEvents = events.map((e) => ({
           workItemId: e.workItemId,
           action: e.action,
@@ -179,6 +189,8 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
           rationale: e.rationale,
           createdAt: e.createdAt.toISOString(),
         }));
+        workItems = applySmeWorkItemEventStatuses(workItems, workEvents);
+        priority = applySmeWorkItemEventStatuses(priority, workEvents);
         persistent = true;
       } catch {
         persistent = false;
@@ -200,7 +212,11 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
       workEvents,
       persistent,
       scaffoldEval: evalReport,
-      note: "Human scientific review required. Rematch needs PMID+DOI+passage. No bulk Gate C approve.",
+      checklists: {
+        keynote: keynoteRematchChecklist(),
+        r011: r011SpoRewriteChecklist(),
+      },
+      note: "Human scientific review required. Rematch needs PMID+DOI+passage. No bulk Gate C approve. Scores/labels null until SME fills.",
     };
   });
 
@@ -372,6 +388,74 @@ export const recordSmeWorkDecision = createServerFn({ method: "POST" })
     });
 
     return { ok: true as const, autoApprove: false as const, action: data.action };
+  });
+
+/**
+ * Record an R011 (or similar) S-P-O rewrite *proposal* — audited only.
+ * Does not rewrite the graph edge and does not approve Gate C.
+ * Scientist supplies proposed subject/predicate/object text; engineering stores the proposal.
+ */
+export const recordSmeSpoRewriteProposal = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        workItemId: z.string().min(1).max(80),
+        evidenceUuid: z.string().uuid().optional(),
+        relationshipId: z.string().min(1).max(200).nullable().optional(),
+        proposedSubject: z.string().min(1).max(200),
+        proposedPredicate: z.string().min(1).max(200),
+        proposedObject: z.string().min(1).max(200),
+        rationale: z.string().min(8).max(2000),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertCanReview(context.userId);
+    const actor = context.email ?? context.userId;
+    const db = getDb();
+    let evidenceId: string | null = null;
+    let relationshipId = data.relationshipId ?? null;
+    if (data.evidenceUuid) {
+      const [existing] = await db
+        .select()
+        .from(evidenceRecords)
+        .where(eq(evidenceRecords.id, data.evidenceUuid))
+        .limit(1);
+      if (!existing) throw new Error("Evidence record not found.");
+      evidenceId = existing.evidenceId;
+      relationshipId = relationshipId ?? existing.relationshipId;
+      const noteLine = `[sme_spo_rewrite_proposal] ${data.proposedSubject} → ${data.proposedPredicate} → ${data.proposedObject} · ${data.rationale}`;
+      await db
+        .update(evidenceRecords)
+        .set({
+          notes: [noteLine, existing.notes].filter(Boolean).join("\n"),
+          updatedAt: new Date(),
+        })
+        .where(eq(evidenceRecords.id, existing.id));
+    }
+    await db.insert(smeWorkItemEvents).values({
+      workItemId: data.workItemId,
+      relationshipId,
+      evidenceId,
+      actor,
+      action: "spo_rewrite_proposal",
+      rationale: data.rationale,
+      payloadJson: {
+        proposedSubject: data.proposedSubject,
+        proposedPredicate: data.proposedPredicate,
+        proposedObject: data.proposedObject,
+        autoApprove: false,
+        graphRewritten: false,
+        note: "Proposal only — graph edge rewrite is out-of-band; Gate C not approved.",
+      },
+    });
+    return {
+      ok: true as const,
+      autoApprove: false as const,
+      graphRewritten: false as const,
+      note: "S-P-O rewrite proposal audited. Graph not rewritten. Gate C not approved.",
+    };
   });
 
 /**

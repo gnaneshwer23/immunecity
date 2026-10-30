@@ -666,6 +666,46 @@ export const smeWorkItemEvents = pgTable("sme_work_item_events", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * Team collab scaffolding (migration 0027) — invite/membership drafts only.
+ * Billing / shared-profile product features stay inactive.
+ */
+export const researchTeamOrgs = pgTable("research_team_orgs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  label: text("label").notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchTeamMemberships = pgTable(
+  "research_team_memberships",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => researchTeamOrgs.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").notNull(),
+    roleHint: text("role_hint").notNull().default("viewer"),
+    status: text("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("research_team_memberships_uniq").on(t.orgId, t.userId)],
+);
+
+export const researchTeamInvites = pgTable("research_team_invites", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orgId: uuid("org_id")
+    .notNull()
+    .references(() => researchTeamOrgs.id, { onDelete: "cascade" }),
+  inviteeEmail: text("invitee_email").notNull(),
+  roleHint: text("role_hint").notNull().default("viewer"),
+  status: text("status").notNull().default("draft_pending"),
+  invitedBy: text("invited_by").notNull(),
+  wouldSend: boolean("would_send").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type ResearchProfileDbRow = typeof researchProfiles.$inferSelect;
 export type ResearchGapDbRow = typeof researchGaps.$inferSelect;
 export type ResearchDiscoveryAlertDbRow = typeof researchDiscoveryAlerts.$inferSelect;

@@ -33,6 +33,7 @@
     "db:research-discovery-gaps": "bun scripts/apply-research-discovery-gaps-migration.ts",
     "db:research-discovery-monitor": "bun scripts/apply-research-discovery-monitor-migration.ts",
     "db:research-entitlements-team": "bun scripts/apply-research-entitlements-team-migration.ts",
+    "db:ops-sme-team-scaffold": "bun scripts/apply-ops-sme-team-scaffold-migration.ts",
     "discovery:monitor": "bun scripts/run-discovery-monitor.ts",
     "discovery:retrieval-pilots": "bun scripts/run-discovery-retrieval-pilots.ts",
     "discovery:appraisal-sprint": "bun scripts/run-discovery-appraisal-sprint.ts",

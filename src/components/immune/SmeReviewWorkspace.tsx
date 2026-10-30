@@ -1,6 +1,6 @@
 /**
  * SME review workspace — melanoma / KEYNOTE / R011 queues + gold-set + rematch.
- * Reviewer-gated actions; never bulk-approves or invents PMIDs.
+ * Reviewer-gated actions; never bulk-approves or invents PMIDs / gold scores.
  */
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -10,22 +10,28 @@ import {
   listSmeEvidenceQueueSlice,
   listSmeWorkItemEvents,
   recordSmeCitationRematch,
+  recordSmeSpoRewriteProposal,
   recordSmeWorkDecision,
   upsertSmeGoldLabel,
 } from "@/lib/sme/sme.functions";
 import { SME_GOLD_LABELS, type SmeGoldCase, type SmeGoldLabel } from "@/lib/sme/goldSet";
 import type { SmeWorkItem } from "@/lib/sme/workQueue";
 import type { SmeEvalReport } from "@/lib/sme/evalRunner";
+import type { SmeHumanChecklistStep } from "@/lib/sme/workItemStatus";
 
 type Snapshot = Awaited<ReturnType<typeof getSmeWorkspaceSnapshot>>;
 
-export default function SmeReviewWorkspace() {
+export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {}) {
   const snapFn = useServerFn(getSmeWorkspaceSnapshot);
   const queueFn = useServerFn(listSmeEvidenceQueueSlice);
   const decideFn = useServerFn(recordSmeWorkDecision);
   const rematchFn = useServerFn(recordSmeCitationRematch);
+  const spoFn = useServerFn(recordSmeSpoRewriteProposal);
   const goldFn = useServerFn(upsertSmeGoldLabel);
   const eventsFn = useServerFn(listSmeWorkItemEvents);
+
+  // Deep-link from Discovery dossiers: /sme?gapKey=…
+  const gapKeyParam = (gapKey ?? "").trim();
 
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const [msg, setMsg] = useState("");
@@ -36,8 +42,12 @@ export default function SmeReviewWorkspace() {
   const [pmid, setPmid] = useState("");
   const [doi, setDoi] = useState("");
   const [passage, setPassage] = useState("");
+  const [spoSubject, setSpoSubject] = useState("");
+  const [spoPredicate, setSpoPredicate] = useState("");
+  const [spoObject, setSpoObject] = useState("");
   const [goldCase, setGoldCase] = useState<SmeGoldCase | null>(null);
   const [goldLabel, setGoldLabel] = useState<SmeGoldLabel>("genuine_gap");
+  const [goldScore, setGoldScore] = useState("");
   const [events, setEvents] = useState<string[]>([]);
   const [idByEvidence, setIdByEvidence] = useState<Record<string, string>>({});
 
@@ -49,7 +59,7 @@ export default function SmeReviewWorkspace() {
       setSnap(s);
       setMsg(
         s.canReview
-          ? `Loaded ${s.workItems.length} work items · pending_sme=${s.workSummary.pendingSme} · persistent=${String(s.persistent)}`
+          ? `Loaded ${s.workItems.length} work items · pending_sme=${s.workSummary.pendingSme} · resolved=${s.workSummary.resolvedBySme} · persistent=${String(s.persistent)}`
           : "Signed in — scientific reviewer role required for decisions.",
       );
       if (s.canReview) {
@@ -57,12 +67,18 @@ export default function SmeReviewWorkspace() {
         const slice = await queueFn({ data: { relationshipIds: relIds.length ? relIds : undefined, limit: 40 } });
         setIdByEvidence(slice.idByEvidence);
       }
+      if (gapKeyParam) {
+        const match =
+          s.workItems.find((i) => i.gapKey === gapKeyParam) ??
+          s.workItems.find((i) => i.id === `SME-DISC-${gapKeyParam}`);
+        if (match) setSelected(match);
+      }
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "SME workspace failed to load.");
       setSnap(null);
     }
     setBusy(false);
-  }, [snapFn, queueFn]);
+  }, [snapFn, queueFn, gapKeyParam]);
 
   useEffect(() => {
     void load();
@@ -130,6 +146,11 @@ export default function SmeReviewWorkspace() {
 
   const saveGold = async () => {
     if (!goldCase) return;
+    const parsedScore = goldScore.trim() === "" ? null : Number(goldScore);
+    if (parsedScore !== null && (Number.isNaN(parsedScore) || parsedScore < 0 || parsedScore > 1)) {
+      setMsg("Optional smeScore must be empty (null) or a number from 0–1 — never invent.");
+      return;
+    }
     setBusy(true);
     try {
       await goldFn({
@@ -138,14 +159,46 @@ export default function SmeReviewWorkspace() {
           workItemId: goldCase.workItemId,
           gapKey: goldCase.gapKey,
           label: goldLabel,
-          smeScore: null,
+          smeScore: parsedScore,
           notes: rationale.trim() || goldCase.notes,
         },
       });
-      setMsg(`Gold label ${goldLabel} saved for ${goldCase.id} (score remains null until SME sets one).`);
+      setMsg(
+        `Gold label ${goldLabel} saved for ${goldCase.id} (score=${parsedScore === null ? "null" : String(parsedScore)}).`,
+      );
       await load();
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Gold label save failed.");
+    }
+    setBusy(false);
+  };
+
+  const runSpoProposal = async () => {
+    if (!selected || selected.kind !== "r011_spo_rewrite") {
+      setMsg("Select the R011 S-P-O work item before recording a rewrite proposal.");
+      return;
+    }
+    if (!spoSubject.trim() || !spoPredicate.trim() || !spoObject.trim() || rationale.trim().length < 8) {
+      setMsg("Proposed S / P / O and rationale (≥8 chars) required. Do not invent — scientist fills.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await spoFn({
+        data: {
+          workItemId: selected.id,
+          evidenceUuid: evidenceUuid || undefined,
+          relationshipId: selected.relId,
+          proposedSubject: spoSubject.trim(),
+          proposedPredicate: spoPredicate.trim(),
+          proposedObject: spoObject.trim(),
+          rationale: rationale.trim(),
+        },
+      });
+      setMsg(res.note);
+      await load();
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "S-P-O proposal failed.");
     }
     setBusy(false);
   };
@@ -210,10 +263,20 @@ export default function SmeReviewWorkspace() {
         </div>
       ) : null}
 
+      {gapKeyParam ? (
+        <p className="callout small" data-testid="sme-gapkey-deeplink" style={{ marginBottom: 12 }}>
+          Deep-link filter: <code>gapKey={gapKeyParam}</code>
+          {selected?.gapKey === gapKeyParam || selected?.id === `SME-DISC-${gapKeyParam}`
+            ? " — matching work item selected."
+            : " — no matching Discovery work item in this snapshot (persist gap or refresh)."}
+        </p>
+      ) : null}
+
       <div className="card" style={{ marginBottom: 16, padding: 12 }} data-testid="sme-priority-queues">
         <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Priority queues (KEYNOTE / R011)</h3>
         <p className="small muted" style={{ marginBottom: 10 }}>
-          Explicit <code>pending_sme</code> work — no silent fix or fixture auto-rematch.
+          Explicit work — no silent fix or fixture auto-rematch. Status may leave{" "}
+          <code>pending_sme</code> only after audited human events.
         </p>
         <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
           {(snap?.priority ?? []).map((item) => (
@@ -226,6 +289,16 @@ export default function SmeReviewWorkspace() {
             />
           ))}
         </ul>
+        <HumanChecklist
+          title="KEYNOTE-006 rematch checklist (PMID 25891173)"
+          steps={snap?.checklists?.keynote ?? []}
+          testId="sme-keynote-checklist"
+        />
+        <HumanChecklist
+          title="R011 S-P-O rewrite checklist"
+          steps={snap?.checklists?.r011 ?? []}
+          testId="sme-r011-checklist"
+        />
       </div>
 
       <div className="card" style={{ marginBottom: 16, padding: 12 }} data-testid="sme-flagged-list">
@@ -335,6 +408,49 @@ export default function SmeReviewWorkspace() {
           <button type="button" className="btn sm" disabled={busy || !selected?.relId} onClick={() => void runRematch()}>
             Rematch (resets approval)
           </button>
+          {selected?.kind === "r011_spo_rewrite" ? (
+            <div style={{ marginTop: 16 }} data-testid="sme-spo-rewrite">
+              <h4 style={{ fontSize: "0.95rem", marginBottom: 6 }}>R011 S-P-O rewrite proposal (audited only)</h4>
+              <p className="xs muted" style={{ marginBottom: 8 }}>
+                Scientist fills proposed S / P / O. Does <strong>not</strong> rewrite the graph edge or approve Gate C.
+              </p>
+              <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+                <label className="xs">
+                  Subject
+                  <input
+                    className="input"
+                    value={spoSubject}
+                    onChange={(e) => setSpoSubject(e.target.value)}
+                    style={{ display: "block", minWidth: 120 }}
+                    placeholder="Curator-supplied"
+                  />
+                </label>
+                <label className="xs">
+                  Predicate
+                  <input
+                    className="input"
+                    value={spoPredicate}
+                    onChange={(e) => setSpoPredicate(e.target.value)}
+                    style={{ display: "block", minWidth: 140 }}
+                    placeholder="Curator-supplied"
+                  />
+                </label>
+                <label className="xs">
+                  Object
+                  <input
+                    className="input"
+                    value={spoObject}
+                    onChange={(e) => setSpoObject(e.target.value)}
+                    style={{ display: "block", minWidth: 120 }}
+                    placeholder="Curator-supplied"
+                  />
+                </label>
+              </div>
+              <button type="button" className="btn sm" disabled={busy} onClick={() => void runSpoProposal()}>
+                Record S-P-O proposal
+              </button>
+            </div>
+          ) : null}
           {events.length ? (
             <ul className="xs muted" style={{ marginTop: 12, paddingLeft: 16 }}>
               {events.map((line) => (
@@ -403,12 +519,52 @@ export default function SmeReviewWorkspace() {
                 </option>
               ))}
             </select>
+            <label className="xs" style={{ marginRight: 8 }}>
+              Optional score 0–1 (leave empty = null)
+              <input
+                className="input"
+                value={goldScore}
+                onChange={(e) => setGoldScore(e.target.value)}
+                placeholder="null"
+                style={{ display: "block", width: 80 }}
+              />
+            </label>
             <button type="button" className="btn sm primary" disabled={busy} onClick={() => void saveGold()}>
-              Save label (score stays null)
+              Save label
             </button>
           </div>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+function HumanChecklist({
+  title,
+  steps,
+  testId,
+}: {
+  title: string;
+  steps: SmeHumanChecklistStep[];
+  testId: string;
+}) {
+  if (!steps.length) return null;
+  return (
+    <div style={{ marginTop: 14 }} data-testid={testId}>
+      <h4 style={{ fontSize: "0.95rem", marginBottom: 6 }}>{title}</h4>
+      <ul className="xs" style={{ margin: 0, paddingLeft: 18 }}>
+        {steps.map((s) => (
+          <li key={s.id}>
+            <input type="checkbox" disabled checked={false} aria-label={s.label} readOnly />{" "}
+            {s.required ? "[required] " : "[optional] "}
+            {s.label}
+            <span className="muted"> — {s.hint}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="xs muted" style={{ marginTop: 4 }}>
+        Checkboxes stay unchecked in UI — completion is recorded only via audited SME actions above.
+      </p>
     </div>
   );
 }

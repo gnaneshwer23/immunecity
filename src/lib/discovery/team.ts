@@ -1,7 +1,7 @@
 /**
- * Team / Enterprise readiness scaffolding for Discovery (Phase 7).
- * Placeholders only — no multi-tenant tenancy, shared profile persistence,
- * or billing activation in this slice.
+ * Team / Enterprise readiness scaffolding for Discovery (Phase 7 + 0027 tables).
+ * Invite drafts may persist when DISCOVERY_TEAM_COLLAB_SCAFFOLD=1 — never sends email,
+ * never activates paid Team billing or shared profile product features.
  */
 import {
   assertEntitlementAllows,
@@ -11,14 +11,16 @@ import {
 import type { ResearchEntitlement } from "@/lib/discovery/types";
 
 export const TEAM_COLLAB_POLICY = {
-  /** Real shared tenancy / org membership is off. */
+  /** Real shared tenancy / org membership product features stay off. */
   activated: false as const,
   multiTenantBilling: false as const,
   sharedProfilesPersisted: false as const,
   collabWritesEnabled: false as const,
-  /** Tables / org IDs may be designed later; none are live. */
-  membershipTable: null as null,
-  note: "Team and Enterprise Discovery plans are entitlement stubs. Shared profiles and collaboration are scaffolding only — billing not activated.",
+  /** Migration 0027 tables exist for invite/membership scaffolding. */
+  membershipTable: "research_team_memberships" as const,
+  inviteTable: "research_team_invites" as const,
+  orgTable: "research_team_orgs" as const,
+  note: "Team and Enterprise Discovery plans are entitlement stubs. Membership/invite tables are scaffolding — billing not activated; invites never auto-send.",
 };
 
 export type TeamSharedProfileDraft = {
@@ -33,7 +35,14 @@ export type TeamCollabInviteDraft = {
   roleHint: "viewer" | "editor" | "admin";
 };
 
-/** Plan may be team/enterprise in Neon; collaboration still refuses until policy flips. */
+export function isTeamCollabScaffoldEnabled(
+  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
+): boolean {
+  const raw = (env.DISCOVERY_TEAM_COLLAB_SCAFFOLD ?? "").trim().toLowerCase();
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
+/** Plan may be team/enterprise in Neon; collaboration product features still refuse until policy flips. */
 export function assertTeamFeature(
   plan: ResearchEntitlement,
   feature: "team_shared_profile" | "team_collab",
@@ -68,18 +77,87 @@ export function planSharedTeamProfile(input: {
   };
 }
 
-/** Shape a collab invite that must never send or persist under current policy. */
+/**
+ * Shape a collab invite. Product send stays refused.
+ * When scaffold env is on, callers may persist a draft_pending row with wouldSend=false.
+ */
 export function planTeamCollabInvite(input: {
   plan: ResearchEntitlement;
   invite: TeamCollabInviteDraft;
-}): { ok: false; error: string; wouldSend: false; planLabel: string } {
-  void input.invite;
+  env?: Record<string, string | undefined>;
+}): {
+  ok: false;
+  error: string;
+  wouldSend: false;
+  planLabel: string;
+  scaffoldPersistAllowed: boolean;
+  inviteeEmail: string;
+  roleHint: TeamCollabInviteDraft["roleHint"];
+} {
+  const email = String(input.invite.inviteeEmail ?? "")
+    .trim()
+    .toLowerCase();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const blocked = assertTeamFeature(input.plan, "team_collab");
+  const scaffold = isTeamCollabScaffoldEnabled(input.env);
   return {
     ok: false,
     error: blocked.error,
     wouldSend: false,
     planLabel: PLAN_DISPLAY_LABEL[input.plan],
+    scaffoldPersistAllowed: scaffold && emailOk,
+    inviteeEmail: emailOk ? email : "",
+    roleHint: input.invite.roleHint,
+  };
+}
+
+/** Validate invite draft fields for scaffold persistence (no send). */
+export function buildTeamInviteScaffoldRecord(input: {
+  orgId: string;
+  invite: TeamCollabInviteDraft;
+  invitedBy: string;
+  env?: Record<string, string | undefined>;
+}):
+  | {
+      ok: true;
+      wouldSend: false;
+      row: {
+        orgId: string;
+        inviteeEmail: string;
+        roleHint: TeamCollabInviteDraft["roleHint"];
+        status: "draft_pending";
+        invitedBy: string;
+        wouldSend: false;
+      };
+    }
+  | { ok: false; error: string; wouldSend: false } {
+  if (!isTeamCollabScaffoldEnabled(input.env)) {
+    return {
+      ok: false,
+      wouldSend: false,
+      error: "Team invite scaffold persistence requires DISCOVERY_TEAM_COLLAB_SCAFFOLD=1.",
+    };
+  }
+  const email = String(input.invite.inviteeEmail ?? "")
+    .trim()
+    .toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, wouldSend: false, error: "Valid invitee email required." };
+  }
+  if (!input.orgId.trim()) {
+    return { ok: false, wouldSend: false, error: "orgId required." };
+  }
+  return {
+    ok: true,
+    wouldSend: false,
+    row: {
+      orgId: input.orgId.trim(),
+      inviteeEmail: email,
+      roleHint: input.invite.roleHint,
+      status: "draft_pending",
+      invitedBy: input.invitedBy,
+      wouldSend: false,
+    },
   };
 }
 
@@ -93,5 +171,6 @@ export function teamReadinessSummary(plan: ResearchEntitlement) {
     ),
     sharedProfile: assertTeamFeature(plan, "team_shared_profile"),
     collab: assertTeamFeature(plan, "team_collab"),
+    scaffoldEnv: isTeamCollabScaffoldEnabled(),
   };
 }

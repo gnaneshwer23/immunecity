@@ -19,10 +19,12 @@ Enable scientific reviewers to complete **Gate C**, **melanoma pilot**, **KEYNOT
 
 ## What the workspace shows
 
-1. **Priority queues** — `SME-KEYNOTE-I008-TR003` and `SME-R011-EXHAUSTION-D012` as explicit `pending_sme` (no silent fix).
-2. **Flagged melanoma candidates** — S-P-O, honesty status, rejected PMID notes, search coverage, claim type (`literature_candidate`).
-3. **Honest eval denominators** — e.g. `0/15` labelled, never coerced to a pass rate.
-4. **Gold-set harness** — scaffold cases with `label` / `smeScore` null until SME fills.
+1. **Priority queues** — `SME-KEYNOTE-I008-TR003` and `SME-R011-EXHAUSTION-D012` (status from audited events; rematch leaves pending until separate Gate C).
+2. **Human checklists** — KEYNOTE rematch + R011 S-P-O steps with empty expected slots (`done: false` until humans act).
+3. **Flagged melanoma / Discovery candidates** — S-P-O, honesty, rejected PMID notes, coverage; deep-link `/sme?gapKey=…`.
+4. **Honest eval denominators** — e.g. `0/15` labelled, never coerced to a pass rate.
+5. **Gold-set harness** — scaffold + Discovery merge; `label` / `smeScore` null until SME fills.
+6. **R011 S-P-O proposal form** — audited proposal only; does not rewrite the graph or approve Gate C.
 
 ## Reviewer actions (audited)
 
@@ -32,6 +34,8 @@ Enable scientific reviewers to complete **Gate C**, **melanoma pilot**, **KEYNOT
 | Reject | Evidence UUID + rationale | Curation rejected; audited |
 | Request changes | Evidence UUID + rationale | Notes prefixed `[sme_request_changes]`; stays unreviewed |
 | Rematch citation | **PMID + DOI + passage locator** (≥12 chars) + relationship | Source edit via `computeEvidenceUpdate` → **unreviewed** / pending check; **never auto-approves** |
+| S-P-O rewrite proposal | Proposed S/P/O + rationale (R011 queue) | `spo_rewrite_proposal` audit event only — **graph not rewritten**; Gate C unchanged |
+| Opportunity review | On `/discovery/gaps/$gapId` (not Gate C) | Human promote/reject/demote `opportunity_status` → may set `reviewed_opportunity` |
 
 ## Neon (migration 0023)
 
@@ -63,13 +67,11 @@ bun run discovery:eval      # Discovery gold scaffold (scores null)
 - No silent KEYNOTE rematch from fixture data
 - Trial Intelligence production flag stays **off**
 - Playwright without `E2E_USER_*`: **skip ≠ pass**
-- No Vercel deploy in this workstream
-
 ## Still requires a human scientist
 
 - Approve or rewrite **REL-R011-drives_immune_exhaustion_in-D012** (S-P-O vs Dong 2002)
 - Rematch **REL-I008-demonstrates_in-TR003** with KEYNOTE-006 primary (PMID `25891173`) + passage — after identifier verification, then separate human approve
 - All draft `treats` / `has_clinical_context` and `TO_BE_CURATED` melanoma edges
 - Fill gold-set labels/scores and sign `docs/SME_GOLD_SET_SIGNOFF.md`
-- Promote Discovery gaps to `reviewed_gap` (never automatic)
+- Promote Discovery gaps to `reviewed_gap` / opportunities to `reviewed_opportunity` (never automatic)
 - Named sign-off that Ask / brief wording remains educational, not CDS

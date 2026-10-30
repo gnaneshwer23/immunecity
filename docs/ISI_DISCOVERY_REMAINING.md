@@ -1,64 +1,43 @@
 # ISI Discovery Intelligence — remaining backlog
 
 **Date:** 2026-10-30  
-**Shipped baseline:** Discovery Phase 0–8 on `main` (see `ISI_DISCOVERY_PHASE3_4_REPORT.md`, `ISI_DISCOVERY_PHASE5_6_REPORT.md`, `ISI_DISCOVERY_PHASE7_8_REPORT.md`).  
-**Related:** `ISI_REMAINING_AFTER_FIXPASS.md`, `ISI_DISCOVERY_INTEL_AUDIT.md`.
+**Shipped baseline:** Discovery Phase 0–8 + Evidence Intel 4.0 + ops scaffolding on `main`.  
+**Related:** `ISI_REMAINING_ENGINEERING.md`, `ISI_DISCOVERY_CRON.md`, `ISI_STRIPE_BILLING_RUNBOOK.md`.
 
 ## Shipped (engineering)
 
 | Item | Notes |
 | --- | --- |
-| Phase 0 docs (audit, matrix, PRD, data model, orchestration) | `docs/ISI_DISCOVERY_*.md` |
-| `research_profiles` migration 0019 + server CRUD | Ownership-scoped; entitlement stub |
-| Gap suite migration 0020 + types/status taxonomy | Includes `coverage_insufficient` |
-| Deterministic Detect (Pilots A/B) | Matrix + evidenceGap; never `reviewed_gap` |
-| Gap review decision fn | Reviewer-gated; version + audit events |
-| Routes `/discovery*` + Investigate I7 | Radar, onboarding, profile, gaps, dossier, alerts |
-| Neon apply 0019/0020 on ep-blue-salad | See `docs/ISI_NEON_0019_0020_APPLY.md`; schema-only, evidence=46 unchanged |
-| Phase 3 verification | `verify.ts` + `verifyPersistedGap`; coverage rows; labelled AI draft-only |
-| Phase 4 Radar / dossier | Neon-merged feed, badges, emerging/contradiction, Ask prefill, follow stub |
-| Persist from signed-in member | Idempotent upsert by `gap_key`; no overwrite of human decisions |
-| Phase 5 personalisation | Explainable weighted ranking + feedback → `research_gap_feedback`; free preview / pro stub |
-| Phase 6 monitoring | Adapters (fail-closed live), `/discovery/alerts`, migration 0021, `bun run discovery:monitor` |
-| Phase 7 entitlements | Free / Researcher Pro / Team / Enterprise stubs; quotas in server fns; team scaffolding; migration 0022; no Stripe |
-| Phase 8 verification | Unit/security/ranking/monitor tests; Playwright Discovery journeys (skip≠pass); gold-set harness; a11y smoke |
-| Unit tests Phase 1–8 | Isolation, transitions, coverage, entitlements/quotas, verify, ranking, feedback, monitor, export, team refuse |
-| Playwright Discovery smoke | Public structure + a11y landmarks; auth still skip≠pass without creds |
+| Phase 0–8 Discovery | Radar, dossiers, ranking, monitor, entitlements stubs, eval harness |
+| Evidence Intel 4.0 | Scout / verifier / cross-exam / routing; 0026; offline validate |
+| SME workspace | `/sme` checklists, rematch, gold slots, S-P-O proposal audit, `?gapKey=` |
+| Opportunity review | Human `reviewed_opportunity` on dossier (no Gate C couple) |
+| Prod cron wire | `vercel.json` + `/api/cron/discovery-monitor` + `runMonitorCron.ts` |
+| Email adapter | Resend env-gated; default `email_deferred` / in-app |
+| Stripe scaffolding | Planners + runbook; `paymentActivation` false without config |
+| Team tables (0027) | Orgs / memberships / invites; collab product still refuse |
+| Unit / Playwright public | Auth E2E still skip≠pass without `E2E_USER_*` |
 
 ## Intentionally deferred / SME-blocked
 
 | Item | Why |
 | --- | --- |
-| Email alert delivery | In-app only; `email_deferred` channel stub |
-| Live PubMed / CT.gov in default cron | Opt-in env (`DISCOVERY_LIVE_*`); stub/fail-closed by default |
-| Stripe / researcher_pro billing | Server entitlement stub; **no payment activation** |
-| Team multi-tenant shared profiles | Scaffolding only (`team.ts`); billing not activated |
-| Mass ontology fill / assay cut-offs | Fabrication-forbidden / prior backlog |
-| Gate C / KEYNOTE rematch / gold-set SME scores | Human scientific review (harness structure only) |
-| Bulk gap approve | Explicitly refused |
-| TI prod flag / Vercel deploy | Out of scope |
-| Live multi-account Playwright green | Needs `E2E_USER_*`; skips ≠ passes |
+| Gold labels / accuracy % | Null until SME fills |
+| Gate C / KEYNOTE rematch / R011 rewrite | Human science |
+| Live multi-account Playwright green | Needs credentials |
+| Stripe collect payments | Missing price IDs / webhook fulfilment |
+| Email in production | Missing Resend + enable flag |
+| Live PubMed/CT.gov default | Opt-in `DISCOVERY_LIVE_*` only |
+| TI production flag | Keep off |
+| Ontology / assay cut-offs | Curator-supplied; empty OK |
 
-## Evidence Intel 4.0 (shipped engineering — 2026-10-30)
+## Next human / ops actions (ordered)
 
-| Item | Notes |
-| --- | --- |
-| Audit / architecture / Phase 8 validation | `docs/ISI_EVIDENCE_INTEL_4_*.md` + JSON |
-| Scout / Claim Verifier / A–D cross-exam / routing | `src/lib/discovery/{scout,claimVerifier,crossExamine,verifiedGaps,reviewRouting,intel4}.ts` |
-| Migration 0026 | Additive; apply via `bun run db:evidence-intel-4` on ep-blue-salad |
-| Offline five-dossier reassess | `bun run discovery:intel4-validate` — accuracyVsGold=null |
-| Unit tests | `src/test/evidence-intel-4.test.ts` |
-
-**Still SME-human:** gold labels; confirm demotions; Gate C / `reviewed_opportunity`; full-text directness on any remaining support.
-
-## Next engineering (when unblocked)
-
-1. ~~Curator UI panel for gap review queue~~ — **shipped** SME workspace `/sme` (Investigate I8 / Trust T5); dossier still has inline gap decisions.  
-2. ~~Apply migration 0022 / **0023** on Neon~~ — **done** on ep-blue-salad; see `docs/ISI_NEON_0023_APPLY.md` (0023) and Phase 7–8 report (0022).  
-3. Fill gold-set expected statuses only after SME review — never invent scores (`bun run sme:eval` reports honest denominators).  
-4. Persist-on-first-radar-load policy debate (today: explicit member action).  
-5. Optional scheduled cron wrapping `bun run discovery:monitor` (email still deferred).  
-6. Activate Team collab / Stripe only after explicit product + billing sign-off.  
-7. ~~Apply **0026** + wire `getDiscoveryGap` intel4 panel~~ — **done** (Neon applied; DB decisions or offline validation snapshot; see `ISI_REMAINING_ENGINEERING.md`).  
-8. ~~Bounded citation-chaining / new-evidence monitor hooks~~ — **done** (`citationChain.ts` + scout `activateHooks`; no prod cron).  
-9. SME review of five deep dossiers after Intel 4.0 demotion flags — required before any accuracy % or reviewed_opportunity.
+1. SME: KEYNOTE rematch (PMID `25891173` + DOI + passage) then separate Gate C.
+2. SME: R011 S-P-O rewrite or demote; optional gold labels.
+3. SME: Opportunity / Gate C decisions on deep dossiers (no bulk).
+4. Ops: set `CRON_SECRET` on Vercel; confirm daily cron logs.
+5. Ops: optional Resend + `DISCOVERY_EMAIL_ALERTS=1`.
+6. Ops: Stripe Dashboard prices → env → webhook (see runbook) before claiming Researcher Pro billing.
+7. Ops: provision `E2E_USER_A_*` / `E2E_USER_B_*` and run Playwright auth block.
+8. Product: TI enablement only after SME sign-off (`VITE_TRIAL_INTELLIGENCE=1` + redeploy).

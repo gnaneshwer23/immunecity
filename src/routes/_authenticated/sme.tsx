@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { PageHead } from "@/components/immune/ui";
 import { PageToc, Section } from "@/components/immune/page";
 import SmeReviewWorkspace from "@/components/immune/SmeReviewWorkspace";
@@ -16,6 +18,11 @@ const TOC = [
 ];
 
 export const Route = createFileRoute("/_authenticated/sme")({
+  validateSearch: zodValidator(
+    z.object({
+      gapKey: fallback(z.string(), "").default(""),
+    }),
+  ),
   head: () =>
     seoHead({
       title: `SME review workspace — ${PRODUCT_NAME}`,
@@ -28,6 +35,7 @@ export const Route = createFileRoute("/_authenticated/sme")({
 });
 
 function SmePage() {
+  const { gapKey } = Route.useSearch();
   const roleFn = useServerFn(getMyRole);
   const [roleLabel, setRoleLabel] = useState<string>("…");
 
@@ -58,7 +66,7 @@ function SmePage() {
         title="Review queue & gold-set"
         lede="Flagged melanoma / Discovery candidates, priority KEYNOTE and R011 items as pending_sme, and honest eval denominators."
       >
-        <SmeReviewWorkspace />
+        <SmeReviewWorkspace gapKey={gapKey || undefined} />
       </Section>
 
       <Section

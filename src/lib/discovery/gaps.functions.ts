@@ -37,6 +37,11 @@ import {
 } from "@/lib/discovery/entitlements";
 import { planDossierExport } from "@/lib/discovery/export";
 import { applyGapReviewDecision, assertDetectionEmitStatus, isResearchGapStatus } from "@/lib/discovery/gapStatus";
+import {
+  applyOpportunityReviewDecision,
+  OPPORTUNITY_REVIEW_DECISIONS,
+} from "@/lib/discovery/opportunityReview";
+import type { OpportunityStatus, ResearchGapClass } from "@/lib/discovery/gapClass";
 import { mergeDetectionWithPersisted, shapeRadarFeed } from "@/lib/discovery/radar";
 import {
   FEEDBACK_RATINGS,
@@ -953,6 +958,120 @@ export const recordGapReviewDecision = createServerFn({ method: "POST" })
         throw new Error("Research gaps are not available on this database yet (apply migration 0020).");
       }
       throw new Error("Gap review decision failed.");
+    }
+  });
+
+/**
+ * Human opportunity review — sets opportunity_status only.
+ * Never auto-promotes reviewed_opportunity; never Gate C / evidence approve.
+ */
+export const recordOpportunityReviewDecision = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        gapKey: z.string().min(1).max(160),
+        decision: z.enum(OPPORTUNITY_REVIEW_DECISIONS),
+        rationale: z.string().min(8).max(2000),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertCanReview(context.userId);
+    const powers = await loadAccountPowers(context.userId);
+    const db = getDb();
+    try {
+      const [existing] = await db
+        .select()
+        .from(researchGaps)
+        .where(eq(researchGaps.gapKey, data.gapKey))
+        .limit(1);
+      if (!existing) {
+        throw new Error("Persist the gap candidate before recording an opportunity review.");
+      }
+      const from = (existing.opportunityStatus as OpportunityStatus) ?? "none";
+      const transition = applyOpportunityReviewDecision({
+        from,
+        decision: data.decision,
+        actorIsReviewer: powers.reviewer,
+        gapClass: existing.gapClass as ResearchGapClass | null,
+      });
+      if (!transition.ok) throw new Error(transition.error);
+      if (transition.autoApproved) {
+        throw new Error("Auto-approval of reviewed_opportunity is forbidden.");
+      }
+
+      const actor = context.email ?? context.userId;
+      await db
+        .update(researchGaps)
+        .set({
+          opportunityStatus: transition.to,
+          reviewedBy: actor,
+          reviewedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(researchGaps.id, existing.id));
+
+      await db.insert(researchGapReviews).values({
+        gapId: existing.id,
+        actor,
+        decision: data.decision,
+        rationale: data.rationale,
+        previousStatus: existing.status,
+        newStatus: existing.status,
+      });
+
+      const versions = await db
+        .select({ versionN: researchGapVersions.versionN })
+        .from(researchGapVersions)
+        .where(eq(researchGapVersions.gapId, existing.id))
+        .orderBy(asc(researchGapVersions.versionN));
+      const nextN = (versions[versions.length - 1]?.versionN ?? 0) + 1;
+      await db.insert(researchGapVersions).values({
+        gapId: existing.id,
+        versionN: nextN,
+        snapshotJson: {
+          opportunityStatus: transition.to,
+          previousOpportunityStatus: from,
+          decision: data.decision,
+          rationale: data.rationale,
+          gapStatusUnchanged: existing.status,
+          autoApproved: false,
+        },
+      });
+      await db.insert(researchGapChangeEvents).values({
+        gapId: existing.id,
+        eventType: "opportunity_status_change",
+        detail: {
+          decision: data.decision,
+          from,
+          to: transition.to,
+          autoApprove: false,
+        },
+        actor,
+      });
+
+      return {
+        gapKey: data.gapKey,
+        previousOpportunityStatus: from,
+        newOpportunityStatus: transition.to,
+        autoApproved: false as const,
+        versionN: nextN,
+        note: "Opportunity status updated only — Gate C / reviewed_gap unchanged.",
+      };
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        /Persist the gap|Only scientific|Cannot promote|forbidden|Unknown|reviewed_opportunity|opportunity/.test(
+          err.message,
+        )
+      ) {
+        throw err;
+      }
+      if (missingRelation(err)) {
+        throw new Error("Research gaps are not available on this database yet (apply migration 0020).");
+      }
+      throw new Error("Opportunity review decision failed.");
     }
   });
 

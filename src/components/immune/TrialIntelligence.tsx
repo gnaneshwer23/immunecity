@@ -129,7 +129,8 @@ function BiomarkerContextBlock({ trial }: { trial: ClinicalTrialRecord }) {
       <h4 id={`ti-bio-${trial.trialId}`}>Biomarker context</h4>
       {!hasFixture && !hasGraph ? (
         <p className="small muted" data-testid="ti-biomarker-empty">
-          No curated biomarker assay rows for this pilot release. Assay cut-offs are not invented.
+          No curated biomarker assay rows for this pilot release. TPS/CPS and other assay cut-offs stay
+          empty until a curator supplies them — engineering never invents thresholds.
         </p>
       ) : null}
       {hasFixture ? (
