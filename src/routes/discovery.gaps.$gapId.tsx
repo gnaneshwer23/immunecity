@@ -2,19 +2,36 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { PageHead } from "@/components/immune/ui";
-import { Section } from "@/components/immune/page";
+import { PageToc, Section } from "@/components/immune/page";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
-import { getDiscoveryGap } from "@/lib/discovery/gaps.functions";
+import { buildGapDossier, type GapDossierView } from "@/lib/discovery/dossier";
+import {
+  getDiscoveryGap,
+  persistDetectedGapCandidates,
+  recordGapReviewDecision,
+  toggleGapSubscription,
+  verifyPersistedGap,
+} from "@/lib/discovery/gaps.functions";
 import { recommendGapsForProfile } from "@/lib/discovery/recommend";
-import type { ResearchGapCandidate } from "@/lib/discovery/types";
+import { verifyGapCandidate } from "@/lib/discovery/verify";
 import { seoHead } from "@/lib/seo";
+
+const TOC = [
+  { id: "why", label: "Why it matters" },
+  { id: "scope", label: "Search scope" },
+  { id: "verification", label: "Verification" },
+  { id: "coverage", label: "Search coverage" },
+  { id: "review", label: "Review trail" },
+  { id: "links", label: "Continue" },
+];
 
 export const Route = createFileRoute("/discovery/gaps/$gapId")({
   head: ({ params }) =>
     seoHead({
       title: `Gap ${params.gapId} | ${PRODUCT_NAME}`,
-      description: "Research gap dossier with ISI search scope, Atlas/Ask/Workbench links. Educational/research — not CDS.",
+      description:
+        "Research gap dossier with ISI search scope, verification, and Atlas/Ask/Workbench links. Educational/research — not CDS.",
       path: `/discovery/gaps/${params.gapId}`,
     }),
   component: DiscoveryGapDossierPage,
@@ -23,18 +40,31 @@ export const Route = createFileRoute("/discovery/gaps/$gapId")({
 function DiscoveryGapDossierPage() {
   const { gapId } = Route.useParams();
   const load = useServerFn(getDiscoveryGap);
-  const fallback = detectDiscoveryCandidates().find((g) => g.gapKey === gapId) ?? null;
-  const [gap, setGap] = useState<ResearchGapCandidate | null>(fallback);
-  const [persistedStatus, setPersistedStatus] = useState<string | null>(null);
+  const persistFn = useServerFn(persistDetectedGapCandidates);
+  const verifyFn = useServerFn(verifyPersistedGap);
+  const reviewFn = useServerFn(recordGapReviewDecision);
+  const followFn = useServerFn(toggleGapSubscription);
+
+  const fallbackGap = detectDiscoveryCandidates().find((g) => g.gapKey === gapId) ?? null;
+  const [dossier, setDossier] = useState<GapDossierView | null>(
+    fallbackGap
+      ? buildGapDossier({
+          gap: fallbackGap,
+          verification: verifyGapCandidate(fallbackGap),
+        })
+      : null,
+  );
   const [err, setErr] = useState("");
+  const [actionMsg, setActionMsg] = useState("");
+  const [rationale, setRationale] = useState("");
 
   useEffect(() => {
     let cancel = false;
     load({ data: { gapKey: gapId } })
       .then((res) => {
         if (cancel) return;
-        setGap(res.gap);
-        setPersistedStatus(res.persistedStatus);
+        setDossier(res.dossier);
+        setErr("");
       })
       .catch((e) => {
         if (!cancel) setErr(e instanceof Error ? e.message : "Gap not found.");
@@ -44,7 +74,7 @@ function DiscoveryGapDossierPage() {
     };
   }, [gapId, load]);
 
-  if (!gap && err) {
+  if (!dossier && err) {
     return (
       <div className="page">
         <PageHead kicker="Investigate · Research Radar" title="Gap not found" lede={err} />
@@ -52,7 +82,7 @@ function DiscoveryGapDossierPage() {
       </div>
     );
   }
-  if (!gap) {
+  if (!dossier) {
     return (
       <div className="page">
         <p className="muted">Loading gap dossier…</p>
@@ -60,72 +90,260 @@ function DiscoveryGapDossierPage() {
     );
   }
 
-  const recommend = recommendGapsForProfile([gap], {
-    displayLabel: null,
-    focusDiseases: gap.diseaseId ? [gap.diseaseId] : ["D012"],
-    focusDomains: ["checkpoint"],
-    modalities: ["pd1"],
-    interests: {},
-  })[0];
+  const recommend = recommendGapsForProfile(
+    [
+      {
+        gapKey: dossier.gapKey,
+        title: dossier.title,
+        summary: dossier.summary,
+        status: dossier.status === "coverage_insufficient" ? "coverage_insufficient" : "candidate",
+        pilot: (dossier.pilot as "melanoma_a" | "coverage_b" | null) ?? null,
+        subjectId: null,
+        objectId: null,
+        relationshipId: null,
+        diseaseId: null,
+        whyItMatters: dossier.whyItMatters,
+        searchScope: dossier.searchScope,
+        detectionSource: dossier.detectionSource as "melanoma_matrix",
+        detectionDetail: {},
+        coverageLabel: dossier.coverageLabel,
+        autoReviewed: false,
+      },
+    ],
+    {
+      displayLabel: null,
+      focusDiseases: ["D012"],
+      focusDomains: ["checkpoint"],
+      modalities: ["pd1"],
+      interests: {},
+    },
+  )[0];
+
+  async function runPersist() {
+    setActionMsg("");
+    try {
+      const res = await persistFn({ data: { gapKeys: [gapId] } });
+      setActionMsg(`Persisted (${res.upserted}). Reloading…`);
+      const next = await load({ data: { gapKey: gapId } });
+      setDossier(next.dossier);
+    } catch (e) {
+      setActionMsg(e instanceof Error ? e.message : "Persist failed.");
+    }
+  }
+
+  async function runVerify() {
+    setActionMsg("");
+    try {
+      const res = await verifyFn({ data: { gapKey: gapId } });
+      setActionMsg(res.note);
+      const next = await load({ data: { gapKey: gapId } });
+      setDossier(next.dossier);
+    } catch (e) {
+      setActionMsg(e instanceof Error ? e.message : "Verification failed.");
+    }
+  }
+
+  async function runReview(decision: "promote_reviewed" | "reject" | "needs_context" | "demote") {
+    setActionMsg("");
+    try {
+      const res = await reviewFn({
+        data: { gapKey: gapId, decision, rationale: rationale || "Reviewer decision recorded from dossier." },
+      });
+      setActionMsg(`Status ${res.previousStatus} → ${res.newStatus} (v${res.versionN}).`);
+      const next = await load({ data: { gapKey: gapId } });
+      setDossier(next.dossier);
+    } catch (e) {
+      setActionMsg(e instanceof Error ? e.message : "Review failed.");
+    }
+  }
+
+  async function runFollow(follow: boolean) {
+    setActionMsg("");
+    try {
+      const res = await followFn({ data: { gapKey: gapId, follow } });
+      setActionMsg(
+        res.following
+          ? "Following in-app (email alerts deferred; researcher_pro stub)."
+          : "Unfollowed.",
+      );
+    } catch (e) {
+      setActionMsg(e instanceof Error ? e.message : "Follow failed.");
+    }
+  }
 
   return (
     <div className="page">
-      <PageHead
-        kicker="Investigate · Research Radar"
-        title={gap.title}
-        lede={gap.summary}
-      />
-      <p className="small muted">
-        Status: <code>{persistedStatus ?? gap.status}</code> · Detection: {gap.detectionSource} · Auto-reviewed:{" "}
-        {String(gap.autoReviewed)}
-      </p>
+      <PageHead kicker="Investigate · Research Radar" title={dossier.title} lede={dossier.summary} />
+      <PageToc items={TOC} />
+      <div className="isi-radar-meta" style={{ marginBottom: 12 }}>
+        <span className="isi-gap-badge" data-tone={dossier.badge.tone}>
+          {dossier.badge.label}
+        </span>
+        <span className="small muted">
+          Detection: {dossier.detectionSource}
+          {dossier.pilot ? ` · ${dossier.pilot}` : ""}
+        </span>
+        <span className="small muted">
+          {dossier.persisted ? "Persisted in Neon" : "Detection only"}
+          {dossier.reviewedBy ? ` · reviewed by ${dossier.reviewedBy}` : ""}
+        </span>
+      </div>
+      <p className="small muted">{dossier.badge.honesty}</p>
+      <p className="small muted">Auto-approve: false · {dossier.note}</p>
+
+      <div className="row" style={{ gap: 8, flexWrap: "wrap", margin: "12px 0" }}>
+        <button type="button" className="btn sm" onClick={() => void runPersist()}>
+          Persist candidate
+        </button>
+        <button type="button" className="btn sm" onClick={() => void runVerify()}>
+          Run verification
+        </button>
+        <button type="button" className="btn sm" onClick={() => void runFollow(true)}>
+          Follow (pro stub)
+        </button>
+        <button type="button" className="btn sm" onClick={() => void runFollow(false)}>
+          Unfollow
+        </button>
+      </div>
+      {actionMsg ? <p className="small">{actionMsg}</p> : null}
 
       <Section id="why" title="Why it matters" lede="Framed as ISI uncertainty — not clinical advice.">
-        <p>{gap.whyItMatters}</p>
+        <p>{dossier.whyItMatters}</p>
+        {(recommend?.because ?? []).length ? (
+          <ul>
+            {recommend!.because.map((b) => (
+              <li key={b}>{b}</li>
+            ))}
+          </ul>
+        ) : null}
       </Section>
 
       <Section id="scope" title="Documented search scope" lede="Coverage honesty for this candidate.">
         <ul>
-          <li>Corpus: {gap.searchScope.corpus}</li>
-          <li>Method: {gap.searchScope.method}</li>
-          <li>Date scope: {gap.searchScope.dateScope}</li>
-          <li>{gap.searchScope.note}</li>
+          <li>Corpus: {dossier.searchScope.corpus}</li>
+          <li>Method: {dossier.searchScope.method}</li>
+          <li>Date scope: {dossier.searchScope.dateScope}</li>
+          <li>{dossier.searchScope.note}</li>
         </ul>
       </Section>
 
-      <Section id="recommended" title="Recommended because…" lede="Stub ranking from profile-shaped interests — not a novelty score.">
-        <ul>
-          {(recommend?.because ?? []).map((b) => (
-            <li key={b}>{b}</li>
-          ))}
-        </ul>
+      <Section
+        id="verification"
+        title="Scientific verification (engineering)"
+        lede="Deterministic provenance checks. Optional AI drafts are labelled and never change status."
+      >
+        {dossier.verification ? (
+          <>
+            <p className="small muted">{dossier.verification.note}</p>
+            <ul className="isi-verify-list">
+              {dossier.verification.provenance.map((p) => (
+                <li key={p.id}>
+                  <span className={p.ok ? "isi-verify-ok" : "isi-verify-fail"}>
+                    {p.ok ? "OK" : "Issue"} · {p.id}
+                  </span>
+                  <span className="small">{p.detail}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="small">
+              Conflict context: {dossier.verification.conflict.present ? "present" : "none"} —{" "}
+              {dossier.verification.conflict.note}
+            </p>
+            <p className="small muted">
+              AI-assisted:{" "}
+              {dossier.verification.aiAssisted
+                ? "labelled draft_only"
+                : "none (deterministic path)"}
+            </p>
+          </>
+        ) : (
+          <p className="muted">No verification report yet.</p>
+        )}
       </Section>
 
-      <Section id="links" title="Continue investigating" lede="Reuse Ask, Atlas, Evidence, and Workbench — one knowledge graph.">
-        <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
-          {gap.subjectId ? (
-            <Link className="btn sm" to="/atlas/$id" params={{ id: gap.subjectId }}>
-              Atlas · subject
-            </Link>
-          ) : null}
-          {gap.objectId ? (
-            <Link className="btn sm" to="/atlas/$id" params={{ id: gap.objectId }}>
-              Atlas · object
-            </Link>
-          ) : null}
-          <Link className="btn sm" to="/ask">
-            Ask Immune
-          </Link>
-          <Link className="btn sm" to="/evidence">
-            Evidence explorer
-          </Link>
-          <Link className="btn sm" to="/research">
-            Research library
-          </Link>
-          <Link className="btn sm" to="/discovery">
-            Radar
-          </Link>
+      <Section
+        id="coverage"
+        title="Search coverage records"
+        lede="hitCount stays null when unknown — never coerced to zero."
+      >
+        {dossier.coverageRows.length ? (
+          <ul className="isi-library-list">
+            {dossier.coverageRows.map((c, i) => (
+              <li key={`${c.ranAt ?? "cov"}-${i}`}>
+                <p className="small">
+                  Attempted: {String(c.searchAttempted)} · Hits:{" "}
+                  {c.hitCount === null ? "unknown" : c.hitCount}
+                  {c.queryText ? ` · ${c.queryText}` : ""}
+                </p>
+                <p className="small muted">{c.scopeNote}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">No coverage rows yet — persist or run verification to append one.</p>
+        )}
+      </Section>
+
+      <Section
+        id="review"
+        title="Review trail"
+        lede="Scientific reviewer decisions append research_gap_reviews + versions. No bulk/auto approve."
+      >
+        {dossier.reviews.length ? (
+          <ul className="isi-library-list">
+            {dossier.reviews.map((r) => (
+              <li key={`${r.createdAt}-${r.decision}`}>
+                <strong>
+                  {r.decision}: {r.previousStatus} → {r.newStatus}
+                </strong>
+                <p className="small muted">
+                  {r.actor} · {r.createdAt}
+                </p>
+                <p className="small">{r.rationale}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">No review decisions yet.</p>
+        )}
+        <label className="small" style={{ display: "grid", gap: 4, marginTop: 12, maxWidth: "40rem" }}>
+          Reviewer rationale
+          <textarea
+            rows={3}
+            value={rationale}
+            onChange={(e) => setRationale(e.target.value)}
+            placeholder="Required for review actions (min 8 chars)."
+          />
+        </label>
+        <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+          <button type="button" className="btn sm" onClick={() => void runReview("promote_reviewed")}>
+            Promote reviewed_gap
+          </button>
+          <button type="button" className="btn sm" onClick={() => void runReview("needs_context")}>
+            Needs context
+          </button>
+          <button type="button" className="btn sm" onClick={() => void runReview("reject")}>
+            Reject
+          </button>
+          <button type="button" className="btn sm" onClick={() => void runReview("demote")}>
+            Demote
+          </button>
         </div>
+      </Section>
+
+      <Section id="links" title="Continue investigating" lede="Reuse Ask, Atlas, Evidence, Workbench, Pipeline — one knowledge graph.">
+        <div className="isi-dossier-links">
+          {dossier.links.map((l) => (
+            <a key={l.id} className="btn sm" href={l.href}>
+              {l.label}
+            </a>
+          ))}
+        </div>
+        {dossier.askPrefillQuestion ? (
+          <p className="small muted" style={{ marginTop: 12 }}>
+            Ask prefill: {dossier.askPrefillQuestion}
+          </p>
+        ) : null}
       </Section>
     </div>
   );

@@ -5,12 +5,14 @@ import { PageHead } from "@/components/immune/ui";
 import { PageToc, Section } from "@/components/immune/page";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
-import { listDiscoveryRadar } from "@/lib/discovery/gaps.functions";
-import type { ResearchGapCandidate } from "@/lib/discovery/types";
+import { listDiscoveryRadar, persistDetectedGapCandidates } from "@/lib/discovery/gaps.functions";
+import { shapeRadarFeed, type RadarFeedItem } from "@/lib/discovery/radar";
 import { seoHead } from "@/lib/seo";
 
 const TOC = [
-  { id: "radar", label: "Radar" },
+  { id: "radar", label: "Radar feed" },
+  { id: "emerging", label: "Emerging" },
+  { id: "contradictions", label: "Contradictions" },
   { id: "honesty", label: "Coverage honesty" },
   { id: "next", label: "Get started" },
 ];
@@ -26,19 +28,51 @@ export const Route = createFileRoute("/discovery")({
   component: DiscoveryRadarPage,
 });
 
+function GapRow({ g }: { g: RadarFeedItem }) {
+  return (
+    <li>
+      <div className="isi-radar-meta">
+        <span className="isi-gap-badge" data-tone={g.badge.tone}>
+          {g.badge.label}
+        </span>
+        <span className="small muted">{g.detectionSource}{g.pilot ? ` · ${g.pilot}` : ""}</span>
+        <span className="small muted">{g.reviewStatusLabel}</span>
+      </div>
+      <Link to="/discovery/gaps/$gapId" params={{ gapId: g.gapKey }}>
+        <strong>{g.title}</strong>
+      </Link>
+      <p className="isi-radar-why">{g.whySnippet}</p>
+      <p className="small muted" style={{ marginTop: 4 }}>
+        {g.summary.slice(0, 200)}
+        {g.summary.length > 200 ? "…" : ""}
+      </p>
+    </li>
+  );
+}
+
 function DiscoveryRadarPage() {
   const listFn = useServerFn(listDiscoveryRadar);
-  const [gaps, setGaps] = useState<ResearchGapCandidate[]>(() => detectDiscoveryCandidates().slice(0, 25));
-  const [note, setNote] = useState("Showing deterministic ISI detection (client).");
+  const persistFn = useServerFn(persistDetectedGapCandidates);
+  const clientSeed = shapeRadarFeed(detectDiscoveryCandidates().slice(0, 25), { persistent: false });
+  const [items, setItems] = useState<RadarFeedItem[]>(clientSeed.items);
+  const [emerging, setEmerging] = useState<RadarFeedItem[]>(clientSeed.emerging);
+  const [contradictions, setContradictions] = useState<RadarFeedItem[]>(clientSeed.contradictions);
+  const [note, setNote] = useState(clientSeed.note);
+  const [persistent, setPersistent] = useState(false);
   const [filter, setFilter] = useState<"all" | "candidate" | "coverage_insufficient">("all");
+  const [persistMsg, setPersistMsg] = useState("");
+  const [persisting, setPersisting] = useState(false);
 
   useEffect(() => {
     let cancel = false;
-    listFn({ data: { limit: 25 } })
+    listFn({ data: { limit: 25, status: filter === "all" ? "all" : filter } })
       .then((res) => {
         if (cancel) return;
-        setGaps(res.gaps);
+        setItems(res.items ?? res.gaps ?? []);
+        setEmerging(res.emerging ?? []);
+        setContradictions(res.contradictions ?? []);
         setNote(res.note);
+        setPersistent(Boolean(res.persistent));
       })
       .catch(() => {
         /* keep client detection */
@@ -46,9 +80,26 @@ function DiscoveryRadarPage() {
     return () => {
       cancel = true;
     };
-  }, [listFn]);
+  }, [listFn, filter]);
 
-  const shown = gaps.filter((g) => (filter === "all" ? true : g.status === filter));
+  async function onPersist() {
+    setPersisting(true);
+    setPersistMsg("");
+    try {
+      const res = await persistFn({ data: {} });
+      setPersistMsg(`Persisted ${res.upserted} candidate(s). ${res.note}`);
+      const refreshed = await listFn({ data: { limit: 25, status: filter === "all" ? "all" : filter } });
+      setItems(refreshed.items ?? refreshed.gaps ?? []);
+      setEmerging(refreshed.emerging ?? []);
+      setContradictions(refreshed.contradictions ?? []);
+      setNote(refreshed.note);
+      setPersistent(Boolean(refreshed.persistent));
+    } catch (e) {
+      setPersistMsg(e instanceof Error ? e.message : "Persist failed (sign in required).");
+    } finally {
+      setPersisting(false);
+    }
+  }
 
   return (
     <div className="page">
@@ -61,7 +112,7 @@ function DiscoveryRadarPage() {
 
       <Section
         id="radar"
-        title="Current radar"
+        title="Radar feed"
         lede="Pilot A (melanoma matrix) and Pilot B (evidence-gap labels) only. Status stays candidate or coverage_insufficient until a scientific reviewer decides."
       >
         <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
@@ -87,23 +138,52 @@ function DiscoveryRadarPage() {
           <Link className="btn sm" to="/discovery/onboarding">
             Set research focus
           </Link>
+          <button type="button" className="btn sm" disabled={persisting} onClick={() => void onPersist()}>
+            {persisting ? "Persisting…" : "Persist detection to Neon"}
+          </button>
         </div>
-        <p className="small muted">{note}</p>
+        <p className="small muted">
+          {note} · Source {persistent ? "Neon + detection" : "detection only"}
+        </p>
+        {persistMsg ? <p className="small">{persistMsg}</p> : null}
         <ul className="isi-library-list" style={{ marginTop: 12 }}>
-          {shown.map((g) => (
-            <li key={g.gapKey}>
-              <Link to="/discovery/gaps/$gapId" params={{ gapId: g.gapKey }}>
-                <strong>{g.title}</strong>
-              </Link>
-              <p className="small muted" style={{ margin: "4px 0" }}>
-                {g.status} · {g.detectionSource}
-                {g.pilot ? ` · ${g.pilot}` : ""}
-              </p>
-              <p className="small">{g.summary.slice(0, 220)}{g.summary.length > 220 ? "…" : ""}</p>
-            </li>
+          {items.map((g) => (
+            <GapRow key={g.gapKey} g={g} />
           ))}
         </ul>
-        {!shown.length ? <p className="muted">No gaps match this filter.</p> : null}
+        {!items.length ? <p className="muted">No gaps match this filter.</p> : null}
+      </Section>
+
+      <Section
+        id="emerging"
+        title="Emerging signals"
+        lede="Only candidates labelled emerging from real ISI evidence-gap classifications — never invented novelty."
+      >
+        {emerging.length ? (
+          <ul className="isi-library-list">
+            {emerging.map((g) => (
+              <GapRow key={g.gapKey} g={g} />
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">No emerging-labelled candidates in the current detection set.</p>
+        )}
+      </Section>
+
+      <Section
+        id="contradictions"
+        title="Contradiction / conflict"
+        lede="Conflict-sourced candidates from ISI signals only."
+      >
+        {contradictions.length ? (
+          <ul className="isi-library-list">
+            {contradictions.map((g) => (
+              <GapRow key={g.gapKey} g={g} />
+            ))}
+          </ul>
+        ) : (
+          <p className="muted">No conflict-sourced candidates in the current filter window.</p>
+        )}
       </Section>
 
       <Section

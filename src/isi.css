@@ -610,3 +610,31 @@ textarea.community-input { min-height: 120px; padding: 10px; }
   .home-audiences, .home-live { grid-template-columns: 1fr; }
   .home-audiences a, .home-live a { border-right: 0; }
 }
+
+/* Discovery Intelligence — Research Radar + dossier */
+.isi-library-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--isi-space-3); }
+.isi-library-list > li {
+  padding: var(--isi-space-3) 0; border-bottom: 1px solid var(--border);
+}
+.isi-library-list > li:last-child { border-bottom: 0; }
+.isi-library-list a { color: var(--text); text-decoration: none; }
+.isi-library-list a:hover { color: var(--primary); }
+
+.isi-gap-badge {
+  display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: var(--isi-radius-sm);
+  border: 1px solid var(--border-strong); color: var(--muted); background: transparent;
+}
+.isi-gap-badge[data-tone="warn"] { color: color-mix(in oklab, oklch(0.55 0.14 75) 90%, var(--text)); border-color: color-mix(in oklab, oklch(0.55 0.14 75) 45%, var(--border)); }
+.isi-gap-badge[data-tone="ok"] { color: var(--isi-ok); border-color: color-mix(in oklab, var(--isi-ok) 40%, var(--border)); }
+.isi-gap-badge[data-tone="danger"] { color: var(--isi-danger); border-color: color-mix(in oklab, var(--isi-danger) 40%, var(--border)); }
+.isi-gap-badge[data-tone="info"] { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 40%, var(--border)); }
+
+.isi-radar-meta { display: flex; flex-wrap: wrap; gap: var(--isi-space-2); align-items: center; margin: 4px 0; }
+.isi-radar-why { margin: 6px 0 0; color: var(--muted); font-size: 14px; max-width: var(--isi-measure); }
+.isi-radar-sections { display: grid; gap: var(--isi-space-5); margin-top: var(--isi-space-4); }
+.isi-dossier-links { display: flex; flex-wrap: wrap; gap: var(--isi-space-2); }
+.isi-verify-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--isi-space-2); }
+.isi-verify-list li { display: grid; gap: 2px; padding: var(--isi-space-2) 0; border-bottom: 1px solid var(--border); }
+.isi-verify-ok { color: var(--isi-ok); font-size: 12px; font-weight: 600; }
+.isi-verify-fail { color: var(--isi-danger); font-size: 12px; font-weight: 600; }

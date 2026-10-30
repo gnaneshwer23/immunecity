@@ -1,5 +1,5 @@
 /**
- * Discovery Intelligence — Research Radar (Phase 1–2).
+ * Discovery Intelligence — Research Radar (Phase 1–4).
  * Run: bun test src/test/discovery-intelligence.test.ts
  */
 import { describe, expect, it } from "bun:test";
@@ -11,6 +11,7 @@ import {
   detectEvidenceGapCandidates,
   detectMelanomaMatrixCandidates,
 } from "@/lib/discovery/detect";
+import { buildGapDossier, dossierAskPrefill, gapStatusBadge } from "@/lib/discovery/dossier";
 import {
   ENTITLEMENT_ACCESS,
   assertEntitlementAllows,
@@ -29,7 +30,14 @@ import {
   planResearchProfile,
   profileOwnershipSpec,
 } from "@/lib/discovery/profiles";
+import { mergeDetectionWithPersisted, shapeRadarFeed } from "@/lib/discovery/radar";
 import { recommendGapsForProfile } from "@/lib/discovery/recommend";
+import {
+  VERIFICATION_POLICY,
+  draftSearchCoverage,
+  refuseAutoReviewedGap,
+  verifyGapCandidate,
+} from "@/lib/discovery/verify";
 import { stubLiteratureSearchAdapter } from "@/lib/discovery/adapters";
 import { JOURNEY_NAV } from "@/data/marketingNav";
 
@@ -155,7 +163,70 @@ describe("Discovery entitlement server stubs", () => {
     expect(gapsFns).toMatch(/paymentActivation:\s*false/);
     expect(gapsFns).toMatch(/autoApprove:\s*false/);
     expect(gapsFns).toContain("assertCanReview");
-    expect(gapsFns).toMatch(/Never overwrite human decisions|Persist.*candidate/);
+    expect(gapsFns).toContain("persistDetectedGapCandidates");
+    expect(gapsFns).toContain("verifyPersistedGap");
+    expect(gapsFns).toContain("toggleGapSubscription");
+    expect(gapsFns).toMatch(/Never overwrite human decisions|reviewed_gap|rejected/);
+    expect(gapsFns).toMatch(/neon_merged_detection|mergeDetectionWithPersisted/);
+  });
+});
+
+describe("Discovery Phase 3 verification", () => {
+  it("runs deterministic provenance checks and never auto-promotes reviewed_gap", () => {
+    expect(VERIFICATION_POLICY.autoReviewedGap).toBe(false);
+    expect(VERIFICATION_POLICY.prefersDeterministic).toBe(true);
+    expect(refuseAutoReviewedGap("reviewed_gap")).toBe(true);
+    const gap = detectDiscoveryCandidates()[0]!;
+    const report = verifyGapCandidate(gap);
+    expect(report.autoReviewed).toBe(false);
+    expect(report.gapKey).toBe(gap.gapKey);
+    expect(report.provenance.length).toBeGreaterThan(3);
+    expect(report.coverage.hitCount).toBeNull();
+    expect(report.aiAssisted).toBe(false);
+    const withDraft = verifyGapCandidate(gap, { aiDraft: "Suggested wording only." });
+    expect(withDraft.aiAssisted).toEqual({ labelled: true, role: "draft_only" });
+    const coverage = draftSearchCoverage(gap, { hitCount: null });
+    expect(coverage.hitCount).toBeNull();
+    expect(coverage.scopeNote).toMatch(/not a claim that (no )?literature (is absent|exists) worldwide/i);
+  });
+});
+
+describe("Discovery Phase 4 dossier + radar shaping", () => {
+  it("shapes dossier links, Ask prefill, and Neon merge without fabricating gaps", () => {
+    const gaps = detectDiscoveryCandidates();
+    expect(gaps.length).toBeGreaterThan(0);
+    const gap = gaps[0]!;
+    const dossier = buildGapDossier({
+      gap,
+      persistedStatus: "candidate",
+      persisted: true,
+      verification: verifyGapCandidate(gap),
+    });
+    expect(dossier.autoApprove).toBe(false);
+    expect(dossier.badge.label.length).toBeGreaterThan(0);
+    expect(dossier.links.some((l) => l.id === "ask")).toBe(true);
+    expect(dossier.askHref).toMatch(/^\/ask/);
+    expect(dossierAskPrefill(gap).q.length).toBeGreaterThan(0);
+    expect(gapStatusBadge("coverage_insufficient").tone).toBe("warn");
+    expect(gapStatusBadge("reviewed_gap").tone).toBe("ok");
+
+    const merged = mergeDetectionWithPersisted(gaps.slice(0, 3), [
+      { gapKey: gaps[0]!.gapKey, status: "needs_context", title: gaps[0]!.title, summary: gaps[0]!.summary, whyItMatters: gaps[0]!.whyItMatters },
+    ]);
+    expect(merged.persistent).toBe(true);
+    expect(merged.persistedByKey[gaps[0]!.gapKey]).toBe("needs_context");
+    expect(merged.gaps.every((g) => gaps.some((d) => d.gapKey === g.gapKey))).toBe(true);
+
+    const feed = shapeRadarFeed(gaps, {
+      filters: { status: "all", limit: 10 },
+      persistedByKey: merged.persistedByKey,
+      persistent: true,
+    });
+    expect(feed.autoApprove).toBe(false);
+    expect(feed.items.length).toBeGreaterThan(0);
+    expect(feed.items.length).toBeLessThanOrEqual(10);
+    expect(feed.emerging.every((e) => gaps.some((g) => g.gapKey === e.gapKey))).toBe(true);
+    expect(feed.contradictions.every((e) => gaps.some((g) => g.gapKey === e.gapKey))).toBe(true);
   });
 });
 

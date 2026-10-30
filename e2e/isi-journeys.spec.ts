@@ -111,11 +111,22 @@ test.describe("ISI public journeys (browser E2E)", () => {
     await expect(page.getByText(/coverage honesty|coverage_insufficient|candidate/i).first()).toBeVisible({
       timeout: 15_000,
     });
+    await expect(page.getByText(/emerging|contradiction|radar feed/i).first()).toBeVisible({
+      timeout: 15_000,
+    });
     await page.goto("/discovery/gaps");
     await expectMainHeading(page);
+    // Optional smoke: open first dossier if a gap link is present.
+    const firstGap = page.locator('a[href*="/discovery/gaps/"]').first();
+    if (await firstGap.count()) {
+      await firstGap.click();
+      await expect(page.getByText(/why it matters|search scope|verification/i).first()).toBeVisible({
+        timeout: 15_000,
+      });
+    }
     await page.goto("/discovery/onboarding");
     await expectMainHeading(page);
-    // Auth-gated profile save is skip≠pass without credentials — structure only here.
+    // Auth-gated profile / persist / review are skip≠pass without credentials.
   });
 });
 
