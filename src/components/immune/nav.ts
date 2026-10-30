@@ -17,7 +17,7 @@ export const NAV_GROUPS = [
     { n: "10", path: "/patient", title: "Patient", desc: "Rule-based teaching — not personalised advice." },
   ] },
   { label: "Frontier", items: [
-    { n: "11", path: "/reasoning", title: "Reasoning", desc: "Ask, exemplars, cases and path tracer." },
+    { n: "11", path: "/reasoning", title: "Reasoning", desc: "Exemplars, cases and path tracer — chat on Ask Immune." },
     { n: "12", path: "/research", title: "Research", desc: "Literature candidates, workbench and model registry." },
   ] },
 ] as const;

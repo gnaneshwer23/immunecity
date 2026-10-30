@@ -243,7 +243,9 @@ export default function ScientificWorkbench({
 
       <p className="small muted" style={{ marginTop: 8 }}>
         Reuse outputs from{" "}
-        <Link to="/reasoning">Ask (Reasoning)</Link>
+        <Link to="/ask">Ask Immune</Link>
+        {" · "}
+        <Link to="/reasoning">Scientific reasoning</Link>
         {" · "}
         <Link to="/mechanism">Mechanism workspace</Link>
         {" · "}
@@ -363,7 +365,7 @@ export default function ScientificWorkbench({
             >
               Seed related IDs from Ask retrieval
             </button>
-            <Link className="btn sm" to="/reasoning">Open Ask</Link>
+            <Link className="btn sm" to="/ask">Continue in Ask Immune</Link>
           </div>
           {session.question.relatedConceptIds.length > 0 && (
             <p className="xs muted">

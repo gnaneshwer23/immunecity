@@ -194,7 +194,7 @@ export function buildGapDossier(input: {
   if (gap.objectId) {
     links.push({ id: "atlas-object", label: "Atlas · object", href: `/atlas/${gap.objectId}` });
   }
-  links.push({ id: "ask", label: "Ask Immune (prefilled)", href: ask.href });
+  links.push({ id: "ask", label: "Continue in Ask Immune", href: ask.href });
   links.push({ id: "evidence", label: "Evidence explorer", href: "/evidence" });
   links.push({ id: "research", label: "Research library", href: "/research" });
   links.push({ id: "workbench", label: "Research Workbench", href: "/research-workbench" });

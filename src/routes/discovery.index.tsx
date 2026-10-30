@@ -264,7 +264,7 @@ function DiscoveryRadarPage() {
             Research library
           </Link>
           <Link className="btn" to="/ask">
-            Ask Immune
+            Continue in Ask Immune
           </Link>
         </div>
       </Section>

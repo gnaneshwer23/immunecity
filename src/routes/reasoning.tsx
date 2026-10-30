@@ -11,14 +11,13 @@ import { PageHead, NodeChip } from "@/components/immune/ui";
 import { PageToc, Section } from "@/components/immune/page";
 
 const TOC = [
-  { id: "ask", label: "Ask" },
+  { id: "ask", label: "Ask Immune" },
   { id: "how-ai-works", label: "How the AI works" },
   { id: "pathways", label: "Pathways" },
   { id: "workspace", label: "Workspace" },
   { id: "cases", label: "Cases" },
   { id: "tracer", label: "Path tracer" },
 ];
-import AskAtlas from "@/components/immune/AskAtlas";
 import MechanismWorkspace from "@/components/immune/MechanismWorkspace";
 import { approvedQuery } from "@/lib/citations.functions";
 import {
@@ -40,7 +39,7 @@ export const Route = createFileRoute("/reasoning")({
     seoHead({
       title: "Reasoning & Scientific AI — Immune Super Intelligence",
       description:
-        "Ask Immune with graph context and reviewed cites when present, inspect retrieval grounding, trace paths and run start–perturbation–outcome reasoning. Educational resource — not fully evidence-grounded AI.",
+        "Inspect Ask retrieval grounding, walk curated pathways, trace paths and run start–perturbation–outcome reasoning. Chat lives on Ask Immune. Educational resource — not fully evidence-grounded AI.",
       path: "/reasoning",
     }),
   component: Reasoning,
@@ -69,7 +68,7 @@ function Reasoning() {
       <PageHead
         kicker="Investigate · Scientific reasoning"
         title="Reason through the biology"
-        lede="Ask with graph context and reviewed cites when they exist, inspect grounding, walk curated pathways, trace any two concepts, then run start → perturbation → outcome reasoning. Rule-based walks are illustrative — not fully evidence-grounded AI."
+        lede="Use Ask Immune as the chatbot for graph-grounded answers, then return here to inspect retrieval demos, walk curated pathways, trace any two concepts, and run start → perturbation → outcome reasoning. Rule-based walks are illustrative — not fully evidence-grounded AI."
         stats={[
           { v: CONTENT.cases.length, l: "CASES" },
           { v: "A→B", l: "PATH TRACER" },
@@ -80,21 +79,26 @@ function Reasoning() {
       <Section
         id="ask"
         n={1}
-        title="Ask Immune"
+        title="Continue in Ask Immune"
         lede={
           <>
-            Answers use retrieved concepts, causal links and relationship-level review status. Reviewed cites appear
-            when present; provisional literature stays labelled; unsupported citation claims are rejected. Reviewed-claim
-            coverage is still limited.{" "}
-            <Link to="/ask">Full Ask page</Link>
-            {" · "}
+            The chatbot lives on one page — not a second chat UI here. Answers use retrieved concepts, causal links and
+            relationship-level review status; provisional literature stays labelled; unsupported citation claims are
+            rejected.{" "}
             <Link to="/methods" hash="live-ev-heading">
               Live coverage
             </Link>
           </>
         }
       >
-        <AskAtlas />
+        <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+          <Link className="btn primary" to="/ask">
+            Continue in Ask Immune
+          </Link>
+          <Link className="btn" to="/ask" search={{ q: "What evidence supports the role of IL-6 in inflammatory disease?" }}>
+            Start with a research question
+          </Link>
+        </div>
       </Section>
       <Section
         id="how-ai-works"

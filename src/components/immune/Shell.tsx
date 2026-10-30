@@ -360,7 +360,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   const [askOpen, setAskOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const marketing = isMarketingPath(pathname);
-  /** Full Ask page already hosts AskAtlas — hide the corner FAB to avoid overlap. */
+  /** Canonical chatbot is /ask; corner FAB is the only other AskAtlas host (unpersisted). Hide FAB on /ask to avoid overlap. */
   const showAskFab = pathname !== "/ask";
   const compactNavId = useId();
   const closeCompact = () => setOpen(false);

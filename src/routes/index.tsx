@@ -73,7 +73,7 @@ export const Route = createFileRoute("/")({
 
 const INVESTIGATE_TOOLS = [
   { to: "/simulator", icon: FlaskConical, title: "System simulator", can: "Run a 30-day infection and add treatments to see which outcome follows.", limit: "Teaching parameters only — not calibrated to patients." },
-  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect Ask retrieval and walk curated pathways.", limit: "Illustrative walks with labelled sources — not fully evidence-grounded AI." },
+  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect retrieval demos and walk curated pathways — chat on Ask Immune.", limit: "Illustrative walks with labelled sources — not fully evidence-grounded AI." },
   { to: "/patient", icon: Microscope, title: "Patient and biomarkers", can: "See how biomarker thresholds map to educational rule flags.", limit: "Teaching rules only — not an individual assessment." },
 ] as const;
 

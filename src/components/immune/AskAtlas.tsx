@@ -340,7 +340,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
               <Info size={12} aria-hidden /> Evidence: {CAPABILITY_STATUS_LABEL.partial.toLowerCase()}
             </button>
             <span className="ask-head-actions">
-              {showFullPageLink ? <Link to="/ask" className="ask-mini-btn"><Maximize2 size={13} /> Full page</Link> : null}
+              {showFullPageLink ? <Link to="/ask" className="ask-mini-btn"><Maximize2 size={13} /> Continue in Ask Immune</Link> : null}
               {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New chat</button> : null}
             </span>
           </div>
@@ -438,13 +438,42 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                 {m === lastAssistant && !busy ? (() => {
                   const lastUser = [...messages].reverse().find((x) => x.role === "user");
                   const q = lastUser ? lastUser.parts.map((p) => (p.type === "text" ? p.text : "")).join("").slice(0, 200) : "";
-                  return q ? (
-                    <p className="xs muted">
-                      Look for literature:{" "}
-                      <Link to="/research" search={{ lib: q }} hash="library">search journal metadata (Crossref)</Link>{" "}
-                      (source records only — not reviewed evidence; no Nature Portfolio affiliation).
-                    </p>
-                  ) : null;
+                  const primaryId = grounding?.nodeIds.find((id) => byId[id]) ?? conceptsIn(text)[0];
+                  const primary = primaryId ? byId[primaryId] : undefined;
+                  return (
+                    <>
+                      {grounding?.coverage.matched && !grounding.trace.abstained ? (
+                        <div className="ask-followups ask-build-links" aria-label="Continue investigating">
+                          <span className="ask-insp-label">Build from this answer</span>
+                          {primary ? (
+                            <Link className="chip" to="/atlas/$id" params={{ id: primary.id }}>
+                              Atlas · {primary.name} <ArrowUpRight size={12} />
+                            </Link>
+                          ) : null}
+                          <Link className="chip" to="/discovery">
+                            Research Radar <ArrowUpRight size={12} />
+                          </Link>
+                          <Link className="chip" to="/research-workbench">
+                            Research Workbench <ArrowUpRight size={12} />
+                          </Link>
+                          <Link className="chip" to="/reasoning" hash="tracer" search={primary ? { from: primary.id } : undefined}>
+                            Path tracer <ArrowUpRight size={12} />
+                          </Link>
+                          {q ? (
+                            <Link className="chip" to="/research" search={{ lib: q }} hash="library">
+                              Journal metadata <ArrowUpRight size={12} />
+                            </Link>
+                          ) : null}
+                        </div>
+                      ) : q ? (
+                        <p className="xs muted">
+                          Look for literature:{" "}
+                          <Link to="/research" search={{ lib: q }} hash="library">search journal metadata (Crossref)</Link>{" "}
+                          (source records only — not reviewed evidence; no Nature Portfolio affiliation).
+                        </p>
+                      ) : null}
+                    </>
+                  );
                 })() : null}
                 {fu.length > 0 && (
                   <div className="ask-followups" aria-label="Suggested follow-ups">

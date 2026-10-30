@@ -5,9 +5,12 @@ describe("journey navigation", () => {
   it("groups the header into Learn, Explore, Investigate, Trust", () => {
     expect(JOURNEY_NAV.map((g) => g.label)).toEqual(["Learn", "Explore", "Investigate", "Trust"]);
   });
-  it("lists each destination once", () => {
-    const paths = JOURNEY_NAV.flatMap((g) => g.items.map(journeyKey));
-    expect(new Set(paths).size).toBe(paths.length);
+  it("lists each destination once (SME may appear in Investigate and Trust)", () => {
+    const keys = JOURNEY_NAV.flatMap((g) => g.items.map(journeyKey));
+    const smeKeys = keys.filter((k) => k === "/sme");
+    expect(smeKeys.length).toBe(2);
+    const withoutSme = keys.filter((k) => k !== "/sme");
+    expect(new Set(withoutSme).size).toBe(withoutSme.length);
   });
 });
 
@@ -38,6 +41,13 @@ describe("primary entries", () => {
     expect(learn).toContain("/ask");
     expect(investigate).toEqual(expect.arrayContaining(["/simulator", "/research"]));
   });
+  it("keeps the chatbot on Learn /ask; Reasoning is investigation tools, not a second chat", () => {
+    const learnAsk = JOURNEY_NAV.find((g) => g.label === "Learn")!.items.find((i) => i.path === "/ask");
+    const reasoning = JOURNEY_NAV.find((g) => g.label === "Investigate")!.items.find((i) => i.path === "/reasoning");
+    expect(learnAsk?.title).toBe("Ask Immune");
+    expect(reasoning?.title).toBe("Scientific reasoning");
+    expect(reasoning?.desc.toLowerCase()).toMatch(/ask immune/);
+  });
 });
 
 describe("brief v2 menu mapping", () => {
@@ -47,9 +57,9 @@ describe("brief v2 menu mapping", () => {
       expect.arrayContaining(["System simulator", "Research library", "Evidence explorer", "Research Radar"]),
     );
   });
-  it("Trust sections all live on Methods", () => {
+  it("Trust keeps Methods sections plus SME workspace", () => {
     const trust = JOURNEY_NAV.find((g) => g.label === "Trust")!.items;
-    expect(trust).toHaveLength(4);
-    expect(trust.every((i) => i.path === "/methods")).toBe(true);
+    expect(trust.filter((i) => i.path === "/methods")).toHaveLength(4);
+    expect(trust.some((i) => i.path === "/sme" && i.title === "SME workspace")).toBe(true);
   });
 });

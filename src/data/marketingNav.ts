@@ -137,7 +137,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
     label: "Investigate",
     items: [
       { n: "I1", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
-      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Ask, retrieval grounding and path tracing." },
+      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Retrieval grounding, pathways and path tracing — chat on Ask Immune." },
       { n: "I3", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench." },
       { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
       { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Rule-based teaching — not medical advice." },

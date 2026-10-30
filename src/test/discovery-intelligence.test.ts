@@ -451,7 +451,7 @@ describe("Discovery Phase 4 dossier + radar shaping", () => {
     });
     expect(dossier.autoApprove).toBe(false);
     expect(dossier.badge.label.length).toBeGreaterThan(0);
-    expect(dossier.links.some((l) => l.id === "ask")).toBe(true);
+    expect(dossier.links.some((l) => l.id === "ask" && l.label === "Continue in Ask Immune")).toBe(true);
     expect(dossier.askHref).toMatch(/^\/ask/);
     expect(dossierAskPrefill(gap).q.length).toBeGreaterThan(0);
     expect(gapStatusBadge("coverage_insufficient").tone).toBe("warn");

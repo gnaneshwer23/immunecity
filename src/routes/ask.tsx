@@ -40,7 +40,7 @@ function AskPage() {
       <PageHead
         kicker={`Learn · ${ASK_NAME}`}
         title="Ask about the immune system."
-        lede={`${ASK_PUBLIC_LINE} Missing evidence is stated clearly. ${ASK_EVIDENCE_LIMIT} Your conversation stays in this browser.`}
+        lede={`${ASK_PUBLIC_LINE} Missing evidence is stated clearly. ${ASK_EVIDENCE_LIMIT} This is the primary chatbot for graph-grounded answers and the starting point for Atlas, Discovery, dossiers and the research workbench. Your conversation stays in this browser.`}
       />
       {ctx ? (
         <p className="isi-ask-context" role="status">
