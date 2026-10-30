@@ -21,8 +21,8 @@ In metastatic melanoma, which immune-escape mechanisms associate with PD-1 inhib
 | **B** | Scientific graph model | **Complete (engineering)** | `docs/ISI_PHASE_B_REPORT.md` · `1e48f1a` |
 | **C** | Evidence intelligence | **Complete (engineering)** | `docs/ISI_PHASE_C_REPORT.md` · `2056b2f` |
 | **D** | Ask Immune GraphRAG | **Partial** (neighbourhood + conflict lines; SME eval open) | `docs/ISI_PHASE_D_REPORT.md` · `2056b2f` |
-| **E** | Clinical / research workflows | Deferred / status note | `docs/ISI_PHASE_E_F_STATUS.md` |
-| **F** | End-to-end QA | Deferred / status note | `docs/ISI_PHASE_E_F_STATUS.md` |
+| **E** | Clinical / research workflows | **Complete (engineering)** | `docs/ISI_PHASE_E_REPORT.md` · `23aabbd` |
+| **F** | End-to-end QA | **Complete (focused bun suite)** | `docs/ISI_PHASE_F_REPORT.md` · SHA after F commit |
 
 Prior hardening / correction sprints (2026-10-30) remain prerequisites: `docs/ISI_HARDENING_SPRINT_2026-10-30.md`, `docs/ISI_AUDIT_BASELINE_2026-10-30.md`.
 
@@ -65,9 +65,24 @@ Prior hardening / correction sprints (2026-10-30) remain prerequisites: `docs/IS
 - Ask `GRAPH_NEIGHBOURHOOD` / `NPATH` + `EVIDENCE_CONFLICT` lines; `PROMPT_VERSION=ask-grounding-v11`
 - SME gold-set / full eval metrics still open
 
-## Phase E–F
+## Phase E exit (done, engineering)
 
-See `docs/ISI_PHASE_E_F_STATUS.md`.
+1. Melanoma investigation path — `melanomaInvestigationPath.ts` (typed relations + pilots + endpoints)
+2. Additive **0018** `treatment_line` + fixture seed (`db:trial-treatment-line`); sources/assays still fixture/stub
+3. Scientific brief package + curation handoff — `scientificBrief.ts` (unreviewed stays unapproved)
+4. Export provenance trail — `exportProvenance.ts` (+ workbench export)
+5. Collections / path sync helpers — no community→KG write
+
+**Tests:** Phase E suite green; combined A–F **53 pass**. **SHA:** `23aabbd`.
+
+## Phase F exit (done, focused QA)
+
+1. Journey suite `phase-f-e2e-journey.test.ts` — OS → City → evidence → TI flag → Ask → Research → export
+2. Regressions for A–E suites; honesty for missing/conflicting evidence; a11y script smoke
+3. Gaps documented: Playwright auth, live Neon isolation re-check, full Vite/a11y when OOM
+
+**Tests:** 53 pass / 0 fail across phase-a…f. **SHA:** see `docs/ISI_PHASE_F_REPORT.md`.  
+Status note: `docs/ISI_PHASE_E_F_STATUS.md`.
 
 ---
 

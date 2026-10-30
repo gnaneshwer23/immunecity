@@ -3,7 +3,7 @@
 **Date:** 2026-10-30  
 **Product:** Immune Super Intelligence (educational — not CDS)  
 **Baseline:** docs SHA `4f76495` (post Phase C/D)  
-**Phase E commit:** `<PHASE_E_SHA>`  
+**Phase E commit:** `23aabbd`  
 
 ---
 
@@ -99,12 +99,12 @@ Not run here: live `bun run db:trial-treatment-line` (requires Neon ep-blue-sala
 | Item | Value |
 | --- | --- |
 | Prior HEAD | `4f76495` |
-| Phase E HEAD | `<PHASE_E_SHA>` |
+| Phase E HEAD | `23aabbd` |
 
 **Rollback:**
 
 ```bash
-git revert <PHASE_E_SHA>
+git revert 23aabbd
 # DB (only if 0018 applied):
 # ALTER TABLE public.trial_arms DROP COLUMN IF EXISTS treatment_line;
 # ALTER TABLE public.clinical_trials DROP COLUMN IF EXISTS treatment_line;

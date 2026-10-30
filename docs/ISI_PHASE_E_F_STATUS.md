@@ -1,38 +1,30 @@
-# ISI Phase E / F — Status (session checkpoint)
+# ISI Phase E / F — Status
 
 **Date:** 2026-10-30  
 
 ## Phase E — Clinical and research workflows
 
-**Not fully implemented in this session.** Existing foundations remain:
+**Complete (engineering).** Report: `docs/ISI_PHASE_E_REPORT.md` · `23aabbd`.
 
-- Melanoma Trial Intelligence fixtures + 0015 Postgres (flag off in prod)
-- Biomarker context empty stub (no invented assays)
-- Research Workbench collections + draft briefs (`kgWrite=false`)
-- `treatment_line` still fixture-overlay (Phase A contract)
+Highlights:
 
-**Recommended next (human-scoped):**
-
-1. Additive `treatment_line` column on `clinical_trials` / `trial_arms` + seed from fixtures  
-2. Curated biomarker assay rows only when PMIDs exist  
-3. Brief → curation handoff UI (import claim candidates, never auto-approve)  
-4. Export provenance trail using `graphProvenance` + audit events  
+- Additive **0018** `treatment_line` (+ seed script `db:trial-treatment-line`)
+- `melanomaInvestigationPath.ts` — typed relations, pilots, endpoints, unknowns
+- `scientificBrief.ts` + `exportProvenance.ts` — draft brief, review handoff, provenance trail
+- Collections / saved-path sync helpers (no community→KG write)
+- Biomarker assays remain empty stub; Trial Intelligence prod flag unchanged (off)
 
 ## Phase F — End-to-end QA
 
-**Not executed as a full journey suite in this session.**
+**Complete (automated focused suite).** Report: `docs/ISI_PHASE_F_REPORT.md` · SHA filled after commit.
 
-Suggested smoke (manual / Playwright):
+```text
+bun test src/test/phase-{a,b,c,d,e}*.test.ts src/test/phase-f-e2e-journey.test.ts --timeout 30000
+→ 53 pass / 0 fail
+```
 
-1. Unauth: `/` → Learn → Atlas → Graph → Evidence → Methods  
-2. Auth member: Research collections create/list (own only)  
-3. Ask: clinical abstain; melanoma mechanism question shows NPATH  
-4. Trial Intelligence: flag off → panel hidden; flag on in preview only  
-5. Curation: non-supports cannot approve  
-6. a11y: existing `bun run a11y`  
-
-Two-account isolation already covered in collections ownership tests (hardening sprint).
+Gaps: Playwright auth, live Neon isolation re-check, full a11y / Vite build (OOM preference documented).
 
 ## Program DoD
 
-Source-traceable melanoma path is **structurally** available (D012 → PD-1 → TR003/TR020 → Ask neighbourhood → Research brief draft) but **must not** be marketed as clinically conclusive until SME Gate C density + Ask gold-set sign-off.
+Source-traceable melanoma path is available (D012 → PD-1 → TR003/TR020 → Ask neighbourhood → Research brief draft + provenance) **without** unsupported clinical conclusions. SME Gate C density + Ask gold-set sign-off remain open before any clinical-sounding marketing.
