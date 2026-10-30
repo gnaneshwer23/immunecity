@@ -81,7 +81,7 @@ Prior hardening / correction sprints (2026-10-30) remain prerequisites: `docs/IS
 2. Regressions for A–E suites; honesty for missing/conflicting evidence; a11y script smoke
 3. Gaps documented: Playwright auth, live Neon isolation re-check, full Vite/a11y when OOM
 
-**Tests:** 53 pass / 0 fail across phase-a…f. **SHA:** see `docs/ISI_PHASE_F_REPORT.md`.  
+**Tests:** 53 pass / 0 fail across phase-a…f. **SHA:** `74d357c`.  
 Status note: `docs/ISI_PHASE_E_F_STATUS.md`.
 
 ---
