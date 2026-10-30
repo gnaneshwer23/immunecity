@@ -16,12 +16,12 @@
 | Routes `/discovery*` + Investigate I7 | Radar, onboarding, profile, gaps, dossier |
 | Unit tests | Isolation, transitions, coverage, entitlements |
 | Adapter stubs | Literature/trial interfaces; no live ingest |
+| Neon apply 0019/0020 on ep-blue-salad | See `docs/ISI_NEON_0019_0020_APPLY.md`; schema-only, evidence=46 unchanged |
 
 ## Intentionally deferred / SME-blocked
 
 | Item | Why |
 | --- | --- |
-| Apply 0019/0020 on Neon | Ops apply (same pattern as 0017/0018 docs) |
 | Live PubMed / CT.gov continuous ingestion | Designed adapters only |
 | Email alerts | Subscriptions table + channel stub only |
 | Stripe / researcher_pro billing | Server entitlement stub; **no payment activation** |
@@ -33,8 +33,7 @@
 
 ## Next engineering (when unblocked)
 
-1. Document Neon apply for 0019/0020.  
-2. Curator UI panel for gap review (reuse ScientificReviewQueue patterns).  
-3. Wire dossier “Ask prefill” from gap subject/object ids.  
-4. Empty eval harness for future SME gold-set scoring (no invented scores).  
-5. Optional thin live PubMed adapter behind rate-limit gate + coverage rows.
+1. Curator UI panel for gap review (reuse ScientificReviewQueue patterns).  
+2. Wire dossier “Ask prefill” from gap subject/object ids.  
+3. Empty eval harness for future SME gold-set scoring (no invented scores).  
+4. Optional thin live PubMed adapter behind rate-limit gate + coverage rows.
