@@ -107,3 +107,35 @@ AI agents expansion, new diseases, Research Workbench MVP, full review workflow 
 ## 9. Next audit phase
 
 **Phase 1 / next:** ISI-A04 curation review hardening (existing workflow only) + remaining Trial P1 (comparison engine still deferred) → then Ask grounding evals (A10 light) before any production flag flip.
+
+---
+
+## 10. Phase 1 — Scientific evidence foundation (exit checklist)
+
+**Status:** Engineering exit criteria met in code; **human SME sign-off still required** before enabling `VITE_TRIAL_INTELLIGENCE` in production.
+
+**Exit gate:** Every published pilot endpoint is traceable to an approved source.
+
+| # | Criterion | Status | Evidence |
+| --- | --- | --- | --- |
+| P1-1 | Melanoma pilot endpoints honesty (no invented numerics) | Met | `endpointPassesHonesty` / `melanomaPilotExitGateReport` · `bun test src/test/phase1-evidence-foundation.test.ts` |
+| P1-2 | Published numerics cite PMID (+ DOI) + analysis set | Met | Endpoint provenance column in `TrialIntelligence.tsx`; fixtures + Postgres seed |
+| P1-3 | Unverified gaps stay null + labelled | Met | CheckMate 067 ORR null / unverified |
+| P1-4 | Postgres authoritative when seeded; fixture fallback on outage | Met | `resolveTrialIntelligence` · `bun run db:trial-intelligence:check` |
+| P1-5 | Three dimensions visible (curation ≠ evidence_status ≠ quality) | Met | `EvidenceDimensionsStrip` on inspector, edge refs, trial endpoint fold |
+| P1-6 | ISI-A04: supports-only page approve; no AI auto-approve; no mass Gate C | Met | `isReadyForSupportsApproval`; curation callouts; server `computeEvidenceUpdate` |
+| P1-7 | ISI-A10 light: Ask fails closed; no “fully evidence-grounded” claim | Met | Existing `validateAnswerCitations` + SYSTEM contract; Phase 1 test asserts honesty copy |
+| P1-8 | Docs + focused tests | Met | This checklist · Phase 1 bun tests |
+| P1-9 | Production flag remains OFF | Required | Do **not** set `VITE_TRIAL_INTELLIGENCE` in Vercel Production until SME review |
+
+### Still needs human SME
+
+- Independent re-check of KEYNOTE-006 / CheckMate 067 abstracts vs stored numerics (A02 spot-check done in eng; SME confirmation open).
+- Gate C claim density on melanoma mechanism edges (curator work — not mass-approved here).
+- Sign-off before any production Trial Intelligence flag flip.
+
+### Explicitly out of Phase 1
+
+- Trial comparison engine (A08), biomarker schemas (A07), Workbench MVP, new disease areas, full Ask eval overhaul.
+
+**Next:** Phase 2 — Trial Intelligence experience (UI/comparability/navigation; flag still off until SME).

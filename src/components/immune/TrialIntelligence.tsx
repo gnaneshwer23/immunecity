@@ -19,27 +19,49 @@ import { ctgStudyUrl } from "@/data/trialRegistry";
 import { isTrialIntelligenceEnabled } from "@/lib/trialIntelligenceFlag";
 import { trialIntelligenceQuery } from "@/lib/trialIntelligence.functions";
 import { ExplainerSection } from "@/components/immune/explain";
+import { EvidenceDimensionsStrip } from "@/components/immune/EvidenceDimensions";
 import { byId } from "@/lib/immune/engine";
+import { trialEndpointDimensions } from "@/lib/immune/evidenceDimensions";
+import { endpointProvenanceView, VERIFICATION_LABEL } from "@/lib/immune/trialProvenance";
 
 function EndpointRow({ ep }: { ep: EndpointResultRecord }) {
+  const prov = endpointProvenanceView(ep);
   const unverified = ep.verificationState === "unverified";
+  const verMeta = VERIFICATION_LABEL[ep.verificationState];
+  const dims = trialEndpointDimensions(ep, prov);
   return (
-    <tr>
+    <tr data-testid={`ti-endpoint-${ep.resultId}`} data-exit-gate={prov.exitGateOk ? "ok" : "fail"}>
       <th scope="row">{ep.label}</th>
       <td>
         <span className={unverified ? "isi-ti-unverified" : undefined}>{formatEndpointValue(ep)}</span>
-        {unverified ? <span className="xs muted"> · unverified</span> : null}
       </td>
-      <td className="xs muted">{ep.analysisSet}</td>
-      <td className="xs muted">{ep.followUp ?? ep.timepoint ?? "—"}</td>
       <td className="xs">
+        <span className={`badge isi-ti-ver isi-ti-ver-${ep.verificationState}`} title={verMeta.desc}>
+          {verMeta.short}
+        </span>
+      </td>
+      <td className="xs muted">{ep.analysisSet || "—"}</td>
+      <td className="xs muted">{ep.followUp ?? ep.timepoint ?? "—"}</td>
+      <td className="xs isi-ti-provenance">
         {ep.sourcePmid ? (
           <a href={pubmedUrl(ep.sourcePmid)} target="_blank" rel="noopener noreferrer">
             PMID {ep.sourcePmid}
           </a>
         ) : (
-          <span className="muted">—</span>
+          <span className="muted">no PMID</span>
         )}
+        {ep.sourceDoi ? (
+          <>
+            {" · "}
+            <a href={doiUrl(ep.sourceDoi)} target="_blank" rel="noopener noreferrer">
+              doi:{ep.sourceDoi}
+            </a>
+          </>
+        ) : null}
+        <details className="isi-ti-ep-dims">
+          <summary className="xs">Dimensions</summary>
+          <EvidenceDimensionsStrip dims={dims} compact testId={`ti-dims-${ep.resultId}`} />
+        </details>
       </td>
     </tr>
   );
@@ -61,6 +83,10 @@ function TrialCard({ trial }: { trial: ClinicalTrialRecord }) {
           <Link to="/atlas/$id" params={{ id: trial.graphNodeId }}>
             {trial.graphNodeId}
           </Link>
+          {" · "}
+          <span className={`badge isi-ti-ver isi-ti-ver-${trial.verificationState}`}>
+            {VERIFICATION_LABEL[trial.verificationState].short}
+          </span>
         </p>
       </header>
 
@@ -91,9 +117,10 @@ function TrialCard({ trial }: { trial: ClinicalTrialRecord }) {
                 <tr>
                   <th scope="col">Endpoint</th>
                   <th scope="col">Result</th>
+                  <th scope="col">Verification</th>
                   <th scope="col">Analysis set</th>
                   <th scope="col">Follow-up / timepoint</th>
-                  <th scope="col">Source</th>
+                  <th scope="col">Provenance</th>
                 </tr>
               </thead>
               <tbody>
@@ -156,6 +183,10 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
       <p className="isi-ti-warn" role="note" data-testid="trial-noncausal-warning">
         {NON_CAUSAL_TRIAL_WARNING}
       </p>
+      <p className="xs muted" role="note">
+        Provenance columns show PMID/DOI, verification label, and analysis set / follow-up when present. Curation,
+        source identifiers and analysis context stay separate — not one confidence score.
+      </p>
       <TrialCard trial={trial} />
       {peers.length ? (
         <div className="isi-ti-peers">
@@ -180,7 +211,7 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
         </div>
       ) : null}
       <p className="xs muted">
-        Read model: {readSource === "postgres" ? "validated Postgres (curated)" : "fixture seed"}
+        Read model: {readSource === "postgres" ? "validated Postgres (authoritative when seeded)" : "fixture seed"}
         {q.data?.unavailable ? " · database unavailable — showing fixture fallback" : ""}. Methods: see{" "}
         <Link to="/methods" hash="trial-intelligence">
           Evidence & Methods — Trial Intelligence
@@ -200,6 +231,7 @@ export function TrialIntelligenceMethodsNote() {
         Arm-level ORR, PFS, OS and safety fields for KEYNOTE-006 (<span className="mono">TR003</span>, NCT01866319)
         and CheckMate 067 (<span className="mono">TR020</span>, NCT01844505) are curated from primary publications.
         Numbers absent from the verified abstracts stay null and labelled unverified — they are never invented.
+        Each published endpoint shows source PMID/DOI, verification label, and analysis set / follow-up when present.
       </p>
       <p className="isi-ti-warn" role="note" data-testid="trial-noncausal-warning">
         {NON_CAUSAL_TRIAL_WARNING}
@@ -209,7 +241,7 @@ export function TrialIntelligenceMethodsNote() {
         graph journeys stay unchanged. Rollback: unset or set the flag to{" "}
         <span className="mono">0</span> in Vercel Production and redeploy — no route removal required. When enabled,
         curated reads prefer Postgres; fixtures remain the seed/import source of truth. Educational resource — not
-        clinical decision support.
+        clinical decision support. Do not enable for general production until Phase 1 exit criteria and SME review.
       </p>
     </div>
   );

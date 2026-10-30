@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { edgeRef, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
+import { relationshipStatus } from "@/lib/immune/evidenceStatus";
+import { edgeEvidenceDimensions } from "@/lib/immune/evidenceDimensions";
 import { StatusBadge } from "./ScientificInspector";
+import { EvidenceDimensionsStrip } from "./EvidenceDimensions";
 import { approvedQuery, type ApprovedCitation } from "@/lib/citations.functions";
 
 const LEVEL: Record<string, string> = {
@@ -18,6 +21,8 @@ export default function EdgeReference({ edge }: { edge: KGEdge }) {
   const { data, isError } = useQuery(approvedQuery);
   const approved = data?.find((c) => c.relationship_id === relId(edge));
   const level = LEVEL[edge.evidence_status] ?? edge.evidence_status?.toLowerCase();
+  const review = relationshipStatus(edge, data ?? []);
+  const dims = edgeEvidenceDimensions(edge, isError ? "unreviewed" : review);
   return (
     <span className="edge-ref-wrap">
       {ref ? (
@@ -37,8 +42,15 @@ export default function EdgeReference({ edge }: { edge: KGEdge }) {
       )}
       <StatusBadge edge={edge} />
       <button type="button" className="si-open" onClick={() => inspect({ kind: "relationship", id: relId(edge) })} aria-label="Open scientific detail for this link">details</button>
-      {level ? <span className={`badge lvl-${edge.evidence_status}`}>{level}</span> : null}
+      {level ? <span className={`badge lvl-${edge.evidence_status}`} title="Evidence status (teaching class — not curation)">{level}</span> : null}
+      {edge.confidence ? (
+        <span className="badge isi-ev-dim-quality" title="Recorded quality (link confidence — not Gate C)">{edge.confidence}</span>
+      ) : null}
       {edge.draft ? <span className="badge ev-chk-missing" title="Added to close a coverage gap; needs expert review">draft</span> : null}
+      <details className="isi-ev-dims-fold">
+        <summary className="xs">Evidence dimensions</summary>
+        <EvidenceDimensionsStrip dims={dims} compact />
+      </details>
     </span>
   );
 }

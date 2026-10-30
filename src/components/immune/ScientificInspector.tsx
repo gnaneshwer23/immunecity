@@ -5,7 +5,9 @@ import { X, ArrowUpRight } from "lucide-react";
 import { TYPES, byId, cellForNode, edgeByRel, edgeRef, human, inn, lessonsForNode, out, relId, type KGEdge } from "@/lib/immune/engine";
 import { approvedQuery } from "@/lib/citations.functions";
 import { citationsFor, relationshipStatus, STATUS_INFO } from "@/lib/immune/evidenceStatus";
+import { edgeEvidenceDimensions } from "@/lib/immune/evidenceDimensions";
 import { inspect, useInspected } from "@/lib/immune/inspector";
+import { EvidenceDimensionsStrip } from "@/components/immune/EvidenceDimensions";
 import { CONTENT } from "@/data/content";
 
 export function StatusBadge({ edge }: { edge: KGEdge }) {
@@ -96,14 +98,19 @@ function RelationshipBody({ id }: { id: string }) {
         <p className="si-warn" role="alert">Evidence service unavailable — review status below may be incomplete.</p>
       ) : null}
       <p className="si-status"><span className={`badge rs rs-${status}`}>{STATUS_INFO[status].label}</span> <span className="xs muted">{STATUS_INFO[status].desc}</span></p>
+      <section>
+        <h3>Evidence dimensions</h3>
+        <p className="xs muted">
+          Curation / review, evidence status and recorded quality are separate axes — not one confidence score.
+        </p>
+        <EvidenceDimensionsStrip dims={edgeEvidenceDimensions(e, status)} />
+      </section>
       <section><h3>Mechanism</h3><p className="small">{e.mechanism || "No mechanism text recorded."}</p></section>
       <section>
         <h3>Context</h3>
         <dl className="si-dl">
           <dt>Predicate</dt><dd className="mono">{e.relation}</dd>
           <dt>Tissue</dt><dd>{e.location || "Not specified"}</dd>
-          <dt>Confidence</dt><dd>{e.confidence}</dd>
-          <dt>Evidence level</dt><dd>{e.evidence_status?.toLowerCase() || "—"}</dd>
           <dt>Weight</dt><dd>{typeof e.weight === "number" ? e.weight : "default"}</dd>
         </dl>
       </section>

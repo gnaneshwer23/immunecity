@@ -20,6 +20,7 @@ import {
 } from "@/data/trialIntelligence";
 import { getDb } from "@/lib/db.server";
 import { clinicalTrials, endpointResults, trialArms } from "@/lib/db/schema.server";
+import { endpointPassesHonesty } from "@/lib/immune/trialProvenance";
 
 export type TrialIntelligenceDataSource = "postgres" | "fixture";
 
@@ -55,16 +56,6 @@ function asRole(v: string | null | undefined): ComparatorRole | null {
 
 function asEndpointType(v: string | null | undefined): EndpointType | null {
   return v && ENDPOINT_TYPES.has(v as EndpointType) ? (v as EndpointType) : null;
-}
-
-/** Reject invented numerics: any stored number must be verified with a PMID. */
-function endpointPassesHonesty(ep: EndpointResultRecord): boolean {
-  if (ep.valueNum != null) {
-    if (ep.verificationState !== "verified") return false;
-    if (!ep.sourcePmid || !/^\d+$/.test(ep.sourcePmid)) return false;
-  }
-  if (ep.verificationState === "unverified" && ep.valueNum != null) return false;
-  return true;
 }
 
 function sourcesForTrial(trialId: string) {

@@ -56,6 +56,22 @@ export function canApproveClaim(relationshipId: string | null | undefined, claim
   return claimSupport === "supports";
 }
 
+/**
+ * ISI-A04 page-scoped approve eligibility (client filter; server still re-validates).
+ * Requires identifier verified/matched + unreviewed + mapped relationship + supports.
+ * Never includes partial/contradicts. AI never auto-approves.
+ */
+export function isReadyForSupportsApproval(row: {
+  check_status?: string | null;
+  curation?: string | null;
+  relationship_id?: string | null;
+  claim_support?: string | null;
+}): boolean {
+  if (row.curation !== "unreviewed") return false;
+  if (!canApproveIdentifier(row.check_status)) return false;
+  return canApproveClaim(row.relationship_id, row.claim_support);
+}
+
 /** Identifier metadata must resolve before scientific approval can stick. */
 export function canApproveIdentifier(checkStatus: string | null | undefined): boolean {
   return !!checkStatus && APPROVAL_ELIGIBLE_CHECK.has(checkStatus);

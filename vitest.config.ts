@@ -18,6 +18,7 @@ export default defineConfig({
       "src/test/ask-quality-loop.test.ts",
       // bun:test — Vitest pool hangs on collection in this environment; run with `bun test`.
       "src/test/trial-intelligence.test.ts",
+      "src/test/phase1-evidence-foundation.test.ts",
     ],
     pool: "forks",
     fileParallelism: false,

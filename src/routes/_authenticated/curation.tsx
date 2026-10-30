@@ -27,6 +27,7 @@ import {
   EXEMPLAR_PATHWAYS,
   exemplarQueueFocus,
 } from "@/lib/immune/exemplarPathways";
+import { isReadyForSupportsApproval } from "@/lib/immune/evidenceInvariants";
 
 export const Route = createFileRoute("/_authenticated/curation")({
   head: () => seoHead({ title: "Evidence curation — Immune Super Intelligence", description: "Import citation manifests, cross-check identifiers against PubMed and Crossref, and approve citations.", path: "/curation", noIndex: true }),
@@ -244,10 +245,8 @@ function Curation() {
   };
 
   const verifiedUnapproved = rows.filter((r) => (r.check_status === "verified" || r.check_status === "matched") && r.curation === "unreviewed");
-  /** Server rejects approval without relationship_id + assessed claim_support. */
-  const readyToApprove = verifiedUnapproved.filter(
-    (r) => r.relationship_id && r.claim_support && r.claim_support !== "unassessed",
-  );
+  /** ISI-A04: supports-only page approve; AI never auto-approves; server re-validates. */
+  const readyToApprove = rows.filter(isReadyForSupportsApproval);
   const claimMapped = rows.filter((r) => r.relationship_id && r.claim_support && r.claim_support !== "unassessed");
   const approvedClaimLinks = new Set(
     rows.filter((r) => r.curation === "approved" && r.relationship_id && r.claim_support === "supports").map((r) => r.relationship_id),
@@ -308,10 +307,16 @@ function Curation() {
         Reviewed support counts only records that are approved, marked as supporting the claim, and mapped to that relationship.
       </p>
       <p className="callout" style={{ marginBottom: 20 }} role="note">
+        <strong>Three dimensions stay separate.</strong>{" "}
+        Curation decision (approved / unreviewed / rejected), graph evidence_status (established / …), and recorded link confidence are not one score.
+        Partial or contradicts assessments never become Gate C support. Ask Immune fails closed on overclaims — AI never auto-approves.
+      </p>
+      <p className="callout" style={{ marginBottom: 20 }} role="note">
         <strong>Counterevidence stays separate from reviewed support.</strong>{" "}
         Mark a paper partial or contradicts when it only partly supports or opposes the directional claim.
         Those rows appear as counterevidence in Ask. They never count as approved support.
         Do not invent a contradicts row. Leave the assessment empty when the direction is unclear.
+        Do not mass-approve or invent PMIDs.
       </p>
       {role && !canReview ? (
         <p className="callout" style={{ marginBottom: 20 }}>
@@ -434,7 +439,7 @@ function Curation() {
             }
             onClick={approveClaimAssessed}
           >
-            Approve {readyToApprove.length} claim-assessed
+            Approve {readyToApprove.length} supports-assessed
           </button>
         </div>
       ) : null}

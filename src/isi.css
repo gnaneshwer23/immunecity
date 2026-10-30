@@ -484,6 +484,33 @@ a.isi-journey-card, a.isi-journey-card:hover { text-decoration: none; }
 .isi-ti-peers { margin-top: var(--isi-space-3); }
 .isi-ti-peers ul { margin: 6px 0 0; padding-left: 1.1rem; }
 .isi-ti-methods { display: grid; gap: var(--isi-space-2); }
+.isi-ti-ver { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
+.isi-ti-ver-verified { background: var(--ok-soft, color-mix(in oklab, var(--primary) 12%, transparent)); color: var(--ok, var(--primary)); }
+.isi-ti-ver-partial { background: var(--warn-soft, color-mix(in oklab, var(--warn) 14%, transparent)); color: var(--warn); }
+.isi-ti-ver-unverified { background: color-mix(in oklab, var(--muted) 18%, transparent); color: var(--muted); }
+.isi-ti-provenance { min-width: 9rem; }
+.isi-ti-ep-dims { margin-top: 4px; }
+.isi-ti-ep-dims > summary { cursor: pointer; color: var(--primary); }
+
+/* Three orthogonal evidence dimensions (curation ≠ evidence_status ≠ quality). */
+.isi-ev-dims {
+  display: grid;
+  gap: 8px 12px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.isi-ev-dims-compact { gap: 4px 8px; font-size: 12px; margin: 4px 0; }
+.isi-ev-dim { display: grid; grid-template-columns: minmax(7rem, max-content) 1fr; gap: 4px 10px; align-items: baseline; }
+.isi-ev-dim dt { color: var(--muted); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; font-family: var(--font-mono); }
+.isi-ev-dim dd { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.isi-ev-dim-desc { display: block; flex-basis: 100%; }
+.isi-ev-dim-badge { font-size: 11px; }
+.isi-ev-dim-curation { background: color-mix(in oklab, var(--primary) 12%, transparent); color: var(--primary); }
+.isi-ev-dim-evidence_status { background: var(--ok-soft, color-mix(in oklab, var(--ok, var(--primary)) 12%, transparent)); }
+.isi-ev-dim-quality { background: color-mix(in oklab, var(--muted) 16%, transparent); color: var(--muted); }
+.isi-ev-dims-fold { display: inline-block; margin-left: 2px; }
+.isi-ev-dims-fold > summary { cursor: pointer; color: var(--primary); list-style: none; }
+.isi-ev-dims-fold > summary::-webkit-details-marker { display: none; }
 
 /* Ask answer evidence summary (plain-language). */
 .grounding-summary { margin: 4px 0 6px; font-size: 14px; line-height: 1.45; }

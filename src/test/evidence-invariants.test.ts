@@ -5,6 +5,7 @@ import {
   computeEvidenceUpdate,
   isCounterEvidenceAssessment,
   isGateCSupportingEvidence,
+  isReadyForSupportsApproval,
   partitionEvidencePolarity,
 } from "@/lib/immune/evidenceInvariants";
 
@@ -33,6 +34,25 @@ describe("evidence approval invariants", () => {
     expect(canApproveIdentifier("matched")).toBe(true);
     expect(canApproveIdentifier("pending")).toBe(false);
     expect(canApproveIdentifier("ambiguous")).toBe(false);
+  });
+
+  it("ISI-A04 ready-for-approve requires supports only", () => {
+    expect(
+      isReadyForSupportsApproval({
+        check_status: "verified",
+        curation: "unreviewed",
+        relationship_id: "REL-x",
+        claim_support: "supports",
+      }),
+    ).toBe(true);
+    expect(
+      isReadyForSupportsApproval({
+        check_status: "verified",
+        curation: "unreviewed",
+        relationship_id: "REL-x",
+        claim_support: "partial",
+      }),
+    ).toBe(false);
   });
 
   it("invalidates approval when source identifiers change", () => {

@@ -12,6 +12,7 @@ import {
 import { TRIAL_INTELLIGENCE_FLAG, isTrialIntelligenceEnabled } from "@/lib/trialIntelligenceFlag";
 import { byId } from "@/lib/immune/engine";
 import { TRIAL_REGISTRY } from "@/data/trialRegistry";
+import { melanomaPilotExitGateReport } from "@/lib/immune/trialProvenance";
 
 const ENV_KEYS = ["VITE_TRIAL_INTELLIGENCE", "TRIAL_INTELLIGENCE"] as const;
 const saved: Record<string, string | undefined> = {};
@@ -72,6 +73,12 @@ describe("trial intelligence loaders", () => {
     const orrs = cm.arms.flatMap((a) => a.endpoints.filter((e) => e.endpointType === "orr"));
     expect(orrs.length).toBe(3);
     expect(orrs.every((e) => e.valueNum == null && e.verificationState === "unverified")).toBe(true);
+  });
+
+  it("Phase 1 exit gate: every pilot endpoint is source-traceable", () => {
+    const report = melanomaPilotExitGateReport();
+    expect(report.ok).toBe(true);
+    expect(report.failing).toEqual([]);
   });
 });
 
