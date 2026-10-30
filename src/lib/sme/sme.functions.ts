@@ -3,7 +3,7 @@
  * Rematch requires PMID+DOI+passage; decisions are audited; never auto-approves Gate C.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { asc, desc, eq } from "drizzle-orm";
+import { asc, desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { assertCanReview, loadAccountPowers } from "@/lib/access/roles.server";
@@ -11,9 +11,13 @@ import { getDb } from "@/lib/db.server";
 import {
   evidenceAuditEvents,
   evidenceRecords,
+  researchGaps,
   smeGoldLabels,
   smeWorkItemEvents,
 } from "@/lib/db/schema.server";
+import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
+import type { OpportunityStatus, ResearchGapClass } from "@/lib/discovery/gapClass";
+import type { ResearchGapCandidate } from "@/lib/discovery/types";
 import { edgeByRel } from "@/lib/immune/engine";
 import { computeEvidenceUpdate } from "@/lib/immune/evidenceInvariants";
 import { buildScientificReviewQueue } from "@/lib/immune/scientificReviewQueue";
@@ -32,7 +36,6 @@ import {
   buildSmeUnifiedWorkQueue,
   summariseSmeWorkQueue,
 } from "@/lib/sme/workQueue";
-import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
 
 function auditSnapshot(r: typeof evidenceRecords.$inferSelect) {
   return {
@@ -53,9 +56,71 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const powers = await loadAccountPowers(context.userId);
     const canReview = powers.reviewer || powers.administrator;
-    const discoveryGaps = detectDiscoveryCandidates()
-      .filter((g) => g.gapClass === "isi_curation_gap" || g.detectionSource === "melanoma_matrix")
-      .slice(0, 20);
+    // Priority: research_opportunity → scientific_evidence_gap → isi_curation_gap.
+    // Gold-set expected labels remain null until SME fills them. No auto-approve.
+    const allDetected = detectDiscoveryCandidates();
+    const byKey = new Map<string, ResearchGapCandidate>();
+    for (const g of allDetected) byKey.set(g.gapKey, g);
+    if (canReview) {
+      try {
+        const db = getDb();
+        const neonOpp = await db
+          .select()
+          .from(researchGaps)
+          .where(
+            inArray(researchGaps.gapClass, [
+              "research_opportunity",
+              "scientific_evidence_gap",
+            ]),
+          )
+          .limit(30);
+        for (const row of neonOpp) {
+          const shaped: ResearchGapCandidate = {
+            gapKey: row.gapKey,
+            title: row.title,
+            summary: row.summary,
+            status:
+              row.status === "coverage_insufficient" ? "coverage_insufficient" : "candidate",
+            gapClass: (row.gapClass as ResearchGapClass) ?? undefined,
+            opportunityStatus: (row.opportunityStatus as OpportunityStatus) ?? undefined,
+            classReason: row.classReason ?? undefined,
+            pilot:
+              row.pilot === "melanoma_a" || row.pilot === "coverage_b" ? row.pilot : null,
+            subjectId: row.subjectId,
+            objectId: row.objectId,
+            relationshipId: row.relationshipId,
+            diseaseId: row.diseaseId,
+            whyItMatters: row.whyItMatters ?? "",
+            searchScope:
+              (row.searchScopeJson as ResearchGapCandidate["searchScope"]) ?? {
+                corpus: "neon",
+                method: "persisted",
+                dateScope: "",
+                note: "Persisted Discovery gap",
+              },
+            detectionSource:
+              row.detectionSource === "conflict" ||
+              row.detectionSource === "trial_signal" ||
+              row.detectionSource === "melanoma_matrix"
+                ? row.detectionSource
+                : "evidence_gap",
+            detectionDetail: (row.detectionDetail as Record<string, unknown>) ?? {},
+            coverageLabel: row.coverageLabel,
+            autoReviewed: false,
+          };
+          byKey.set(row.gapKey, shaped);
+        }
+      } catch {
+        /* Neon optional when migration pending */
+      }
+    }
+    const discoveryGaps = [...byKey.values()]
+      .sort((a, b) => {
+        const rank = (c: string | undefined) =>
+          c === "research_opportunity" ? 0 : c === "scientific_evidence_gap" ? 1 : 2;
+        return rank(a.gapClass) - rank(b.gapClass);
+      })
+      .slice(0, 25);
     const workItems = buildSmeUnifiedWorkQueue({ discoveryGaps, includeMatrix: true });
     const priority = buildSmePriorityQueues();
     const goldSummary = summariseSmeGoldSet();

@@ -40,6 +40,23 @@ import {
 } from "@/lib/discovery/gapStatus";
 import { PIPELINE_POLICY, runGapAssessmentPipeline } from "@/lib/discovery/pipeline";
 import {
+  APPRAISAL_POLICY,
+  appraiseWorkForQuestion,
+  appraiseWorksForQuestion,
+  assertPerQuestionReappraisal,
+  assessIdentifier,
+} from "@/lib/discovery/appraise";
+import {
+  DEEP_RESEARCH_QUESTIONS,
+  OPPORTUNITY_SPRINT_POLICY,
+  promoteFromAppraisal,
+} from "@/lib/discovery/opportunities";
+import {
+  PERSIST_RETRIEVAL_POLICY,
+  evidenceLinkDedupeKey,
+  planPersistRetrieval,
+} from "@/lib/discovery/persistRetrieval";
+import {
   RETRIEVAL_POLICY,
   planRetrievalQueries,
   validateDoi,
@@ -685,6 +702,172 @@ describe("Discovery 3.0 retrieval + assessment pipeline", () => {
       expect(g.expertReviewStatus).toBe("pending_human");
       expect(g.novelty.confidentGlobalNovelty).toBe(false);
       expect(g.feasibility.smeConfirmed).toBe(false);
+    }
+  });
+
+  it("separates identifier validation from scientific appraisal and re-appraises shared PMIDs per question", () => {
+    expect(APPRAISAL_POLICY.identifierValidationIsScientificAppraisal).toBe(false);
+    expect(APPRAISAL_POLICY.sharedHitImpliesMultiSupport).toBe(false);
+    expect(APPRAISAL_POLICY.autoGateC).toBe(false);
+
+    const idOnly = assessIdentifier({ pmid: "25891173", doi: null, nctId: null });
+    expect(idOnly.identifierValidated).toBe(true);
+    expect(idOnly.validationNotes).toMatch(/Not a scientific appraisal/i);
+
+    const sharedPmid = "25891173";
+    const work = {
+      pmid: sharedPmid,
+      doi: null,
+      nctId: null,
+      title:
+        "Pembrolizumab versus ipilimumab in advanced melanoma with MHC class I antigen presentation loss and PD-1 resistance",
+      source: "pubmed" as const,
+      abstractAvailable: true,
+      fullTextAvailable: false,
+      year: "2015",
+      excluded: false,
+      exclusionReason: null,
+      provenance: {},
+      abstractText:
+        "Loss of MHC class I antigen presentation was associated with resistance to PD-1 blockade in melanoma. Exhaustion markers including LAG-3 were also observed.",
+    };
+    const qA = DEEP_RESEARCH_QUESTIONS[0]!;
+    const qB = DEEP_RESEARCH_QUESTIONS[3]!;
+    const aMelanoma = appraiseWorkForQuestion({
+      questionKey: qA.gapKey,
+      researchQuestion: qA.researchQuestion,
+      work,
+      lexicon: qA.lexicon,
+    });
+    const aRa = appraiseWorkForQuestion({
+      questionKey: qB.gapKey,
+      researchQuestion: qB.researchQuestion,
+      work,
+      lexicon: qB.lexicon,
+    });
+    expect(aMelanoma.identifier.identifierValidated).toBe(true);
+    expect(aMelanoma.scientific?.questionKey).toBe(qA.gapKey);
+    expect(aRa.scientific?.questionKey).toBe(qB.gapKey);
+    // Same PMID must not copy melanoma support onto the RA/ageing question.
+    expect(aMelanoma.scientific?.scientificRelation).toBe("support");
+    expect(aRa.scientific?.scientificRelation).not.toBe("support");
+    const re = assertPerQuestionReappraisal({
+      pmid: sharedPmid,
+      appraisals: [aMelanoma.scientific!, aRa.scientific!],
+    });
+    expect(re.ok).toBe(true);
+    if (re.ok) {
+      expect(re.relationsByQuestion[qA.gapKey]).toBe("support");
+      expect(re.relationsByQuestion[qB.gapKey]).not.toBe("support");
+    }
+  });
+
+  it("promotes scientific_evidence_gap / research_opportunity only when appraisal warrants; refuses reviewed overwrite", () => {
+    expect(OPPORTUNITY_SPRINT_POLICY.maxDeepOpportunities).toBe(5);
+    expect(OPPORTUNITY_SPRINT_POLICY.autoReviewedOpportunity).toBe(false);
+    expect(OPPORTUNITY_SPRINT_POLICY.inventPmids).toBe(false);
+    expect(PERSIST_RETRIEVAL_POLICY.massApproveEvidenceRecords).toBe(false);
+    expect(PERSIST_RETRIEVAL_POLICY.overwriteReviewed).toBe(false);
+
+    const spec = DEEP_RESEARCH_QUESTIONS[0]!;
+    const empty = appraiseWorksForQuestion({
+      questionKey: spec.gapKey,
+      researchQuestion: spec.researchQuestion,
+      works: [],
+      lexicon: spec.lexicon,
+    });
+    const blocked = promoteFromAppraisal({ spec, appraisal: empty });
+    expect(blocked.qualify).toBe(false);
+
+    const works = [
+      {
+        pmid: "25891173",
+        doi: "10.1056/NEJMoa1503093" as string | null,
+        nctId: null,
+        title: "Pembrolizumab versus ipilimumab in advanced melanoma",
+        source: "pubmed" as const,
+        abstractAvailable: true,
+        fullTextAvailable: false,
+        year: "2015",
+        excluded: false,
+        exclusionReason: null,
+        provenance: {},
+        abstractText:
+          "In metastatic melanoma, MHC class I antigen presentation defects contributed to resistance after PD-1 pembrolizumab therapy.",
+      },
+      {
+        pmid: "12345678",
+        doi: null,
+        nctId: null,
+        title: "Checkpoint immunotherapy overview",
+        source: "pubmed" as const,
+        abstractAvailable: true,
+        fullTextAvailable: false,
+        year: "2020",
+        excluded: false,
+        exclusionReason: null,
+        provenance: {},
+        abstractText: "Review of checkpoint immunotherapy and T cell responses in solid tumours.",
+      },
+    ];
+    const appraisal = appraiseWorksForQuestion({
+      questionKey: spec.gapKey,
+      researchQuestion: spec.researchQuestion,
+      works,
+      lexicon: spec.lexicon,
+    });
+    expect(appraisal.counts.identifierValidated).toBeGreaterThan(0);
+    expect(appraisal.counts.scientificallyAppraised).toBeGreaterThan(0);
+    expect("identifierValidated" in appraisal.counts).toBe(true);
+    expect("scientificallyAppraised" in appraisal.counts).toBe(true);
+    // assessed/legacy retrieval count must not be treated as scientific appraisal elsewhere
+    expect(APPRAISAL_POLICY.identifierValidationIsScientificAppraisal).toBe(false);
+
+    const asGap = promoteFromAppraisal({
+      spec,
+      appraisal,
+      rationale: "",
+      noveltyNote: "",
+      feasibilityNote: "",
+    });
+    expect(asGap.qualify).toBe(true);
+    if (asGap.qualify) {
+      expect(asGap.gapClass).toBe("scientific_evidence_gap");
+      expect(asGap.opportunityStatus).toBe("none");
+    }
+
+    const asOpp = promoteFromAppraisal({ spec, appraisal });
+    expect(asOpp.qualify).toBe(true);
+    if (asOpp.qualify) {
+      expect(asOpp.gapClass).toBe("research_opportunity");
+      expect(asOpp.opportunityStatus).toBe("assessed");
+      expect(asOpp.candidate.opportunityStatus).not.toBe("reviewed_opportunity");
+
+      const persistBlocked = planPersistRetrieval({
+        gap: asOpp.candidate,
+        works: appraisal.works,
+        existing: { status: "reviewed_gap", gapClass: "research_opportunity", opportunityStatus: "reviewed_opportunity" },
+        queryText: spec.pubmedQuery,
+        hitCount: appraisal.counts.retrieved,
+      });
+      expect(persistBlocked.ok).toBe(false);
+      if (!persistBlocked.ok) expect(persistBlocked.evidenceRecordsTouched).toBe(0);
+
+      const persistOk = planPersistRetrieval({
+        gap: asOpp.candidate,
+        works: appraisal.works,
+        existing: null,
+        queryText: spec.pubmedQuery,
+        hitCount: appraisal.counts.retrieved,
+      });
+      expect(persistOk.ok).toBe(true);
+      if (persistOk.ok) {
+        expect(persistOk.plan.autoGateC).toBe(false);
+        expect(persistOk.plan.evidenceRecordsTouched).toBe(0);
+        expect(persistOk.plan.links.length).toBeGreaterThan(0);
+        const keys = persistOk.plan.links.map(evidenceLinkDedupeKey);
+        expect(new Set(keys).size).toBe(keys.length);
+      }
     }
   });
 

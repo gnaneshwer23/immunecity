@@ -1,0 +1,964 @@
+{
+  "generatedAt": "2026-10-30T18:02:42.430Z",
+  "baselineTip": "e626370",
+  "adapterMode": "live",
+  "liveFlags": {
+    "pubmed": true,
+    "europePmc": true
+  },
+  "scientificEvidenceGapCreated": 1,
+  "researchOpportunityCreated": 4,
+  "neonPersistence": "applied",
+  "evidenceCount": 46,
+  "linksTotal": 72,
+  "e2eAuthBlocker": "SKIP (not a pass): E2E_USER_A_* / E2E_USER_B_* missing — auth E2E unproven",
+  "candidateRegister": [
+    {
+      "gapKey": "GAP-OPP-A-MHC-PD1-RESIST",
+      "gapClass": "scientific_evidence_gap",
+      "opportunityStatus": "none",
+      "pilot": "melanoma_a",
+      "title": "MHC-I / antigen presentation loss vs anti-PD-1 resistance in melanoma",
+      "smeHref": "/sme?gapKey=GAP-OPP-A-MHC-PD1-RESIST",
+      "dossierHref": "/discovery/gaps/GAP-OPP-A-MHC-PD1-RESIST",
+      "identifierValidated": 14,
+      "scientificallyAppraised": 14,
+      "support": 13,
+      "contradict": 0,
+      "background": 1,
+      "reason": "Promoted to scientific_evidence_gap within documented search; assessment incomplete for opportunity class.",
+      "persisted": true,
+      "gapId": "b3fd3ce7-eaf7-4d15-a0b5-fd4d3cf04b3c",
+      "linksUpserted": 14,
+      "evidenceCount": 46
+    },
+    {
+      "gapKey": "GAP-OPP-A-LAG3-TIM3-EXHAUST",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "pilot": "melanoma_a",
+      "title": "LAG-3/TIM-3 co-blockade vs PD-1 alone in melanoma exhaustion",
+      "smeHref": "/sme?gapKey=GAP-OPP-A-LAG3-TIM3-EXHAUST",
+      "dossierHref": "/discovery/gaps/GAP-OPP-A-LAG3-TIM3-EXHAUST",
+      "identifierValidated": 16,
+      "scientificallyAppraised": 16,
+      "support": 14,
+      "contradict": 0,
+      "background": 2,
+      "reason": "Promoted to research_opportunity (assessed, unreviewed) after scientific_evidence_gap-quality appraisal + assessment fields.",
+      "persisted": true,
+      "gapId": "cba716ae-5e6f-40e5-b0e0-912fa2510f60",
+      "linksUpserted": 16,
+      "evidenceCount": 46
+    },
+    {
+      "gapKey": "GAP-OPP-A-AGPRES-UPSTREAM",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "pilot": "melanoma_a",
+      "title": "Antigen presentation upstream of exhaustion in melanoma",
+      "smeHref": "/sme?gapKey=GAP-OPP-A-AGPRES-UPSTREAM",
+      "dossierHref": "/discovery/gaps/GAP-OPP-A-AGPRES-UPSTREAM",
+      "identifierValidated": 13,
+      "scientificallyAppraised": 13,
+      "support": 12,
+      "contradict": 0,
+      "background": 1,
+      "reason": "Promoted to research_opportunity (assessed, unreviewed) after scientific_evidence_gap-quality appraisal + assessment fields.",
+      "persisted": true,
+      "gapId": "83771e5c-ab5c-4938-8fc3-fbda00b42d72",
+      "linksUpserted": 13,
+      "evidenceCount": 46
+    },
+    {
+      "gapKey": "GAP-OPP-B-CD28NULL-RA-AGE",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "pilot": "coverage_b",
+      "title": "CD28-null CD8 T cells in RA vs ageing confound",
+      "smeHref": "/sme?gapKey=GAP-OPP-B-CD28NULL-RA-AGE",
+      "dossierHref": "/discovery/gaps/GAP-OPP-B-CD28NULL-RA-AGE",
+      "identifierValidated": 16,
+      "scientificallyAppraised": 16,
+      "support": 12,
+      "contradict": 0,
+      "background": 4,
+      "reason": "Promoted to research_opportunity (assessed, unreviewed) after scientific_evidence_gap-quality appraisal + assessment fields.",
+      "persisted": true,
+      "gapId": "6587bcd4-46e1-471a-8297-72d64d57f046",
+      "linksUpserted": 16,
+      "evidenceCount": 46
+    },
+    {
+      "gapKey": "GAP-OPP-B-CD28NULL-SSC",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "pilot": "coverage_b",
+      "title": "CD28-null expansion and fibrosis in systemic sclerosis",
+      "smeHref": "/sme?gapKey=GAP-OPP-B-CD28NULL-SSC",
+      "dossierHref": "/discovery/gaps/GAP-OPP-B-CD28NULL-SSC",
+      "identifierValidated": 13,
+      "scientificallyAppraised": 13,
+      "support": 13,
+      "contradict": 0,
+      "background": 0,
+      "reason": "Promoted to research_opportunity (assessed, unreviewed) after scientific_evidence_gap-quality appraisal + assessment fields.",
+      "persisted": true,
+      "gapId": "bcb33a1d-2cc6-49cd-986d-43ee471aca94",
+      "linksUpserted": 13,
+      "evidenceCount": 46
+    }
+  ],
+  "disqualified": [],
+  "dossiers": [
+    {
+      "gapKey": "GAP-OPP-A-MHC-PD1-RESIST",
+      "researchQuestion": "In metastatic melanoma, does loss of MHC class I or antigen-presentation machinery causally mediate anti-PD-1 resistance, or is the association primarily correlative without causal evidence in human disease?",
+      "citations": [
+        {
+          "pmid": "42958414",
+          "doi": "10.1186/s13046-026-03799-z",
+          "title": "PROTAC technology for sensitizing melanoma to immune checkpoint therapy.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Melanoma remains one of the most aggressive malignancies, with limited response to immune checkpoint inhibitors (ICIs) due to primary or acquired resistance.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; resistance; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42947736",
+          "doi": "10.3389/fonc.2026.1965090",
+          "title": "Salvage nivolumab plus temozolomide associated with improved survival and clinical benefit in refractory melanoma: a retrospective cohort study.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Introduction</h4>Patients with metastatic melanoma who progress on standard of care therapy have limited treatment options.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[nivolumab; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42945905",
+          "doi": "10.1016/j.cancergen.2026.10.003",
+          "title": "Spatiotemporal immune remodeling by light at night uncovers an adaptive immune signature linked to tumor progression and anti-PD-1 non-response.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "In human melanoma sentinel lymph nodes, the LAN-associated CD8<sup>+</sup> T cell trajectory exhibited strong directional concordance with advanced (Stage III) disease.",
+          "studyContext": "preclinical/in vivo cue; clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[resistance; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42908204",
+          "doi": "10.1111/sji.70153",
+          "title": "Spatial Transcriptomic and Proteomic Analysis Identifies Novel Immune-Associated Biomarkers of Anti-PD1 Response in Metastatic Melanoma.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Resistance to anti-PD1 therapy remains a major challenge in metastatic melanoma, despite long-term benefit in some patients.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; resistance; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42738348",
+          "doi": "10.3390/cancers18172829",
+          "title": "Rethinking Immunotherapy Resistance in Melanoma: A Narrative Review of Clinical Patterns, Resistance Mechanisms, and Future Strategies.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<b>Background/Objectives</b>: Immune checkpoint inhibitors have revolutionized the treatment of advanced melanoma, yet primary and acquired resistance remain major barriers to durable disease control.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; resistance; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42442347",
+          "doi": "10.1158/1535-7163.mct-25-1325",
+          "title": "Decitabine reverses innate immune gene suppression in rare melanomas.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Rare melanoma subtypes, including acral, mucosal, and uveal melanomas, exhibit limited responses to immune checkpoint inhibitors (ICIs), yet the molecular mechanisms of immune resistance remain poorly defined.",
+          "studyContext": "clinical/human cue; in vitro cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; resistance; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42427150",
+          "doi": "10.1002/adma.202518422",
+          "title": "Self-Cooperative RNA Vaccine Mitigates Dendritic Cell-Mediated Acquired Immune Resistance to Potentiate Cell Therapy for Solid Tumors.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Conventional mRNA cancer vaccines are designed to maximize antigen potency but often overlook vaccination-induced immune resistance.",
+          "studyContext": "preclinical/in vivo cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; resistance; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42230631",
+          "doi": "10.1038/s41467-026-73827-1",
+          "title": "Sphingosine kinase-2 inhibition promotes immunogenic differentiation of myeloid-derived suppressor cells through an Acetyl-CoA carboxylase-phosphatidylcholine axis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Here, we show that inhibition of sphingosine kinase-2 (SphK2), the enzyme generating S1P in MDSCs, reduces the suppressive activity of monocytic MDSCs (M-MDSCs) while promoting their differentiation toward a mature, immunogenic phenotype characterized by enhanced antigen presentation.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; resistant; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42763389",
+          "doi": "10.1186/s12943-026-02786-4",
+          "title": "Immune-pressure redistribution in resistance to PD-1/PD-L1 blockade: mechanisms, biomarkers, and therapeutic design.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "PD-1/PD-L1 blockade can produce durable tumor control, yet primary, adaptive, and acquired resistance remain common.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[resistance; PD-1]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42757474",
+          "doi": "10.3892/or.2026.9197",
+          "title": "Overcoming melanoma drug resistance: Mechanisms and clinical progress of oncolytic viruses combined with immune checkpoint inhibitors (Review).",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Although immune checkpoint inhibitors (ICIs) have revolutionized the management of advanced melanoma, a major clinical challenge persists: Nearly 50% of patients develop primary or acquired resistance and therefore derive no meaningful clinical benefit.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[resistance; resistant; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42761662",
+          "doi": "10.3389/fimmu.2026.1936590",
+          "title": "Therapy-induced immunoediting and the evolution of cancer immune escape.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "We discuss how genetic alterations, therapy-resistant stem-like tumour-cell states and spatial remodelling of vascular, stromal and myeloid niches cooperate to reduce tumour visibility, effector susceptibility and immune-cell access.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[resistant]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42909279",
+          "doi": "10.3389/fcell.2026.1895670",
+          "title": "Pan-cancer biomarkers of immune therapy resistance: mechanisms and clinical translation.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Immune checkpoint blockade targeting PD-1/PD-L1 has reshaped cancer therapy across multiple tumor types.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; resistance; PD-1]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42781243",
+          "doi": "10.1002/mco2.71020",
+          "title": "Targeting the DNA Damage Response in Cancer.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "title_only: Targeting the DNA Damage Response in Cancer.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42903663",
+          "doi": "10.3389/fimmu.2026.1932718",
+          "title": "Towards epigenetically informed and biobank-driven precision immunotherapy in melanoma.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Towards epigenetically informed and biobank-driven precision immunotherapy in melanoma.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        }
+      ],
+      "coverage": {
+        "retrieved": 14,
+        "identifierValidated": 14,
+        "scientificallyAppraised": 14,
+        "support": 13,
+        "contradict": 0,
+        "background": 1,
+        "insufficientContext": 0,
+        "excludedInvalidId": 0
+      },
+      "appraisalHonesty": "identifierValidated counts structural IDs only. scientificallyAppraised is per-question engineering screen. Shared PMID across gaps does not imply multi-support.",
+      "whyItMatters": "If antigen-presentation loss is causal, biomarker and combination strategies differ from exhaustion-only models of checkpoint failure.",
+      "gapClass": "scientific_evidence_gap",
+      "opportunityStatus": "none",
+      "smeHref": "/sme?gapKey=GAP-OPP-A-MHC-PD1-RESIST",
+      "dossierHref": "/discovery/gaps/GAP-OPP-A-MHC-PD1-RESIST"
+    },
+    {
+      "gapKey": "GAP-OPP-A-LAG3-TIM3-EXHAUST",
+      "researchQuestion": "In PD-1-refractory metastatic melanoma, does dual LAG-3 and/or TIM-3 blockade reverse T-cell exhaustion beyond PD-1 monotherapy in antigen-experienced TILs, or are benefits confined to biomarker-selected subsets?",
+      "citations": [
+        {
+          "pmid": "42900960",
+          "doi": "10.1158/2767-9764.crc-26-0011",
+          "title": "Comparative analysis of ovarian cancer tumor-infiltrating T cells with those in melanoma and before and after PD-1 blockade.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "CD8+ T cells are involved in natural tumor immune surveillance and are known to play a critical role in mediating responses to PD-1 blockade.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhaustion; exhausted; PD-1; melanoma; TIL]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42840951",
+          "doi": "10.3389/fimmu.2026.1756987",
+          "title": "Advances in IL-2-based cancer immunotherapy and the synergistic role of stem-like CD8&lt;sup&gt;+&lt;/sup&gt; T cells in IL-2 and PD-1 combination therapy.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "FDA approval for metastatic renal cell carcinoma and melanoma, IL-2 has represented a landmark in cancer immunotherapy.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhausted; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42780128",
+          "doi": "10.64898/2026.09.10.750646",
+          "title": "Dendritic cell PD-L2 restrains intratumoral CD8 &lt;sup&gt;+&lt;/sup&gt; T cell immunity.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Blockade of inhibitory PD-1 signaling on T cells is a cornerstone of cancer immunotherapy, with current strategies targeting PD-1 or its ligand PD-L1.",
+          "studyContext": "preclinical/in vivo cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhausted; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42763729",
+          "doi": "10.7759/cureus.114850",
+          "title": "Candidate MicroRNA Regulatory Axes in Melanoma CD8+ T Cell Exhaustion: A Network-Based In Silico Stratification.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Background Anti-programmed cell death protein-1 (anti-PD-1) immunotherapy has transformed the treatment of advanced melanoma, but durable benefit remains limited to a subset of patients.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhaustion; PD-1; melanoma; TIL]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42710546",
+          "doi": "10.2460/javma.26.06.0517",
+          "title": "Gilvetmab advances immune checkpoint inhibitor immunotherapy for canine cancer.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "In dogs, the immune checkpoint programmed cell death protein 1 (PD-1) axis is a primary focus due to conserved structural and functional homology with the PD-1 axis in humans, documented PD-1/programmed death-ligand 1 (PD-L1) signaling in the canine tumor microenvironment, and its role in reversing tumor-induced immune exhaustion.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhaustion; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42661498",
+          "doi": "10.1002/jev2.70356",
+          "title": "Pyroptosis-Amplified Decoy Nanovesicles Orchestrate Pyroptotic Antigen Explosion and Endogenous Immune Revitalization for Potentiating Tumour Immunotherapy.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Systemically infused PADVs demonstrated dual-targeting priority towards lymph node and deep tumour tissues, reversing immunosuppression through competitive blockade of PD-1/PD-L1 and SIRPα/CD47 axes while providing co-stimulatory signals for immune reactivation.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhaustion; PD-1; melanoma; TIL]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42567561",
+          "doi": "10.1136/jitc-2026-015585",
+          "title": "Circulating B cell and T cell activation states predict clinical outcomes in melanoma and reveal dynamic immune reinvigoration with checkpoint inhibitor immunotherapy.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Background</h4>Nearly half of patients with melanoma do not respond to immune checkpoint inhibitors (CPIs) and many develop immune-related adverse events (irAEs), often forcing treatment discontinuation, and underscoring the need to predict and monitor outcomes.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhaustion; exhausted; LAG-3; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42534945",
+          "doi": "10.3389/fonc.2026.1875467",
+          "title": "Case Report: Durable remission in stage IV melanoma following strategic immune checkpoint inhibitor class rotation and rechallenge.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Immune checkpoint inhibitors (ICIs) have significantly improved outcomes in patients with regional and distant melanoma metastases.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhausted; PD-1; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42649907",
+          "doi": "10.3390/cancers18162593",
+          "title": "Next-Generation Immune Checkpoint Inhibitors in Gastrointestinal Cancers: Mechanisms, Resistance, and Emerging Therapeutic Strategies.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "However, most GI cancers remain resistant to current PD-1/PD-L1-based immunotherapy because of complex and highly suppressive tumor microenvironments characterized by immune stromal exclusion, myeloid-driven immune suppression, defective antigen presentation, and adaptive immune resistance mechanisms.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[LAG-3; TIM-3; PD-1]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42763389",
+          "doi": "10.1186/s12943-026-02786-4",
+          "title": "Immune-pressure redistribution in resistance to PD-1/PD-L1 blockade: mechanisms, biomarkers, and therapeutic design.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "PD-1/PD-L1 blockade can produce durable tumor control, yet primary, adaptive, and acquired resistance remain common.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhausted; PD-1]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42279386",
+          "doi": "10.3390/cancers18111804",
+          "title": "Advances in Immune Checkpoint Inhibitors for Cancer Treatment.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "This review provides a comprehensive overview of the regulation and therapeutic targeting of immune checkpoint proteins in cancer, covering both classical checkpoints, including PD-1, PD-L1, and CTLA-4, and emerging targets such as LAG-3, TIM-3, TIGIT, BTLA, SIRP-α, CD200, ILT4, and CD24.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[LAG-3; TIM-3; PD-1]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42196613",
+          "doi": "10.3390/ijms27104628",
+          "title": "Immune Checkpoint-Based Therapies in Colorectal Cancer-Current Approaches and Future Perspectives.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "A key mechanism of tumor immune evasion involves activation of immune checkpoint pathways through the upregulation of inhibitory ligand expression within the tumor microenvironment, leading to lymphocyte exhaustion and impaired antitumor immunity.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[exhaustion]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42824772",
+          "doi": "10.3389/fimmu.2026.1815113",
+          "title": "Targeting VISTA as a novel immunotherapy for skin cancer.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "title_only: Targeting VISTA as a novel immunotherapy for skin cancer.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42512060",
+          "doi": "10.3390/biomedicines14071587",
+          "title": "Expression of LAG-3, TIM-3, and VISTA on Tumor-Infiltrating Lymphocytes in Advanced Laryngeal Squamous Cell Carcinoma and Their Association with CD8+ TIL Density.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Expression of LAG-3, TIM-3, and VISTA on Tumor-Infiltrating Lymphocytes in Advanced Laryngeal Squamous Cell Carcinoma and Their Association with CD8+ TIL Density.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[LAG-3; TIM-3; TIL]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42823731",
+          "doi": "10.1186/s12967-026-09004-1",
+          "title": "Lineage-specific immune checkpoint dynamics define a context-dependent regulatory framework with translational relevance in human γδ T cells.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "title_only: Lineage-specific immune checkpoint dynamics define a context-dependent regulatory framework with translational relevance in human γδ T cells.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41846252",
+          "doi": "10.1080/07853890.2026.2643042",
+          "title": "Research progress on the molecular mechanisms of PD-1 and LAG-3 synergy in regulating T cell exhaustion and immunotherapy.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Research progress on the molecular mechanisms of PD-1 and LAG-3 synergy in regulating T cell exhaustion and immunotherapy.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[exhaustion; LAG-3; PD-1]; contradict=[]. Does not approve Gate C or invent claim support."
+        }
+      ],
+      "coverage": {
+        "retrieved": 16,
+        "identifierValidated": 16,
+        "scientificallyAppraised": 16,
+        "support": 14,
+        "contradict": 0,
+        "background": 2,
+        "insufficientContext": 0,
+        "excludedInvalidId": 0
+      },
+      "appraisalHonesty": "identifierValidated counts structural IDs only. scientificallyAppraised is per-question engineering screen. Shared PMID across gaps does not imply multi-support.",
+      "whyItMatters": "Clarifies whether exhaustion co-inhibitory receptors are obligatory resistance nodes or redundant with PD-1 in melanoma.",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "smeHref": "/sme?gapKey=GAP-OPP-A-LAG3-TIM3-EXHAUST",
+      "dossierHref": "/discovery/gaps/GAP-OPP-A-LAG3-TIM3-EXHAUST"
+    },
+    {
+      "gapKey": "GAP-OPP-A-AGPRES-UPSTREAM",
+      "researchQuestion": "Is impaired antigen presentation upstream of T-cell exhaustion phenotypes in melanoma (causing dysfunction via weak TCR signal), or a parallel resistance axis that can coexist with classical exhaustion markers?",
+      "citations": [
+        {
+          "pmid": "42780435",
+          "doi": "10.3389/fimmu.2026.1921391",
+          "title": "Melanoma in people living with HIV: antigen-presentation loss, spatial immune escape, and inclusive immunotherapy trials.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Melanoma is an informative but understudied example because its progression and response to immune checkpoint inhibitors are shaped by host immunity and tumor antigen presentation.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42774267",
+          "doi": "10.1093/immadv/ltag020",
+          "title": "ImmTACs overcome cytotoxic T cell suppression.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Introduction</h4>Synthetic T cell receptor (TCR) engagers are cancer therapeutics that activate T cells through recognition of antigens on the tumor cell surface.",
+          "studyContext": "in vitro cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; MHC; TCR; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42769533",
+          "doi": "10.3389/fimmu.2026.1949371",
+          "title": "Mitophagy-driven immune evasion in skin cancer: multidimensional regulatory networks and context-dependent therapeutic strategies-a narrative review.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Mitophagy serves as a pivotal metabolic-immune hub that drives immune evasion in major skin cancer subtypes including melanoma cutaneous squamous cell carcinoma and basal cell carcinoma.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; exhaustion; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42726782",
+          "doi": "10.1158/2326-6066.cir-26-0293",
+          "title": "Phenotypic and functional characterization of tumor-reactive T cells in malignant pleural effusions.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Adoptive cell therapy using tumor-infiltrating lymphocytes (TIL) is effective for treating advanced melanoma but requires surgical tumor resection.",
+          "studyContext": "clinical/human cue; in vitro cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[MHC; exhaustion; TCR; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42427150",
+          "doi": "10.1002/adma.202518422",
+          "title": "Self-Cooperative RNA Vaccine Mitigates Dendritic Cell-Mediated Acquired Immune Resistance to Potentiate Cell Therapy for Solid Tumors.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "SCORV simultaneously suppresses PD-L1-mediated immune resistance during antigen presentation and enhances T cell priming while alleviating T cell exhaustion.",
+          "studyContext": "preclinical/in vivo cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; exhaustion; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42316257",
+          "doi": "10.1186/s13046-026-03762-y",
+          "title": "Cellular immunotherapy in melanoma: the next frontier in cancer treatment.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Therapy-resistant melanoma remains a major clinical challenge despite advances with immune checkpoint inhibitors and targeted therapies, as most patients ultimately exhibit primary or acquired resistance and progress through multiple toxic treatment lines with limited durable benefit.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; dysfunction; TCR; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42196460",
+          "doi": "10.3390/ijms27104484",
+          "title": "Dynamic Time-Resolved Remodeling of the Immune Microenvironment After Resistance to BRAF/MEK Inhibitors in Melanoma: Mechanisms, Biomarkers, and Emerging Therapeutic Strategies.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Targeted inhibition of the MAPK pathway with BRAF and MEK inhibitors (BRAFi/MEKi) produces rapid tumor regressions in BRAF V600-mutant melanoma, yet most patients ultimately develop acquired resistance.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; MHC; exhaustion; dysfunction; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41903669",
+          "doi": "10.1016/j.canlet.2026.218459",
+          "title": "A circRNA neoantigen vaccine elicits potent antitumor immunity and synergizes with checkpoint blockade in melanoma.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Here, we developed a circRNA-based vaccine encoding multiple melanoma neoantigens (circRNA<sup>MNA</sup>).",
+          "studyContext": "preclinical/in vivo cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; TCR; melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42824519",
+          "doi": "10.3389/fimmu.2026.1946627",
+          "title": "Cancer immunoediting in the melanoma tumor microenvironment: from immune elimination to therapeutic resistance.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "It plays a central regulatory role in melanoma initiation, progression, and therapeutic response.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42415851",
+          "doi": "10.1002/mco2.70797",
+          "title": "Melanosomes as Antigen-Presenting Decoys in Melanoma Immune Evasion.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Melanosomes as Antigen-Presenting Decoys in Melanoma Immune Evasion.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42763389",
+          "doi": "10.1186/s12943-026-02786-4",
+          "title": "Immune-pressure redistribution in resistance to PD-1/PD-L1 blockade: mechanisms, biomarkers, and therapeutic design.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "PD-1/PD-L1 blockade can produce durable tumor control, yet primary, adaptive, and acquired resistance remain common.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42909279",
+          "doi": "10.3389/fcell.2026.1895670",
+          "title": "Pan-cancer biomarkers of immune therapy resistance: mechanisms and clinical translation.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Second, we discuss the mechanistic basis of resistance-associated biomarkers, emphasizing antigen presentation defects, impaired interferon signaling, oncogenic pathway activation, T-cell exhaustion, myeloid and stromal immunosuppression, metabolic reprogramming, and dynamic systemic immune remodeling.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[antigen presentation; exhaustion]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42903663",
+          "doi": "10.3389/fimmu.2026.1932718",
+          "title": "Towards epigenetically informed and biobank-driven precision immunotherapy in melanoma.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Towards epigenetically informed and biobank-driven precision immunotherapy in melanoma.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[melanoma]; contradict=[]. Does not approve Gate C or invent claim support."
+        }
+      ],
+      "coverage": {
+        "retrieved": 13,
+        "identifierValidated": 13,
+        "scientificallyAppraised": 13,
+        "support": 12,
+        "contradict": 0,
+        "background": 1,
+        "insufficientContext": 0,
+        "excludedInvalidId": 0
+      },
+      "appraisalHonesty": "identifierValidated counts structural IDs only. scientificallyAppraised is per-question engineering screen. Shared PMID across gaps does not imply multi-support.",
+      "whyItMatters": "Distinguishes ordering of resistance mechanisms for combination trial design and ISI graph edge semantics.",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "smeHref": "/sme?gapKey=GAP-OPP-A-AGPRES-UPSTREAM",
+      "dossierHref": "/discovery/gaps/GAP-OPP-A-AGPRES-UPSTREAM"
+    },
+    {
+      "gapKey": "GAP-OPP-B-CD28NULL-RA-AGE",
+      "researchQuestion": "Do CD28-null (CD28−) CD8+ T cells drive rheumatoid arthritis synovial inflammation independently of chronological ageing, or are expanded CD28-null populations primarily an ageing-associated epiphenomenon without disease-specific pathogenicity?",
+      "citations": [
+        {
+          "pmid": "42632933",
+          "doi": "10.36721/pjps.2026.39.11.312.1",
+          "title": "&lt;b&gt;Exploring the role of TNF/TNFR superfamily and NF-κB pathway in regulating B7/CD28 expression in rheumatoid arthritis: An &lt;i&gt;in-vitro&lt;/i&gt; study&lt;/b&gt;.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Background</h4>The TNF/TNFR superfamily and B7/CD28 costimulatory molecules are critical regulators of immune responses; however, their interplay in rheumatoid arthritis (RA) remains unclear.<h4>Objectives</h4>To investigate whether the TNF/TNFR superfamily regulates B7/CD28 expression via the NF-κB pathway in RA and to evaluate its effects on synovial cell inflammation and apoptosis.<h4>Methods</h4>Peripheral blood mononuclear cells (PBMCs) and fibroblast-like synoviocyt",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis; synovial; CD8]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42273681",
+          "doi": "10.3389/fimmu.2026.1806138",
+          "title": "Ligature-induced periodontitis in mice potentially accelerates CD4&lt;sup&gt;+&lt;/sup&gt; T-cell senescence and exacerbates rheumatoid arthritis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Introduction</h4>Aging impairs immunity, sustains chronic inflammation, and enhances autoimmunity-a process termed \"immunosenescence\" that contributes to the pathogenesis of type 2 diabetes and rheumatoid arthritis (RA).",
+          "studyContext": "preclinical/in vivo cue; in vitro cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41678165",
+          "doi": "10.55563/clinexprheumatol/3nxngt",
+          "title": "Do intrasynovial T lymphocytes facilitate disease progression in patients with rheumatoid arthritis?",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Objectives</h4>Rheumatoid arthritis (RA) is attributed to inflammation and infiltration of immune cells into the inflamed joints.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis; synovial; cytotoxic; CD8]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41613114",
+          "doi": "10.3389/fimmu.2025.1661461",
+          "title": "Global burden and genetic insights of RA and JIA in ages 0-19 years: GBD 2021 and MR analysis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Background</h4>Rheumatoid arthritis (RA) is a chronic autoimmune arthritis that predominantly affects adults, whereas juvenile idiopathic arthritis (JIA) comprises a heterogeneous group of childhood-onset arthritides defined by age at onset, clinical phenotype, and immunological profile.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis; CD8]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41235706",
+          "doi": "10.1002/eji.70093",
+          "title": "Divergent Effects of Cytomegalovirus and Rheumatoid Arthritis on Senescent CD4&lt;sup&gt;+&lt;/sup&gt; T Cells.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Using cytomegalovirus (CMV) and rheumatoid arthritis (RA) as models of chronic immune activation, we performed high-dimensional mass cytometry and functional assays to define their impact on CD4⁺ T cells.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis; cytotoxic; CD8]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41213086",
+          "doi": "10.14336/ad.2025.0898",
+          "title": "Late Onset Rheumatoid Arthritis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Late-onset rheumatoid arthritis (LORA) refers to rheumatoid arthritis (RA) with initial symptoms and signs appearing after the age of 60 or 65.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis; CD8]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "40925204",
+          "doi": "10.1016/j.intimp.2025.115518",
+          "title": "Accelerated T-cell senescence and persistent inflammation in older adults with rheumatoid arthritis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Rheumatoid arthritis (RA) is a chronic inflammatory condition primarily affecting the peripheral joints while also causing extra-articular complications.",
+          "studyContext": "in vitro cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "40751895",
+          "doi": "10.1007/s10067-025-07605-7",
+          "title": "Identifying plasma proteins and immunocyte phenotypes as risk factors in rheumatoid arthritis: The role of EPHA3 and CD28&lt;sup&gt;+&lt;/sup&gt; CD45RA&lt;sup&gt;+&lt;/sup&gt; CD8&lt;sup&gt;br&lt;/sup&gt; treg cells.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Objectives</h4>Rheumatoid arthritis (RA) is a chronic systemic autoimmune disease whose pathogenesis involves the participation of numerous plasma proteins and immune cells, but their relationships are unclear.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis; CD8]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41827837",
+          "doi": "10.3390/cells15050403",
+          "title": "CD57-Expressing Lymphocytes: From Chronic Viral Response to Age-Related Inflammation.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "CD57-expressing lymphocytes constitute a distinct subset of immune cells with enhanced cytotoxic and pro-inflammatory functions.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[cytotoxic]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42452516",
+          "doi": "10.3390/jcm15135054",
+          "title": "Carotid Atherosclerosis and T-Cell Imbalance in Women with Rheumatoid Arthritis: A Cross-Sectional Study of Intima-Media Thickness, Anti-CCP Antibodies and CD4/CD8 Ratio.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<b>Background:</b> Rheumatoid arthritis (RA) is associated with increased cardiovascular risk beyond traditional risk factors.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis; CD8]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41952158",
+          "doi": "10.1186/s12916-026-04833-9",
+          "title": "Targeting immunosenescence in lung diseases: mechanistic insights and clinical interventions.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "Immunosenescence, the age-related decline in immune function, plays a crucial role in the pathogenesis and progression of lung diseases, including chronic obstructive pulmonary disease, lung cancer, pulmonary fibrosis, asthma, and respiratory tract infections.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42253976",
+          "doi": "10.3389/fimmu.2026.1850656",
+          "title": "Microbiota-targeted therapeutic strategies for elderly-onset rheumatoid arthritis: based on the gut-joint axis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Elderly-onset rheumatoid arthritis (EORA) presents distinct clinical challenges, including more refractory disease activity, higher comorbidity burden, and increased disability and mortality compared to younger-onset RA.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[rheumatoid arthritis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42681689",
+          "doi": "10.1186/s40364-026-00973-5",
+          "title": "Pathogens in rheumatoid arthritis: epidemiological, mechanistic, and clinical insights.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Pathogens in rheumatoid arthritis: epidemiological, mechanistic, and clinical insights.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[rheumatoid arthritis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "40508061",
+          "doi": "10.3390/ijms26115248",
+          "title": "Divergent Immune Pathways in Coronary Artery Disease and Aortic Stenosis: The Role of Chronic Inflammation and Senescence.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "title_only: Divergent Immune Pathways in Coronary Artery Disease and Aortic Stenosis: The Role of Chronic Inflammation and Senescence.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42572402",
+          "doi": "10.14814/phy2.71057",
+          "title": "CD31&lt;sup&gt;+&lt;/sup&gt; T-cells express greater VEGF-A than CD31&lt;sup&gt;-&lt;/sup&gt; counterparts with expression exacerbated with advancing age in male adults.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "title_only: CD31&lt;sup&gt;+&lt;/sup&gt; T-cells express greater VEGF-A than CD31&lt;sup&gt;-&lt;/sup&gt; counterparts with expression exacerbated with advancing age in male adults.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "40443365",
+          "doi": "10.1093/jimmun/vkae036",
+          "title": "Immunological biomarkers of aging.",
+          "scientificRelation": "background",
+          "screeningDecision": "background_only",
+          "supportingPassage": "title_only: Immunological biomarkers of aging.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[]; contradict=[]. Does not approve Gate C or invent claim support."
+        }
+      ],
+      "coverage": {
+        "retrieved": 16,
+        "identifierValidated": 16,
+        "scientificallyAppraised": 16,
+        "support": 12,
+        "contradict": 0,
+        "background": 4,
+        "insufficientContext": 0,
+        "excludedInvalidId": 0
+      },
+      "appraisalHonesty": "identifierValidated counts structural IDs only. scientificallyAppraised is per-question engineering screen. Shared PMID across gaps does not imply multi-support.",
+      "whyItMatters": "Separating ageing confound from RA-specific CD28-null pathogenicity changes whether CD28-null cells are therapeutic targets or biomarkers of immunosenescence.",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "smeHref": "/sme?gapKey=GAP-OPP-B-CD28NULL-RA-AGE",
+      "dossierHref": "/discovery/gaps/GAP-OPP-B-CD28NULL-RA-AGE"
+    },
+    {
+      "gapKey": "GAP-OPP-B-CD28NULL-SSC",
+      "researchQuestion": "In systemic sclerosis (SSc), does CD28-null T-cell expansion associate with progressive fibrosis beyond immunosenescence markers shared with healthy ageing, and is the association reproducible across cutaneous vs visceral disease subsets?",
+      "citations": [
+        {
+          "pmid": "42926811",
+          "doi": "10.1016/j.ero.2026.100256",
+          "title": "Hallmarks of aging in systemic sclerosis: implications for pathogenesis, multimorbidity, and therapeutic development.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Systemic sclerosis (SSc) is a heterogeneous autoimmune disease characterised by marked clinical variability and a substantial burden of comorbidities, which may reflect underlying biological aging processes.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis; fibrosis; immunosenescence]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42575882",
+          "doi": "10.1038/s41392-026-02873-4",
+          "title": "CAR T cell therapy beyond cancer: current status, challenges and future prospects.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "We discuss these approaches across infections, including human immunodeficiency virus (HIV) and Epstein-Barr virus (EBV); autoimmunity involving CD19- and B-cell maturation antigen (BCMA)-directed depletion strategies and CAR-engineered regulatory T cells (CAR-Tregs); fibrosis targeting fibroblast activation protein (FAP); hemophilia using B-cell antibody receptor (BAR)-CARs against factor VIII and factor IX inhibitors; transplantation employing human leukocyte antigen (HLA)-",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis; fibrosis; fibrotic]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41521382",
+          "doi": "10.1002/acr2.70120",
+          "title": "Lymphocyte Activation Gene 3 Regulation of Profibrotic Cytokines and Type I Collagen Production in Patients With Systemic Sclerosis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Objective</h4>Diffuse cutaneous systemic sclerosis (dcSSc) is characterized by skin and internal organ fibrosis.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis; fibrosis; fibrotic]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41335323",
+          "doi": "10.1007/s43440-025-00809-3",
+          "title": "Thiazolidine derivative (LPSF/CR-35) modulates the production of IL-17A, IL-10, IL-4, TFN, CCL2 and CXCL8 in PBMC from systemic sclerosis patients.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Background</h4>Systemic sclerosis (SSc) is an autoimmune disease characterized by vasculopathy, fibrosis, and dysregulation of the immune system.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis; fibrosis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "40344312",
+          "doi": "10.1111/1756-185x.70250",
+          "title": "The Role of Abatacept on Inflammation and Fibrosis in Hypochlorous Acid-Induced Fibrosis Mice.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Aim</h4>To investigate the effect of abatacept in the hypochlorous acid (HCLO)-induced fibrosis model and to analyze changes in immune cell fractions within the abatacept-treated early diffuse systemic sclerosis (SSc) cohort.<h4>Methods</h4>Fibrosis was induced in BALB/c mice by subcutaneous injection of HCLO, and abatacept was injected intraperitoneally on alternate days starting on day 28.",
+          "studyContext": "preclinical/in vivo cue; clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis; fibrosis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "39941028",
+          "doi": "10.3390/ijms26031258",
+          "title": "Markers of Type 2 Inflammation and Immunosenescence Are Upregulated in Localized Scleroderma.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Localized scleroderma (LS) is an autoimmune, fibrotic skin disease that is thought to be triggered by environmental factors.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[scleroderma; fibrotic; immunosenescence]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "36355434",
+          "doi": "10.1172/jci.insight.155282",
+          "title": "Machine-learning classification identifies patients with early systemic sclerosis as abatacept responders via CD28 pathway modulation.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Here, the efficacy of abatacept in patients with early diffuse systemic sclerosis (dcSSc) was analyzed to test the hypothesis that patients in the inflammatory intrinsic subset would show the most significant clinical improvement.",
+          "studyContext": "randomized/RCT cue; clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "35979691",
+          "doi": "10.1097/bor.0000000000000898",
+          "title": "Role of cellular senescence in the pathogenesis of systemic sclerosis.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "<h4>Purpose of review</h4>Systemic sclerosis (SSc) is a chronic rheumatic disease that is characterized by immune activation, vasculopathy and fibrosis of the skin and internal organs.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis; fibrosis; fibrotic; immunosenescence]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "41827837",
+          "doi": "10.3390/cells15050403",
+          "title": "CD57-Expressing Lymphocytes: From Chronic Viral Response to Age-Related Inflammation.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Initially described in the context of chronic viral infections, most notably cytomegalovirus (CMV), these cells are now recognized as central contributors to immunosenescence and age-related immune dysregulation.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[immunosenescence]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42306294",
+          "doi": "10.5114/reum/221033",
+          "title": "Late-onset systemic sclerosis: current concepts, uncertainties, and future practice guidelines.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Late-onset systemic sclerosis: current concepts, uncertainties, and future practice guidelines.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[systemic sclerosis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "42511961",
+          "doi": "10.3390/biomedicines14071486",
+          "title": "Biomarkers of Inflammaging and Cellular Senescence in Musculoskeletal (MSK) Diseases: The Knowns and the Unknowns.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Musculoskeletal (MSK) diseases associated with advancing age are a major global health burden and are closely associated with cellular senescence, inflammaging and immunosenescence.",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[immunosenescence]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "40819722",
+          "doi": "10.1016/j.bj.2025.100906",
+          "title": "Plasminogen activator Inhibitor-1 in systemic sclerosis: A nexus of fibrosis, vasculopathy, and senescence.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "Plasminogen activator inhibitor-1 (PAI-1), a key regulator of the fibrinolytic system, has emerged as a multifaceted contributor to the pathogenesis of systemic sclerosis (SSc).",
+          "studyContext": "clinical/human cue",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Passage taken from abstract (full text not reviewed). Support hits=[systemic sclerosis; fibrosis]; contradict=[]. Does not approve Gate C or invent claim support."
+        },
+        {
+          "pmid": "40206390",
+          "doi": "10.1016/j.lana.2025.101044",
+          "title": "Incidence, prevalence, and mortality of localized scleroderma in Quebec, Canada: a population-based study.",
+          "scientificRelation": "support",
+          "screeningDecision": "include_for_sme",
+          "supportingPassage": "title_only: Incidence, prevalence, and mortality of localized scleroderma in Quebec, Canada: a population-based study.",
+          "studyContext": "study design not clear from title/abstract cues",
+          "limitations": "Engineering relevance screen against the specific research question — not SME peer review. Abstract unavailable — title/identifier only. Support hits=[scleroderma]; contradict=[]. Does not approve Gate C or invent claim support."
+        }
+      ],
+      "coverage": {
+        "retrieved": 13,
+        "identifierValidated": 13,
+        "scientificallyAppraised": 13,
+        "support": 13,
+        "contradict": 0,
+        "background": 0,
+        "insufficientContext": 0,
+        "excludedInvalidId": 0
+      },
+      "appraisalHonesty": "identifierValidated counts structural IDs only. scientificallyAppraised is per-question engineering screen. Shared PMID across gaps does not imply multi-support.",
+      "whyItMatters": "If CD28-null cells track SSc fibrosis independently of age, they become a candidate mechanistic node for ISI coverage beyond melanoma pilots.",
+      "gapClass": "research_opportunity",
+      "opportunityStatus": "assessed",
+      "smeHref": "/sme?gapKey=GAP-OPP-B-CD28NULL-SSC",
+      "dossierHref": "/discovery/gaps/GAP-OPP-B-CD28NULL-SSC"
+    }
+  ],
+  "smeQueueUrls": [
+    "/sme?gapKey=GAP-OPP-A-MHC-PD1-RESIST",
+    "/sme?gapKey=GAP-OPP-A-LAG3-TIM3-EXHAUST",
+    "/sme?gapKey=GAP-OPP-A-AGPRES-UPSTREAM",
+    "/sme?gapKey=GAP-OPP-B-CD28NULL-RA-AGE",
+    "/sme?gapKey=GAP-OPP-B-CD28NULL-SSC"
+  ],
+  "policy": {
+    "maxDeepOpportunities": 5,
+    "autoReviewedOpportunity": false,
+    "autoGateC": false,
+    "inventPmids": false,
+    "preferPilots": [
+      "melanoma_a",
+      "coverage_b"
+    ],
+    "requireScientificEvidenceGapBeforeOpportunity": true
+  },
+  "honesty": "identifierValidated ≠ scientificallyAppraised. Shared PMID ≠ multi-support. No Gate C mass-approve. Opportunities remain unreviewed until SME."
+}

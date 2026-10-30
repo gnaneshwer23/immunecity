@@ -495,6 +495,14 @@ export const researchGapEvidenceLinks = pgTable("research_gap_evidence_links", {
   exclusionReason: text("exclusion_reason"),
   provenanceJson: jsonb("provenance_json").notNull().default({}),
   linkRole: text("link_role").notNull().default("background"),
+  /** 0025 — scientific appraisal (orthogonal to identifier validation). */
+  scientificRelation: text("scientific_relation"),
+  screeningDecision: text("screening_decision"),
+  supportingPassage: text("supporting_passage"),
+  studyContext: text("study_context"),
+  appraisalLimitations: text("appraisal_limitations"),
+  questionKey: text("question_key"),
+  identifierValidated: boolean("identifier_validated"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

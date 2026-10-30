@@ -19,14 +19,83 @@ import {
   SME_PRIORITY_QUEUE_IDS,
   buildSmeMelanomaWorkQueue,
   buildSmePriorityQueues,
+  buildSmeUnifiedWorkQueue,
+  discoveryGapSmePriority,
+  discoveryGapsToSmeWorkItems,
   summariseSmeWorkQueue,
 } from "@/lib/sme/workQueue";
+import type { ResearchGapCandidate } from "@/lib/discovery/types";
 
 function source(rel: string) {
   return readFileSync(resolve(process.cwd(), rel), "utf8");
 }
 
 describe("SME work queue", () => {
+  it("prioritizes research_opportunity and scientific_evidence_gap in Discovery queue", () => {
+    expect(discoveryGapSmePriority("research_opportunity")).toBeLessThan(
+      discoveryGapSmePriority("scientific_evidence_gap"),
+    );
+    expect(discoveryGapSmePriority("scientific_evidence_gap")).toBeLessThan(
+      discoveryGapSmePriority("isi_curation_gap"),
+    );
+    const gaps: ResearchGapCandidate[] = [
+      {
+        gapKey: "GAP-CURATION",
+        title: "Curation",
+        summary: "x",
+        status: "candidate",
+        gapClass: "isi_curation_gap",
+        opportunityStatus: "none",
+        pilot: "melanoma_a",
+        subjectId: "R011",
+        objectId: "D012",
+        relationshipId: null,
+        diseaseId: "D012",
+        whyItMatters: "x",
+        searchScope: {
+          corpus: "t",
+          method: "t",
+          dateScope: "t",
+          note: "not worldwide absence",
+        },
+        detectionSource: "melanoma_matrix",
+        detectionDetail: {},
+        coverageLabel: null,
+        autoReviewed: false,
+      },
+      {
+        gapKey: "GAP-OPP-TEST",
+        title: "Opportunity",
+        summary: "x",
+        status: "candidate",
+        gapClass: "research_opportunity",
+        opportunityStatus: "assessed",
+        pilot: "melanoma_a",
+        subjectId: "R011",
+        objectId: "D012",
+        relationshipId: null,
+        diseaseId: "D012",
+        whyItMatters: "x",
+        searchScope: {
+          corpus: "t",
+          method: "t",
+          dateScope: "t",
+          note: "documented search",
+        },
+        detectionSource: "evidence_gap",
+        detectionDetail: {},
+        coverageLabel: "emerging",
+        autoReviewed: false,
+      },
+    ];
+    const items = discoveryGapsToSmeWorkItems(gaps);
+    expect(items[0]?.gapKey).toBe("GAP-OPP-TEST");
+    expect(items.every((i) => i.status === "pending_sme")).toBe(true);
+    expect(items.every((i) => i.autoApprove === false)).toBe(true);
+    const unified = buildSmeUnifiedWorkQueue({ discoveryGaps: gaps, includeMatrix: false });
+    expect(unified[0]?.gapKey).toBe("GAP-OPP-TEST");
+  });
+
   it("lists melanoma matrix items as pending_sme without auto-approve", () => {
     const items = buildSmeMelanomaWorkQueue();
     expect(items.length).toBe(15);

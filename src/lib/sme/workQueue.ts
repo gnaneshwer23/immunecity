@@ -167,14 +167,23 @@ export function listFlaggedSmeCandidates(opts?: {
   return items;
 }
 
+/** Priority for Discovery queue: opportunities first, then scientific gaps, then curation. */
+export function discoveryGapSmePriority(gapClass: ResearchGapClass | string | null | undefined): number {
+  if (gapClass === "research_opportunity") return 0;
+  if (gapClass === "scientific_evidence_gap") return 1;
+  if (gapClass === "isi_curation_gap") return 2;
+  return 3;
+}
+
 /**
- * Map Discovery gap candidates (esp. isi_curation_gap) into SME work items.
+ * Map Discovery gap candidates into SME work items (all three classes).
  * Engineering never marks resolved — decisions stay pending_sme.
+ * Gold-set expected labels stay null until a human fills them.
  */
 export function discoveryGapsToSmeWorkItems(
   gaps: readonly ResearchGapCandidate[],
 ): SmeWorkItem[] {
-  return gaps.map((g) => {
+  const items = gaps.map((g) => {
     const subjectName = g.subjectId ? byId[g.subjectId]?.name ?? g.subjectId : null;
     const objectName = g.objectId ? byId[g.objectId]?.name ?? g.objectId : null;
     const honesty: SmeHonestyStatus =
@@ -200,8 +209,8 @@ export function discoveryGapsToSmeWorkItems(
         g.gapClass === "isi_curation_gap"
           ? "Route to curation / rematch — ISI internal gap, not worldwide absence."
           : g.gapClass === "scientific_evidence_gap"
-            ? "Assess documented-scope evidence; do not invent studies."
-            : "Opportunity requires human review before reviewed_opportunity.",
+            ? "Assess documented-scope evidence appraisals (support/contradict/background per question); do not invent studies; gold-set slots stay null until labelled."
+            : "Opportunity requires human review before reviewed_opportunity. No auto-approve. Gold-set expected labels remain null until SME fills them.",
       suggestedPmid: null,
       suggestedDoi: null,
       gapKey: g.gapKey,
@@ -212,9 +221,12 @@ export function discoveryGapsToSmeWorkItems(
       autoRematch: false as const,
     };
   });
+  return items.sort(
+    (a, b) => discoveryGapSmePriority(a.gapClass) - discoveryGapSmePriority(b.gapClass),
+  );
 }
 
-/** Combined melanoma priority + Discovery curation gaps for SME workspace. */
+/** Combined melanoma priority + Discovery gaps (opportunities prioritized) for SME workspace. */
 export function buildSmeUnifiedWorkQueue(opts?: {
   discoveryGaps?: readonly ResearchGapCandidate[];
   includeMatrix?: boolean;
@@ -222,10 +234,22 @@ export function buildSmeUnifiedWorkQueue(opts?: {
   const matrix = opts?.includeMatrix === false ? [] : buildSmeMelanomaWorkQueue();
   const disc = discoveryGapsToSmeWorkItems(opts?.discoveryGaps ?? []);
   const byIdMap = new Map<string, SmeWorkItem>();
-  for (const i of [...buildSmePriorityQueues(), ...matrix, ...disc]) {
+  // Discovery opportunities / scientific gaps first, then KEYNOTE/R011, then matrix.
+  for (const i of [...disc, ...buildSmePriorityQueues(), ...matrix]) {
     byIdMap.set(i.id, i);
   }
-  return [...byIdMap.values()];
+  const merged = [...byIdMap.values()];
+  const discIds = new Set(disc.map((d) => d.id));
+  return merged.sort((a, b) => {
+    const aDisc = discIds.has(a.id);
+    const bDisc = discIds.has(b.id);
+    if (aDisc && bDisc) {
+      return discoveryGapSmePriority(a.gapClass) - discoveryGapSmePriority(b.gapClass);
+    }
+    if (aDisc && !bDisc) return -1;
+    if (!aDisc && bDisc) return 1;
+    return 0;
+  });
 }
 
 export function summariseSmeWorkQueue(items: readonly SmeWorkItem[] = buildSmeMelanomaWorkQueue()) {

@@ -72,7 +72,15 @@ export type RetrievalRunReport = {
   gapKey: string;
   pilot: string;
   found: number;
+  /**
+   * @deprecated Prefer identifierValidated — historically counted structural ID checks only,
+   * not scientific appraisal (see appraise.ts).
+   */
   assessed: number;
+  /** Structural PMID/DOI/NCT validation count — ≠ scientific appraisal. */
+  identifierValidated: number;
+  /** Filled only when a per-question scientific appraisal pass ran. */
+  scientificallyAppraised: number;
   linked: number;
   excluded: number;
   failedQueries: number;
@@ -406,12 +414,18 @@ export async function runBoundedRetrieval(
   const deduped = dedupeWorks(works);
   const excluded = deduped.filter((w) => w.excluded);
   const linked = deduped.filter((w) => !w.excluded && (w.pmid || w.doi || w.nctId));
+  const identifierValidated = linked.filter(
+    (w) => validatePmid(w.pmid) || validateDoi(w.doi) || validateNct(w.nctId),
+  ).length;
 
   return {
     gapKey: plan.gapKey,
     pilot: plan.pilot,
     found: deduped.length,
-    assessed: deduped.length,
+    // Legacy alias: structural IDs only — not scientific appraisal.
+    assessed: identifierValidated,
+    identifierValidated,
+    scientificallyAppraised: 0,
     linked: linked.length,
     excluded: excluded.length,
     failedQueries,

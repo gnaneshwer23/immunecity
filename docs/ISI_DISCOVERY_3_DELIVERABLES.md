@@ -1,6 +1,7 @@
 # ISI Discovery Intelligence 3.0 — deliverables
 
-**Final tip (this session):** `b365588` (`b36558872d377dd06ae413bcbeed41b5ad8168ad`).  
+**Appraisal sprint (30 Oct 2026):** see `docs/ISI_DISCOVERY_3_APPRAISAL_SPRINT.md` + report JSON/MD (baseline tip `e626370` / impl `b365588`).  
+**Prior tip:** `b365588` (`b36558872d377dd06ae413bcbeed41b5ad8168ad`).  
 **Baseline tip:** `479531a` → audit `7c9c73f` → implementation commits below.
 
 ## 1. Audit
