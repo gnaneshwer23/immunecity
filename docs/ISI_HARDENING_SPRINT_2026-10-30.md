@@ -83,7 +83,7 @@ Backup / rollback: see `docs/ISI_AUDIT_BASELINE_2026-10-30.md` § Migration back
 
 | Check | Result |
 | --- | --- |
-| Correction sprint HEAD | `f8e507a` (on `main`; prior `1c393dd`) |
+| Correction sprint HEAD | `7e846ce` (log) · fixes `f8e507a` (on `main`; prior `1c393dd`) |
 | `bun test src/test/correction-sprint.test.ts` | **18 pass / 0 fail** |
 | Related regression (hardening + phase2 + phase4) | **37 pass / 0 fail** across those files |
 | Prod trial flag | Still **not** enabled — env kill = unset/`0` + redeploy |
