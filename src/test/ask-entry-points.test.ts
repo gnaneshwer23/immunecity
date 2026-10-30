@@ -7,12 +7,14 @@ const root = process.cwd();
 const source = (rel: string) => readFileSync(resolve(root, rel), "utf8");
 
 describe("Ask Immune entry points", () => {
-  it("keeps Ask Immune as the Learn journey chatbot route", () => {
+  it("keeps Ask Immune out of journey menus (chatbot-only)", () => {
+    const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path));
+    expect(paths).not.toContain("/ask");
     const learn = JOURNEY_NAV.find((g) => g.label === "Learn")!.items;
-    expect(learn.some((i) => i.path === "/ask" && i.title === "Ask Immune")).toBe(true);
+    expect(learn.some((i) => i.title === "Ask Immune")).toBe(false);
     const reasoning = JOURNEY_NAV.find((g) => g.label === "Investigate")!.items.find((i) => i.path === "/reasoning");
-    expect(reasoning?.desc.toLowerCase()).toContain("ask immune");
     expect(reasoning?.title).toBe("Scientific reasoning");
+    expect(reasoning?.desc.toLowerCase()).not.toContain("ask immune");
   });
 
   it("hosts AskAtlas only on /ask and the Shell corner assistant", () => {
@@ -23,26 +25,33 @@ describe("Ask Immune entry points", () => {
     expect(source("src/components/immune/Shell.tsx")).toContain('pathname !== "/ask"');
 
     expect(source("src/routes/reasoning.tsx")).not.toContain("AskAtlas");
-    expect(source("src/routes/reasoning.tsx")).toContain("Continue in Ask Immune");
     expect(source("src/routes/discovery.index.tsx")).not.toContain("AskAtlas");
-    expect(source("src/routes/discovery.index.tsx")).toContain("Continue in Ask Immune");
     expect(source("src/components/immune/ScientificWorkbench.tsx")).not.toContain("AskAtlas");
     expect(source("src/components/immune/ScientificWorkbench.tsx")).toContain('to="/ask"');
-    expect(source("src/components/immune/ScientificWorkbench.tsx")).not.toMatch(/to="\/reasoning">Open Ask/);
   });
 
-  it("routes dossier and gap CTAs to /ask without a second chat UI", () => {
-    expect(source("src/lib/discovery/dossier.ts")).toContain('label: "Continue in Ask Immune"');
-    expect(source("src/lib/discovery/dossier.ts")).toMatch(/href: qs \? `\/ask\?\$\{qs\}` : "\/ask"/);
-    expect(source("src/routes/discovery.gaps.$gapId.tsx")).not.toContain("AskAtlas");
-    expect(source("src/routes/discovery.gaps.$gapId.tsx")).toContain("Continue in Ask Immune");
+  it("does not feature Ask Immune on the homepage marketing surfaces", () => {
+    const home = source("src/routes/index.tsx");
+    expect(home).not.toMatch(/to="\/ask"/);
+    expect(home).not.toMatch(/>Ask Immune</);
+    expect(home).toContain('to="/atlas"');
+    expect(home).toContain('to="/graph"');
   });
 
-  it("documents the single-chatbot entry map", () => {
+  it("ships immune-cell voice command and speaker in the chatbot", () => {
+    const ask = source("src/components/immune/AskAtlas.tsx");
+    expect(ask).toContain("ImmuneCellSpeaker");
+    expect(ask).toContain("toggleListen");
+    expect(ask).toContain("speakAnswer");
+    expect(ask).toContain("Voice command");
+    expect(source("src/components/immune/ImmuneCellSpeaker.tsx")).toContain("ImmuneCellSpeaker");
+  });
+
+  it("documents chatbot-only entry map", () => {
     const doc = source("docs/ASK_ENTRY_POINTS.md");
-    expect(doc).toContain("/ask");
+    expect(doc).toContain("only the chatbot");
     expect(doc).toContain("Corner assistant");
-    expect(doc).toContain("must not");
-    expect(doc).toContain("AskAtlas");
+    expect(doc).toContain("Immune cell speaker");
+    expect(doc).toContain("Not in journeys");
   });
 });

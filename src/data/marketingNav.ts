@@ -116,12 +116,11 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
   {
     label: "Learn",
     items: [
-      { n: "L1", path: "/ask", title: "Ask Immune", desc: "Graph-based answers with labelled sources." },
-      { n: "L2", path: "/atlas", title: "Knowledge atlas", desc: "Concepts across eight domains, each with its own page." },
-      { n: "L3", path: "/overview", title: "Overview", desc: "Causal spine and twelve layers in one view." },
-      { n: "L4", path: "/learn", title: "Cell atlas", desc: "Immune cells, roles and where metaphors break." },
-      { n: "L5", path: "/academy", title: "Immune system foundations", desc: "Guided foundation track through core immunology." },
-      { n: "L6", path: "/mechanism", title: "Mechanisms and pathways", desc: "Step-by-step cascades and perturbations." },
+      { n: "L1", path: "/atlas", title: "Knowledge atlas", desc: "Concepts across eight domains, each with its own page." },
+      { n: "L2", path: "/overview", title: "Overview", desc: "Causal spine and twelve layers in one view." },
+      { n: "L3", path: "/learn", title: "Cell atlas", desc: "Immune cells, roles and where metaphors break." },
+      { n: "L4", path: "/academy", title: "Immune system foundations", desc: "Guided foundation track through core immunology." },
+      { n: "L5", path: "/mechanism", title: "Mechanisms and pathways", desc: "Step-by-step cascades and perturbations." },
     ],
   },
   {
@@ -137,7 +136,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
     label: "Investigate",
     items: [
       { n: "I1", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
-      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Retrieval grounding, pathways and path tracing — chat on Ask Immune." },
+      { n: "I2", path: "/reasoning", title: "Scientific reasoning", desc: "Retrieval grounding, curated pathways and path tracing." },
       { n: "I3", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench." },
       { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
       { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Rule-based teaching — not medical advice." },
@@ -175,7 +174,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
 
 /**
  * Direct header destinations beside the journey menus.
- * Ask Immune stays inside Learn. It is not a top-level header item.
+ * Ask Immune is chatbot-only (corner FAB + /ask page) — not a journey menu or top-level header item.
  * Community lives in its own footer column (Discussions, Start a discussion, Journal clubs).
  * My Workspace stays out of this row. Signed-in members open it from the account menu.
  */

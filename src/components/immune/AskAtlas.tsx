@@ -3,7 +3,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
 import { Link } from "@tanstack/react-router";
-import { Send, Square, Microscope, X, ArrowUpRight, CornerDownRight, Copy, RotateCcw, Maximize2, Info } from "lucide-react";
+import { Send, Square, Mic, Volume2, VolumeX, X, ArrowUpRight, CornerDownRight, Copy, RotateCcw, Maximize2, Info } from "lucide-react";
 import type { UIMessage } from "ai";
 import { byId, out, inn, human, TYPES, edgeByRel, relId, type KGEdge } from "@/lib/immune/engine";
 import { inspect } from "@/lib/immune/inspector";
@@ -20,7 +20,53 @@ import {
 } from "@/lib/askGrounding";
 import EdgeReference, { NodeCitations } from "./EdgeReference";
 import GroundingPanel from "./GroundingPanel";
+import { ImmuneCellSpeaker } from "./ImmuneCellSpeaker";
 import { Button } from "@/components/ui/button";
+
+type SpeechRecognitionLike = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((ev: {
+    results: { length: number; [i: number]: { 0: { transcript: string }; isFinal: boolean } };
+  }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+};
+
+function getSpeechRecognitionCtor(): (new () => SpeechRecognitionLike) | null {
+  if (typeof window === "undefined") return null;
+  const w = window as Window & {
+    SpeechRecognition?: new () => SpeechRecognitionLike;
+    webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+}
+
+function pickImmuneCellVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  const prefer = [/samantha/i, /karen/i, /moira/i, /google uk english female/i, /english.*female/i, /en-gb/i, /en-us/i];
+  for (const re of prefer) {
+    const hit = voices.find((v) => re.test(v.name) || re.test(v.lang));
+    if (hit) return hit;
+  }
+  return voices.find((v) => v.lang.toLowerCase().startsWith("en")) ?? voices[0] ?? null;
+}
+
+/** Strip markdown / graph link noise for spoken answers. */
+function speakableText(raw: string): string {
+  return hideGraphScorePhrases(raw)
+    .replace(/\]\((concept|edge):[^)]+\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[#>*_`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 1200);
+}
 
 const SUGGESTIONS = [
   "What is the immune system?",
@@ -190,6 +236,11 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const busy = status === "submitted" || status === "streaming";
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const [listening, setListening] = useState(false);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const [speechReady, setSpeechReady] = useState({ mic: false, speak: false });
   const matches = useMemo(() => {
     if (input.trim().length < 2) return [];
     return matchConceptSuggestions(input, 5);
@@ -199,6 +250,94 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages, status, grounding, localNote, provisionalNote]);
   useEffect(() => { inputRef.current?.focus(); }, []);
+
+  useEffect(() => {
+    const mic = !!getSpeechRecognitionCtor();
+    const speak = typeof window !== "undefined" && "speechSynthesis" in window;
+    setSpeechReady({ mic, speak });
+    if (!speak) return;
+    const warm = () => { pickImmuneCellVoice(); };
+    warm();
+    window.speechSynthesis.addEventListener("voiceschanged", warm);
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", warm);
+      window.speechSynthesis.cancel();
+      recognitionRef.current?.abort();
+    };
+  }, []);
+
+  const stopSpeaking = () => {
+    if (typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel();
+    setSpeakingId(null);
+  };
+
+  const speakAnswer = (id: string, text: string) => {
+    if (!speechReady.speak) {
+      setVoiceNote("Spoken answers need a browser that supports speech synthesis.");
+      return;
+    }
+    const clean = speakableText(text);
+    if (!clean) return;
+    stopSpeaking();
+    const u = new SpeechSynthesisUtterance(clean);
+    u.rate = 1;
+    u.pitch = 1.05;
+    const voice = pickImmuneCellVoice();
+    if (voice) u.voice = voice;
+    u.onend = () => setSpeakingId(null);
+    u.onerror = () => setSpeakingId(null);
+    setSpeakingId(id);
+    setVoiceNote(null);
+    window.speechSynthesis.speak(u);
+  };
+
+  const toggleListen = () => {
+    const Ctor = getSpeechRecognitionCtor();
+    if (!Ctor) {
+      setVoiceNote("Voice commands need a browser that supports speech recognition (try Chrome or Edge).");
+      return;
+    }
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+    stopSpeaking();
+    const rec = new Ctor();
+    recognitionRef.current = rec;
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.lang = "en-US";
+    rec.onresult = (ev) => {
+      let final = "";
+      let interim = "";
+      for (let i = 0; i < ev.results.length; i++) {
+        const row = ev.results[i];
+        if (!row) continue;
+        if (row.isFinal) final += row[0].transcript;
+        else interim += row[0].transcript;
+      }
+      const next = (final || interim).trim();
+      if (next) setInput(next);
+      if (final.trim()) {
+        setListening(false);
+        setVoiceNote(null);
+      }
+    };
+    rec.onerror = () => {
+      setListening(false);
+      setVoiceNote("Could not hear that — try again, or type your question.");
+    };
+    rec.onend = () => setListening(false);
+    try {
+      rec.start();
+      setListening(true);
+      setVoiceNote(null);
+    } catch {
+      setListening(false);
+      setVoiceNote("Microphone unavailable — check browser permissions.");
+    }
+  };
 
   const callModelCache = useRef(new Map<string, boolean>());
   const willCallModel = (q: string) => {
@@ -325,7 +464,9 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   return (
     <div className={`ask-atlas card${showFullPageLink ? " ask-atlas--corner" : " ask-atlas--page"}`}>
       <div className="ask-head">
-        <span className="ask-id" aria-hidden><Microscope size={18} /></span>
+        <span className="ask-id ask-id--cell" aria-hidden>
+          <ImmuneCellSpeaker active={listening} speaking={!!speakingId} size={28} title="" />
+        </span>
         <div className="ask-head-main">
           <div className="ask-head-row">
             <h3>{ASK_NAME}</h3>
@@ -344,7 +485,9 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
               {messages.length ? <button type="button" className="ask-mini-btn" onClick={newConversation} disabled={busy}>New chat</button> : null}
             </span>
           </div>
-          <p className="ask-tagline">Answers from a curated immunology knowledge graph, with every source labelled.</p>
+          <p className="ask-tagline">
+            Your immunology chatbot — ask by typing or voice. The immune-cell speaker can read answers aloud.
+          </p>
           {howOpen ? (
             <div className="ask-how" id={howId}>
               <b>How answers work</b>
@@ -407,9 +550,23 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                     </div>
                     <ReactMarkdown urlTransform={(u) => u} components={{ a: renderLink }}>{text}</ReactMarkdown>
                     {!busy || m !== lastAssistant ? (
-                      <button type="button" className="ask-mini-btn" onClick={() => copyText(m.id, text)} aria-label="Copy answer">
-                        <Copy size={12} /> {copied === m.id ? "Copied" : "Copy answer"}
-                      </button>
+                      <span className="ask-msg-actions">
+                        <button type="button" className="ask-mini-btn" onClick={() => copyText(m.id, text)} aria-label="Copy answer">
+                          <Copy size={12} /> {copied === m.id ? "Copied" : "Copy answer"}
+                        </button>
+                        {speechReady.speak ? (
+                          <button
+                            type="button"
+                            className={`ask-mini-btn ask-speak-btn${speakingId === m.id ? " is-live" : ""}`}
+                            onClick={() => (speakingId === m.id ? stopSpeaking() : speakAnswer(m.id, text))}
+                            aria-label={speakingId === m.id ? "Stop immune cell speaker" : "Hear answer from immune cell speaker"}
+                            title="Immune cell speaker"
+                          >
+                            <ImmuneCellSpeaker speaking={speakingId === m.id} size={16} title="" />
+                            {speakingId === m.id ? <><VolumeX size={12} /> Stop</> : <><Volume2 size={12} /> Hear</>}
+                          </button>
+                        ) : null}
+                      </span>
                     ) : null}
                   </>
                 ) : <p>{text}</p>}
@@ -534,13 +691,26 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
         </div>
       )}
       <form className="ask-composer" onSubmit={(e) => { e.preventDefault(); send(input); }}>
+        <button
+          type="button"
+          className={`ask-voice-btn${listening ? " is-live" : ""}`}
+          onClick={toggleListen}
+          disabled={busy}
+          aria-pressed={listening}
+          aria-label={listening ? "Stop voice command" : "Voice command with immune cell speaker"}
+          title={speechReady.mic ? "Voice command" : "Voice command not supported in this browser"}
+        >
+          <ImmuneCellSpeaker active={listening} size={22} title="" />
+          <Mic size={14} aria-hidden />
+          <span className="ask-voice-label">{listening ? "Listening…" : "Voice"}</span>
+        </button>
         <textarea
           maxLength={500}
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
-          placeholder="Ask about a cell, pathway, drug or connection…"
+          placeholder={listening ? "Listening for your question…" : "Ask about a cell, pathway, drug or connection…"}
           rows={2}
           aria-label={`${ASK_NAME} question`}
         />
@@ -550,7 +720,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
           <button type="submit" className="btn sm primary" disabled={!input.trim()} aria-label="Send question"><Send size={14} /> Ask</button>
         )}
       </form>
-      <p className="ask-foot-note">Educational only — not medical advice or clinical decision support.</p>
+      {voiceNote ? <p className="ask-voice-note" role="status">{voiceNote}</p> : null}
+      <p className="ask-foot-note">Educational only — not medical advice or clinical decision support. Voice stays in your browser.</p>
       {pick ? <Inspector pick={pick} onClose={() => setPick(null)} /> : null}
     </div>
   );

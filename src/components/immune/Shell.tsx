@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { neonAuth } from "@/integrations/neon/auth-client";
-import { BookOpen, Box, ChevronDown, FlaskConical, Menu, MessageSquare, Network, Search, Shield, UserRound, X, Youtube } from "lucide-react";
+import { BookOpen, Box, ChevronDown, FlaskConical, Menu, Network, Search, Shield, UserRound, X, Youtube } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { useMember } from "@/components/immune/community/chrome";
 import { NAV_GROUPS } from "./nav";
@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import AskAtlas from "./AskAtlas";
+import { ImmuneCellSpeaker } from "./ImmuneCellSpeaker";
 import ScientificInspector from "./ScientificInspector";
 import { JourneyNext } from "./page";
 import {
@@ -448,7 +449,7 @@ export default function Shell({ children }: { children: ReactNode }) {
       {showAskFab ? (
         <>
           <Button className="ask-launcher" onClick={() => setAskOpen(!askOpen)} aria-haspopup="dialog" aria-expanded={askOpen} aria-label={askOpen ? `Close ${ASK_NAME}` : `Open ${ASK_NAME}`} title={ASK_NAME}>
-            {askOpen ? <X size={20} /> : <MessageSquare size={20} />}<span>Ask Immune</span>
+            {askOpen ? <X size={20} /> : <ImmuneCellSpeaker size={22} title="" />}<span>Ask Immune</span>
           </Button>
           <Dialog modal={false} open={askOpen} onOpenChange={setAskOpen}>
             <DialogPortal>

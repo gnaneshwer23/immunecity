@@ -35,18 +35,20 @@ describe("primary entries", () => {
   it("keeps those tools inside Learn, Explore and Investigate", () => {
     expect(JOURNEY_NAV.map((g) => g.label)).toEqual(["Learn", "Explore", "Investigate", "Trust"]);
     const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path as string));
-    expect(paths).toEqual(expect.arrayContaining(["/ask", "/research", "/simulator"]));
+    expect(paths).toEqual(expect.arrayContaining(["/atlas", "/research", "/simulator"]));
+    expect(paths).not.toContain("/ask");
     const learn = JOURNEY_NAV.find((g) => g.label === "Learn")!.items.map((i) => i.path);
     const investigate = JOURNEY_NAV.find((g) => g.label === "Investigate")!.items.map((i) => i.path);
-    expect(learn).toContain("/ask");
+    expect(learn).toContain("/atlas");
+    expect(learn).not.toContain("/ask");
     expect(investigate).toEqual(expect.arrayContaining(["/simulator", "/research"]));
   });
-  it("keeps the chatbot on Learn /ask; Reasoning is investigation tools, not a second chat", () => {
+  it("keeps Ask Immune out of journeys; Reasoning is tools, not a second chat", () => {
     const learnAsk = JOURNEY_NAV.find((g) => g.label === "Learn")!.items.find((i) => i.path === "/ask");
     const reasoning = JOURNEY_NAV.find((g) => g.label === "Investigate")!.items.find((i) => i.path === "/reasoning");
-    expect(learnAsk?.title).toBe("Ask Immune");
+    expect(learnAsk).toBeUndefined();
     expect(reasoning?.title).toBe("Scientific reasoning");
-    expect(reasoning?.desc.toLowerCase()).toMatch(/ask immune/);
+    expect(reasoning?.desc.toLowerCase()).not.toMatch(/ask immune/);
   });
 });
 

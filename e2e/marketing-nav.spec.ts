@@ -9,7 +9,7 @@ async function expectDesktopNav(page: Page) {
   for (const label of JOURNEYS) {
     await expect(nav.getByRole("button", { name: label, exact: true })).toBeVisible();
   }
-  // Ask Immune lives inside Learn — not a top-level header link.
+  // Ask Immune is chatbot-only (FAB /ask) — not a header or journey link.
   await expect(nav.getByRole("link", { name: "Ask Immune", exact: true })).toHaveCount(0);
   for (const item of JOURNEY_PRIMARY) {
     await expect(nav.getByRole("link", { name: item.label, exact: true })).toBeVisible();
@@ -52,8 +52,9 @@ test.describe("marketing navigation (current journey IA)", () => {
     await page.goto("/");
     await expect(page.getByRole("navigation", { name: "Primary", exact: true })).toBeHidden();
     const panel = await openCompactNav(page);
-    // Compact nav lists journey item titles (not legacy Platform/Academy flat list).
-    await expect(panel.getByRole("link", { name: "Ask Immune", exact: true })).toBeVisible();
+    // Compact nav lists journey item titles (Ask Immune is chatbot-only, not listed).
+    await expect(panel.getByRole("link", { name: "Ask Immune", exact: true })).toHaveCount(0);
+    await expect(panel.getByRole("link", { name: "Knowledge atlas", exact: true })).toBeVisible();
     await expect(panel.getByRole("link", { name: "Knowledge graph", exact: true })).toBeVisible();
     await expect(panel.getByRole("link", { name: "Evidence explorer", exact: true })).toBeVisible();
     await expect(panel.getByRole("link", { name: "Research", exact: true })).toBeVisible();

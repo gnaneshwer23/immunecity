@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ART } from "@/components/immune/explain";
-import { ArrowRight, ArrowUpRight, BookOpen, FlaskConical, Microscope, Network } from "lucide-react";
+import { ArrowRight, BookOpen, FlaskConical, Microscope, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CausalSpine } from "@/components/immune/CausalSpine";
 import { IsiCityBand } from "@/components/immune/IsiCityBand";
@@ -10,7 +10,6 @@ import { CONTENT } from "@/data/content";
 import { VISION_MOTTO } from "@/data/vision";
 import { AUDIENCES } from "@/data/audiences";
 import {
-  ASK_PUBLIC_LINE,
   BRAND_EYEBROW,
   CITY_CTA,
   CITY_PATH,
@@ -65,7 +64,7 @@ export const Route = createFileRoute("/")({
     seoHead({
       title: `${PRODUCT_NAME} | ${TAGLINE}`,
       description:
-        "Immune Super Intelligence — explore mechanisms through a curated causal graph. Ask Immune answers from graph context with labelled sources. Educational resource — not clinical decision support.",
+        "Immune Super Intelligence — explore mechanisms through a curated causal graph with labelled sources. Educational resource — not clinical decision support.",
       path: "/",
     }),
   component: Home,
@@ -73,7 +72,7 @@ export const Route = createFileRoute("/")({
 
 const INVESTIGATE_TOOLS = [
   { to: "/simulator", icon: FlaskConical, title: "System simulator", can: "Run a 30-day infection and add treatments to see which outcome follows.", limit: "Teaching parameters only — not calibrated to patients." },
-  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect retrieval demos and walk curated pathways — chat on Ask Immune.", limit: "Illustrative walks with labelled sources — not fully evidence-grounded AI." },
+  { to: "/reasoning", icon: Network, title: "Scientific reasoning", can: "Trace causal paths, inspect retrieval demos and walk curated pathways.", limit: "Illustrative walks with labelled sources — not fully evidence-grounded AI." },
   { to: "/patient", icon: Microscope, title: "Patient and biomarkers", can: "See how biomarker thresholds map to educational rule flags.", limit: "Teaching rules only — not an individual assessment." },
 ] as const;
 
@@ -261,11 +260,6 @@ function Home() {
                 {COMMUNITY_CTA} <ArrowRight />
               </Link>
             </Button>
-            <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
-              <Link to="/ask">
-                Ask Immune <ArrowUpRight />
-              </Link>
-            </Button>
           </div>
           <p className="home-helix-foot">{HERO_TRUST}</p>
         </div>
@@ -309,8 +303,8 @@ function Home() {
           <HomeCoverageGlance />
         </section>
         <nav className="isi-three" aria-label="Three ways in">
-          <Link to="/ask"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Ask Immune</b><span>{ASK_PUBLIC_LINE}</span></Link>
           <Link to="/atlas"><img src={ART.moleculesArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge Atlas</b><span>Cells, molecules, diseases and therapies — one page per concept.</span></Link>
+          <Link to="/graph"><img src={ART.cellsArt} alt="" loading="lazy" width={1024} height={768} /><b>Knowledge graph</b><span>Typed concepts and directional causal links you can explore.</span></Link>
           <Link to="/research" hash="library"><img src={ART.researchArt} alt="" loading="lazy" width={1024} height={768} /><b>Research</b><span>Journal metadata and candidate claims — reviewed before they enter the curated graph.</span></Link>
         </nav>
         {/* B — What ISI enables */}
@@ -447,28 +441,26 @@ function Home() {
               <span>Teaching links remain visible with clear status while review continues.</span>
             </li>
             <li>
-              <strong>Ask Immune</strong>
-              <span>{ASK_PUBLIC_LINE} Unsupported citation claims are rejected.</span>
+              <strong>Graph-grounded teaching</strong>
+              <span>Explanations stay tied to curated relationships; unsupported citation claims are rejected.</span>
             </li>
           </ul>
           <WontClaimList />
           <p className="home-trust-link">
             <Link to="/methods" hash="live-ev-heading">Live coverage</Link>
             <Link to="/disclaimer">Educational disclaimer</Link>
-            <Link to="/ask">Ask Immune</Link>
           </p>
         </section>
 
         <section className="bio-banner home-final-cta" aria-labelledby="cta-heading">
           <div>
             <div className="bio-eyebrow">{VISION_MOTTO.join(" · ")}</div>
-            <h2 id="cta-heading">Start from a concept, pathway or question.</h2>
+            <h2 id="cta-heading">Start from a concept or pathway.</h2>
             <p>
               Follow the relationships that connect it to the wider immune system — with review status in view.
             </p>
           </div>
           <nav className="isi-final-links" aria-label="Start exploring">
-            <Link to="/ask">Ask Immune <ArrowRight size={16} /></Link>
             <Link to="/mechanism">Investigate a mechanism <ArrowRight size={16} /></Link>
             <Link to="/graph">Open the knowledge graph <ArrowRight size={16} /></Link>
             <Link to="/methods" hash="live-ev-heading">See live coverage <ArrowRight size={16} /></Link>
