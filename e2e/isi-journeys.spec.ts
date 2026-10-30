@@ -103,6 +103,34 @@ test.describe("ISI public journeys (browser E2E)", () => {
     await page.goto("/research");
     await expectMainHeading(page);
   });
+
+  test("Discovery Radar public journey structure", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "discovery once on desktop");
+    await page.goto("/discovery");
+    await expectMainHeading(page);
+    await expect(page.getByText(/coverage honesty|coverage_insufficient|candidate/i).first()).toBeVisible({
+      timeout: 15_000,
+    });
+    await page.goto("/discovery/gaps");
+    await expectMainHeading(page);
+    await page.goto("/discovery/onboarding");
+    await expectMainHeading(page);
+    // Auth-gated profile save is skip≠pass without credentials — structure only here.
+  });
+});
+
+test.describe("ISI Discovery authenticated (credentials required)", () => {
+  test("discovery profile load when credentials present", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "auth once on desktop");
+    const user = primaryE2EUser();
+    test.skip(!user, SKIP_AUTH_SINGLE);
+    await signInWithEmail(page, user!, "/discovery/profile");
+    await expect(page).toHaveURL(/\/discovery\/profile/);
+    await expectMainHeading(page);
+    await expect(page.getByText(/entitlement|plan|radar limit|billing/i).first()).toBeVisible({
+      timeout: 20_000,
+    });
+  });
 });
 
 test.describe("ISI authenticated journeys", () => {

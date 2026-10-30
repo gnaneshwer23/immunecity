@@ -142,6 +142,12 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
       { n: "I4", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
       { n: "I5", path: "/patient", title: "Patient and biomarkers", desc: "Rule-based teaching — not medical advice." },
       { n: "I6", path: "/pipeline", title: "Disease pipelines", desc: "Therapies by mechanism, landmark and active trials." },
+      {
+        n: "I7",
+        path: "/discovery",
+        title: "Research Radar",
+        desc: "Evidence-governed unknowns and defensible next questions — ISI coverage, not worldwide absence.",
+      },
     ],
   },
   {

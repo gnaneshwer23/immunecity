@@ -12,6 +12,9 @@
 | Trial Intelligence production enable | Product flag stays **off**. Enabling TI in prod is an explicit ops decision, not part of this fix-pass. |
 | Vercel deploy | Explicitly out of scope (Hobby 402 / deploy triggers). |
 | Live multi-account Playwright E2E | Specs implement sign-in / CRUD / isolation / export when `E2E_USER_A_*` / `E2E_USER_B_*` exist. Without credentials tests **skip with explicit reason** and must not be counted as passes (`e2e/README.md`). |
+| Discovery Radar `reviewed_gap` promotions | Detection may only emit `candidate` / `coverage_insufficient`. Human review mandatory — see `docs/ISI_DISCOVERY_REMAINING.md`. |
+| Neon apply of Discovery migrations 0019/0020 | Additive SQL shipped in repo; apply is ops (same honesty as 0017/0018). |
+| Live PubMed/CT.gov continuous Discovery ingest; email alerts; Stripe | Explicitly deferred — adapter/entitlement stubs only. |
 
 ## Engineering closed in audit response (not SME-blocked)
 

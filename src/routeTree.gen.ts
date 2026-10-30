@@ -59,6 +59,11 @@ import { Route as CommunityPostPostIdRouteImport } from './routes/community.post
 import { Route as CommunityProfileIndexRouteImport } from './routes/community.profile.index'
 import { Route as CommunityProfileUserIdRouteImport } from './routes/community.profile.$userId'
 import { Route as CommunityTopicSlugRouteImport } from './routes/community.topic.$slug'
+import { Route as DiscoveryIndexRouteImport } from './routes/discovery.index'
+import { Route as DiscoveryOnboardingRouteImport } from './routes/discovery.onboarding'
+import { Route as DiscoveryProfileRouteImport } from './routes/discovery.profile'
+import { Route as DiscoveryGapsIndexRouteImport } from './routes/discovery.gaps.index'
+import { Route as DiscoveryGapsGapIdRouteImport } from './routes/discovery.gaps.$gapId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -309,6 +314,31 @@ const CommunityTopicSlugRoute = CommunityTopicSlugRouteImport.update({
   path: '/community/topic/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoveryIndexRoute = DiscoveryIndexRouteImport.update({
+  id: '/discovery/',
+  path: '/discovery/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryOnboardingRoute = DiscoveryOnboardingRouteImport.update({
+  id: '/discovery/onboarding',
+  path: '/discovery/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryProfileRoute = DiscoveryProfileRouteImport.update({
+  id: '/discovery/profile',
+  path: '/discovery/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryGapsIndexRoute = DiscoveryGapsIndexRouteImport.update({
+  id: '/discovery/gaps/',
+  path: '/discovery/gaps/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryGapsGapIdRoute = DiscoveryGapsGapIdRouteImport.update({
+  id: '/discovery/gaps/$gapId',
+  path: '/discovery/gaps/$gapId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -360,6 +390,11 @@ export interface FileRoutesByFullPath {
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
   '/community/profile/': typeof CommunityProfileIndexRoute
+  '/discovery/': typeof DiscoveryIndexRoute
+  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
+  '/discovery/profile': typeof DiscoveryProfileRoute
+  '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
+  '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -411,6 +446,11 @@ export interface FileRoutesByTo {
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
   '/community/profile': typeof CommunityProfileIndexRoute
+  '/discovery': typeof DiscoveryIndexRoute
+  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
+  '/discovery/profile': typeof DiscoveryProfileRoute
+  '/discovery/gaps': typeof DiscoveryGapsIndexRoute
+  '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -464,6 +504,11 @@ export interface FileRoutesById {
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
   '/community/profile/': typeof CommunityProfileIndexRoute
+  '/discovery/': typeof DiscoveryIndexRoute
+  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
+  '/discovery/profile': typeof DiscoveryProfileRoute
+  '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
+  '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -517,6 +562,11 @@ export interface FileRouteTypes {
     | '/community/profile/$userId'
     | '/community/topic/$slug'
     | '/community/profile/'
+    | '/discovery/'
+    | '/discovery/onboarding'
+    | '/discovery/profile'
+    | '/discovery/gaps/'
+    | '/discovery/gaps/$gapId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -568,6 +618,11 @@ export interface FileRouteTypes {
     | '/community/profile/$userId'
     | '/community/topic/$slug'
     | '/community/profile'
+    | '/discovery'
+    | '/discovery/onboarding'
+    | '/discovery/profile'
+    | '/discovery/gaps'
+    | '/discovery/gaps/$gapId'
   id:
     | '__root__'
     | '/'
@@ -620,6 +675,11 @@ export interface FileRouteTypes {
     | '/community/profile/$userId'
     | '/community/topic/$slug'
     | '/community/profile/'
+    | '/discovery/'
+    | '/discovery/onboarding'
+    | '/discovery/profile'
+    | '/discovery/gaps/'
+    | '/discovery/gaps/$gapId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -671,6 +731,11 @@ export interface RootRouteChildren {
   CommunityProfileUserIdRoute: typeof CommunityProfileUserIdRoute
   CommunityTopicSlugRoute: typeof CommunityTopicSlugRoute
   CommunityProfileIndexRoute: typeof CommunityProfileIndexRoute
+  DiscoveryIndexRoute: typeof DiscoveryIndexRoute
+  DiscoveryOnboardingRoute: typeof DiscoveryOnboardingRoute
+  DiscoveryProfileRoute: typeof DiscoveryProfileRoute
+  DiscoveryGapsIndexRoute: typeof DiscoveryGapsIndexRoute
+  DiscoveryGapsGapIdRoute: typeof DiscoveryGapsGapIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1025,6 +1090,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunityTopicSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discovery/': {
+      id: '/discovery/'
+      path: '/discovery'
+      fullPath: '/discovery/'
+      preLoaderRoute: typeof DiscoveryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery/onboarding': {
+      id: '/discovery/onboarding'
+      path: '/discovery/onboarding'
+      fullPath: '/discovery/onboarding'
+      preLoaderRoute: typeof DiscoveryOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery/profile': {
+      id: '/discovery/profile'
+      path: '/discovery/profile'
+      fullPath: '/discovery/profile'
+      preLoaderRoute: typeof DiscoveryProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery/gaps/': {
+      id: '/discovery/gaps/'
+      path: '/discovery/gaps'
+      fullPath: '/discovery/gaps/'
+      preLoaderRoute: typeof DiscoveryGapsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery/gaps/$gapId': {
+      id: '/discovery/gaps/$gapId'
+      path: '/discovery/gaps/$gapId'
+      fullPath: '/discovery/gaps/$gapId'
+      preLoaderRoute: typeof DiscoveryGapsGapIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1099,6 +1199,11 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityProfileUserIdRoute: CommunityProfileUserIdRoute,
   CommunityTopicSlugRoute: CommunityTopicSlugRoute,
   CommunityProfileIndexRoute: CommunityProfileIndexRoute,
+  DiscoveryIndexRoute: DiscoveryIndexRoute,
+  DiscoveryOnboardingRoute: DiscoveryOnboardingRoute,
+  DiscoveryProfileRoute: DiscoveryProfileRoute,
+  DiscoveryGapsIndexRoute: DiscoveryGapsIndexRoute,
+  DiscoveryGapsGapIdRoute: DiscoveryGapsGapIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

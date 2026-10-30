@@ -401,3 +401,131 @@ export const graphProvenanceEvents = pgTable("graph_provenance_events", {
 
 export type OntologyMappingRow = typeof ontologyMappings.$inferSelect;
 export type GraphProvenanceEventRow = typeof graphProvenanceEvents.$inferSelect;
+
+/**
+ * Discovery Intelligence — research profiles (migration 0019).
+ * Ownership-scoped; entitlement stub only (no Stripe). No required sensitive PII.
+ */
+export const researchProfiles = pgTable("research_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().unique(),
+  displayLabel: text("display_label"),
+  focusDiseases: text("focus_diseases").array().notNull().default([]),
+  focusDomains: text("focus_domains").array().notNull().default([]),
+  modalities: text("modalities").array().notNull().default([]),
+  interestsJson: jsonb("interests_json").notNull().default({}),
+  entitlement: text("entitlement").notNull().default("free"),
+  entitlementNotes: text("entitlement_notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Discovery Intelligence — research gaps (migration 0020).
+ * Detection emits candidate | coverage_insufficient only; reviewed_gap is human-only.
+ */
+export const researchGaps = pgTable("research_gaps", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapKey: text("gap_key").notNull().unique(),
+  title: text("title").notNull(),
+  summary: text("summary").notNull(),
+  status: text("status").notNull().default("candidate"),
+  pilot: text("pilot"),
+  subjectId: text("subject_id"),
+  objectId: text("object_id"),
+  relationshipId: text("relationship_id"),
+  diseaseId: text("disease_id"),
+  whyItMatters: text("why_it_matters"),
+  searchScopeJson: jsonb("search_scope_json").notNull().default({}),
+  detectionSource: text("detection_source").notNull(),
+  detectionDetail: jsonb("detection_detail").notNull().default({}),
+  coverageLabel: text("coverage_label"),
+  createdBy: text("created_by").notNull().default("system"),
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchGapCandidates = pgTable("research_gap_candidates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapKey: text("gap_key").notNull(),
+  payloadJson: jsonb("payload_json").notNull(),
+  emittedAt: timestamp("emitted_at", { withTimezone: true }).notNull().defaultNow(),
+  ingestedGapId: uuid("ingested_gap_id"),
+});
+
+export const researchGapEvidenceLinks = pgTable("research_gap_evidence_links", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id").notNull(),
+  evidenceId: text("evidence_id"),
+  relationshipId: text("relationship_id"),
+  pmid: text("pmid"),
+  doi: text("doi"),
+  linkRole: text("link_role").notNull().default("background"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchGapReviews = pgTable("research_gap_reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id").notNull(),
+  actor: text("actor").notNull(),
+  decision: text("decision").notNull(),
+  rationale: text("rationale").notNull(),
+  previousStatus: text("previous_status").notNull(),
+  newStatus: text("new_status").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchGapVersions = pgTable("research_gap_versions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id").notNull(),
+  versionN: integer("version_n").notNull(),
+  snapshotJson: jsonb("snapshot_json").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchSearchCoverage = pgTable("research_search_coverage", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id"),
+  conceptId: text("concept_id"),
+  relationshipId: text("relationship_id"),
+  searchAttempted: boolean("search_attempted").notNull().default(false),
+  hitCount: integer("hit_count"),
+  queryText: text("query_text"),
+  scopeNote: text("scope_note").notNull(),
+  ranAt: timestamp("ran_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchGapSubscriptions = pgTable(
+  "research_gap_subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull(),
+    gapId: uuid("gap_id").notNull(),
+    channel: text("channel").notNull().default("in_app"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("research_gap_subscriptions_uniq").on(t.userId, t.gapId, t.channel)],
+);
+
+export const researchGapFeedback = pgTable("research_gap_feedback", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id").notNull(),
+  userId: uuid("user_id").notNull(),
+  rating: text("rating"),
+  comment: text("comment"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchGapChangeEvents = pgTable("research_gap_change_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id"),
+  eventType: text("event_type").notNull(),
+  detail: jsonb("detail").notNull().default({}),
+  actor: text("actor").notNull().default("system"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type ResearchProfileDbRow = typeof researchProfiles.$inferSelect;
+export type ResearchGapDbRow = typeof researchGaps.$inferSelect;

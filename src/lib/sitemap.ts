@@ -21,6 +21,8 @@ export const STATIC_SITEMAP: Entry[] = [
   { path: "/insights", changefreq: "weekly", priority: 0.7 },
   { path: "/collaborate", changefreq: "monthly", priority: 0.7 },
   { path: "/research", changefreq: "monthly", priority: 0.7 },
+  { path: "/discovery", changefreq: "weekly", priority: 0.7 },
+  { path: "/discovery/gaps", changefreq: "weekly", priority: 0.6 },
   { path: "/graph", changefreq: "weekly", priority: 0.8 },
   { path: "/learn", changefreq: "weekly", priority: 0.7 },
   { path: "/mechanism", changefreq: "weekly", priority: 0.7 },

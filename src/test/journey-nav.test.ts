@@ -42,8 +42,10 @@ describe("primary entries", () => {
 
 describe("brief v2 menu mapping", () => {
   const find = (label: string) => JOURNEY_NAV.find((g) => g.label === label)!.items.map((i) => i.title);
-  it("puts the Research library and Simulator under Investigate", () => {
-    expect(find("Investigate")).toEqual(expect.arrayContaining(["System simulator", "Research library", "Evidence explorer"]));
+  it("puts the Research library, Simulator and Research Radar under Investigate", () => {
+    expect(find("Investigate")).toEqual(
+      expect.arrayContaining(["System simulator", "Research library", "Evidence explorer", "Research Radar"]),
+    );
   });
   it("Trust sections all live on Methods", () => {
     const trust = JOURNEY_NAV.find((g) => g.label === "Trust")!.items;
