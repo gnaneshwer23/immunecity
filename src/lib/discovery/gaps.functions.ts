@@ -4,7 +4,7 @@
  * Never auto-promotes to reviewed_gap. Reviewer gate mirrors evidence curation.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm"; // asc used for feedback chronology
 import { z } from "zod";
 import { requireNeonAuth } from "@/integrations/neon/auth-middleware";
 import { assertCanReview, loadAccountPowers } from "@/lib/access/roles.server";
@@ -12,6 +12,7 @@ import { requireMember } from "@/lib/community/rules";
 import { getDb } from "@/lib/db.server";
 import {
   researchGapChangeEvents,
+  researchGapFeedback,
   researchGapReviews,
   researchGapSubscriptions,
   researchGapVersions,
@@ -21,10 +22,22 @@ import {
 } from "@/lib/db/schema.server";
 import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
 import { buildGapDossier } from "@/lib/discovery/dossier";
-import { normalizeEntitlement, radarListLimit, assertEntitlementAllows } from "@/lib/discovery/entitlements";
+import {
+  normalizeEntitlement,
+  radarListLimit,
+  assertEntitlementAllows,
+  personalisedFeedLimit,
+  FREE_PERSONALISED_PREVIEW,
+} from "@/lib/discovery/entitlements";
 import { applyGapReviewDecision, assertDetectionEmitStatus, isResearchGapStatus } from "@/lib/discovery/gapStatus";
 import { mergeDetectionWithPersisted, shapeRadarFeed } from "@/lib/discovery/radar";
-import { recommendGapsForProfile } from "@/lib/discovery/recommend";
+import {
+  FEEDBACK_RATINGS,
+  orderByRecommendation,
+  recommendGapsForProfile,
+  reasonMap,
+  type GapFeedbackSignal,
+} from "@/lib/discovery/recommend";
 import { verifyGapCandidate } from "@/lib/discovery/verify";
 import type { ResearchGapCandidate, ResearchGapStatus } from "@/lib/discovery/types";
 
@@ -267,7 +280,7 @@ export const listDiscoveryRadar = createServerFn({ method: "GET" })
     };
   });
 
-/** Signed-in radar with entitlement limit + optional recommend reasons. */
+/** Signed-in radar with entitlement limit + explainable personalised ranking (Phase 5). */
 export const listMyDiscoveryRadar = createServerFn({ method: "GET" })
   .middleware([requireNeonAuth])
   .inputValidator((d: unknown) =>
@@ -293,6 +306,8 @@ export const listMyDiscoveryRadar = createServerFn({ method: "GET" })
       modalities: string[];
       interests: Record<string, unknown>;
     } | null;
+    let feedbackSignals: GapFeedbackSignal[] = [];
+    const updatedAtByKey: Record<string, string> = {};
     try {
       const db = getDb();
       const [row] = await db
@@ -313,11 +328,51 @@ export const listMyDiscoveryRadar = createServerFn({ method: "GET" })
               : {},
         };
       }
+      // Feedback + recency are server-side ranking inputs (DB).
+      try {
+        const fb = await db
+          .select({
+            gapKey: researchGaps.gapKey,
+            rating: researchGapFeedback.rating,
+            createdAt: researchGapFeedback.createdAt,
+          })
+          .from(researchGapFeedback)
+          .innerJoin(researchGaps, eq(researchGaps.id, researchGapFeedback.gapId))
+          .where(eq(researchGapFeedback.userId, userId))
+          .orderBy(asc(researchGapFeedback.createdAt))
+          .limit(500);
+        feedbackSignals = fb
+          .filter((r) => r.rating && (FEEDBACK_RATINGS as readonly string[]).includes(r.rating))
+          .map((r) => ({
+            gapKey: r.gapKey,
+            rating: r.rating as GapFeedbackSignal["rating"],
+            createdAt: r.createdAt.toISOString(),
+          }));
+      } catch (err) {
+        if (!missingRelation(err)) throw err;
+      }
+      try {
+        const persistedMeta = await db
+          .select({ gapKey: researchGaps.gapKey, updatedAt: researchGaps.updatedAt })
+          .from(researchGaps)
+          .limit(200);
+        for (const p of persistedMeta) {
+          updatedAtByKey[p.gapKey] = p.updatedAt.toISOString();
+        }
+      } catch (err) {
+        if (!missingRelation(err)) throw err;
+      }
     } catch (err) {
       if (!missingRelation(err)) throw new Error("Discovery Radar request failed.");
     }
 
-    const max = Math.min(data?.limit ?? radarListLimit(entitlement), radarListLimit(entitlement));
+    const advanced = assertEntitlementAllows(entitlement, "advanced_feed");
+    const personalisedLimit = personalisedFeedLimit(entitlement);
+    const max = Math.min(
+      data?.limit ?? (advanced.ok ? radarListLimit(entitlement) : personalisedLimit),
+      advanced.ok ? radarListLimit(entitlement) : Math.max(personalisedLimit, FREE_PERSONALISED_PREVIEW),
+    );
+    // Rank against the full detection set, then slice to entitlement window (honest free preview).
     const detected = detectDiscoveryCandidates();
     const { rows, ok } = await loadPersistedGapSummaries();
     const merged = mergeDetectionWithPersisted(detected, rows);
@@ -326,22 +381,111 @@ export const listMyDiscoveryRadar = createServerFn({ method: "GET" })
         status: data?.status ?? "all",
         pilot: data?.pilot ?? "all",
         source: data?.source ?? "all",
-        limit: max,
+        limit: 200,
       },
       persistedByKey: merged.persistedByKey,
       persistent: ok && merged.persistent,
     });
-    const recommendations = recommendGapsForProfile(feed.items, profileDraft);
+    const recommendations = recommendGapsForProfile(feed.items, profileDraft, {
+      feedback: feedbackSignals,
+      updatedAtByKey,
+    });
+    const ordered = orderByRecommendation(feed.items, recommendations).slice(0, max);
+    const reasons = reasonMap(recommendations);
+    const emerging = orderByRecommendation(feed.emerging, recommendations).slice(0, max);
+    const contradictions = orderByRecommendation(feed.contradictions, recommendations).slice(0, max);
     return {
       ...feed,
-      gaps: feed.items,
-      recommendations,
+      items: ordered,
+      gaps: ordered,
+      emerging,
+      contradictions,
+      recommendations: recommendations.filter((r) => ordered.some((g) => g.gapKey === r.gapKey)),
+      reasonByKey: Object.fromEntries(
+        ordered.map((g) => {
+          const r = reasons[g.gapKey];
+          return [
+            g.gapKey,
+            r
+              ? {
+                  score: r.score,
+                  because: r.because,
+                  factors: r.factors,
+                  disclaimer: r.disclaimer,
+                }
+              : null,
+          ];
+        }),
+      ),
       entitlement,
       radarLimit: max,
+      personalisedPreview: !advanced.ok,
+      personalisedPreviewLimit: FREE_PERSONALISED_PREVIEW,
+      rankingDisclaimer:
+        "Ranking aids navigation from your stated interests and feedback. It is not a novelty, importance, or worldwide-literature score.",
       autoApprove: false as const,
       paymentActivation: false as const,
       persistent: feed.persistent,
+      note: advanced.ok
+        ? `${feed.note} Personalised ordering applied (researcher_pro stub).`
+        : `${feed.note} Free plan shows a limited personalised preview (${FREE_PERSONALISED_PREVIEW} items); researcher_pro unlocks the advanced feed (billing not activated).`,
     };
+  });
+
+/** Member feedback on a gap — stored in research_gap_feedback; influences ranking only. */
+export const submitGapFeedback = createServerFn({ method: "POST" })
+  .middleware([requireNeonAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        gapKey: z.string().min(1).max(160),
+        rating: z.enum(["useful", "not_relevant", "unclear"]),
+        comment: z.string().max(1000).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const userId = memberId(context.userId);
+    try {
+      const db = getDb();
+      const [gap] = await db
+        .select()
+        .from(researchGaps)
+        .where(eq(researchGaps.gapKey, data.gapKey))
+        .limit(1);
+      if (!gap) throw new Error("Persist the gap before submitting feedback.");
+      await db.insert(researchGapFeedback).values({
+        gapId: gap.id,
+        userId,
+        rating: data.rating,
+        comment: data.comment?.trim() || null,
+      });
+      await db.insert(researchGapChangeEvents).values({
+        gapId: gap.id,
+        eventType: "feedback",
+        detail: {
+          gapKey: data.gapKey,
+          rating: data.rating,
+          userId,
+          note: "Feedback influences personalised ranking only — not novelty or scientific importance.",
+        },
+        actor: context.email ?? userId,
+      });
+      return {
+        ok: true as const,
+        rating: data.rating,
+        influencesRanking: true as const,
+        claimsNovelty: false as const,
+        claimsImportance: false as const,
+        note: "Feedback saved. It adjusts your Discovery feed ranking only — not a novelty or importance claim.",
+      };
+    } catch (err) {
+      if (err instanceof Error && /Persist the gap|Sign in/.test(err.message)) throw err;
+      if (missingRelation(err)) {
+        throw new Error("Research gap feedback is not available yet (apply migration 0020).");
+      }
+      throw new Error("Submitting gap feedback failed.");
+    }
   });
 
 /**

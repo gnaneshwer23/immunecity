@@ -10,10 +10,11 @@ import {
   getDiscoveryGap,
   persistDetectedGapCandidates,
   recordGapReviewDecision,
+  submitGapFeedback,
   toggleGapSubscription,
   verifyPersistedGap,
 } from "@/lib/discovery/gaps.functions";
-import { recommendGapsForProfile } from "@/lib/discovery/recommend";
+import { recommendGapsForProfile, type FeedbackRating } from "@/lib/discovery/recommend";
 import { verifyGapCandidate } from "@/lib/discovery/verify";
 import { seoHead } from "@/lib/seo";
 
@@ -22,6 +23,7 @@ const TOC = [
   { id: "scope", label: "Search scope" },
   { id: "verification", label: "Verification" },
   { id: "coverage", label: "Search coverage" },
+  { id: "feedback", label: "Feedback" },
   { id: "review", label: "Review trail" },
   { id: "links", label: "Continue" },
 ];
@@ -44,6 +46,7 @@ function DiscoveryGapDossierPage() {
   const verifyFn = useServerFn(verifyPersistedGap);
   const reviewFn = useServerFn(recordGapReviewDecision);
   const followFn = useServerFn(toggleGapSubscription);
+  const feedbackFn = useServerFn(submitGapFeedback);
 
   const fallbackGap = detectDiscoveryCandidates().find((g) => g.gapKey === gapId) ?? null;
   const [dossier, setDossier] = useState<GapDossierView | null>(
@@ -171,6 +174,16 @@ function DiscoveryGapDossierPage() {
     }
   }
 
+  async function runFeedback(rating: FeedbackRating) {
+    setActionMsg("");
+    try {
+      const res = await feedbackFn({ data: { gapKey: gapId, rating } });
+      setActionMsg(res.note);
+    } catch (e) {
+      setActionMsg(e instanceof Error ? e.message : "Feedback failed.");
+    }
+  }
+
   return (
     <div className="page">
       <PageHead kicker="Investigate · Research Radar" title={dossier.title} lede={dossier.summary} />
@@ -210,11 +223,17 @@ function DiscoveryGapDossierPage() {
       <Section id="why" title="Why it matters" lede="Framed as ISI uncertainty — not clinical advice.">
         <p>{dossier.whyItMatters}</p>
         {(recommend?.because ?? []).length ? (
-          <ul>
-            {recommend!.because.map((b) => (
-              <li key={b}>{b}</li>
-            ))}
-          </ul>
+          <>
+            <p className="small muted" style={{ marginTop: 8 }}>
+              Recommended because… (profile interest stub on this dossier — signed-in Radar uses your real profile + feedback)
+            </p>
+            <ul>
+              {recommend!.because.map((b) => (
+                <li key={b}>{b}</li>
+              ))}
+            </ul>
+            {recommend?.disclaimer ? <p className="small muted">{recommend.disclaimer}</p> : null}
+          </>
         ) : null}
       </Section>
 
@@ -282,6 +301,27 @@ function DiscoveryGapDossierPage() {
         ) : (
           <p className="muted">No coverage rows yet — persist or run verification to append one.</p>
         )}
+      </Section>
+
+      <Section
+        id="feedback"
+        title="Your feedback"
+        lede="Stored in research_gap_feedback. Influences your personalised ranking only — never a novelty or importance claim."
+      >
+        <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+          <button type="button" className="btn sm" onClick={() => void runFeedback("useful")}>
+            Useful
+          </button>
+          <button type="button" className="btn sm" onClick={() => void runFeedback("not_relevant")}>
+            Not relevant
+          </button>
+          <button type="button" className="btn sm" onClick={() => void runFeedback("unclear")}>
+            Unclear
+          </button>
+          <Link className="btn sm" to="/discovery/alerts">
+            Alerts
+          </Link>
+        </div>
       </Section>
 
       <Section

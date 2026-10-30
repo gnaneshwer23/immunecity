@@ -118,11 +118,37 @@ research_gap_feedback
 research_gap_change_events
   id UUID PK
   gap_id UUID
-  event_type TEXT NOT NULL         -- status_change | evidence_linked | detection_rerun
+  event_type TEXT NOT NULL         -- status_change | evidence_linked | detection_rerun | monitor_* | feedback
   detail JSONB NOT NULL DEFAULT '{}'
   actor TEXT NOT NULL DEFAULT 'system'
   created_at
 ```
+
+### 0021 — Monitor alerts + run ledger
+
+```text
+research_discovery_alerts
+  id UUID PK
+  user_id UUID NOT NULL
+  gap_id UUID
+  gap_key TEXT
+  dedupe_key TEXT NOT NULL         -- UNIQUE(user_id, dedupe_key)
+  event_type TEXT NOT NULL
+  title / body TEXT NOT NULL
+  href TEXT
+  read_at TIMESTAMPTZ
+  created_at
+
+research_monitor_runs
+  id UUID PK
+  started_at / finished_at
+  status TEXT                     -- running | completed | failed | partial
+  actor TEXT
+  mode TEXT                       -- stub | live_partial | live
+  detail JSONB
+```
+
+Email channel remains deferred; in-app alerts only.
 
 ## TypeScript conventions
 

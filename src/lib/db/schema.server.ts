@@ -527,5 +527,38 @@ export const researchGapChangeEvents = pgTable("research_gap_change_events", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * Discovery Intelligence Phase 6 — in-app alerts + monitor runs (migration 0021).
+ * Email deferred. Dedupe by (user_id, dedupe_key).
+ */
+export const researchDiscoveryAlerts = pgTable(
+  "research_discovery_alerts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull(),
+    gapId: uuid("gap_id"),
+    gapKey: text("gap_key"),
+    dedupeKey: text("dedupe_key").notNull(),
+    eventType: text("event_type").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    href: text("href"),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("research_discovery_alerts_dedupe_uniq").on(t.userId, t.dedupeKey)],
+);
+
+export const researchMonitorRuns = pgTable("research_monitor_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  status: text("status").notNull().default("running"),
+  actor: text("actor").notNull().default("system"),
+  mode: text("mode").notNull().default("stub"),
+  detail: jsonb("detail").notNull().default({}),
+});
+
 export type ResearchProfileDbRow = typeof researchProfiles.$inferSelect;
 export type ResearchGapDbRow = typeof researchGaps.$inferSelect;
+export type ResearchDiscoveryAlertDbRow = typeof researchDiscoveryAlerts.$inferSelect;

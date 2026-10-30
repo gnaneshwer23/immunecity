@@ -5,7 +5,8 @@ import { PageHead } from "@/components/immune/ui";
 import { PageToc, Section } from "@/components/immune/page";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
-import { listDiscoveryRadar, persistDetectedGapCandidates } from "@/lib/discovery/gaps.functions";
+import { listDiscoveryRadar, listMyDiscoveryRadar, persistDetectedGapCandidates } from "@/lib/discovery/gaps.functions";
+import { recommendedBecauseLine, type RecommendReason } from "@/lib/discovery/recommend";
 import { shapeRadarFeed, type RadarFeedItem } from "@/lib/discovery/radar";
 import { seoHead } from "@/lib/seo";
 
@@ -28,7 +29,14 @@ export const Route = createFileRoute("/discovery")({
   component: DiscoveryRadarPage,
 });
 
-function GapRow({ g }: { g: RadarFeedItem }) {
+function GapRow({
+  g,
+  reason,
+}: {
+  g: RadarFeedItem;
+  reason?: RecommendReason | null;
+}) {
+  const because = recommendedBecauseLine(reason ?? undefined);
   return (
     <li>
       <div className="isi-radar-meta">
@@ -42,6 +50,11 @@ function GapRow({ g }: { g: RadarFeedItem }) {
         <strong>{g.title}</strong>
       </Link>
       <p className="isi-radar-why">{g.whySnippet}</p>
+      {because ? (
+        <p className="small isi-recommend-because" style={{ marginTop: 4 }}>
+          {because}
+        </p>
+      ) : null}
       <p className="small muted" style={{ marginTop: 4 }}>
         {g.summary.slice(0, 200)}
         {g.summary.length > 200 ? "…" : ""}
@@ -51,7 +64,8 @@ function GapRow({ g }: { g: RadarFeedItem }) {
 }
 
 function DiscoveryRadarPage() {
-  const listFn = useServerFn(listDiscoveryRadar);
+  const listPublic = useServerFn(listDiscoveryRadar);
+  const listMine = useServerFn(listMyDiscoveryRadar);
   const persistFn = useServerFn(persistDetectedGapCandidates);
   const clientSeed = shapeRadarFeed(detectDiscoveryCandidates().slice(0, 25), { persistent: false });
   const [items, setItems] = useState<RadarFeedItem[]>(clientSeed.items);
@@ -62,10 +76,14 @@ function DiscoveryRadarPage() {
   const [filter, setFilter] = useState<"all" | "candidate" | "coverage_insufficient">("all");
   const [persistMsg, setPersistMsg] = useState("");
   const [persisting, setPersisting] = useState(false);
+  const [reasonByKey, setReasonByKey] = useState<Record<string, RecommendReason | null>>({});
+  const [personalised, setPersonalised] = useState(false);
+  const [rankingDisclaimer, setRankingDisclaimer] = useState("");
 
   useEffect(() => {
     let cancel = false;
-    listFn({ data: { limit: 25, status: filter === "all" ? "all" : filter } })
+    const status = filter === "all" ? "all" : filter;
+    listMine({ data: { limit: 25, status } })
       .then((res) => {
         if (cancel) return;
         setItems(res.items ?? res.gaps ?? []);
@@ -73,14 +91,32 @@ function DiscoveryRadarPage() {
         setContradictions(res.contradictions ?? []);
         setNote(res.note);
         setPersistent(Boolean(res.persistent));
+        setReasonByKey((res.reasonByKey as Record<string, RecommendReason | null>) ?? {});
+        setPersonalised(true);
+        setRankingDisclaimer(res.rankingDisclaimer ?? "");
       })
       .catch(() => {
-        /* keep client detection */
+        // Public / signed-out fallback — detection order, no fabricated personalisation.
+        listPublic({ data: { limit: 25, status } })
+          .then((res) => {
+            if (cancel) return;
+            setItems(res.items ?? res.gaps ?? []);
+            setEmerging(res.emerging ?? []);
+            setContradictions(res.contradictions ?? []);
+            setNote(res.note);
+            setPersistent(Boolean(res.persistent));
+            setReasonByKey({});
+            setPersonalised(false);
+            setRankingDisclaimer("");
+          })
+          .catch(() => {
+            /* keep client detection */
+          });
       });
     return () => {
       cancel = true;
     };
-  }, [listFn, filter]);
+  }, [listMine, listPublic, filter]);
 
   async function onPersist() {
     setPersisting(true);
@@ -88,12 +124,18 @@ function DiscoveryRadarPage() {
     try {
       const res = await persistFn({ data: {} });
       setPersistMsg(`Persisted ${res.upserted} candidate(s). ${res.note}`);
-      const refreshed = await listFn({ data: { limit: 25, status: filter === "all" ? "all" : filter } });
+      const refreshed = await listMine({ data: { limit: 25, status: filter === "all" ? "all" : filter } }).catch(
+        () => listPublic({ data: { limit: 25, status: filter === "all" ? "all" : filter } }),
+      );
       setItems(refreshed.items ?? refreshed.gaps ?? []);
       setEmerging(refreshed.emerging ?? []);
       setContradictions(refreshed.contradictions ?? []);
       setNote(refreshed.note);
       setPersistent(Boolean(refreshed.persistent));
+      if ("reasonByKey" in refreshed && refreshed.reasonByKey) {
+        setReasonByKey(refreshed.reasonByKey as Record<string, RecommendReason | null>);
+        setPersonalised(true);
+      }
     } catch (e) {
       setPersistMsg(e instanceof Error ? e.message : "Persist failed (sign in required).");
     } finally {
@@ -135,6 +177,9 @@ function DiscoveryRadarPage() {
           <Link className="btn sm" to="/discovery/gaps">
             Full gap list
           </Link>
+          <Link className="btn sm" to="/discovery/alerts">
+            Alerts
+          </Link>
           <Link className="btn sm" to="/discovery/onboarding">
             Set research focus
           </Link>
@@ -144,11 +189,13 @@ function DiscoveryRadarPage() {
         </div>
         <p className="small muted">
           {note} · Source {persistent ? "Neon + detection" : "detection only"}
+          {personalised ? " · Personalised ordering" : ""}
         </p>
+        {rankingDisclaimer ? <p className="small muted">{rankingDisclaimer}</p> : null}
         {persistMsg ? <p className="small">{persistMsg}</p> : null}
         <ul className="isi-library-list" style={{ marginTop: 12 }}>
           {items.map((g) => (
-            <GapRow key={g.gapKey} g={g} />
+            <GapRow key={g.gapKey} g={g} reason={reasonByKey[g.gapKey]} />
           ))}
         </ul>
         {!items.length ? <p className="muted">No gaps match this filter.</p> : null}
@@ -162,7 +209,7 @@ function DiscoveryRadarPage() {
         {emerging.length ? (
           <ul className="isi-library-list">
             {emerging.map((g) => (
-              <GapRow key={g.gapKey} g={g} />
+              <GapRow key={g.gapKey} g={g} reason={reasonByKey[g.gapKey]} />
             ))}
           </ul>
         ) : (
@@ -178,7 +225,7 @@ function DiscoveryRadarPage() {
         {contradictions.length ? (
           <ul className="isi-library-list">
             {contradictions.map((g) => (
-              <GapRow key={g.gapKey} g={g} />
+              <GapRow key={g.gapKey} g={g} reason={reasonByKey[g.gapKey]} />
             ))}
           </ul>
         ) : (
@@ -205,6 +252,9 @@ function DiscoveryRadarPage() {
           </Link>
           <Link className="btn" to="/discovery/profile">
             Profile
+          </Link>
+          <Link className="btn" to="/discovery/alerts">
+            Alerts
           </Link>
           <Link className="btn" to="/research">
             Research library

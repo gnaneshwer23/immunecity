@@ -17,8 +17,8 @@ Detect → Normalise → CoverageCheck → CandidateEmit → (optional) ExplainD
 | **CandidateEmit** | Server fn / job stub | Normalised + coverage | Upsert `research_gaps` at candidate statuses only | No |
 | **ExplainDraft** | Optional Ask/brief helper | Gap + profile interests | Suggested “why it matters” / next question **draft** | Yes (draft, unreviewed) |
 | **HumanReview** | Reviewer/admin | Gap + evidence links | Status change + `research_gap_reviews` + version snapshot | No (human) |
-| **Subscribe / Feedback** | Member | gap_id | Subscription/feedback rows | No |
-| **Monitor** | Deferred | Change events | In-app markers only (email deferred) | No |
+| **Subscribe / Feedback** | Member | gap_id | Subscription/feedback rows; feedback influences ranking only | No |
+| **Monitor** | Cron / server fn | Followed gaps + profile interests + adapters | Change events, versions, in-app alerts (email deferred) | No |
 
 ## Deterministic detectors (v1)
 
@@ -53,7 +53,7 @@ Detect → Normalise → CoverageCheck → CandidateEmit → (optional) ExplainD
 
 Reuse Ask grounding / research brief fail-closed citation rules when any LLM path is wired.
 
-## External adapters (interfaces only this session)
+## External adapters (Phase 6 MVP)
 
 ```ts
 interface LiteratureSearchAdapter {
@@ -61,15 +61,16 @@ interface LiteratureSearchAdapter {
     attempted: true;
     hitCount: number | null; // null = unknown
     scopeNote: string;
+    source: "stub" | "fixture" | "pubmed_live" | "ctgov_live" | "fail_closed";
   }>;
 }
 
 interface TrialRegistryAdapter {
-  lookup(nctOrQuery: string): Promise<{ attempted: true; hitCount: number | null; scopeNote: string }>;
+  lookup(nctOrQuery: string): Promise<{ attempted: true; hitCount: number | null; scopeNote: string; source: string }>;
 }
 ```
 
-Implementations: thin stubs with rate-limit hooks; no continuous ingestion.
+Implementations: stubs + fixtures + optional live PubMed/CT.gov behind `DISCOVERY_LIVE_PUBMED` / `DISCOVERY_LIVE_CTGOV` (fail closed). Rate-limit + retries. No fabricated PMIDs. Cron: `bun run discovery:monitor`.
 
 ## Review integration
 

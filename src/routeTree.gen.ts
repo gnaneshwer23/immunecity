@@ -62,6 +62,7 @@ import { Route as CommunityTopicSlugRouteImport } from './routes/community.topic
 import { Route as DiscoveryIndexRouteImport } from './routes/discovery.index'
 import { Route as DiscoveryOnboardingRouteImport } from './routes/discovery.onboarding'
 import { Route as DiscoveryProfileRouteImport } from './routes/discovery.profile'
+import { Route as DiscoveryAlertsRouteImport } from './routes/discovery.alerts'
 import { Route as DiscoveryGapsIndexRouteImport } from './routes/discovery.gaps.index'
 import { Route as DiscoveryGapsGapIdRouteImport } from './routes/discovery.gaps.$gapId'
 
@@ -329,6 +330,11 @@ const DiscoveryProfileRoute = DiscoveryProfileRouteImport.update({
   path: '/discovery/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoveryAlertsRoute = DiscoveryAlertsRouteImport.update({
+  id: '/discovery/alerts',
+  path: '/discovery/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiscoveryGapsIndexRoute = DiscoveryGapsIndexRouteImport.update({
   id: '/discovery/gaps/',
   path: '/discovery/gaps/',
@@ -393,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/discovery/': typeof DiscoveryIndexRoute
   '/discovery/onboarding': typeof DiscoveryOnboardingRoute
   '/discovery/profile': typeof DiscoveryProfileRoute
+  '/discovery/alerts': typeof DiscoveryAlertsRoute
   '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
   '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
 }
@@ -449,6 +456,7 @@ export interface FileRoutesByTo {
   '/discovery': typeof DiscoveryIndexRoute
   '/discovery/onboarding': typeof DiscoveryOnboardingRoute
   '/discovery/profile': typeof DiscoveryProfileRoute
+  '/discovery/alerts': typeof DiscoveryAlertsRoute
   '/discovery/gaps': typeof DiscoveryGapsIndexRoute
   '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
 }
@@ -507,6 +515,7 @@ export interface FileRoutesById {
   '/discovery/': typeof DiscoveryIndexRoute
   '/discovery/onboarding': typeof DiscoveryOnboardingRoute
   '/discovery/profile': typeof DiscoveryProfileRoute
+  '/discovery/alerts': typeof DiscoveryAlertsRoute
   '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
   '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
 }
@@ -565,6 +574,7 @@ export interface FileRouteTypes {
     | '/discovery/'
     | '/discovery/onboarding'
     | '/discovery/profile'
+    | '/discovery/alerts'
     | '/discovery/gaps/'
     | '/discovery/gaps/$gapId'
   fileRoutesByTo: FileRoutesByTo
@@ -621,6 +631,7 @@ export interface FileRouteTypes {
     | '/discovery'
     | '/discovery/onboarding'
     | '/discovery/profile'
+    | '/discovery/alerts'
     | '/discovery/gaps'
     | '/discovery/gaps/$gapId'
   id:
@@ -678,6 +689,7 @@ export interface FileRouteTypes {
     | '/discovery/'
     | '/discovery/onboarding'
     | '/discovery/profile'
+    | '/discovery/alerts'
     | '/discovery/gaps/'
     | '/discovery/gaps/$gapId'
   fileRoutesById: FileRoutesById
@@ -734,6 +746,7 @@ export interface RootRouteChildren {
   DiscoveryIndexRoute: typeof DiscoveryIndexRoute
   DiscoveryOnboardingRoute: typeof DiscoveryOnboardingRoute
   DiscoveryProfileRoute: typeof DiscoveryProfileRoute
+  DiscoveryAlertsRoute: typeof DiscoveryAlertsRoute
   DiscoveryGapsIndexRoute: typeof DiscoveryGapsIndexRoute
   DiscoveryGapsGapIdRoute: typeof DiscoveryGapsGapIdRoute
 }
@@ -1111,6 +1124,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DiscoveryProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discovery/alerts': {
+      id: '/discovery/alerts'
+      path: '/discovery/alerts'
+      fullPath: '/discovery/alerts'
+      preLoaderRoute: typeof DiscoveryAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/discovery/gaps/': {
       id: '/discovery/gaps/'
       path: '/discovery/gaps'
@@ -1202,6 +1222,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiscoveryIndexRoute: DiscoveryIndexRoute,
   DiscoveryOnboardingRoute: DiscoveryOnboardingRoute,
   DiscoveryProfileRoute: DiscoveryProfileRoute,
+  DiscoveryAlertsRoute: DiscoveryAlertsRoute,
   DiscoveryGapsIndexRoute: DiscoveryGapsIndexRoute,
   DiscoveryGapsGapIdRoute: DiscoveryGapsGapIdRoute,
 }

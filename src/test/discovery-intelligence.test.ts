@@ -1,5 +1,5 @@
 /**
- * Discovery Intelligence — Research Radar (Phase 1–4).
+ * Discovery Intelligence — Research Radar (Phase 1–6).
  * Run: bun test src/test/discovery-intelligence.test.ts
  */
 import { describe, expect, it } from "bun:test";
@@ -16,6 +16,7 @@ import {
   ENTITLEMENT_ACCESS,
   assertEntitlementAllows,
   normalizeEntitlement,
+  personalisedFeedLimit,
   radarListLimit,
 } from "@/lib/discovery/entitlements";
 import {
@@ -31,14 +32,29 @@ import {
   profileOwnershipSpec,
 } from "@/lib/discovery/profiles";
 import { mergeDetectionWithPersisted, shapeRadarFeed } from "@/lib/discovery/radar";
-import { recommendGapsForProfile } from "@/lib/discovery/recommend";
+import {
+  RANKING_POLICY,
+  orderByRecommendation,
+  recommendGapsForProfile,
+  recommendedBecauseLine,
+} from "@/lib/discovery/recommend";
+import {
+  MONITOR_POLICY,
+  dedupeAlertKeys,
+  planMonitorRun,
+} from "@/lib/discovery/monitor";
 import {
   VERIFICATION_POLICY,
   draftSearchCoverage,
   refuseAutoReviewedGap,
   verifyGapCandidate,
 } from "@/lib/discovery/verify";
-import { stubLiteratureSearchAdapter } from "@/lib/discovery/adapters";
+import {
+  createFixtureLiteratureAdapter,
+  createLivePubmedAdapter,
+  stubLiteratureSearchAdapter,
+  withRetries,
+} from "@/lib/discovery/adapters";
 import { JOURNEY_NAV } from "@/data/marketingNav";
 
 const root = (...p: string[]) => resolve(process.cwd(), ...p);
@@ -230,39 +246,164 @@ describe("Discovery Phase 4 dossier + radar shaping", () => {
   });
 });
 
-describe("Discovery recommend stub + adapters", () => {
-  it("explains recommendations without inventing novelty scores as science", async () => {
-    const gaps = detectDiscoveryCandidates().slice(0, 3);
-    const ranked = recommendGapsForProfile(gaps, {
+describe("Discovery Phase 5 ranking explainability + feedback", () => {
+  it("exposes transparent factors and never claims novelty from score", () => {
+    expect(RANKING_POLICY.claimsNoveltyFromScore).toBe(false);
+    expect(RANKING_POLICY.claimsScientificImportanceFromScore).toBe(false);
+    expect(RANKING_POLICY.fabricatesRelevance).toBe(false);
+
+    const gaps = detectDiscoveryCandidates();
+    expect(gaps.length).toBeGreaterThan(2);
+    const profile = {
       displayLabel: null,
       focusDiseases: ["D012"],
       focusDomains: ["checkpoint"],
-      modalities: [],
-      interests: {},
-    });
+      modalities: ["pd1"],
+      interests: { pathways: ["PD-1"], cells: ["T cell"], therapies: ["pembrolizumab"] },
+    };
+    const ranked = recommendGapsForProfile(gaps, profile);
     expect(ranked.length).toBe(gaps.length);
     expect(ranked[0]!.because.length).toBeGreaterThan(0);
+    expect(ranked[0]!.factors.length).toBeGreaterThan(0);
+    expect(ranked[0]!.disclaimer).toMatch(/not a novelty/i);
+    expect(recommendedBecauseLine(ranked[0]!)!).toMatch(/Recommended because/);
+
+    const withUseful = recommendGapsForProfile(gaps, profile, {
+      feedback: [{ gapKey: gaps[0]!.gapKey, rating: "useful" }],
+    });
+    const withNotRelevant = recommendGapsForProfile(gaps, profile, {
+      feedback: [{ gapKey: gaps[0]!.gapKey, rating: "not_relevant" }],
+    });
+    const usefulScore = withUseful.find((r) => r.gapKey === gaps[0]!.gapKey)!.score;
+    const demotedScore = withNotRelevant.find((r) => r.gapKey === gaps[0]!.gapKey)!.score;
+    expect(usefulScore).toBeGreaterThan(demotedScore);
+    expect(withUseful.find((r) => r.gapKey === gaps[0]!.gapKey)!.factors.some((f) => f.id === "feedback")).toBe(
+      true,
+    );
+
+    const ordered = orderByRecommendation(
+      gaps.map((g) => ({ gapKey: g.gapKey })),
+      withUseful,
+    );
+    expect(ordered[0]!.gapKey).toBe(withUseful[0]!.gapKey);
+
+    expect(personalisedFeedLimit("free")).toBeLessThan(personalisedFeedLimit("researcher_pro"));
+    expect(assertEntitlementAllows("free", "advanced_feed").ok).toBe(false);
+    expect(assertEntitlementAllows("researcher_pro", "advanced_feed").ok).toBe(true);
+
+    const gapsFns = source("src/lib/discovery/gaps.functions.ts");
+    expect(gapsFns).toContain("submitGapFeedback");
+    expect(gapsFns).toContain("researchGapFeedback");
+    expect(gapsFns).toContain("orderByRecommendation");
+    expect(gapsFns).toMatch(/rankingDisclaimer|not a novelty/i);
+  });
+});
+
+describe("Discovery Phase 6 monitor idempotency + alert dedupe", () => {
+  it("plans monitor runs without auto review and dedupes alerts", async () => {
+    expect(MONITOR_POLICY.autoScientificReview).toBe(false);
+    expect(MONITOR_POLICY.autoReviewedGap).toBe(false);
+    expect(MONITOR_POLICY.fabricatesPmids).toBe(false);
+    expect(MONITOR_POLICY.emailAlerts).toBe(false);
+
+    const gaps = detectDiscoveryCandidates().slice(0, 5);
+    const followed = new Set([gaps[0]!.gapKey]);
+    const profile = {
+      displayLabel: null,
+      focusDiseases: gaps[0]!.diseaseId ? [gaps[0]!.diseaseId] : ["D012"],
+      focusDomains: [],
+      modalities: [],
+      interests: {},
+    };
+
+    const first = planMonitorRun({
+      userId: "00000000-0000-4000-8000-000000000001",
+      gaps,
+      followedGapKeys: followed,
+      profile,
+      gapIdByKey: { [gaps[0]!.gapKey]: "gap-uuid-1" },
+    });
+    expect(first.autoApprove).toBe(false);
+    expect(first.scientificReviewImplied).toBe(false);
+    expect(first.targets.length).toBeGreaterThan(0);
+    expect(first.signals.length).toBeGreaterThan(0);
+    expect(first.alerts.length).toBeGreaterThan(0);
+    expect(first.reassessment.every((r) => r.statusUnchangedPolicy === "never_auto_reviewed_gap")).toBe(
+      true,
+    );
+
+    const dedupe = new Set(dedupeAlertKeys(first.alerts));
+    const second = planMonitorRun({
+      userId: "00000000-0000-4000-8000-000000000001",
+      gaps,
+      followedGapKeys: followed,
+      profile,
+      gapIdByKey: { [gaps[0]!.gapKey]: "gap-uuid-1" },
+      priorFingerprints: Object.fromEntries(
+        first.signals.map((s) => [s.gapKey, s.fingerprint]),
+      ),
+      existingDedupeKeys: dedupe,
+    });
+    // Identical fingerprints + existing dedupe → no new alerts (idempotent).
+    expect(second.alerts.length).toBe(0);
+
+    const fixture = createFixtureLiteratureAdapter();
+    const fx = await fixture.search("melanoma PD-1");
+    expect(fx.hitCount).toBeNull();
+    expect(fx.pmids).toBeUndefined();
+    expect(fx.source).toBe("fixture");
+
+    const liveClosed = createLivePubmedAdapter({ enableLivePubmed: false });
+    const closed = await liveClosed.search("melanoma");
+    expect(closed.source).toBe("fail_closed");
+    expect(closed.hitCount).toBeNull();
+
+    let attempts = 0;
+    const ok = await withRetries(async () => {
+      attempts += 1;
+      if (attempts < 2) throw new Error("transient");
+      return "ok";
+    }, { retries: 2, baseDelayMs: 1 });
+    expect(ok).toBe("ok");
+    expect(attempts).toBe(2);
+
     const stub = await stubLiteratureSearchAdapter.search("PD-1 melanoma");
     expect(stub.attempted).toBe(true);
     expect(stub.hitCount).toBeNull();
-    expect(stub.scopeNote).toMatch(/deferred|unknown/i);
+
+    const monFns = source("src/lib/discovery/monitor.functions.ts");
+    expect(monFns).toContain("runMyDiscoveryMonitor");
+    expect(monFns).toContain("listMyDiscoveryAlerts");
+    expect(monFns).toMatch(/scientificReviewImplied:\s*false/);
+    expect(source("scripts/run-discovery-monitor.ts")).toContain("discovery_monitor");
+    expect(source("package.json")).toContain("discovery:monitor");
   });
 });
 
 describe("Discovery IA + migrations + route tree", () => {
-  it("adds Investigate Research Radar without inventing a second KG", () => {
-    const investigate = JOURNEY_NAV.find((g) => g.label === "Investigate")!;
-    expect(investigate.items.some((i) => i.path === "/discovery" && i.title === "Research Radar")).toBe(true);
-    const agents = source("src/lib/discovery/AGENTS.md");
-    expect(agents).toMatch(/never a second graph/i);
-    expect(agents).toMatch(/reviewed_gap/i);
-    expect(source("drizzle/migrations/0019_research_profiles.sql")).toContain("research_profiles");
-    expect(source("drizzle/migrations/0020_research_discovery_gaps.sql")).toContain("research_gaps");
-    expect(source("drizzle/migrations/0020_research_discovery_gaps.sql")).toContain("coverage_insufficient");
-    const tree = source("src/routeTree.gen.ts");
-    expect(tree).toContain("discovery.index");
-    expect(tree).toContain("/discovery/gaps/$gapId");
-    expect(source("src/lib/db/schema.server.ts")).toContain("researchProfiles");
-    expect(source("src/lib/db/schema.server.ts")).toContain("researchGaps");
-  });
+  it(
+    "adds Investigate Research Radar without inventing a second KG",
+    () => {
+      const investigate = JOURNEY_NAV.find((g) => g.label === "Investigate")!;
+      expect(investigate.items.some((i) => i.path === "/discovery" && i.title === "Research Radar")).toBe(true);
+      const agents = source("src/lib/discovery/AGENTS.md");
+      expect(agents).toMatch(/never a second graph/i);
+      expect(agents).toMatch(/reviewed_gap/i);
+      expect(agents).toMatch(/Phase 5 ranking/i);
+      expect(source("drizzle/migrations/0019_research_profiles.sql")).toContain("research_profiles");
+      expect(source("drizzle/migrations/0020_research_discovery_gaps.sql")).toContain("research_gaps");
+      expect(source("drizzle/migrations/0020_research_discovery_gaps.sql")).toContain("coverage_insufficient");
+      expect(source("drizzle/migrations/0021_research_discovery_monitor.sql")).toContain(
+        "research_discovery_alerts",
+      );
+      const tree = source("src/routeTree.gen.ts");
+      expect(tree).toContain("discovery.index");
+      expect(tree).toContain("/discovery/gaps/$gapId");
+      expect(tree).toContain("/discovery/alerts");
+      expect(source("src/lib/db/schema.server.ts")).toContain("researchProfiles");
+      expect(source("src/lib/db/schema.server.ts")).toContain("researchGaps");
+      expect(source("src/lib/db/schema.server.ts")).toContain("researchDiscoveryAlerts");
+    },
+    { timeout: 20_000 },
+  );
 });
