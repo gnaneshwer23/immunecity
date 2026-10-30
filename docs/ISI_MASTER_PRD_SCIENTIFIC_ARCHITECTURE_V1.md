@@ -59,8 +59,10 @@ Related backlog tickets: ISI-007 / ISI-008 (import verified KEYNOTE-006 & CheckM
 P0 Trial Intelligence foundation ships as:
 
 - Additive Neon/drizzle tables `clinical_trials`, `trial_arms`, `endpoint_results` (`drizzle/migrations/0015_clinical_trial_intelligence.sql`).
-- Browser-safe loaders in `src/data/trialIntelligence.ts` linked to graph nodes `TR003` / `TR020`.
-- Feature flag `VITE_TRIAL_INTELLIGENCE=1` (`src/lib/trialIntelligenceFlag.ts`).
+- Browser-safe fixtures in `src/data/trialIntelligence.ts` (seed/import SOT) linked to graph nodes `TR003` / `TR020`.
+- Validated Postgres reads when the flag is on (`src/lib/trialIntelligence.functions.ts`); fixtures remain fallback and bibliography SOT.
+- Feature flag `VITE_TRIAL_INTELLIGENCE=1` (`src/lib/trialIntelligenceFlag.ts`) — off in production until audit checks pass. Rollback: unset flag and redeploy.
 - Atlas trial panel + Methods honesty (`TrialIntelligence` component).
+- Consistency check: `bun run db:trial-intelligence:check`.
 
 **Registry correction:** KEYNOTE-006 is **NCT01866319**. NCT02263508 is MASTERKEY-265, not KEYNOTE-006.

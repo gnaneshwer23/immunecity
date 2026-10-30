@@ -22,6 +22,7 @@
     "evidence:queue:resolve": "bun scripts/build-relationship-evidence-queue.ts --resolve-pmids",
     "db:neon-schema": "bun scripts/apply-neon-schema.ts",
     "db:trial-intelligence": "bun scripts/apply-trial-intelligence-migration.ts",
+    "db:trial-intelligence:check": "bun scripts/check-trial-intelligence-consistency.ts",
     "smoke:neon": "bun scripts/smoke-neon-cutover.ts",
     "seo:indexnow": "bun scripts/ping-indexnow.ts"
   },

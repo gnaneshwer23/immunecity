@@ -83,9 +83,9 @@ export interface ClinicalTrialRecord {
   arms: TrialArmRecord[];
 }
 
-/** Cross-trial comparison is contextual — never causal comparative efficacy. */
+/** Cross-trial comparison is contextual — never causal comparative efficacy (audit T03). */
 export const NON_CAUSAL_TRIAL_WARNING =
-  "Association is not causation. Arm-level results are reported within each randomised trial. Cross-trial comparisons are contextual only — populations, dosing, follow-up and concurrent care differ. This view is educational and is not clinical decision support.";
+  "Association is not causation. Arm-level results are reported within each randomised trial only. Do not treat side-by-side figures as head-to-head comparative efficacy — populations, dosing, follow-up, and concurrent care differ across trials. This view is educational and is not clinical decision support.";
 
 export const TRIAL_INTELLIGENCE_PROVENANCE = {
   verifiedOn: "2026-10-30",
@@ -93,6 +93,15 @@ export const TRIAL_INTELLIGENCE_PROVENANCE = {
     "ClinicalTrials.gov API v2 identity check + PubMed efetch abstracts for primary publications. Numerics taken only from abstract-stated results; omitted when absent.",
   nctNote:
     "KEYNOTE-006 registry ID is NCT01866319. NCT02263508 is MASTERKEY-265 (T-VEC ± pembrolizumab), not KEYNOTE-006.",
+  /**
+   * Independent spot-check (audit A02, 2026-10-30) against PubMed abstracts:
+   * KEYNOTE-006 PMID 25891173 — ORR 33.7/32.9/11.9%; 6-mo PFS 47.3/46.4/26.5%; grade 3–5 TRAE 13.3/10.1/19.9%; NCT01866319.
+   * KEYNOTE-006 PMID 28822576 — 24-mo OS 55/55/43%; n randomised 279/277/278.
+   * CheckMate 067 PMID 26027431 — median PFS 11.5 (8.9–16.7) / 6.9 (4.3–9.5) / 2.9 (2.8–3.4) mo; grade 3–4 TRAE 55.0/16.3/27.3%; ORR absent → left null.
+   * CheckMate 067 PMID 31562797 — 5-yr OS 52/44/26%. PMID 28889792 grade 3–4 rates differ (59/21/28%); primary abstract values retained.
+   */
+  spotCheckNote:
+    "Spot-checked 2026-10-30 via PubMed efetch; unverified ORR on CheckMate 067 left null. See docs/ISI_AUDIT_BASELINE_2026-10-30.md.",
 } as const;
 
 const KEYNOTE_SOURCES: TrialSource[] = [

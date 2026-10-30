@@ -98,10 +98,20 @@ describe("trial intelligence feature flag and honesty", () => {
 
   it("ships a non-causal comparison warning (association ≠ causation; not CDS)", () => {
     expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/Association is not causation/i);
-    expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/Cross-trial comparisons are contextual/i);
+    expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/head-to-head comparative efficacy/i);
     expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/not clinical decision support/i);
     const methods = readFileSync(resolve(process.cwd(), "src/routes/methods.tsx"), "utf8");
     expect(methods).toContain("TrialIntelligenceMethodsNote");
     expect(methods).toContain("trial-intelligence");
+  });
+
+  it("documents rollback via flag and prefers Postgres read service when gated", () => {
+    const panel = readFileSync(resolve(process.cwd(), "src/components/immune/TrialIntelligence.tsx"), "utf8");
+    expect(panel).toContain("trialIntelligenceQuery");
+    expect(panel).toMatch(/Rollback:|rollback/i);
+    const fn = readFileSync(resolve(process.cwd(), "src/lib/trialIntelligence.functions.ts"), "utf8");
+    expect(fn).toContain("loadTrialIntelligenceFromDb");
+    expect(fn).toContain("resolveTrialIntelligence");
+    expect(fn).toContain("endpointPassesHonesty");
   });
 });

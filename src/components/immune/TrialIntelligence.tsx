@@ -1,6 +1,8 @@
 /* Feature-flagged arm-level trial outcomes for melanoma pilot nodes.
-   Educational only — association ≠ causation; not clinical decision support. */
+   Educational only — association ≠ causation; not clinical decision support.
+   When the flag is on, prefer validated Postgres reads; fixtures remain seed SOT. */
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import {
   NON_CAUSAL_TRIAL_WARNING,
@@ -15,6 +17,7 @@ import {
 } from "@/data/trialIntelligence";
 import { ctgStudyUrl } from "@/data/trialRegistry";
 import { isTrialIntelligenceEnabled } from "@/lib/trialIntelligenceFlag";
+import { trialIntelligenceQuery } from "@/lib/trialIntelligence.functions";
 import { ExplainerSection } from "@/components/immune/explain";
 import { byId } from "@/lib/immune/engine";
 
@@ -42,7 +45,7 @@ function EndpointRow({ ep }: { ep: EndpointResultRecord }) {
   );
 }
 
-function TrialCard({ trial, showCompareHint }: { trial: ClinicalTrialRecord; showCompareHint?: boolean }) {
+function TrialCard({ trial }: { trial: ClinicalTrialRecord }) {
   return (
     <article className="isi-ti-card" aria-labelledby={`ti-${trial.trialId}-title`}>
       <header className="isi-ti-head">
@@ -65,12 +68,6 @@ function TrialCard({ trial, showCompareHint }: { trial: ClinicalTrialRecord; sho
       <p className="xs muted" role="note">
         Analysis sets: {trial.analysisSetNote}
       </p>
-
-      {showCompareHint ? (
-        <p className="isi-ti-warn" role="note" data-testid="trial-noncausal-warning">
-          {NON_CAUSAL_TRIAL_WARNING}
-        </p>
-      ) : null}
 
       {trial.arms.map((arm) => (
         <section key={arm.armId} className="isi-ti-arm" aria-labelledby={`ti-arm-${arm.armId}`}>
@@ -127,7 +124,7 @@ function TrialCard({ trial, showCompareHint }: { trial: ClinicalTrialRecord; sho
         </ul>
         <p className="xs muted">
           Verified {TRIAL_INTELLIGENCE_PROVENANCE.verifiedOn}. {TRIAL_INTELLIGENCE_PROVENANCE.method}{" "}
-          {TRIAL_INTELLIGENCE_PROVENANCE.nctNote}
+          {TRIAL_INTELLIGENCE_PROVENANCE.nctNote} {TRIAL_INTELLIGENCE_PROVENANCE.spotCheckNote}
         </p>
       </details>
     </article>
@@ -137,9 +134,17 @@ function TrialCard({ trial, showCompareHint }: { trial: ClinicalTrialRecord; sho
 /** Arm-level outcomes on a TRIAL concept page when the feature flag is on. */
 export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string }) {
   if (!isTrialIntelligenceEnabled()) return null;
-  const trial = trialIntelligenceByGraphNode(graphNodeId);
+
+  const fixture = trialIntelligenceByGraphNode(graphNodeId);
+  const q = useQuery({
+    ...trialIntelligenceQuery(graphNodeId),
+    enabled: Boolean(fixture),
+  });
+
+  const trial = q.data?.trial ?? fixture;
   if (!trial) return null;
   const peers = listMelanomaPilotTrials().filter((t) => t.graphNodeId !== graphNodeId);
+  const readSource = q.data?.source ?? "fixture";
 
   return (
     <ExplainerSection
@@ -156,14 +161,17 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
         <div className="isi-ti-peers">
           <h3>Related melanoma pilot trial</h3>
           <p className="xs muted">
-            Open for within-trial arm detail only. Do not treat side-by-side figures as head-to-head efficacy.
+            Open for within-trial arm detail only. Do not treat side-by-side figures as head-to-head comparative
+            efficacy — populations and follow-up differ.
           </p>
           <ul>
             {peers.map((p) => {
               const node = byId[p.graphNodeId];
               return (
                 <li key={p.trialId}>
-                  <Link to="/atlas/$id" params={{ id: p.graphNodeId }}>{node?.name ?? p.acronym}</Link>
+                  <Link to="/atlas/$id" params={{ id: p.graphNodeId }}>
+                    {node?.name ?? p.acronym}
+                  </Link>
                   <span className="xs muted"> · {p.nctId}</span>
                 </li>
               );
@@ -172,7 +180,12 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
         </div>
       ) : null}
       <p className="xs muted">
-        Methods: see <Link to="/methods" hash="trial-intelligence">Evidence & Methods — Trial Intelligence</Link>.
+        Read model: {readSource === "postgres" ? "validated Postgres (curated)" : "fixture seed"}
+        {q.data?.unavailable ? " · database unavailable — showing fixture fallback" : ""}. Methods: see{" "}
+        <Link to="/methods" hash="trial-intelligence">
+          Evidence & Methods — Trial Intelligence
+        </Link>
+        .
       </p>
     </ExplainerSection>
   );
@@ -193,7 +206,10 @@ export function TrialIntelligenceMethodsNote() {
       </p>
       <p className="xs muted">
         UI is feature-flagged (<span className="mono">VITE_TRIAL_INTELLIGENCE=1</span>). Off by default so atlas and
-        graph journeys stay unchanged. Educational resource — not clinical decision support.
+        graph journeys stay unchanged. Rollback: unset or set the flag to{" "}
+        <span className="mono">0</span> in Vercel Production and redeploy — no route removal required. When enabled,
+        curated reads prefer Postgres; fixtures remain the seed/import source of truth. Educational resource — not
+        clinical decision support.
       </p>
     </div>
   );
