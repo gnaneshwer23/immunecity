@@ -1,7 +1,7 @@
 # Discovery 3.0 — appraisal sprint (30 Oct 2026)
 
 **Baseline tip:** `e626370` (impl `b365588`)  
-**This sprint tip:** *(see git after commit)*  
+**This sprint tip:** `9d2a121`  
 **Full outcomes:** `ISI_DISCOVERY_3_APPRAISAL_SPRINT_REPORT.md` + `.json`
 
 ## Scope (narrow)
