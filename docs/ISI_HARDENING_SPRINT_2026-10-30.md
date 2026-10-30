@@ -50,7 +50,7 @@ Fill/confirm at ship time:
 
 | Check | Result |
 | --- | --- |
-| Pre-ship main | `6b3c94b` (Phase 4); hardening commit follows |
+| HEAD SHA | `86aca17` (hardening sprint) · prior main `6b3c94b` |
 | `bun test src/test/hardening-sprint.test.ts` + phase4 | **10 pass / 0 fail** |
 | `bun run ask:quality` | **all checks passed** (incl. fabricated PMID rejected, clinical abstains, SME awaiting) |
 | `bun run db:hardening:verify` | **ok** — trials 2 / arms 6 / endpoints 24 / collections present (0 rows) / evidence_records **46** / user_roles **36** |
