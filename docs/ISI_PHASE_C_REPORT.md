@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-30  
 **Baseline:** Phase B `1e48f1a`  
-**Phase C commit:** _(after commit)_  
+**Phase C commit:** `2056b2f` (bundled with Phase D)  
 
 ## Summary
 

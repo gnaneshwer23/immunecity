@@ -19,8 +19,8 @@ In metastatic melanoma, which immune-escape mechanisms associate with PD-1 inhib
 | --- | --- | --- | --- |
 | **A** | Immediate corrections | **Complete (engineering)** | `docs/ISI_PHASE_A_REPORT.md` · `40d9bbc` |
 | **B** | Scientific graph model | **Complete (engineering)** | `docs/ISI_PHASE_B_REPORT.md` · `1e48f1a` |
-| **C** | Evidence intelligence | **Complete (engineering)** | `docs/ISI_PHASE_C_REPORT.md` |
-| **D** | Ask Immune GraphRAG | **Partial** (neighbourhood + conflict lines; SME eval open) | `docs/ISI_PHASE_D_REPORT.md` |
+| **C** | Evidence intelligence | **Complete (engineering)** | `docs/ISI_PHASE_C_REPORT.md` · `2056b2f` |
+| **D** | Ask Immune GraphRAG | **Partial** (neighbourhood + conflict lines; SME eval open) | `docs/ISI_PHASE_D_REPORT.md` · `2056b2f` |
 | **E** | Clinical / research workflows | Deferred / status note | `docs/ISI_PHASE_E_F_STATUS.md` |
 | **F** | End-to-end QA | Deferred / status note | `docs/ISI_PHASE_E_F_STATUS.md` |
 

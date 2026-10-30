@@ -2,6 +2,7 @@
 
 **Date:** 2026-10-30  
 **Status:** Partial engineering complete — full eval/SME gold-set still open  
+**Commit:** `2056b2f`  
 
 ## Summary
 
