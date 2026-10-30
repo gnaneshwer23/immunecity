@@ -16,7 +16,7 @@ Highlights:
 
 ## Phase F — End-to-end QA
 
-**Complete (automated focused suite).** Report: `docs/ISI_PHASE_F_REPORT.md` · SHA filled after commit.
+**Complete (automated focused suite).** Report: `docs/ISI_PHASE_F_REPORT.md` · `74d357c` (docs SHA pass `81ae387`).
 
 ```text
 bun test src/test/phase-{a,b,c,d,e}*.test.ts src/test/phase-f-e2e-journey.test.ts --timeout 30000

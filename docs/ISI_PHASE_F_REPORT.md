@@ -98,6 +98,6 @@ Same as Phase E — brief candidates, Gate C density, biomarker assays (none inv
 | Phase E | `23aabbd` |
 | Phase F HEAD | `74d357c` |
 
-**Rollback:** `git revert <PHASE_F_SHA>` (docs + tests only; no DDL in Phase F).
+**Rollback:** `git revert 74d357c` (docs + tests only; no DDL in Phase F). Docs SHA pass: `81ae387`.
 
 Do not force-push published main (Lovable-connected).
