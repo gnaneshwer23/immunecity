@@ -15,6 +15,7 @@ import {
 } from "./claimLedger";
 import { createHypothesisDraft, type HypothesisDraft } from "./hypothesisDraft";
 import type { CandidateClaim, CurationManifestExport, LiteratureProject } from "./literatureWorkflow";
+import { buildExportProvenanceTrail, type ExportProvenanceTrail } from "./exportProvenance";
 
 /** Bump when export shape changes in a breaking way. */
 export const WORKBENCH_SCHEMA_VERSION = "wb-1";
@@ -1092,9 +1093,29 @@ export interface WorkbenchExport {
   exportDisclaimer: string;
   session: WorkbenchSession;
   candidateFlags: ReturnType<typeof sessionCandidateFlags>;
+  /** Phase E — graph → export provenance trail (never invents approvals). */
+  provenance: ExportProvenanceTrail;
 }
 
 export function buildWorkbenchExport(session: WorkbenchSession): WorkbenchExport {
+  const relatedIds = [
+    ...session.evidence.flatMap((e) => e.relatedIds),
+    ...(session.question.relatedConceptIds ?? []),
+    session.mechanism.startId,
+    session.mechanism.perturbId,
+    session.mechanism.outcomeId,
+  ].filter((id): id is string => Boolean(id));
+  const conceptIds = relatedIds.filter((id) => byId[id]);
+  const relIds = [
+    ...relatedIds.filter((id) => id.startsWith("REL-")),
+    ...(session.question.relatedRelIds ?? []),
+    ...(session.mechanism.relatedRelIds ?? []),
+  ].filter((id) => id.startsWith("REL-"));
+  const provenance = buildExportProvenanceTrail({
+    conceptIds,
+    relIds,
+    trialIds: conceptIds.filter((id) => id.startsWith("TR")),
+  });
   return {
     schemaVersion: WORKBENCH_SCHEMA_VERSION,
     exportVersion: `${WORKBENCH_SCHEMA_VERSION}+g${session.graphVersion}+x${session.extensionsVersion}`,
@@ -1122,6 +1143,7 @@ export function buildWorkbenchExport(session: WorkbenchSession): WorkbenchExport
       experiment: { ...session.experiment, kind: "candidate", status: "draft_proposal" },
     },
     candidateFlags: sessionCandidateFlags(session),
+    provenance,
   };
 }
 

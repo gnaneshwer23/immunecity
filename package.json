@@ -23,6 +23,7 @@
     "db:neon-schema": "bun scripts/apply-neon-schema.ts",
     "db:trial-intelligence": "bun scripts/apply-trial-intelligence-migration.ts",
     "db:trial-intelligence:check": "bun scripts/check-trial-intelligence-consistency.ts",
+    "db:trial-treatment-line": "bun scripts/apply-trial-treatment-line-migration.ts",
     "db:evidence-collections": "bun scripts/apply-evidence-collections-migration.ts",
     "db:graph-ontology": "bun scripts/apply-graph-ontology-migration.ts",
     "db:ontology-backfill": "bun scripts/backfill-ontology-mappings.ts",

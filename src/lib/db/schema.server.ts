@@ -272,7 +272,7 @@ export const communityModerationActions = pgTable("community_moderation_actions"
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-/** Melanoma-pilot Trial Intelligence (migration 0015). Additive; not claim approval. */
+/** Melanoma-pilot Trial Intelligence (migration 0015 + 0018 treatment_line). Additive; not claim approval. */
 export const clinicalTrials = pgTable("clinical_trials", {
   id: uuid("id").primaryKey().defaultRandom(),
   trialId: text("trial_id").notNull().unique(),
@@ -287,6 +287,8 @@ export const clinicalTrials = pgTable("clinical_trials", {
   conditionLabel: text("condition_label"),
   populationSummary: text("population_summary"),
   analysisSetNote: text("analysis_set_note"),
+  /** Curated facet (0018); seeded from fixtures — never regex-inferred. */
+  treatmentLine: text("treatment_line"),
   verificationState: text("verification_state").notNull().default("unverified"),
   primaryPmid: text("primary_pmid"),
   primaryDoi: text("primary_doi"),
@@ -306,6 +308,8 @@ export const trialArms = pgTable("trial_arms", {
   enrolledN: integer("enrolled_n"),
   treatedN: integer("treated_n"),
   sortOrder: integer("sort_order").notNull().default(0),
+  /** Optional arm-level line (0018); null when only trial-level is curated. */
+  treatmentLine: text("treatment_line"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -334,9 +338,10 @@ export const endpointResults = pgTable("endpoint_results", {
 });
 
 /**
- * Phase 2 ISI-A07 light stub — biomarker / assay tables are not migrated yet.
- * Fixture `biomarkerContext: []` holds the browser-safe slot; do not invent assays.
- * Future (when curated): trial_biomarkers, biomarker_assays linked to graph BIOMARKER ids.
+ * Phase 2 / E ISI-A07 light stub — biomarker / assay tables are not migrated yet.
+ * Fixture `biomarkerContext: []` holds the browser-safe slot; do not invent assays or cut-offs.
+ * Graph BIOMARKER nodes may still surface via translational edges without assay rows.
+ * Future (when curated PMIDs exist): trial_biomarkers, biomarker_assays linked to graph BIOMARKER ids.
  */
 
 /** Phase 4 Research Workbench — member evidence collections (migration 0016). Never a KG write. */

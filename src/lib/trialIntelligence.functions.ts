@@ -121,6 +121,9 @@ export async function loadTrialIntelligenceFromDb(graphNodeId: string): Promise<
       if (!endpointPassesHonesty(mapped)) return null;
       endpoints.push(mapped);
     }
+    const fixtureArm = MELANOMA_PILOT_TRIALS.find((t) => t.trialId === trialRow.trialId)?.arms.find(
+      (a) => a.armId === armRow.armId,
+    );
     arms.push({
       armId: armRow.armId,
       label: armRow.label,
@@ -130,10 +133,13 @@ export async function loadTrialIntelligenceFromDb(graphNodeId: string): Promise<
       enrolledN: armRow.enrolledN,
       treatedN: armRow.treatedN,
       sortOrder: armRow.sortOrder,
+      // 0018 column when present; fixture fallback — never regex-inferred from free text.
+      treatmentLine: armRow.treatmentLine ?? fixtureArm?.treatmentLine ?? null,
       endpoints,
     });
   }
 
+  const fixtureTrial = MELANOMA_PILOT_TRIALS.find((t) => t.trialId === trialRow.trialId);
   return {
     trialId: trialRow.trialId,
     graphNodeId: trialRow.graphNodeId,
@@ -147,16 +153,16 @@ export async function loadTrialIntelligenceFromDb(graphNodeId: string): Promise<
     conditionLabel: trialRow.conditionLabel ?? "",
     populationSummary: trialRow.populationSummary ?? "",
     analysisSetNote: trialRow.analysisSetNote ?? "",
-    // Fixture-curated treatmentLine (no DB column in 0015) — never infer from free text.
-    treatmentLine: MELANOMA_PILOT_TRIALS.find((t) => t.trialId === trialRow.trialId)?.treatmentLine ?? null,
+    // 0018 clinical_trials.treatment_line; fixture fallback if null / pre-migration.
+    treatmentLine: trialRow.treatmentLine ?? fixtureTrial?.treatmentLine ?? null,
     verificationState,
     primaryPmid: trialRow.primaryPmid ?? "",
     primaryDoi: trialRow.primaryDoi ?? "",
     notes: trialRow.notes,
     sources: sourcesForTrial(trialRow.trialId),
     arms,
-    // Assays not stored in 0015 — keep empty stub; graph biomarkers resolve in UI.
-    biomarkerContext: MELANOMA_PILOT_TRIALS.find((t) => t.trialId === trialRow.trialId)?.biomarkerContext ?? [],
+    // Assays not stored — keep empty stub; graph biomarkers resolve in UI. Never invent cut-offs.
+    biomarkerContext: fixtureTrial?.biomarkerContext ?? [],
   };
 }
 

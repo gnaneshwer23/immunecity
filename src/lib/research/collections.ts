@@ -156,3 +156,26 @@ export function planEvidenceCollection(input: {
   const evidenceRefs = sanitizeEvidenceRefs(input.evidenceRefs ?? []);
   return { ok: true, userId, name, conceptIds, evidenceRefs };
 }
+
+/**
+ * Phase E — Plan a member collection from the melanoma investigation seeds.
+ * Sync helper only: does not write Neon or the KG. Caller must be signed in.
+ * Evidence refs stay empty unless the caller supplies known Neon evidence ids.
+ */
+export function planMelanomaInvestigationCollection(input: {
+  userId: string | null | undefined;
+  name?: string;
+  conceptIds?: readonly string[];
+  evidenceRefs?: readonly string[];
+}): ReturnType<typeof planEvidenceCollection> {
+  // Lazy import avoided — seeds are plain ids; sanitize drops unknowns.
+  const seeds = input.conceptIds?.length
+    ? input.conceptIds
+    : (["D012", "R011", "R012", "I008", "I009", "I025", "B011", "TR003", "TR020"] as const);
+  return planEvidenceCollection({
+    userId: input.userId,
+    name: input.name ?? "Melanoma PD-1 investigation (pilot)",
+    conceptIds: seeds,
+    evidenceRefs: input.evidenceRefs,
+  });
+}

@@ -8,6 +8,19 @@ export const RESEARCH_PATHS_KEY = "isi-research-paths-v1";
 export const MAX_PATH_CONCEPTS = 8;
 export const MAX_SAVED_PATHS = 12;
 
+/**
+ * Phase E — Canonical melanoma investigation path seeds (local path sync).
+ * Cap respects MAX_PATH_CONCEPTS; does not auto-write localStorage or the KG.
+ */
+export const MELANOMA_INVESTIGATION_PATH_SEEDS = [
+  "D012",
+  "R011",
+  "I008",
+  "B011",
+  "TR003",
+  "TR020",
+] as const;
+
 export type ResearchPath = {
   id: string;
   /** Display label; may be derived from concept names */
@@ -102,4 +115,21 @@ export function removeResearchPath(id: string): ResearchPath[] {
 export function pathGraphSearch(path: ResearchPath): { focus: string } | Record<string, never> {
   const first = path.conceptIds.find((id) => byId[id]);
   return first ? { focus: first } : {};
+}
+
+/**
+ * Build (but do not persist) the melanoma investigation research path.
+ * Use `saveResearchPath(ids)` explicitly when the member opts in — never community→KG.
+ */
+export function melanomaInvestigationResearchPath(title?: string): ResearchPath | null {
+  const conceptIds = sanitizePathConceptIds(MELANOMA_INVESTIGATION_PATH_SEEDS);
+  if (conceptIds.length < 2) return null;
+  return {
+    id: "path-melanoma-pd1-investigation",
+    title: title?.trim()
+      ? title.trim().slice(0, 120)
+      : pathTitleFromIds(conceptIds),
+    conceptIds,
+    savedAt: new Date(0).toISOString(),
+  };
 }

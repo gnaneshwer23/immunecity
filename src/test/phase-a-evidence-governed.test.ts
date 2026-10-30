@@ -253,19 +253,22 @@ describe("Phase A3 — trial fixture / schema / read-model consistency", () => {
     }
   });
 
-  it("negative: 0015 schema lacks treatment_line; read path must overlay fixture (source contract)", () => {
-    expect([...TRIAL_FIXTURE_ONLY_FIELDS]).toContain("treatmentLine");
-    const mig = source("drizzle/migrations/0015_clinical_trial_intelligence.sql");
-    expect(mig).not.toMatch(/treatment_line/);
+  it("negative: 0015 CREATE lacks treatment_line; 0018 adds it; sources stay fixture-only", () => {
+    expect([...TRIAL_FIXTURE_ONLY_FIELDS]).toContain("sources");
+    expect([...TRIAL_FIXTURE_ONLY_FIELDS]).not.toContain("treatmentLine");
+    const mig15 = source("drizzle/migrations/0015_clinical_trial_intelligence.sql");
+    expect(mig15).not.toMatch(/treatment_line/);
+    const mig18 = source("drizzle/migrations/0018_trial_treatment_line.sql");
+    expect(mig18).toMatch(/ADD COLUMN IF NOT EXISTS treatment_line/);
     const schema = source("src/lib/db/schema.server.ts");
     expect(schema).toContain("clinicalTrials");
-    expect(schema).not.toMatch(/treatmentLine:/);
+    expect(schema).toMatch(/treatmentLine:\s*text\("treatment_line"\)/);
     const fns = source("src/lib/trialIntelligence.functions.ts");
-    expect(fns).toMatch(/treatmentLine:\s*MELANOMA_PILOT_TRIALS/);
-    expect(fns).toMatch(/fixture_overlay|No DB column|fixture-curated treatmentLine/i);
+    expect(fns).toMatch(/trialRow\.treatmentLine/);
+    expect(fns).toMatch(/fixtureTrial\?\.treatmentLine|fixture fallback/i);
   });
 
-  it("boundary: applyFixtureOverlays restores treatmentLine/sources without inventing assays", () => {
+  it("boundary: applyFixtureOverlays prefers DB treatmentLine; never invents assays", () => {
     const kn = MELANOMA_PILOT_TRIALS[0]!;
     const dbShaped = {
       ...kn,
@@ -281,9 +284,14 @@ describe("Phase A3 — trial fixture / schema / read-model consistency", () => {
     expect(assembled.treatmentLine).toBe(kn.treatmentLine);
     expect(assembled.sources.length).toBe(kn.sources.length);
     expect(assembled.biomarkerContext ?? []).toEqual(kn.biomarkerContext ?? []);
-    expect(TRIAL_READ_MODEL_FIELDS.some((f) => f.path === "treatmentLine" && f.source === "fixture_overlay")).toBe(
-      true,
-    );
+    const fromDb = applyFixtureOverlays({
+      ...kn,
+      treatmentLine: "DB curated line",
+      sources: [],
+      biomarkerContext: undefined,
+    });
+    expect(fromDb.treatmentLine).toBe("DB curated line");
+    expect(TRIAL_READ_MODEL_FIELDS.some((f) => f.path === "treatmentLine" && f.source === "postgres")).toBe(true);
     expect(TRIAL_READ_MODEL_FIELDS.some((f) => f.path === "biomarkerContext" && f.source === "empty_stub")).toBe(
       true,
     );
