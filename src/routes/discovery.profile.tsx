@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent } from "react";
 import { PageHead } from "@/components/immune/ui";
+import { PageToc, Section, Facts } from "@/components/immune/page";
 import { useMember, safeClientError } from "@/components/immune/community/chrome";
 import { PRODUCT_NAME } from "@/lib/brand";
 import {
@@ -10,6 +11,11 @@ import {
 } from "@/lib/discovery/profiles.functions";
 import type { ResearchProfileRow } from "@/lib/discovery/types";
 import { seoHead } from "@/lib/seo";
+
+const TOC = [
+  { id: "plan", label: "Plan & quotas" },
+  { id: "preferences", label: "Preferences" },
+];
 
 export const Route = createFileRoute("/discovery/profile")({
   head: () =>
@@ -83,62 +89,127 @@ function DiscoveryProfilePage() {
   const quotas = entitlement?.quotas;
 
   return (
-    <div className="page">
+    <main className="page isi-auth-page">
       <PageHead
         kicker="Investigate · Research Radar"
         title="Research profile"
-        lede="Account-isolated preferences for Discovery Radar. Sensitive PII is not required."
+        lede="Account-isolated preferences for Discovery Radar. Sensitive PII is not required. Profiles never write the curated knowledge graph."
+        stats={
+          member
+            ? [
+                { v: entitlement?.label ?? profile?.entitlement ?? "free", l: "Plan" },
+                { v: String(radarLimit), l: "Radar limit" },
+                { v: "Stub", l: "Billing" },
+              ]
+            : undefined
+        }
       />
       {member === null ? (
-        <p>
-          <Link to="/auth" search={{ redirect: "/discovery/profile" }}>
-            Sign in to view your profile
-          </Link>
-        </p>
+        <div className="isi-auth-sign-in">
+          <p>
+            <Link to="/auth" search={{ redirect: "/discovery/profile" }}>
+              Sign in to view your profile
+            </Link>
+          </p>
+        </div>
       ) : null}
       {member ? (
         <>
-          <p className="small muted">
-            Plan: <code>{entitlement?.label ?? profile?.entitlement ?? "free"}</code> · Radar limit:{" "}
-            {radarLimit} · {entitlement?.billingCopy ?? "Researcher Pro — billing not activated"}
-          </p>
-          {quotas ? (
-            <ul className="small muted" style={{ margin: "8px 0 16px", paddingLeft: 18 }}>
-              <li>
-                Followed gaps: up to {quotas.maxFollowedGaps} (server-enforced; UI hide is not enough)
-              </li>
-              <li>Monitor runs / day: up to {quotas.maxMonitorRunsPerDay}</li>
-              <li>Dossier exports / day: up to {quotas.maxExportsPerDay}</li>
-              <li>
-                Team shared profiles:{" "}
-                {team?.policy.activated ? "active" : "scaffolding only — billing not activated"}
-              </li>
-              <li>
-                Account roles (<code>user_roles</code>) stay orthogonal to Discovery plans
-              </li>
-            </ul>
-          ) : null}
-          <form className="isi-form" onSubmit={save} style={{ maxWidth: 520 }}>
-            <label>
-              Display label
-              <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} />
-            </label>
-            <label>
-              Focus diseases
-              <input value={diseases} onChange={(e) => setDiseases(e.target.value)} />
-            </label>
-            <button className="btn primary" type="submit">
-              Update profile
-            </button>
-          </form>
-          {msg ? <p className="callout">{msg}</p> : null}
-          <p style={{ marginTop: 16 }}>
-            <Link to="/discovery">Back to Radar</Link>
-            {" · "}
-            <Link to="/discovery/alerts">Alerts</Link>
-          </p>
+          <PageToc items={TOC} />
+          <Section
+            id="plan"
+            title="Plan & quotas"
+            lede="Entitlements are server-checked stubs, orthogonal to account roles. Billing is not activated."
+          >
+            <Facts
+              items={[
+                {
+                  label: "Plan",
+                  children: <code>{entitlement?.label ?? profile?.entitlement ?? "free"}</code>,
+                },
+                { label: "Radar limit", children: String(radarLimit) },
+                {
+                  label: "Billing",
+                  children: entitlement?.billingCopy ?? "Researcher Pro — billing not activated",
+                },
+              ]}
+            />
+            {quotas ? (
+              <ul className="isi-library-list" style={{ marginTop: "var(--isi-space-3)" }}>
+                <li>
+                  <span>
+                    <strong>Followed gaps</strong>
+                    <span className="muted">
+                      {" "}
+                      · up to {quotas.maxFollowedGaps} (server-enforced; UI hide is not enough)
+                    </span>
+                  </span>
+                </li>
+                <li>
+                  <span>
+                    <strong>Monitor runs / day</strong>
+                    <span className="muted"> · up to {quotas.maxMonitorRunsPerDay}</span>
+                  </span>
+                </li>
+                <li>
+                  <span>
+                    <strong>Dossier exports / day</strong>
+                    <span className="muted"> · up to {quotas.maxExportsPerDay}</span>
+                  </span>
+                </li>
+                <li>
+                  <span>
+                    <strong>Team shared profiles</strong>
+                    <span className="muted">
+                      {" "}
+                      · {team?.policy.activated ? "active" : "scaffolding only — billing not activated"}
+                    </span>
+                  </span>
+                </li>
+                <li>
+                  <span>
+                    <strong>Account roles</strong>
+                    <span className="muted">
+                      {" "}
+                      · <code>user_roles</code> stay orthogonal to Discovery plans
+                    </span>
+                  </span>
+                </li>
+              </ul>
+            ) : null}
+          </Section>
+
+          <Section
+            id="preferences"
+            title="Preferences"
+            lede="Display label and focus diseases for Radar ranking. No sensitive personal data required."
+          >
+            <form className="isi-auth-form isi-form" onSubmit={save}>
+              <label>
+                Display label
+                <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} />
+              </label>
+              <label>
+                Focus diseases
+                <input value={diseases} onChange={(e) => setDiseases(e.target.value)} />
+              </label>
+              <button className="btn primary" type="submit">
+                Update profile
+              </button>
+            </form>
+            {msg ? (
+              <p className="callout" role="status">
+                {msg}
+              </p>
+            ) : null}
+            <nav className="isi-auth-links" aria-label="Related Discovery pages">
+              <Link to="/discovery">Back to Radar</Link>
+              <Link to="/discovery/alerts">Alerts</Link>
+              <Link to="/discovery/onboarding">Onboarding</Link>
+            </nav>
+          </Section>
         </>
       ) : null}
-    </div>
+    </main>
   );
 }

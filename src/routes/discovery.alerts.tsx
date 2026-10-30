@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { PageHead } from "@/components/immune/ui";
-import { Section } from "@/components/immune/page";
+import { PageToc, Section, Toolbar } from "@/components/immune/page";
 import { PRODUCT_NAME } from "@/lib/brand";
 import {
   listMyDiscoveryAlerts,
@@ -10,6 +10,11 @@ import {
   runMyDiscoveryMonitor,
 } from "@/lib/discovery/monitor.functions";
 import { seoHead } from "@/lib/seo";
+
+const TOC = [
+  { id: "actions", label: "Monitor" },
+  { id: "inbox", label: "Inbox" },
+];
 
 export const Route = createFileRoute("/discovery/alerts")({
   head: () =>
@@ -41,56 +46,70 @@ function DiscoveryAlertsPage() {
     refresh().catch((e) => setMsg(e instanceof Error ? e.message : "Sign in to view Discovery alerts."));
   }, [load]);
 
+  const unread = data?.items.filter((i) => !i.read).length ?? 0;
+
   return (
-    <div className="page">
+    <main className="page isi-auth-page">
       <PageHead
         kicker="Investigate · Research Radar"
         title="Discovery alerts"
         lede="In-app notices when the monitor sees new or changed ISI signals for gaps you follow or interests on your research profile. These updates are engineering change signals — not automatic scientific review. Email is deferred."
+        stats={
+          data
+            ? [
+                { v: String(data.items.length), l: "Alerts" },
+                { v: String(unread), l: "Unread" },
+                { v: "In-app", l: "Delivery" },
+              ]
+            : undefined
+        }
       />
+      <PageToc items={TOC} />
 
       <Section id="actions" title="Monitor" lede="Safe to re-run; alert dedupe is idempotent.">
-        <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
-          <button
-            type="button"
-            className="btn sm primary"
-            disabled={busy}
-            onClick={() => {
-              setBusy(true);
-              setMsg("");
-              runMonitor({ data: {} })
-                .then(async (res) => {
-                  setMsg(
-                    `Monitor complete · targets ${res.targets} · signals ${res.signals} · alerts inserted ${res.alertsInserted}. ${res.note}`,
-                  );
-                  await refresh();
-                })
-                .catch((e) => setMsg(e instanceof Error ? e.message : "Monitor failed (sign in required)."))
-                .finally(() => setBusy(false));
-            }}
-          >
-            {busy ? "Running…" : "Run monitor now"}
-          </button>
-          <button
-            type="button"
-            className="btn sm"
-            onClick={() => {
-              mark({ data: { all: true } })
-                .then(() => refresh())
-                .catch((e) => setMsg(e instanceof Error ? e.message : "Mark read failed."));
-            }}
-          >
-            Mark all read
-          </button>
-          <Link className="btn sm" to="/discovery">
-            Back to Radar
-          </Link>
-          <Link className="btn sm" to="/discovery/profile">
-            Profile
-          </Link>
-        </div>
+        <Toolbar count={data ? `${unread} unread` : undefined}>
+          <div className="isi-auth-btn-row">
+            <button
+              type="button"
+              className="btn sm primary"
+              disabled={busy}
+              onClick={() => {
+                setBusy(true);
+                setMsg("");
+                runMonitor({ data: {} })
+                  .then(async (res) => {
+                    setMsg(
+                      `Monitor complete · targets ${res.targets} · signals ${res.signals} · alerts inserted ${res.alertsInserted}. ${res.note}`,
+                    );
+                    await refresh();
+                  })
+                  .catch((e) => setMsg(e instanceof Error ? e.message : "Monitor failed (sign in required)."))
+                  .finally(() => setBusy(false));
+              }}
+            >
+              {busy ? "Running…" : "Run monitor now"}
+            </button>
+            <button
+              type="button"
+              className="btn sm"
+              onClick={() => {
+                mark({ data: { all: true } })
+                  .then(() => refresh())
+                  .catch((e) => setMsg(e instanceof Error ? e.message : "Mark read failed."));
+              }}
+            >
+              Mark all read
+            </button>
+            <Link className="btn sm" to="/discovery">
+              Back to Radar
+            </Link>
+            <Link className="btn sm" to="/discovery/profile">
+              Profile
+            </Link>
+          </div>
+        </Toolbar>
         {msg ? (
-          <p className="small" role="status" style={{ marginTop: 8 }}>
+          <p className="isi-auth-status" role="status">
             {msg}
           </p>
         ) : null}
@@ -103,19 +122,21 @@ function DiscoveryAlertsPage() {
       >
         {!data ? <p className="muted">Loading alerts…</p> : null}
         {data?.items.length ? (
-          <ul className="isi-library-list">
+          <ul className="isi-auth-queue">
             {data.items.map((item) => (
-              <li key={item.id}>
-                <div className="isi-radar-meta">
+              <li key={item.id} className="isi-auth-queue-item">
+                <div className="isi-auth-queue-head">
+                  <strong>{item.title}</strong>
                   <span className="isi-gap-badge" data-tone={item.read ? "neutral" : "info"}>
                     {item.read ? "Read" : "Unread"}
                   </span>
-                  <span className="small muted">{item.eventType}</span>
-                  <span className="small muted">{item.createdAt}</span>
                 </div>
-                <strong>{item.title}</strong>
+                <div className="isi-auth-queue-meta">
+                  <span>{item.eventType}</span>
+                  <span>{item.createdAt}</span>
+                </div>
                 <p className="isi-radar-why">{item.body}</p>
-                <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 6 }}>
+                <div className="isi-auth-btn-row">
                   {item.href ? (
                     <a className="btn sm" href={item.href}>
                       Open gap
@@ -139,15 +160,18 @@ function DiscoveryAlertsPage() {
             ))}
           </ul>
         ) : data ? (
-          <p className="muted">
-            No Discovery alerts yet. Follow a persisted gap (Researcher Pro — billing not activated; server quota
-            enforced) or set profile interests, then run the monitor.
-          </p>
+          <div className="isi-auth-empty">
+            <h3>No alerts yet</h3>
+            <p>
+              Follow a persisted gap (Researcher Pro — billing not activated; server quota enforced) or set
+              profile interests, then run the monitor.
+            </p>
+          </div>
         ) : null}
-        <p className="small muted" style={{ marginTop: 12 }}>
+        <p className="small muted" style={{ marginTop: "var(--isi-space-3)" }}>
           {data?.note ?? "Scientific review is never implied by monitor updates."}
         </p>
       </Section>
-    </div>
+    </main>
   );
 }

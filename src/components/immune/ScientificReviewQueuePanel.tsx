@@ -57,70 +57,65 @@ export default function ScientificReviewQueuePanel({ canReview }: Props) {
 
   if (!canReview) {
     return (
-      <p className="callout" style={{ marginBottom: 16 }}>
-        Scientific review queue requires reviewer or administrator access.
-      </p>
+      <div className="isi-auth-empty" data-testid="scientific-review-queue">
+        <p>Scientific review queue requires reviewer or administrator access.</p>
+      </div>
     );
   }
 
   return (
-    <div className="card" style={{ marginBottom: 16 }} data-testid="scientific-review-queue">
-      <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Scientific review queue</h3>
-      <p className="small muted" style={{ marginBottom: 10 }}>
+    <div className="isi-auth-panel" data-testid="scientific-review-queue">
+      <p className="isi-auth-lede">
         Neon-backed unreviewed candidates. Inspect claim text / source passages, then record a human decision.
         Audit events are append-only. <strong>No automatic approval.</strong>
       </p>
-      <div className="row" style={{ gap: 8, marginBottom: 10 }}>
+      <div className="isi-auth-btn-row">
         <button type="button" className="btn sm" disabled={busy} onClick={() => void load()}>
           Refresh queue
         </button>
       </div>
       {msg ? (
-        <p className="xs muted" role="status">
+        <p className="isi-auth-status" role="status">
           {msg}
         </p>
       ) : null}
       {queue ? (
-        <p className="xs muted" style={{ marginBottom: 8 }}>
-          Priorities: conflict={queue.counts.conflict} · ready={queue.counts.ready_for_supports} · needs
-          id={queue.counts.needs_identifier} · unassessed={queue.counts.unassessed} · other=
-          {queue.counts.other} · blockedSilent={queue.blockedSilentApprovals}
+        <p className="isi-auth-status">
+          Priorities: conflict={queue.counts.conflict} · ready={queue.counts.ready_for_supports} · needs id=
+          {queue.counts.needs_identifier} · unassessed={queue.counts.unassessed} · other={queue.counts.other} ·
+          blockedSilent={queue.blockedSilentApprovals}
         </p>
       ) : null}
       {!queue?.items.length ? (
-        <p className="empty small">No unreviewed items in the persistent queue.</p>
+        <div className="isi-auth-empty">
+          <h3>Queue empty</h3>
+          <p>No unreviewed items in the persistent queue.</p>
+        </div>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
+        <ul className="isi-auth-queue">
           {queue.items.slice(0, 40).map((item) => {
             const kind = (item.claim.reviewKind ?? "literature_candidate") as ClaimReviewKind;
             const uuid = idByEvidence[item.evidenceId];
             return (
-              <li key={item.evidenceId} className="card" style={{ padding: 12 }}>
-                <div className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+              <li key={item.evidenceId} className="isi-auth-queue-item">
+                <div className="isi-auth-queue-head">
                   <strong>
                     {item.conceptName ?? item.conceptId ?? "—"} · {item.priority}
                   </strong>
                   <span className="xs muted">{claimReviewKindLabel(kind)}</span>
                 </div>
-                <p className="xs muted" style={{ marginTop: 4 }}>
+                <div className="isi-auth-queue-meta">
                   <code>{item.evidenceId}</code>
-                  {item.relationshipId ? (
-                    <>
-                      {" "}
-                      · <code>{item.relationshipId}</code>
-                    </>
-                  ) : null}
-                  {item.claim.locator.pmid ? <> · PMID {item.claim.locator.pmid}</> : null}
-                </p>
+                  {item.relationshipId ? <code>{item.relationshipId}</code> : null}
+                  {item.claim.locator.pmid ? <span>PMID {item.claim.locator.pmid}</span> : null}
+                </div>
                 {item.sourcePassage ? (
-                  <blockquote className="small" style={{ margin: "8px 0", borderLeft: "3px solid var(--border, #ccc)", paddingLeft: 10 }}>
-                    {item.sourcePassage}
-                  </blockquote>
+                  <blockquote className="isi-auth-quote">{item.sourcePassage}</blockquote>
                 ) : (
                   <p className="xs muted">No passage / claim_text recorded yet.</p>
                 )}
                 <p className="xs">{item.reason}</p>
-                <div className="row" style={{ gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                <div className="isi-auth-btn-row">
                   <button
                     type="button"
                     className="btn sm"
@@ -205,11 +200,11 @@ export default function ScientificReviewQueuePanel({ canReview }: Props) {
                   </button>
                 </div>
                 {auditFor === item.evidenceId ? (
-                  <div className="xs muted" style={{ marginTop: 8 }}>
+                  <div className="xs muted">
                     {auditLines.length === 0 ? (
                       <p>No audit events yet (immutable log empty).</p>
                     ) : (
-                      <ul style={{ paddingLeft: 16, margin: 0 }}>
+                      <ul className="isi-sme-audit">
                         {auditLines.map((line) => (
                           <li key={line}>{line}</li>
                         ))}

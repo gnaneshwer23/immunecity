@@ -61,13 +61,15 @@ export default function EvidenceCollectionsPanel() {
 
   if (member === null) {
     return (
-      <p className="callout">
-        <Link to="/auth" search={{ redirect: "/research" }}>
-          Sign in
-        </Link>{" "}
-        as a member to save named evidence collections (graph concept ids + optional evidence record refs). Collections
-        never write the knowledge graph.
-      </p>
+      <div className="isi-auth-sign-in">
+        <p>
+          <Link to="/auth" search={{ redirect: "/research" }}>
+            Sign in
+          </Link>{" "}
+          as a member to save named evidence collections (graph concept ids + optional evidence record refs).
+          Collections never write the knowledge graph.
+        </p>
+      </div>
     );
   }
 
@@ -76,149 +78,163 @@ export default function EvidenceCollectionsPanel() {
   const isEditing = Boolean(editingId);
 
   return (
-    <div className="card" style={{ display: "grid", gap: 12 }}>
-      <p className="small">
-        Save a named collection of existing atlas concept ids and optional Neon <code>evidence_id</code> refs.
-        Collections sync across devices for your signed-in account (Neon). Workbench local drafts stay in this
-        browser’s localStorage and do not sync. <strong>kgWrite=false</strong> — this does not approve claims or
-        mutate the curated graph. Evidence refs must already exist in <code>evidence_records</code>.
-      </p>
-      <p className="xs muted">{EVIDENCE_GAP_PROVENANCE_NOTE}</p>
-      {!available ? (
-        <p className="callout" role="status">
-          Evidence collections are not available on this database yet (migration 0016 pending).
+    <div className="isi-workspace isi-auth-workspace">
+      <div className="isi-auth-panel">
+        <p className="isi-auth-lede">
+          Save a named collection of existing atlas concept ids and optional Neon <code>evidence_id</code> refs.
+          Collections sync across devices for your signed-in account (Neon). Workbench local drafts stay in this
+          browser’s localStorage and do not sync. <strong>kgWrite=false</strong> — this does not approve claims or
+          mutate the curated graph. Evidence refs must already exist in <code>evidence_records</code>.
         </p>
-      ) : null}
+        <p className="xs muted">{EVIDENCE_GAP_PROVENANCE_NOTE}</p>
+        {!available ? (
+          <p className="callout" role="status">
+            Evidence collections are not available on this database yet (migration 0016 pending).
+          </p>
+        ) : null}
 
-      <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "end" }}>
-        <label className="field" style={{ minWidth: 160, flex: 1 }}>
-          Name
-          <input value={name} onChange={(e) => setName(e.target.value)} maxLength={120} placeholder="Melanoma PD-1 path" />
-        </label>
-        <label className="field" style={{ minWidth: 220, flex: 2 }}>
-          Concept ids
-          <input
-            value={conceptText}
-            onChange={(e) => setConceptText(e.target.value)}
-            placeholder="R001, P001, TR003"
-          />
-        </label>
-        <label className="field" style={{ minWidth: 160, flex: 1 }}>
-          Evidence refs (optional)
-          <input
-            value={evidenceText}
-            onChange={(e) => setEvidenceText(e.target.value)}
-            placeholder="Existing evidence_id only"
-          />
-        </label>
-        <button
-          type="button"
-          className="btn sm"
-          disabled={busy || !available}
-          onClick={() => {
-            setBusy(true);
-            setMsg(null);
-            const conceptIds = conceptText.split(/[\s,;]+/).filter(Boolean);
-            const evidenceRefs = evidenceText.split(/[\s,;]+/).filter(Boolean);
-            const req = isEditing
-              ? updateFn({ data: { id: editingId!, name, conceptIds, evidenceRefs } })
-              : createFn({ data: { name, conceptIds, evidenceRefs } });
-            req
-              .then(() => {
-                resetForm();
-                setMsg(isEditing ? "Collection updated (kgWrite=false)." : "Collection saved (kgWrite=false).");
-                return queryClient.invalidateQueries({ queryKey: ["evidence-collections", member.id] });
-              })
-              .catch((err) => setMsg(safeErr(err)))
-              .finally(() => setBusy(false));
-          }}
-        >
-          {isEditing ? "Update collection" : "Save collection"}
-        </button>
-        {isEditing ? (
-          <button type="button" className="btn sm" disabled={busy} onClick={() => resetForm()}>
-            Cancel edit
+        <div className="isi-auth-field-row">
+          <label className="field">
+            Name
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={120}
+              placeholder="Melanoma PD-1 path"
+            />
+          </label>
+          <label className="field">
+            Concept ids
+            <input
+              value={conceptText}
+              onChange={(e) => setConceptText(e.target.value)}
+              placeholder="R001, P001, TR003"
+            />
+          </label>
+          <label className="field">
+            Evidence refs (optional)
+            <input
+              value={evidenceText}
+              onChange={(e) => setEvidenceText(e.target.value)}
+              placeholder="Existing evidence_id only"
+            />
+          </label>
+          <button
+            type="button"
+            className="btn sm primary"
+            disabled={busy || !available}
+            onClick={() => {
+              setBusy(true);
+              setMsg(null);
+              const conceptIds = conceptText.split(/[\s,;]+/).filter(Boolean);
+              const evidenceRefs = evidenceText.split(/[\s,;]+/).filter(Boolean);
+              const req = isEditing
+                ? updateFn({ data: { id: editingId!, name, conceptIds, evidenceRefs } })
+                : createFn({ data: { name, conceptIds, evidenceRefs } });
+              req
+                .then(() => {
+                  resetForm();
+                  setMsg(isEditing ? "Collection updated (kgWrite=false)." : "Collection saved (kgWrite=false).");
+                  return queryClient.invalidateQueries({ queryKey: ["evidence-collections", member.id] });
+                })
+                .catch((err) => setMsg(safeErr(err)))
+                .finally(() => setBusy(false));
+            }}
+          >
+            {isEditing ? "Update collection" : "Save collection"}
           </button>
+          {isEditing ? (
+            <button type="button" className="btn sm" disabled={busy} onClick={() => resetForm()}>
+              Cancel edit
+            </button>
+          ) : null}
+        </div>
+        {msg ? (
+          <p className="isi-auth-status" role="status">
+            {msg}
+          </p>
         ) : null}
       </div>
-      {msg ? (
-        <p className="xs muted" role="status">
-          {msg}
-        </p>
-      ) : null}
 
-      {collections.length === 0 ? (
-        <p className="empty small">No collections yet.</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
-          {collections.map((c) => (
-            <li key={c.id} className="card" style={{ padding: 12 }}>
-              <div className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-                <strong>{c.name}</strong>
-                <div className="row" style={{ gap: 6 }}>
-                  <button
-                    type="button"
-                    className="btn sm"
-                    disabled={busy}
-                    onClick={() => {
-                      setEditingId(c.id);
-                      setName(c.name);
-                      setConceptText(c.conceptIds.join(", "));
-                      setEvidenceText(c.evidenceRefs.join(", "));
-                      setMsg(null);
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="btn sm"
-                    disabled={busy}
-                    onClick={() => {
-                      setBusy(true);
-                      deleteFn({ data: { id: c.id } })
-                        .then(() => {
-                          if (editingId === c.id) resetForm();
-                          return queryClient.invalidateQueries({ queryKey: ["evidence-collections", member.id] });
-                        })
-                        .catch((err) => setMsg(safeErr(err)))
-                        .finally(() => setBusy(false));
-                    }}
-                  >
-                    Delete
-                  </button>
+      <div className="isi-auth-panel">
+        <h3>Your collections</h3>
+        {collections.length === 0 ? (
+          <div className="isi-auth-empty">
+            <h3>No collections yet</h3>
+            <p>Save a named set of existing graph concept ids. Nothing here writes the knowledge graph.</p>
+          </div>
+        ) : (
+          <ul className="isi-auth-queue">
+            {collections.map((c) => (
+              <li key={c.id} className="isi-auth-queue-item">
+                <div className="isi-auth-queue-head">
+                  <strong>{c.name}</strong>
+                  <div className="isi-auth-btn-row">
+                    <button
+                      type="button"
+                      className="btn sm"
+                      disabled={busy}
+                      onClick={() => {
+                        setEditingId(c.id);
+                        setName(c.name);
+                        setConceptText(c.conceptIds.join(", "));
+                        setEvidenceText(c.evidenceRefs.join(", "));
+                        setMsg(null);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn sm"
+                      disabled={busy}
+                      onClick={() => {
+                        setBusy(true);
+                        deleteFn({ data: { id: c.id } })
+                          .then(() => {
+                            if (editingId === c.id) resetForm();
+                            return queryClient.invalidateQueries({
+                              queryKey: ["evidence-collections", member.id],
+                            });
+                          })
+                          .catch((err) => setMsg(safeErr(err)))
+                          .finally(() => setBusy(false));
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <p className="xs muted" style={{ marginTop: 4 }}>
-                Updated {new Date(c.updatedAt).toLocaleString()} · kgWrite={String(c.kgWrite)}
-              </p>
-              <div className="row" style={{ gap: 6, flexWrap: "wrap", marginTop: 8 }}>
-                {c.conceptIds.map((id) => {
-                  const gap = classifyEvidenceGap(id);
-                  return (
-                    <span key={id} className="row" style={{ gap: 4, alignItems: "center" }}>
-                      {byId[id] ? <NodeChip id={id} /> : <code>{id}</code>}
-                      {gap ? (
-                        <span
-                          className="chip"
-                          title={`${evidenceGapLabelDescription(gap)} ${EVIDENCE_GAP_PROVENANCE_NOTE}`}
-                        >
-                          {evidenceGapLabelText(gap)}
-                        </span>
-                      ) : null}
-                    </span>
-                  );
-                })}
-              </div>
-              {c.evidenceRefs.length ? (
-                <p className="xs muted" style={{ marginTop: 6 }}>
-                  Evidence refs: {c.evidenceRefs.join(", ")}
+                <p className="xs muted">
+                  Updated {new Date(c.updatedAt).toLocaleString()} · kgWrite={String(c.kgWrite)}
                 </p>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      )}
+                <div className="isi-auth-queue-meta">
+                  {c.conceptIds.map((id) => {
+                    const gap = classifyEvidenceGap(id);
+                    return (
+                      <span key={id} className="isi-auth-btn-row">
+                        {byId[id] ? <NodeChip id={id} /> : <code>{id}</code>}
+                        {gap ? (
+                          <span
+                            className="isi-gap-badge"
+                            data-tone="warn"
+                            title={`${evidenceGapLabelDescription(gap)} ${EVIDENCE_GAP_PROVENANCE_NOTE}`}
+                          >
+                            {evidenceGapLabelText(gap)}
+                          </span>
+                        ) : null}
+                      </span>
+                    );
+                  })}
+                </div>
+                {c.evidenceRefs.length ? (
+                  <p className="xs muted">Evidence refs: {c.evidenceRefs.join(", ")}</p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

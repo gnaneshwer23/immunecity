@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, type FormEvent } from "react";
 import { PageHead } from "@/components/immune/ui";
+import { Section } from "@/components/immune/page";
 import { useMember, safeClientError } from "@/components/immune/community/chrome";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { upsertMyResearchProfile } from "@/lib/discovery/profiles.functions";
@@ -11,7 +12,8 @@ export const Route = createFileRoute("/discovery/onboarding")({
   head: () =>
     seoHead({
       title: `Discovery onboarding | ${PRODUCT_NAME}`,
-      description: "Set research focus for the Discovery Radar. No sensitive PII required. Does not write the knowledge graph.",
+      description:
+        "Set research focus for the Discovery Radar. No sensitive PII required. Does not write the knowledge graph.",
       path: "/discovery/onboarding",
       noIndex: true,
     }),
@@ -56,50 +58,68 @@ function DiscoveryOnboardingPage() {
   }
 
   return (
-    <div className="page">
+    <main className="page isi-auth-page">
       <PageHead
         kicker="Investigate · Research Radar"
         title="Set a research focus"
         lede="Tell ISI which disease and modality lenses matter for your radar. We do not require sensitive personal data. Profiles never write the curated knowledge graph."
+        stats={[
+          { v: "free", l: "Starting plan" },
+          { v: "Stub", l: "Billing" },
+          { v: "No PII", l: "Required" },
+        ]}
       />
       {member === undefined ? <p className="small muted">Checking your account…</p> : null}
       {member === null ? (
-        <p>
-          <Link to="/auth" search={{ redirect: "/discovery/onboarding" }}>
-            Sign in to continue onboarding
-          </Link>
-        </p>
-      ) : (
-        <form className="isi-form" onSubmit={save} style={{ maxWidth: 520 }}>
-          <label>
-            Display label (optional)
-            <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} placeholder="e.g. Melanoma IO" />
-          </label>
-          <label>
-            Focus disease concept ids
-            <input value={diseases} onChange={(e) => setDiseases(e.target.value)} placeholder="D012" />
-          </label>
-          <label>
-            Focus domains
-            <input value={domains} onChange={(e) => setDomains(e.target.value)} placeholder="checkpoint" />
-          </label>
-          <label>
-            Modalities
-            <input value={modalities} onChange={(e) => setModalities(e.target.value)} placeholder="pd1" />
-          </label>
-          <p className="small muted">
-            Entitlement starts at <code>free</code> (server-side stub). Billing is not activated.
+        <div className="isi-auth-sign-in">
+          <p>
+            <Link to="/auth" search={{ redirect: "/discovery/onboarding" }}>
+              Sign in to continue onboarding
+            </Link>
           </p>
-          {msg ? (
-            <p className="callout" role="alert">
-              {msg}
+        </div>
+      ) : (
+        <Section
+          id="focus"
+          title="Research focus"
+          lede="Concept ids and short modality labels only. Entitlement starts at free (server-side stub)."
+        >
+          <form className="isi-auth-form isi-form" onSubmit={save}>
+            <label>
+              Display label (optional)
+              <input
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                maxLength={80}
+                placeholder="e.g. Melanoma IO"
+              />
+            </label>
+            <label>
+              Focus disease concept ids
+              <input value={diseases} onChange={(e) => setDiseases(e.target.value)} placeholder="D012" />
+            </label>
+            <label>
+              Focus domains
+              <input value={domains} onChange={(e) => setDomains(e.target.value)} placeholder="checkpoint" />
+            </label>
+            <label>
+              Modalities
+              <input value={modalities} onChange={(e) => setModalities(e.target.value)} placeholder="pd1" />
+            </label>
+            <p className="isi-auth-lede">
+              Entitlement starts at <code>free</code> (server-side stub). Billing is not activated.
             </p>
-          ) : null}
-          <button className="btn primary" type="submit" disabled={busy}>
-            {busy ? "Saving…" : "Save and open Radar"}
-          </button>
-        </form>
+            {msg ? (
+              <p className="callout" role="alert">
+                {msg}
+              </p>
+            ) : null}
+            <button className="btn primary" type="submit" disabled={busy}>
+              {busy ? "Saving…" : "Save and open Radar"}
+            </button>
+          </form>
+        </Section>
       )}
-    </div>
+    </main>
   );
 }

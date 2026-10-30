@@ -81,18 +81,26 @@ function ProfileEditor() {
   }
 
   return (
-    <div className="page community-page">
+    <main className="page community-page isi-auth-page">
       <PageHead
         kicker="Community"
         title="Your profile"
-        lede="Display name, interests and visibility. A credential is optional and is not checked."
+        lede="Display name, interests and visibility. A credential is optional and is not checked. Community profiles never write the curated knowledge graph."
       />
       <CommunityBar unread={unread} />
       {member === undefined ? <p className="small muted">Checking your account.</p> : null}
-      {member === null ? <p><Link to="/auth" search={{ redirect: "/community/profile" }}>Sign in</Link></p> : null}
+      {member === null ? (
+        <div className="isi-auth-sign-in">
+          <p>
+            <Link to="/auth" search={{ redirect: "/community/profile" }}>
+              Sign in
+            </Link>
+          </p>
+        </div>
+      ) : null}
       {member && !mine && !msg ? <p className="small muted">Loading your profile.</p> : null}
       {member && mine ? (
-        <form onSubmit={onSave} className="card community-card community-form">
+        <form onSubmit={onSave} className="isi-auth-panel community-form isi-auth-form">
           <label className="field">Display name<input className="community-input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required maxLength={80} /></label>
           <label className="field">Bio<textarea className="community-input" value={bio} onChange={(e) => setBio(e.target.value)} maxLength={500} /></label>
           <fieldset>
@@ -238,6 +246,6 @@ function ProfileEditor() {
         </section>
       ) : null}
       {msg ? <p className="callout" role="status">{msg}</p> : null}
-    </div>
+    </main>
   );
 }

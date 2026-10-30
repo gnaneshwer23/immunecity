@@ -1,10 +1,11 @@
 import { seoHead } from "@/lib/seo";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { neonAuth } from "@/integrations/neon/auth-client";
 import { PageHead } from "@/components/immune/ui";
+import { PageToc, Section, Toolbar } from "@/components/immune/page";
 import {
   getMyRole,
   importManifest,
@@ -31,9 +32,25 @@ import {
   exemplarQueueFocus,
 } from "@/lib/immune/exemplarPathways";
 import { isReadyForSupportsApproval } from "@/lib/immune/evidenceInvariants";
+import { PRODUCT_NAME } from "@/lib/brand";
+
+const TOC = [
+  { id: "gates", label: "Review gates" },
+  { id: "review-queue", label: "Review queue" },
+  { id: "ontology", label: "Ontology" },
+  { id: "import", label: "Import" },
+  { id: "records", label: "Evidence records" },
+];
 
 export const Route = createFileRoute("/_authenticated/curation")({
-  head: () => seoHead({ title: "Evidence curation — Immune Super Intelligence", description: "Import citation manifests, cross-check identifiers against PubMed and Crossref, and approve citations.", path: "/curation", noIndex: true }),
+  head: () =>
+    seoHead({
+      title: `Evidence curation — ${PRODUCT_NAME}`,
+      description:
+        "Import citation manifests, cross-check identifiers against PubMed and Crossref, and approve citations.",
+      path: "/curation",
+      noIndex: true,
+    }),
   component: Curation,
 });
 
@@ -293,239 +310,510 @@ function Curation() {
   );
   const types = [...new Set(KG.nodes.map((r) => r.node_type))];
 
+  const roleLabel = administrator
+    ? "administrator"
+    : canReview
+      ? "scientific reviewer"
+      : role
+        ? "member"
+        : "…";
+
+  const tocItems = isAdmin ? TOC : TOC.filter((t) => t.id !== "import");
+
   return (
-    <div className="page">
+    <main className="page isi-auth-page isi-curation-page">
       <PageHead
-        kicker="Curation · Citation layer"
+        kicker="Investigate · Trust"
         title="Evidence curation"
         lede="Two separate gates: (1) identifier verification checks that a PMID/DOI resolves in PubMed or Crossref metadata; (2) claim approval maps that source to a directional relationship and assesses claim_support. Identifier verification alone never publishes a claim. Published cites support education — not treatment recommendations."
+        stats={[
+          { v: roleLabel, l: "Signed-in role" },
+          { v: String(stats.total), l: "Slots on page" },
+          { v: String(approvedClaimLinks), l: "Approved + supports" },
+        ]}
       />
-      <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
-        <span className="xs muted">Signed in as {email ?? "…"} · {administrator ? "administrator" : canReview ? "scientific reviewer" : role ? "member" : "…"}</span>
-        <button className="btn sm" onClick={async () => { await neonAuth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
+      <div className="isi-auth-session">
+        <span>
+          Signed in as {email ?? "…"} · {roleLabel}
+        </span>
+        <button
+          type="button"
+          className="btn sm"
+          onClick={async () => {
+            await neonAuth.signOut();
+            navigate({ to: "/" });
+          }}
+        >
+          Sign out
+        </button>
       </div>
-      <p className="callout" style={{ marginBottom: 20 }} role="note">
-        <strong>ID verify ≠ claim approve.</strong>{" "}
-        “Identifier verified” / “One match found” means the bibliographic ID resolved — not that the paper supports the atlas claim.
-        Reviewed support counts only records that are approved, marked as supporting the claim, and mapped to that relationship.
-      </p>
-      <p className="callout" style={{ marginBottom: 20 }} role="note">
-        <strong>Three dimensions stay separate.</strong>{" "}
-        Curation decision (approved / unreviewed / rejected), graph evidence_status (established / …), and recorded link confidence are not one score.
-        Partial or contradicts assessments never become Gate C support. Ask Immune fails closed on overclaims — AI never auto-approves.
-      </p>
-      <p className="callout" style={{ marginBottom: 20 }} role="note">
-        <strong>Counterevidence stays separate from reviewed support.</strong>{" "}
-        Mark a paper partial or contradicts when it only partly supports or opposes the directional claim.
-        Those rows appear as counterevidence in Ask. They never count as approved support.
-        Do not invent a contradicts row. Leave the assessment empty when the direction is unclear.
-        Do not mass-approve or invent PMIDs.
-      </p>
-      {role && !canReview ? (
-        <p className="callout" style={{ marginBottom: 20 }}>
-          <strong>Read-only view.</strong> The review queue is limited to scientific reviewers and administrators.
-        </p>
-      ) : null}
+      <PageToc items={tocItems} />
 
-      <MelanomaPilotChecklist />
-      <ScientificReviewQueuePanel canReview={canReview} />
-      <OntologyMappingPanel canReview={canReview} />
+      <Section
+        id="gates"
+        title="Review gates"
+        lede="Identifier match is bibliographic only. Claim approval is a separate human decision. AI never auto-approves."
+      >
+        <div className="isi-auth-gates" role="note">
+          <p>
+            <strong>ID verify ≠ claim approve.</strong> “Identifier verified” / “One match found” means the
+            bibliographic ID resolved — not that the paper supports the atlas claim. Reviewed support counts only
+            records that are approved, marked as supporting the claim, and mapped to that relationship.
+          </p>
+          <details>
+            <summary>More guardrails</summary>
+            <ul className="isi-auth-gates-extra">
+              <li>
+                <strong>Three dimensions stay separate.</strong> Curation decision (approved / unreviewed /
+                rejected), graph evidence_status (established / …), and recorded link confidence are not one score.
+                Partial or contradicts assessments never become Gate C support. Ask Immune fails closed on
+                overclaims — AI never auto-approves.
+              </li>
+              <li>
+                <strong>Counterevidence stays separate from reviewed support.</strong> Mark a paper partial or
+                contradicts when it only partly supports or opposes the directional claim. Those rows appear as
+                counterevidence in Ask. They never count as approved support. Do not invent a contradicts row.
+                Leave the assessment empty when the direction is unclear. Do not mass-approve or invent PMIDs.
+              </li>
+            </ul>
+          </details>
+          {role && !canReview ? (
+            <p>
+              <strong>Read-only view.</strong> The review queue is limited to scientific reviewers and
+              administrators.
+            </p>
+          ) : null}
+        </div>
+        <MelanomaPilotChecklist />
+        <p className="isi-auth-links">
+          <Link to="/sme">SME review workspace</Link>
+          <Link to="/methods">Methods</Link>
+          <Link to="/discovery">Discovery Radar</Link>
+        </p>
+      </Section>
+
+      <Section
+        id="review-queue"
+        title="Scientific review queue"
+        lede="Neon-backed unreviewed candidates. Inspect claim text and source passages, then record a human decision. Audit events are append-only."
+      >
+        <ScientificReviewQueuePanel canReview={canReview} />
+      </Section>
+
+      <Section
+        id="ontology"
+        title="Ontology mappings"
+        lede="Crosswalks retain ISI ids. External ontology IDs must be curator-supplied — never invent MeSH, UBERON, or Cell Ontology accessions."
+      >
+        <OntologyMappingPanel canReview={canReview} />
+      </Section>
 
       {isAdmin ? (
-        <div className="card" style={{ marginBottom: 16 }}>
-          <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Import citations</h3>
-          <p className="small muted" style={{ marginBottom: 10 }}>
-            Load the relationship evidence queue (KG bibliographic cites mapped to <code>relId</code>s, still unreviewed),
-            the commercial-priority concept manifest (60 concepts), or upload another manifest JSON.
-            New slots are added; existing ones keep their decisions. Nothing is auto-approved.
-          </p>
-            <div className="row" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <button className="btn primary" disabled={!!progress} onClick={importRelationshipQueue}>Load relationship queue</button>
-            <button className="btn" disabled={!!progress} onClick={importBundled}>Load priority manifest</button>
-            <button className="btn" disabled={!!progress} onClick={previewP0} title="PubMed E-utilities preview only — no writes">
-              Preview P0 PubMed
+        <Section
+          id="import"
+          title="Import citations"
+          lede="Load relationship-mapped candidates or a priority manifest. New slots are added; existing ones keep their decisions. Nothing is auto-approved."
+        >
+          <div className="isi-auth-panel isi-curation-import">
+            <div className="isi-auth-btn-row">
+              <button className="btn primary" disabled={!!progress} onClick={importRelationshipQueue}>
+                Load relationship queue
+              </button>
+              <button className="btn" disabled={!!progress} onClick={importBundled}>
+                Load priority manifest
+              </button>
+              <button
+                className="btn"
+                disabled={!!progress}
+                onClick={previewP0}
+                title="PubMed E-utilities preview only — no writes"
+              >
+                Preview P0 PubMed
+              </button>
+              <button
+                className="btn"
+                disabled={!!progress}
+                onClick={seedP0}
+                title="Insert unreviewed drafts only when PubMed title heuristic matches — never auto-approve"
+              >
+                Seed P0 unreviewed drafts
+              </button>
+              <input
+                type="file"
+                accept="application/json,.json"
+                aria-label="Upload a manifest file"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) onFile(f);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            <ol>
+              <li>
+                Import relationship queue → Check identifiers → Assess claim_support per link → Approve. Only
+                approved + supports counts toward claim-level coverage.
+              </li>
+              <li>
+                Demo priority (do not invent PMIDs): {EXEMPLAR_PATHWAYS.map((p) => p.title).join(" · ")}. Focus
+                queue slots on these pathway edges first ({exemplarRelCount} exemplar relIds in graph).
+              </li>
+            </ol>
+            <div className="isi-curation-targets">
+              <p className="isi-auth-lede">
+                <strong>Priority pathway gaps</strong> ({EXEMPLAR_CURATOR_TARGETS.length} targets). PubMed queries
+                are search starts. Verify identifiers before you approve. Do not invent PMIDs or approve in bulk.
+              </p>
+              <Toolbar count={p0Only ? "P0 page filter on" : undefined}>
+                <div className="isi-auth-btn-row">
+                  <button
+                    type="button"
+                    className={`btn sm${p0Only ? " primary" : ""}`}
+                    onClick={() => setP0Only((v) => !v)}
+                    title="Show only rows on this page whose relationship_id is a P0 PD-1/IFN exemplar target"
+                  >
+                    {p0Only ? "P0 page filter on" : "P0 page filter off"}
+                  </button>
+                  <label className="field isi-field">
+                    Focus relId
+                    <select
+                      aria-label="Focus exemplar relationship"
+                      defaultValue=""
+                      onChange={(e) => {
+                        const rel = e.target.value;
+                        if (!rel) return;
+                        const t = EXEMPLAR_CURATOR_TARGETS.find((x) => x.relId === rel);
+                        changeFilter({ ...filter, q: rel });
+                        e.target.value = "";
+                        if (t) {
+                          void navigator.clipboard?.writeText(t.pubmedQuery).then(
+                            () =>
+                              setMsg(
+                                `Filtered to ${t.relId}; PubMed query copied — verify before approve; never invent PMIDs.`,
+                              ),
+                            () => setMsg(`Filtered to ${t.relId}.`),
+                          );
+                        } else {
+                          setMsg(`Filtered to ${rel}.`);
+                        }
+                      }}
+                    >
+                      <option value="">Select exemplar edge…</option>
+                      {EXEMPLAR_CURATOR_TARGETS.map((t) => (
+                        <option key={t.relId} value={t.relId}>
+                          {t.relId}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              </Toolbar>
+              <ul>
+                {EXEMPLAR_PATHWAYS.map((p) => (
+                  <li key={p.id}>
+                    <b>{p.title}</b> — {EXEMPLAR_MATURITY_LABEL[p.maturity]}
+                    <ul>
+                      {EXEMPLAR_CURATOR_TARGETS.filter((t) => t.pathwayId === p.id).map((t) => (
+                        <li key={t.relId}>
+                          <code>{t.relId}</code>: {t.pubmedQuery}
+                          {t.neonHint ? ` · ${t.neonHint}` : ""}
+                        </li>
+                      ))}
+                      {!EXEMPLAR_CURATOR_TARGETS.some((t) => t.pathwayId === p.id) ? (
+                        <li>
+                          No open P0 targets listed — on-path approved+supports complete (teaching caveats still
+                          apply).
+                        </li>
+                      ) : null}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Section>
+      ) : null}
+
+      <Section
+        id="records"
+        title="Evidence records"
+        lede="Statistics and batch actions apply to the current page of records. Keyset pagination keeps the browser load bounded."
+      >
+        <div className="isi-auth-stats" aria-label="Page statistics">
+          <div className="isi-auth-stat">
+            <b>{stats.total}</b>
+            <span>citation slots</span>
+          </div>
+          <div className="isi-auth-stat">
+            <b>{stats.withSource}</b>
+            <span>name a source</span>
+          </div>
+          <div className="isi-auth-stat">
+            <b>{stats.verified}</b>
+            <span>IDs verified (metadata only)</span>
+          </div>
+          <div className="isi-auth-stat">
+            <b>{claimMapped.length}</b>
+            <span>claim-assessed, not yet reviewed support</span>
+          </div>
+          <div className="isi-auth-stat">
+            <b>{approvedClaimLinks}</b>
+            <span>approved + supports links</span>
+          </div>
+          <div className="isi-auth-stat">
+            <b>{stats.approved}</b>
+            <span>approved rows</span>
+          </div>
+        </div>
+
+        {canReview ? (
+          <div className="isi-auth-btn-row" style={{ marginBottom: "var(--isi-space-3)" }}>
+            <button
+              className="btn primary"
+              disabled={!!progress || !stats.pending}
+              onClick={() => check("pending")}
+            >
+              Check {stats.pending} unchecked
+            </button>
+            <button className="btn" disabled={!!progress} onClick={() => check("retry")}>
+              Retry unreachable
+            </button>
+            <button className="btn" disabled={!!progress || !stats.research} onClick={suggest}>
+              Suggest sources
             </button>
             <button
               className="btn"
-              disabled={!!progress}
-              onClick={seedP0}
-              title="Insert unreviewed drafts only when PubMed title heuristic matches — never auto-approve"
+              disabled={!!progress || !readyToApprove.length}
+              title={
+                verifiedUnapproved.length && !readyToApprove.length
+                  ? `${verifiedUnapproved.length} identifier-verified but still need relationship + claim_support`
+                  : undefined
+              }
+              onClick={approveClaimAssessed}
             >
-              Seed P0 unreviewed drafts
+              Approve {readyToApprove.length} supports-assessed
             </button>
-            <input type="file" accept="application/json,.json" aria-label="Upload a manifest file" onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
           </div>
-          <ol className="small muted" style={{ marginTop: 12, paddingLeft: 18 }}>
-            <li>Import relationship queue → 2. Check identifiers → 3. Assess claim_support per link → 4. Approve. Only approved + supports counts toward claim-level coverage.</li>
-            <li>
-              Demo priority (do not invent PMIDs): {EXEMPLAR_PATHWAYS.map((p) => p.title).join(" · ")}.
-              Focus queue slots on these pathway edges first ({exemplarRelCount} exemplar relIds in graph).
-            </li>
-          </ol>
-          <div style={{ marginTop: 14 }}>
-            <p className="small" style={{ marginBottom: 8 }}>
-              <strong>Priority pathway gaps</strong> ({EXEMPLAR_CURATOR_TARGETS.length} targets). PubMed queries are search starts. Verify identifiers before you approve.
-              Do not invent PMIDs or approve in bulk.
-            </p>
-            <p className="xs muted" style={{ marginBottom: 8 }}>
-              Focus filter: paste a <code>relId</code> from the list below into Search (e.g.{" "}
-              <code>REL-R012-suppresses-C015</code> Chemnitz reassessment, or IFN spine{" "}
-              <code>REL-C005-produces-P004</code>). Check → claim_support → Approve only when the source truly supports that directional edge.
-            </p>
-            <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
-              <button
-                type="button"
-                className={`chip${p0Only ? " on" : ""}`}
-                onClick={() => setP0Only((v) => !v)}
-                title="Show only rows on this page whose relationship_id is a P0 PD-1/IFN exemplar target"
-              >
-                {p0Only ? "P0 page filter on" : "P0 page filter off"}
-              </button>
-              {EXEMPLAR_CURATOR_TARGETS.slice(0, 8).map((t) => (
-                <button
-                  key={t.relId}
-                  type="button"
-                  className="chip"
-                  title={t.pubmedQuery}
-                  onClick={() => {
-                    changeFilter({ ...filter, q: t.relId });
-                    void navigator.clipboard?.writeText(t.pubmedQuery).then(
-                      () => setMsg(`Filtered to ${t.relId}; PubMed query copied — verify before approve; never invent PMIDs.`),
-                      () => setMsg(`Filtered to ${t.relId}.`),
-                    );
-                  }}
-                >
-                  Filter {t.relId.replace(/^REL-/, "").slice(0, 28)}
-                </button>
-              ))}
+        ) : null}
+        {progress ? (
+          <div className="isi-auth-progress">
+            <span className="xs muted">
+              Checked {progress.done} of {progress.total}
+            </span>
+            <div className="ev-progress">
+              <span style={{ width: `${(progress.done / progress.total) * 100}%` }} />
             </div>
-            <ul className="xs muted" style={{ paddingLeft: 18, margin: 0 }}>
-              {EXEMPLAR_PATHWAYS.map((p) => (
-                <li key={p.id} style={{ marginBottom: 6 }}>
-                  <b>{p.title}</b> — {EXEMPLAR_MATURITY_LABEL[p.maturity]}
-                  <ul style={{ paddingLeft: 16, marginTop: 4 }}>
-                    {EXEMPLAR_CURATOR_TARGETS.filter((t) => t.pathwayId === p.id).map((t) => (
-                      <li key={t.relId}>
-                        <code>{t.relId}</code>: {t.pubmedQuery}
-                        {t.neonHint ? ` · ${t.neonHint}` : ""}
-                      </li>
-                    ))}
-                    {!EXEMPLAR_CURATOR_TARGETS.some((t) => t.pathwayId === p.id) ? (
-                      <li>No open P0 targets listed — on-path approved+supports complete (teaching caveats still apply).</li>
-                    ) : null}
-                  </ul>
-                </li>
-              ))}
-            </ul>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+        {msg ? (
+          <p className="callout" role="status">
+            {msg}
+          </p>
+        ) : null}
 
-      <p className="small muted">Statistics and batch actions apply to the current page of records.</p>
-      <div className="ev-stats">
-        <div className="ev-stat"><b>{stats.total}</b><span>citation slots</span></div>
-        <div className="ev-stat"><b>{stats.withSource}</b><span>name a source</span></div>
-        <div className="ev-stat"><b>{stats.verified}</b><span>IDs verified (metadata only)</span></div>
-        <div className="ev-stat"><b>{claimMapped.length}</b><span>claim-assessed, not yet reviewed support</span></div>
-        <div className="ev-stat"><b>{approvedClaimLinks}</b><span>approved + supports links</span></div>
-        <div className="ev-stat"><b>{stats.approved}</b><span>approved rows</span></div>
-      </div>
+        {isAdmin ? <HealthReport /> : null}
 
-      {canReview ? (
-        <div className="row" style={{ marginTop: 14 }}>
-          <button className="btn primary" disabled={!!progress || !stats.pending} onClick={() => check("pending")}>Check {stats.pending} unchecked</button>
-          <button className="btn" disabled={!!progress} onClick={() => check("retry")}>Retry unreachable</button>
-          <button className="btn" disabled={!!progress || !stats.research} onClick={suggest}>Suggest sources</button>
-          <button
-            className="btn"
-            disabled={!!progress || !readyToApprove.length}
-            title={
-              verifiedUnapproved.length && !readyToApprove.length
-                ? `${verifiedUnapproved.length} identifier-verified but still need relationship + claim_support`
-                : undefined
-            }
-            onClick={approveClaimAssessed}
-          >
-            Approve {readyToApprove.length} supports-assessed
-          </button>
-        </div>
-      ) : null}
-      {progress ? (
-        <div style={{ marginTop: 10 }}>
-          <span className="xs muted">Checked {progress.done} of {progress.total}</span>
-          <div className="ev-progress"><span style={{ width: `${(progress.done / progress.total) * 100}%` }} /></div>
-        </div>
-      ) : null}
-      {msg ? <p className="callout" style={{ marginTop: 12 }}>{msg}</p> : null}
-
-      {isAdmin ? <HealthReport /> : null}
-
-      <div className="ev-filters">
-        <input type="text" aria-label="Search evidence records" placeholder="Search concept, ID or source" value={filter.q} onChange={(e) => changeFilter({ ...filter, q: e.target.value })} />
-        <select aria-label="Check result" value={filter.status} onChange={(e) => changeFilter({ ...filter, status: e.target.value })}>
-          <option value="all">Any check result</option>
-          {Object.entries(STATUS_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-        </select>
-        <select aria-label="Concept type" value={filter.type} onChange={(e) => changeFilter({ ...filter, type: e.target.value })}>
-          <option value="all">Any type</option>
-          {types.map((t) => <option key={t} value={t}>{t}</option>)}
-        </select>
-        <select aria-label="Curation decision" value={filter.curation} onChange={(e) => changeFilter({ ...filter, curation: e.target.value })}>
-          <option value="all">Any decision</option>
-          <option value="unreviewed">Unreviewed</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-        </select>
-        <span className="xs muted">{shown.length} shown</span>
-      </div>
-
-      {loading ? <p className="empty">Loading records…</p> : loadError ? (
-        <p className="callout" role="alert">Evidence records could not be loaded. This is not an empty collection. <Button variant="outline" onClick={load}>Retry</Button></p>
-      ) : !rows.length ? (
-        <p className="empty card">No records match this page or filter.{isAdmin ? " Import a manifest above to begin if the collection is empty." : ""}</p>
-      ) : (
-        <div className="table-wrap">
-          <table className="ev-table">
-            <thead><tr><th>Concept</th><th>Slot</th><th>Source</th><th>Check</th><th>Decision</th></tr></thead>
-            <tbody>
-              {shown.map((r) => (
-                <Fragment key={r.id}>
-                  <tr>
-                    <td><strong>{r.node_name}</strong><div className="xs mono muted">{r.node_id} · {r.node_type}</div></td>
-                    <td className="small">{r.source_type}<div className="xs mono muted">{r.evidence_id}</div></td>
-                    <td className="ev-cite">
-                      {r.source_ref ?? <span className="muted">—</span>}
-                      {r.pmid ? <div className="xs mono"><a href={`https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`} target="_blank" rel="noreferrer">PMID {r.pmid}</a></div> : null}
-                      {r.doi ? <div className="xs mono"><a href={`https://doi.org/${r.doi}`} target="_blank" rel="noreferrer">doi:{r.doi}</a></div> : null}
-                    </td>
-                    <td>
-                      <span className={`badge ${STATUS_CLASS[r.check_status] ?? ""}`}>{STATUS_LABEL[r.check_status] ?? r.check_status}</span>
-                      <div><button className="nodelink xs" onClick={() => setOpen(open === r.id ? null : r.id)}>{open === r.id ? "Hide" : "Details"}</button></div>
-                    </td>
-                    <td>
-                      {canReview ? (
-                        <div className="row" style={{ gap: 4 }}>
-                          <button className={`chip${r.curation === "approved" ? " on" : ""}`} onClick={() => patch(r.id, { curation: r.curation === "approved" ? "unreviewed" : "approved" })}>Approve</button>
-                          <button className={`chip${r.curation === "rejected" ? " on" : ""}`} onClick={() => patch(r.id, { curation: r.curation === "rejected" ? "unreviewed" : "rejected" })}>Reject</button>
-                        </div>
-                      ) : <span className="small">{r.curation}</span>}
-                    </td>
-                  </tr>
-                  {open === r.id ? (
-                    <tr><td colSpan={5}><RecordDetail r={r} isAdmin={canReview} onSave={(p) => patch(r.id, p, true)} onClaim={(p) => patch(r.id, p)} /></td></tr>
-                  ) : null}
-                </Fragment>
+        <Toolbar count={`${shown.length} shown`}>
+          <div className="isi-auth-filters">
+            <input
+              type="text"
+              aria-label="Search evidence records"
+              placeholder="Search concept, ID or source"
+              value={filter.q}
+              onChange={(e) => changeFilter({ ...filter, q: e.target.value })}
+            />
+            <select
+              aria-label="Check result"
+              value={filter.status}
+              onChange={(e) => changeFilter({ ...filter, status: e.target.value })}
+            >
+              <option value="all">Any check result</option>
+              {Object.entries(STATUS_LABEL).map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v}
+                </option>
               ))}
-            </tbody>
-          </table>
+            </select>
+            <select
+              aria-label="Concept type"
+              value={filter.type}
+              onChange={(e) => changeFilter({ ...filter, type: e.target.value })}
+            >
+              <option value="all">Any type</option>
+              {types.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+            <select
+              aria-label="Curation decision"
+              value={filter.curation}
+              onChange={(e) => changeFilter({ ...filter, curation: e.target.value })}
+            >
+              <option value="all">Any decision</option>
+              <option value="unreviewed">Unreviewed</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </Toolbar>
+
+        {loading ? (
+          <p className="isi-auth-empty">Loading records…</p>
+        ) : loadError ? (
+          <p className="callout" role="alert">
+            Evidence records could not be loaded. This is not an empty collection.{" "}
+            <Button variant="outline" onClick={load}>
+              Retry
+            </Button>
+          </p>
+        ) : !rows.length ? (
+          <div className="isi-auth-empty">
+            <h3>No records on this page</h3>
+            <p>
+              No records match this page or filter.
+              {isAdmin ? " Import a manifest above to begin if the collection is empty." : ""}
+            </p>
+          </div>
+        ) : (
+          <div className="isi-auth-table-wrap table-wrap" tabIndex={0}>
+            <table className="ev-table isi-auth-table">
+              <thead>
+                <tr>
+                  <th>Concept</th>
+                  <th>Slot</th>
+                  <th>Source</th>
+                  <th>Check</th>
+                  <th>Decision</th>
+                </tr>
+              </thead>
+              <tbody>
+                {shown.map((r) => (
+                  <Fragment key={r.id}>
+                    <tr>
+                      <td>
+                        <strong>{r.node_name}</strong>
+                        <div className="xs mono muted">
+                          {r.node_id} · {r.node_type}
+                        </div>
+                      </td>
+                      <td className="small">
+                        {r.source_type}
+                        <div className="xs mono muted">{r.evidence_id}</div>
+                      </td>
+                      <td className="ev-cite">
+                        {r.source_ref ?? <span className="muted">—</span>}
+                        {r.pmid ? (
+                          <div className="xs mono">
+                            <a
+                              href={`https://pubmed.ncbi.nlm.nih.gov/${r.pmid}/`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              PMID {r.pmid}
+                            </a>
+                          </div>
+                        ) : null}
+                        {r.doi ? (
+                          <div className="xs mono">
+                            <a href={`https://doi.org/${r.doi}`} target="_blank" rel="noreferrer">
+                              doi:{r.doi}
+                            </a>
+                          </div>
+                        ) : null}
+                      </td>
+                      <td>
+                        <span className={`badge ${STATUS_CLASS[r.check_status] ?? ""}`}>
+                          {STATUS_LABEL[r.check_status] ?? r.check_status}
+                        </span>
+                        <div>
+                          <button
+                            type="button"
+                            className="nodelink xs"
+                            onClick={() => setOpen(open === r.id ? null : r.id)}
+                          >
+                            {open === r.id ? "Hide" : "Details"}
+                          </button>
+                        </div>
+                      </td>
+                      <td>
+                        {canReview ? (
+                          <div className="isi-auth-btn-row">
+                            <button
+                              type="button"
+                              className={`btn sm${r.curation === "approved" ? " primary" : ""}`}
+                              onClick={() =>
+                                patch(r.id, {
+                                  curation: r.curation === "approved" ? "unreviewed" : "approved",
+                                })
+                              }
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              className={`btn sm${r.curation === "rejected" ? " primary" : ""}`}
+                              onClick={() =>
+                                patch(r.id, {
+                                  curation: r.curation === "rejected" ? "unreviewed" : "rejected",
+                                })
+                              }
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="small">{r.curation}</span>
+                        )}
+                      </td>
+                    </tr>
+                    {open === r.id ? (
+                      <tr>
+                        <td colSpan={5}>
+                          <div className="isi-curation-detail">
+                            <RecordDetail
+                              r={r}
+                              isAdmin={canReview}
+                              onSave={(p) => patch(r.id, p, true)}
+                              onClaim={(p) => patch(r.id, p)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <div className="isi-auth-pager" aria-label="Evidence pages">
+          <Button
+            variant="outline"
+            disabled={loading || !pageHistory.length}
+            onClick={() => {
+              setAfter(pageHistory.at(-1));
+              setPageHistory((h) => h.slice(0, -1));
+            }}
+          >
+            Previous page
+          </Button>
+          <span className="small">Page {pageHistory.length + 1}</span>
+          <Button
+            variant="outline"
+            disabled={loading || loadError || !nextCursor}
+            onClick={() => {
+              if (!nextCursor) return;
+              setPageHistory((h) => [...h, after]);
+              setAfter(nextCursor);
+            }}
+          >
+            Next page
+          </Button>
         </div>
-      )}
-      <div className="row" aria-label="Evidence pages">
-        <Button variant="outline" disabled={loading || !pageHistory.length} onClick={() => { setAfter(pageHistory.at(-1)); setPageHistory((h) => h.slice(0, -1)); }}>Previous page</Button>
-        <span className="small">Page {pageHistory.length + 1}</span>
-        <Button variant="outline" disabled={loading || loadError || !nextCursor} onClick={() => { if (!nextCursor) return; setPageHistory((h) => [...h, after]); setAfter(nextCursor); }}>Next page</Button>
-      </div>
-    </div>
+      </Section>
+    </main>
   );
 }
 
