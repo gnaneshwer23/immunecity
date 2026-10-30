@@ -196,6 +196,22 @@ describe("SME workspace wiring", () => {
     expect(source("docs/ISI_SME_WORKSPACE.md")).toMatch(/not CDS/i);
   });
 
+  it("keeps SME workspace testids and ISI layout tokens", () => {
+    const ui = source("src/components/immune/SmeReviewWorkspace.tsx");
+    expect(ui).toContain('data-testid="sme-review-workspace"');
+    expect(ui).toContain('data-testid="sme-priority-queues"');
+    expect(ui).toContain('data-testid="sme-flagged-list"');
+    expect(ui).toContain('data-testid="sme-gapkey-deeplink"');
+    expect(ui).toContain('data-testid="sme-actions"');
+    expect(ui).toContain('data-testid="sme-gold-set"');
+    expect(ui).toContain("isi-workspace");
+    expect(ui).toContain("DetailPanel");
+    expect(source("src/components/immune/MelanomaPilotChecklist.tsx")).toContain(
+      'data-testid="melanoma-pilot-checklist"',
+    );
+    expect(source("src/isi.css")).toContain(".isi-sme");
+  });
+
   it("refuses silent KEYNOTE rematch and bulk approve in source policy", () => {
     const agents = source("src/lib/sme/AGENTS.md");
     expect(agents).toMatch(/never bulk-approve/i);

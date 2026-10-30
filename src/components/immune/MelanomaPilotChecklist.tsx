@@ -3,6 +3,7 @@
  * Still unreviewed: no Gate C approvals, no remapped KEYNOTE PMIDs invented here.
  */
 import { useMemo, useState } from "react";
+import { Toolbar } from "@/components/immune/page";
 import {
   ISI_MELANOMA_PILOT_VALIDATION_MATRIX,
   melanomaMatrixSummary,
@@ -12,11 +13,11 @@ import { byId } from "@/lib/immune/engine";
 
 const FLAG_FILTERS: { id: MelanomaMatrixFlag | "all"; label: string }[] = [
   { id: "all", label: "All" },
-  { id: "TO_BE_CURATED", label: "TO_BE_CURATED" },
+  { id: "TO_BE_CURATED", label: "To curate" },
   { id: "REJECTED_PMID", label: "Rejected PMID" },
   { id: "S_P_O_MISMATCH", label: "S-P-O mismatch" },
   { id: "GATE_C_PROXY", label: "Gate C proxy" },
-  { id: "DRAFT_ESTABLISHED", label: "Draft ESTABLISHED" },
+  { id: "DRAFT_ESTABLISHED", label: "Draft established" },
 ];
 
 export default function MelanomaPilotChecklist() {
@@ -30,42 +31,46 @@ export default function MelanomaPilotChecklist() {
     [flag],
   );
 
+  const verdictLine = Object.entries(summary.byVerdict)
+    .map(([k, v]) => `${k} ${v}`)
+    .join(" · ");
+
   return (
-    <div className="card" style={{ marginBottom: 16 }} data-testid="melanoma-pilot-checklist">
-      <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Melanoma PD-1 pilot checklist</h3>
-      <p className="small muted" style={{ marginBottom: 10 }}>
-        Engineering aid from the validation matrix.{" "}
-        <strong>All {summary.total} rows remain unreviewed</strong> — no Gate C approvals and no automatic
-        KEYNOTE PMID rematch. Filter PD-1 / trial / flagged relationships for human curation.
+    <div className="isi-sme-matrix" data-testid="melanoma-pilot-checklist">
+      <p className="isi-sme-lede-tight muted">
+        Engineering aid from the validation matrix. All {summary.total} rows remain{" "}
+        <strong>unreviewed</strong> — no Gate C approvals and no automatic KEYNOTE PMID rematch.
       </p>
-      <p className="xs muted" style={{ marginBottom: 10 }}>
-        Verdicts: {Object.entries(summary.byVerdict).map(([k, v]) => `${k}=${v}`).join(" · ")} · Flags:{" "}
-        {Object.entries(summary.byFlag)
-          .map(([k, v]) => `${k}=${v}`)
-          .join(" · ")}
-      </p>
-      <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
-        {FLAG_FILTERS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            className={`chip${flag === f.id ? " on" : ""}`}
-            onClick={() => setFlag(f.id)}
+      <p className="xs muted isi-sme-lede-tight">Verdicts: {verdictLine}</p>
+
+      <Toolbar count={`${rows.length} of ${summary.total} rows`}>
+        <label className="isi-sme-field isi-sme-field-inline">
+          <span>Flag filter</span>
+          <select
+            className="input"
+            value={flag}
+            onChange={(e) => setFlag(e.target.value as MelanomaMatrixFlag | "all")}
+            aria-label="Filter melanoma matrix by flag"
           >
-            {f.label}
-          </button>
-        ))}
-      </div>
-      <div style={{ overflowX: "auto" }}>
-        <table className="table" style={{ width: "100%", fontSize: "0.85rem" }}>
+            {FLAG_FILTERS.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </Toolbar>
+
+      <div className="isi-sme-table-wrap" tabIndex={0}>
+        <table className="isi-ti-table isi-sme-matrix-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>S-P-O</th>
-              <th>Flags</th>
-              <th>Verdict</th>
-              <th>Neon / locators</th>
-              <th>Curator action</th>
+              <th scope="col">#</th>
+              <th scope="col">S-P-O</th>
+              <th scope="col">Flags</th>
+              <th scope="col">Verdict</th>
+              <th scope="col">Neon / locators</th>
+              <th scope="col">Curator action</th>
             </tr>
           </thead>
           <tbody>
@@ -73,19 +78,13 @@ export default function MelanomaPilotChecklist() {
               <tr key={r.relId}>
                 <td>{r.n}</td>
                 <td>
-                  <code style={{ fontSize: "0.75rem" }}>{r.relId}</code>
+                  <code className="isi-sme-rel">{r.relId}</code>
                   <div className="xs muted">
                     {byId[r.subjectId]?.name ?? r.subjectId} → <em>{r.predicate}</em> →{" "}
                     {byId[r.objectId]?.name ?? r.objectId}
                   </div>
                 </td>
-                <td>
-                  {r.flags.map((f) => (
-                    <span key={f} className="chip" style={{ marginRight: 4, marginBottom: 2 }}>
-                      {f}
-                    </span>
-                  ))}
-                </td>
+                <td className="xs muted">{r.flags.join(" · ")}</td>
                 <td>
                   <strong>{r.verdict}</strong>
                   <div className="xs muted">reviewed=false</div>

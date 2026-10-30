@@ -12,8 +12,8 @@ import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 
 const TOC = [
-  { id: "workspace", label: "SME workspace" },
-  { id: "checklist", label: "Melanoma checklist" },
+  { id: "workspace", label: "Review workspace" },
+  { id: "checklist", label: "Melanoma matrix" },
   { id: "links", label: "Related tools" },
 ];
 
@@ -50,46 +50,67 @@ function SmePage() {
   }, [roleFn]);
 
   return (
-    <main className="page">
+    <main className="page isi-sme-page">
       <PageHead
         kicker="Investigate · Trust"
         title="SME review workspace"
-        lede="Enable scientific reviewers to complete Gate C, melanoma pilot, KEYNOTE rematch, and gold-set labelling — without inventing PMIDs or bulk-approving claims. Educational beta — not clinical decision support."
+        lede="Human-only Gate C, KEYNOTE rematch, R011 S-P-O proposals, and gold-set labelling for the melanoma pilot. Decisions are audited; engineering never invents PMIDs or bulk-approves claims. Educational beta — not clinical decision support."
+        stats={[
+          { v: roleLabel, l: "Signed-in role" },
+          { v: "Human", l: "Gate C decisions" },
+          { v: "Audited", l: "Rematch writes" },
+        ]}
       />
       <PageToc items={TOC} />
-      <p className="xs muted" style={{ marginBottom: 16 }}>
-        Signed in · {roleLabel}. Decisions are audited. Rematch requires PMID + DOI + passage locator.
-      </p>
 
       <Section
         id="workspace"
-        title="Review queue & gold-set"
-        lede="Flagged melanoma / Discovery candidates, priority KEYNOTE and R011 items as pending_sme, and honest eval denominators."
+        title="Review workspace"
+        lede="Priority KEYNOTE and R011 queues, Discovery gap candidates, honest eval denominators, and reviewer actions — pending_sme until a scientist decides."
       >
         <SmeReviewWorkspace gapKey={gapKey || undefined} />
       </Section>
 
       <Section
         id="checklist"
-        title="Melanoma pilot checklist"
-        lede="Engineering matrix mirror — all rows remain unreviewed until an SME decides."
+        title="Melanoma pilot matrix"
+        lede="Engineering validation matrix mirror. Every row stays unreviewed until an SME records a decision elsewhere."
       >
         <MelanomaPilotChecklist />
       </Section>
 
-      <Section id="links" title="Related tools" lede="Reuse existing Neon curation and Discovery gap review paths.">
-        <ul className="small">
+      <Section
+        id="links"
+        title="Related tools"
+        lede="Reuse Neon curation and Discovery gap review — this page does not replace them."
+      >
+        <ul className="isi-library-list isi-sme-links">
           <li>
-            <Link to="/curation">Evidence curation</Link> — scientific review queue + identifier checks
+            <Link to="/curation">
+              <strong>Evidence curation</strong>
+              <span className="muted"> Scientific review queue and identifier checks</span>
+            </Link>
           </li>
           <li>
-            <Link to="/discovery">Discovery Radar</Link> — gap candidates (human review before reviewed_gap)
+            <Link to="/discovery">
+              <strong>Discovery Radar</strong>
+              <span className="muted"> Gap candidates before reviewed_gap</span>
+            </Link>
           </li>
           <li>
-            <Link to="/methods">Methods</Link> — evidence lifecycle and limitations
+            <Link to="/methods">
+              <strong>Methods</strong>
+              <span className="muted"> Evidence lifecycle and limitations</span>
+            </Link>
           </li>
           <li>
-            Operator guide: <code>docs/ISI_SME_WORKSPACE.md</code> in the repo
+            <span>
+              <strong>Operator guide</strong>
+              <span className="muted">
+                {" "}
+                <code>docs/ISI_SME_WORKSPACE.md</code> in the repo
+              </span>
+            </span>
           </li>
         </ul>
       </Section>

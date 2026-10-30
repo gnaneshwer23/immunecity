@@ -4,7 +4,8 @@
  */
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { DetailPanel, Facts, Toolbar } from "@/components/immune/page";
 import {
   getSmeWorkspaceSnapshot,
   listSmeEvidenceQueueSlice,
@@ -30,7 +31,6 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
   const goldFn = useServerFn(upsertSmeGoldLabel);
   const eventsFn = useServerFn(listSmeWorkItemEvents);
 
-  // Deep-link from Discovery dossiers: /sme?gapKey=…
   const gapKeyParam = (gapKey ?? "").trim();
 
   const [snap, setSnap] = useState<Snapshot | null>(null);
@@ -50,6 +50,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
   const [goldScore, setGoldScore] = useState("");
   const [events, setEvents] = useState<string[]>([]);
   const [idByEvidence, setIdByEvidence] = useState<Record<string, string>>({});
+  const [queueFilter, setQueueFilter] = useState<"all" | "priority" | "discovery">("all");
 
   const load = useCallback(async () => {
     setBusy(true);
@@ -59,7 +60,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
       setSnap(s);
       setMsg(
         s.canReview
-          ? `Loaded ${s.workItems.length} work items · pending_sme=${s.workSummary.pendingSme} · resolved=${s.workSummary.resolvedBySme} · persistent=${String(s.persistent)}`
+          ? `Loaded ${s.workItems.length} work items · pending_sme=${s.workSummary.pendingSme} · resolved=${s.workSummary.resolvedBySme}`
           : "Signed in — scientific reviewer role required for decisions.",
       );
       if (s.canReview) {
@@ -217,280 +218,473 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
   };
 
   const evalReport: SmeEvalReport | null = snap?.evalReport ?? null;
+  const priority = snap?.priority ?? [];
+  const workItems = snap?.workItems ?? [];
+  const goldCases = snap?.goldCases ?? [];
+
+  const filteredQueue = useMemo(() => {
+    if (queueFilter === "priority") return priority;
+    if (queueFilter === "discovery") {
+      return workItems.filter((i) => i.kind === "discovery_gap" || Boolean(i.gapKey));
+    }
+    return workItems;
+  }, [queueFilter, priority, workItems]);
+
+  const gapMatch =
+    gapKeyParam &&
+    (selected?.gapKey === gapKeyParam || selected?.id === `SME-DISC-${gapKeyParam}`);
+
+  const statusFacts = useMemo(() => {
+    if (!snap) return [];
+    return [
+      { label: "Pending SME", children: String(snap.workSummary.pendingSme) },
+      { label: "Resolved", children: String(snap.workSummary.resolvedBySme) },
+      { label: "Gold labelled", children: snap.goldSummary.labelledRate },
+      {
+        label: "Safeguards",
+        children: (
+          <span className="isi-sme-safeguards">
+            autoApprove={String(snap.autoApprove)} · autoRematch={String(snap.autoRematch)} · TI=
+            {String(snap.trialIntelligenceEnabled)}
+          </span>
+        ),
+      },
+    ];
+  }, [snap]);
 
   return (
-    <div data-testid="sme-review-workspace">
-      <div className="row" style={{ gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-        <button type="button" className="btn sm" disabled={busy} onClick={() => void load()}>
-          Refresh
-        </button>
-        <Link to="/curation" className="btn sm">
-          Evidence curation
-        </Link>
-        <Link to="/discovery" className="btn sm">
-          Discovery Radar
-        </Link>
-      </div>
+    <div className="isi-sme" data-testid="sme-review-workspace">
+      <Toolbar
+        count={
+          snap
+            ? `${snap.workSummary.pendingSme} pending · ${snap.workSummary.resolvedBySme} resolved`
+            : busy
+              ? "Loading…"
+              : "—"
+        }
+      >
+        <div className="isi-sme-toolbar-row">
+          <button type="button" className="btn sm" disabled={busy} onClick={() => void load()}>
+            Refresh
+          </button>
+          <Link to="/curation" className="btn sm">
+            Evidence curation
+          </Link>
+          <Link to="/discovery" className="btn sm">
+            Discovery Radar
+          </Link>
+        </div>
+      </Toolbar>
+
       {msg ? (
-        <p className="xs muted" role="status">
+        <p className="isi-sme-status xs muted" role="status">
           {msg}
         </p>
       ) : null}
 
       {snap ? (
-        <p className="callout small" style={{ marginBottom: 16 }}>
-          Educational / research review tooling — not CDS. autoApprove=
-          {String(snap.autoApprove)} · autoRematch={String(snap.autoRematch)} · TI=
-          {String(snap.trialIntelligenceEnabled)}. Priority KEYNOTE + R011 stay{" "}
-          <em>pending_sme</em> until a human scientist decides.
-        </p>
-      ) : null}
-
-      {evalReport ? (
-        <div className="card" style={{ marginBottom: 16, padding: 12 }}>
-          <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Eval denominators (honest)</h3>
-          <ul className="xs" style={{ margin: 0, paddingLeft: 18 }}>
-            {evalReport.denominators.map((d) => (
-              <li key={d.name}>
-                <code>{d.name}</code>: {d.display}
-                {d.pendingHuman ? " · awaiting SME" : ""}
-              </li>
-            ))}
-          </ul>
-          <p className="xs muted" style={{ marginTop: 8 }}>
-            {evalReport.note}
+        <div className="isi-sme-overview">
+          <p className="isi-note isi-sme-edu">
+            Educational / research review tooling — not CDS. Priority KEYNOTE and R011 stay{" "}
+            <em>pending_sme</em> until a human scientist decides.
           </p>
+          <Facts items={statusFacts} />
         </div>
       ) : null}
 
       {gapKeyParam ? (
-        <p className="callout small" data-testid="sme-gapkey-deeplink" style={{ marginBottom: 12 }}>
-          Deep-link filter: <code>gapKey={gapKeyParam}</code>
-          {selected?.gapKey === gapKeyParam || selected?.id === `SME-DISC-${gapKeyParam}`
-            ? " — matching work item selected."
-            : " — no matching Discovery work item in this snapshot (persist gap or refresh)."}
-        </p>
-      ) : null}
-
-      <div className="card" style={{ marginBottom: 16, padding: 12 }} data-testid="sme-priority-queues">
-        <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Priority queues (KEYNOTE / R011)</h3>
-        <p className="small muted" style={{ marginBottom: 10 }}>
-          Explicit work — no silent fix or fixture auto-rematch. Status may leave{" "}
-          <code>pending_sme</code> only after audited human events.
-        </p>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
-          {(snap?.priority ?? []).map((item) => (
-            <WorkItemCard
-              key={item.id}
-              item={item}
-              selected={selected?.id === item.id}
-              onSelect={() => setSelected(item)}
-              onAudit={() => void loadEvents(item.id)}
-            />
-          ))}
-        </ul>
-        <HumanChecklist
-          title="KEYNOTE-006 rematch checklist (PMID 25891173)"
-          steps={snap?.checklists?.keynote ?? []}
-          testId="sme-keynote-checklist"
-        />
-        <HumanChecklist
-          title="R011 S-P-O rewrite checklist"
-          steps={snap?.checklists?.r011 ?? []}
-          testId="sme-r011-checklist"
-        />
-      </div>
-
-      <div className="card" style={{ marginBottom: 16, padding: 12 }} data-testid="sme-flagged-list">
-        <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Flagged melanoma / Discovery gap candidates</h3>
-        <p className="small muted" style={{ marginBottom: 10 }}>
-          S-P-O, honesty status, rejected PMID notes, search coverage, claim type. Includes{" "}
-          <code>discovery_gap</code> / <code>isi_curation_gap</code> items routed from Radar — pending_sme
-          until a human decides. Engineering never acts as SME.
-        </p>
-        <div style={{ maxHeight: 420, overflow: "auto" }}>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
-            {(snap?.workItems ?? []).map((item) => (
-              <WorkItemCard
-                key={item.id}
-                item={item}
-                selected={selected?.id === item.id}
-                onSelect={() => setSelected(item)}
-                onAudit={() => void loadEvents(item.id)}
-                compact
-              />
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {snap?.canReview ? (
-        <div className="card" style={{ marginBottom: 16, padding: 12 }} data-testid="sme-actions">
-          <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Reviewer actions</h3>
-          <p className="xs muted" style={{ marginBottom: 8 }}>
-            Selected: {selected ? <code>{selected.id}</code> : "—"} · Evidence UUIDs from Neon queue:{" "}
-            {Object.keys(idByEvidence).length}
+        <div
+          className={`isi-sme-deeplink${gapMatch ? " is-matched" : ""}`}
+          data-testid="sme-gapkey-deeplink"
+          role="status"
+        >
+          <span className="isi-detail-eyebrow">Deep-link</span>
+          <p>
+            Focusing gap <code>{gapKeyParam}</code>
+            {gapMatch
+              ? " — matching work item selected in the queue."
+              : " — no matching Discovery work item in this snapshot yet (persist the gap or refresh)."}
           </p>
-          <label className="xs" style={{ display: "block", marginBottom: 6 }}>
-            Evidence UUID
-            <input
-              className="input"
-              style={{ display: "block", width: "100%", marginTop: 4 }}
-              value={evidenceUuid}
-              onChange={(e) => setEvidenceUuid(e.target.value)}
-              placeholder="Paste evidence_records.id (uuid)"
-            />
-          </label>
-          {Object.keys(idByEvidence).length ? (
-            <div className="row" style={{ gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
-              {Object.entries(idByEvidence)
-                .slice(0, 8)
-                .map(([eid, uuid]) => (
-                  <button
-                    key={eid}
-                    type="button"
-                    className="chip"
-                    onClick={() => setEvidenceUuid(uuid)}
-                    title={eid}
-                  >
-                    {eid.slice(0, 24)}…
-                  </button>
-                ))}
-            </div>
-          ) : null}
-          <label className="xs" style={{ display: "block", marginBottom: 6 }}>
-            Rationale
-            <textarea
-              className="input"
-              style={{ display: "block", width: "100%", marginTop: 4, minHeight: 64 }}
-              value={rationale}
-              onChange={(e) => setRationale(e.target.value)}
-              placeholder="Why approve / reject / request changes / rematch"
-            />
-          </label>
-          <div className="row" style={{ gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
-            <button type="button" className="btn sm primary" disabled={busy} onClick={() => void runDecision("approve")}>
-              Approve (human)
-            </button>
-            <button type="button" className="btn sm" disabled={busy} onClick={() => void runDecision("reject")}>
-              Reject
-            </button>
-            <button
-              type="button"
-              className="btn sm"
-              disabled={busy}
-              onClick={() => void runDecision("request_changes")}
-            >
-              Request changes
-            </button>
-          </div>
-          <h4 style={{ fontSize: "0.95rem", marginBottom: 6 }}>Rematch citation (PMID + DOI + passage)</h4>
-          <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
-            <label className="xs">
-              PMID
-              <input className="input" value={pmid} onChange={(e) => setPmid(e.target.value)} style={{ display: "block" }} />
-            </label>
-            <label className="xs">
-              DOI
-              <input className="input" value={doi} onChange={(e) => setDoi(e.target.value)} style={{ display: "block", minWidth: 220 }} />
-            </label>
-          </div>
-          <label className="xs" style={{ display: "block", marginBottom: 8 }}>
-            Passage locator
-            <textarea
-              className="input"
-              style={{ display: "block", width: "100%", marginTop: 4, minHeight: 56 }}
-              value={passage}
-              onChange={(e) => setPassage(e.target.value)}
-              placeholder="Quote or page/section locator (≥12 chars)"
-            />
-          </label>
-          <button type="button" className="btn sm" disabled={busy || !selected?.relId} onClick={() => void runRematch()}>
-            Rematch (resets approval)
-          </button>
-          {selected?.kind === "r011_spo_rewrite" ? (
-            <div style={{ marginTop: 16 }} data-testid="sme-spo-rewrite">
-              <h4 style={{ fontSize: "0.95rem", marginBottom: 6 }}>R011 S-P-O rewrite proposal (audited only)</h4>
-              <p className="xs muted" style={{ marginBottom: 8 }}>
-                Scientist fills proposed S / P / O. Does <strong>not</strong> rewrite the graph edge or approve Gate C.
-              </p>
-              <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
-                <label className="xs">
-                  Subject
-                  <input
-                    className="input"
-                    value={spoSubject}
-                    onChange={(e) => setSpoSubject(e.target.value)}
-                    style={{ display: "block", minWidth: 120 }}
-                    placeholder="Curator-supplied"
-                  />
-                </label>
-                <label className="xs">
-                  Predicate
-                  <input
-                    className="input"
-                    value={spoPredicate}
-                    onChange={(e) => setSpoPredicate(e.target.value)}
-                    style={{ display: "block", minWidth: 140 }}
-                    placeholder="Curator-supplied"
-                  />
-                </label>
-                <label className="xs">
-                  Object
-                  <input
-                    className="input"
-                    value={spoObject}
-                    onChange={(e) => setSpoObject(e.target.value)}
-                    style={{ display: "block", minWidth: 120 }}
-                    placeholder="Curator-supplied"
-                  />
-                </label>
-              </div>
-              <button type="button" className="btn sm" disabled={busy} onClick={() => void runSpoProposal()}>
-                Record S-P-O proposal
-              </button>
-            </div>
-          ) : null}
-          {events.length ? (
-            <ul className="xs muted" style={{ marginTop: 12, paddingLeft: 16 }}>
-              {events.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
+          {selected && gapMatch ? (
+            <p className="xs muted">
+              Selected <code>{selected.id}</code> · {selected.status}
+            </p>
           ) : null}
         </div>
       ) : (
-        <p className="callout" style={{ marginBottom: 16 }}>
-          Decisions, rematch, and gold labels require scientific reviewer or administrator access. Members can
-          read the queue snapshot after sign-in.
-        </p>
+        <div className="isi-sme-deeplink isi-sme-deeplink-empty" role="status">
+          <span className="isi-detail-eyebrow">Queue overview</span>
+          <p>
+            No <code>gapKey</code> filter — browse priority KEYNOTE / R011 items and Discovery candidates below.
+            Open a dossier with <code>?gapKey=…</code> to jump to one gap.
+          </p>
+        </div>
       )}
 
-      <div className="card" style={{ marginBottom: 16, padding: 12 }} data-testid="sme-gold-set">
-        <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Gold-set harness</h3>
-        <p className="small muted" style={{ marginBottom: 10 }}>
-          Expert labels stay null-scored until SME fills. labelled=
-          {snap?.goldSummary.labelledRate ?? "—"} · pending_sme={snap?.goldSummary.pendingSme ?? "—"}
+      {evalReport ? (
+        <details className="isi-sme-eval">
+          <summary>Eval denominators (honest)</summary>
+          <ul className="isi-sme-eval-list">
+            {evalReport.denominators.map((d) => (
+              <li key={d.name}>
+                <code>{d.name}</code>
+                <span>
+                  {d.display}
+                  {d.pendingHuman ? " · awaiting SME" : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="xs muted">{evalReport.note}</p>
+        </details>
+      ) : null}
+
+      <div className="isi-workspace isi-sme-workspace">
+        <div className="isi-sme-queues" data-testid="sme-priority-queues">
+          <div className="isi-panel-head">
+            <h3>Work queues</h3>
+          </div>
+          <div className="isi-sme-queue-tabs" role="tablist" aria-label="Queue filter">
+            {(
+              [
+                ["all", "All items"],
+                ["priority", "KEYNOTE / R011"],
+                ["discovery", "Discovery gaps"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={queueFilter === id}
+                className={`isi-sme-tab${queueFilter === id ? " is-on" : ""}`}
+                onClick={() => setQueueFilter(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {queueFilter !== "discovery" ? (
+            <div className="isi-sme-priority-block">
+              <h4 className="isi-sme-subhead">Priority (KEYNOTE / R011)</h4>
+              <p className="xs muted isi-sme-lede-tight">
+                Explicit work — no silent fix. Status leaves <code>pending_sme</code> only after audited human
+                events.
+              </p>
+              <ul className="isi-library-list isi-sme-item-list">
+                {priority.map((item) => (
+                  <WorkItemRow
+                    key={item.id}
+                    item={item}
+                    selected={selected?.id === item.id}
+                    onSelect={() => setSelected(item)}
+                    onAudit={() => void loadEvents(item.id)}
+                  />
+                ))}
+              </ul>
+              <HumanChecklist
+                title="KEYNOTE-006 rematch"
+                steps={snap?.checklists?.keynote ?? []}
+                testId="sme-keynote-checklist"
+              />
+              <HumanChecklist
+                title="R011 S-P-O rewrite"
+                steps={snap?.checklists?.r011 ?? []}
+                testId="sme-r011-checklist"
+              />
+            </div>
+          ) : null}
+
+          <div className="isi-sme-flagged" data-testid="sme-flagged-list">
+            <h4 className="isi-sme-subhead">
+              {queueFilter === "priority" ? "Priority only" : "Flagged melanoma / Discovery candidates"}
+            </h4>
+            {queueFilter === "priority" ? (
+              <p className="xs muted">Switch to All or Discovery gaps to browse the wider candidate list.</p>
+            ) : (
+              <>
+                <p className="xs muted isi-sme-lede-tight">
+                  S-P-O, honesty, rejected PMID notes, claim type. Engineering never acts as SME.
+                </p>
+                <ul className="isi-library-list isi-sme-item-list isi-sme-scroll">
+                  {filteredQueue.map((item) => (
+                    <WorkItemRow
+                      key={item.id}
+                      item={item}
+                      selected={selected?.id === item.id}
+                      onSelect={() => setSelected(item)}
+                      onAudit={() => void loadEvents(item.id)}
+                      compact
+                    />
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="isi-panel-sticky isi-sme-detail">
+          {selected ? (
+            <DetailPanel
+              eyebrow={`${selected.kind} · ${selected.status}`}
+              title={selected.id}
+              action={
+                <button type="button" className="btn sm" onClick={() => void loadEvents(selected.id)}>
+                  Audit log
+                </button>
+              }
+            >
+              <p className="isi-sme-spo">{selected.spo}</p>
+              <Facts
+                items={[
+                  { label: "Honesty", children: selected.honesty },
+                  { label: "Claim type", children: selected.claimType },
+                  ...(selected.gapClass
+                    ? [
+                        {
+                          label: "Gap class",
+                          children: (
+                            <>
+                              <code>{selected.gapClass}</code>
+                              {selected.dossierHref ? (
+                                <>
+                                  {" "}
+                                  · <a href={selected.dossierHref}>Open dossier</a>
+                                </>
+                              ) : null}
+                            </>
+                          ),
+                        },
+                      ]
+                    : []),
+                  ...(selected.relId
+                    ? [{ label: "Relationship", children: <code>{selected.relId}</code> }]
+                    : []),
+                  { label: "Coverage", children: selected.searchCoverageNote },
+                  ...(selected.rejectedPmidNotes
+                    ? [{ label: "Rejected PMID notes", children: selected.rejectedPmidNotes }]
+                    : []),
+                  { label: "Curator action", children: selected.curatorAction },
+                  ...(selected.flags.length
+                    ? [
+                        {
+                          label: "Flags",
+                          children: (
+                            <span className="isi-sme-flag-text">{selected.flags.join(" · ")}</span>
+                          ),
+                        },
+                      ]
+                    : []),
+                ]}
+              />
+            </DetailPanel>
+          ) : (
+            <div className="isi-sme-empty-detail">
+              <span className="isi-detail-eyebrow">Selection</span>
+              <h3>Select a work item</h3>
+              <p className="muted">
+                Choose KEYNOTE, R011, or a Discovery candidate from the queue. Reviewer actions appear here.
+              </p>
+            </div>
+          )}
+
+          {snap?.canReview ? (
+            <div className="isi-sme-actions" data-testid="sme-actions">
+              <h3 className="isi-sme-subhead">Reviewer actions</h3>
+              <p className="xs muted">
+                Evidence UUIDs available from Neon queue: {Object.keys(idByEvidence).length}
+              </p>
+
+              <fieldset className="isi-fieldset">
+                <legend>Decision</legend>
+                <label className="isi-sme-field">
+                  <span>Evidence UUID</span>
+                  <input
+                    className="input"
+                    value={evidenceUuid}
+                    onChange={(e) => setEvidenceUuid(e.target.value)}
+                    placeholder="Paste evidence_records.id (uuid)"
+                    autoComplete="off"
+                  />
+                </label>
+                {Object.keys(idByEvidence).length ? (
+                  <label className="isi-sme-field">
+                    <span>Pick from queue slice</span>
+                    <select
+                      className="input"
+                      value={
+                        Object.entries(idByEvidence).find(([, uuid]) => uuid === evidenceUuid)?.[0] ?? ""
+                      }
+                      onChange={(e) => {
+                        const uuid = idByEvidence[e.target.value];
+                        if (uuid) setEvidenceUuid(uuid);
+                      }}
+                    >
+                      <option value="">—</option>
+                      {Object.entries(idByEvidence)
+                        .slice(0, 24)
+                        .map(([eid, uuid]) => (
+                          <option key={eid} value={eid}>
+                            {eid} → {uuid.slice(0, 8)}…
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                ) : null}
+                <label className="isi-sme-field">
+                  <span>Rationale</span>
+                  <textarea
+                    className="input"
+                    value={rationale}
+                    onChange={(e) => setRationale(e.target.value)}
+                    placeholder="Why approve / reject / request changes / rematch (≥8 chars)"
+                    rows={3}
+                  />
+                </label>
+                <div className="isi-sme-btn-row">
+                  <button
+                    type="button"
+                    className="btn sm primary"
+                    disabled={busy}
+                    onClick={() => void runDecision("approve")}
+                  >
+                    Approve (human)
+                  </button>
+                  <button type="button" className="btn sm" disabled={busy} onClick={() => void runDecision("reject")}>
+                    Reject
+                  </button>
+                  <button
+                    type="button"
+                    className="btn sm"
+                    disabled={busy}
+                    onClick={() => void runDecision("request_changes")}
+                  >
+                    Request changes
+                  </button>
+                </div>
+              </fieldset>
+
+              <fieldset className="isi-fieldset">
+                <legend>Rematch citation</legend>
+                <p className="xs muted">Requires PMID + DOI + passage locator. Rematch resets approval.</p>
+                <div className="isi-sme-field-row">
+                  <label className="isi-sme-field">
+                    <span>PMID</span>
+                    <input className="input" value={pmid} onChange={(e) => setPmid(e.target.value)} />
+                  </label>
+                  <label className="isi-sme-field isi-sme-field-grow">
+                    <span>DOI</span>
+                    <input className="input" value={doi} onChange={(e) => setDoi(e.target.value)} />
+                  </label>
+                </div>
+                <label className="isi-sme-field">
+                  <span>Passage locator</span>
+                  <textarea
+                    className="input"
+                    value={passage}
+                    onChange={(e) => setPassage(e.target.value)}
+                    placeholder="Quote or page/section locator (≥12 chars)"
+                    rows={2}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="btn sm"
+                  disabled={busy || !selected?.relId}
+                  onClick={() => void runRematch()}
+                >
+                  Rematch (resets approval)
+                </button>
+              </fieldset>
+
+              {selected?.kind === "r011_spo_rewrite" ? (
+                <fieldset className="isi-fieldset" data-testid="sme-spo-rewrite">
+                  <legend>R011 S-P-O rewrite proposal</legend>
+                  <p className="xs muted">
+                    Scientist fills proposed S / P / O. Does not rewrite the graph edge or approve Gate C.
+                  </p>
+                  <div className="isi-sme-field-row">
+                    <label className="isi-sme-field">
+                      <span>Subject</span>
+                      <input
+                        className="input"
+                        value={spoSubject}
+                        onChange={(e) => setSpoSubject(e.target.value)}
+                        placeholder="Curator-supplied"
+                      />
+                    </label>
+                    <label className="isi-sme-field">
+                      <span>Predicate</span>
+                      <input
+                        className="input"
+                        value={spoPredicate}
+                        onChange={(e) => setSpoPredicate(e.target.value)}
+                        placeholder="Curator-supplied"
+                      />
+                    </label>
+                    <label className="isi-sme-field">
+                      <span>Object</span>
+                      <input
+                        className="input"
+                        value={spoObject}
+                        onChange={(e) => setSpoObject(e.target.value)}
+                        placeholder="Curator-supplied"
+                      />
+                    </label>
+                  </div>
+                  <button type="button" className="btn sm" disabled={busy} onClick={() => void runSpoProposal()}>
+                    Record S-P-O proposal
+                  </button>
+                </fieldset>
+              ) : null}
+
+              {events.length ? (
+                <ul className="isi-sme-audit xs muted">
+                  {events.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          ) : (
+            <p className="isi-note" style={{ marginTop: "var(--isi-space-4)" }}>
+              Decisions, rematch, and gold labels require scientific reviewer or administrator access. Members can
+              read the queue snapshot after sign-in.
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="isi-sme-gold" data-testid="sme-gold-set">
+        <div className="isi-panel-head">
+          <h3>Gold-set harness</h3>
+          <span className="isi-toolbar-count">
+            labelled={snap?.goldSummary.labelledRate ?? "—"} · pending_sme={snap?.goldSummary.pendingSme ?? "—"}
+          </span>
+        </div>
+        <p className="xs muted isi-sme-lede-tight">
+          Expert labels stay null-scored until an SME fills them. Evaluation runners use honest denominators.
         </p>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
-          {(snap?.goldCases ?? []).map((c) => (
-            <li key={c.id} className="card" style={{ padding: 10 }}>
-              <div className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+        <ul className="isi-library-list isi-sme-item-list">
+          {goldCases.map((c) => (
+            <li key={c.id} className="isi-sme-gold-row">
+              <div className="isi-sme-item-head">
                 <strong>
-                  <code>{c.id}</code> · {c.status}
+                  <code>{c.id}</code>
                 </strong>
-                <span className="xs muted">
-                  label={c.label ?? "null"} · score={c.smeScore === null ? "null" : String(c.smeScore)}
+                <span className="isi-gap-badge" data-tone={c.label ? "ok" : "info"}>
+                  {c.status}
                 </span>
               </div>
-              <p className="xs" style={{ marginTop: 4 }}>
-                {c.notes}
+              <p className="xs muted">
+                label={c.label ?? "null"} · score={c.smeScore === null ? "null" : String(c.smeScore)}
               </p>
+              <p className="small">{c.notes}</p>
               {snap?.canReview ? (
                 <button
                   type="button"
                   className="btn sm"
-                  style={{ marginTop: 6 }}
                   onClick={() => {
                     setGoldCase(c);
                     if (c.label) setGoldLabel(c.label);
@@ -503,36 +697,40 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
           ))}
         </ul>
         {goldCase && snap?.canReview ? (
-          <div style={{ marginTop: 12 }}>
-            <p className="xs">
+          <fieldset className="isi-fieldset isi-sme-gold-form">
+            <legend>
               Labelling <code>{goldCase.id}</code>
-            </p>
-            <select
-              className="input"
-              value={goldLabel}
-              onChange={(e) => setGoldLabel(e.target.value as SmeGoldLabel)}
-              style={{ marginRight: 8 }}
-            >
-              {SME_GOLD_LABELS.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-            <label className="xs" style={{ marginRight: 8 }}>
-              Optional score 0–1 (leave empty = null)
-              <input
-                className="input"
-                value={goldScore}
-                onChange={(e) => setGoldScore(e.target.value)}
-                placeholder="null"
-                style={{ display: "block", width: 80 }}
-              />
-            </label>
+            </legend>
+            <div className="isi-sme-field-row">
+              <label className="isi-sme-field">
+                <span>Label</span>
+                <select
+                  className="input"
+                  value={goldLabel}
+                  onChange={(e) => setGoldLabel(e.target.value as SmeGoldLabel)}
+                >
+                  {SME_GOLD_LABELS.map((l) => (
+                    <option key={l} value={l}>
+                      {l}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="isi-sme-field">
+                <span>Optional score 0–1 (empty = null)</span>
+                <input
+                  className="input"
+                  value={goldScore}
+                  onChange={(e) => setGoldScore(e.target.value)}
+                  placeholder="null"
+                  inputMode="decimal"
+                />
+              </label>
+            </div>
             <button type="button" className="btn sm primary" disabled={busy} onClick={() => void saveGold()}>
               Save label
             </button>
-          </div>
+          </fieldset>
         ) : null}
       </div>
     </div>
@@ -549,27 +747,50 @@ function HumanChecklist({
   testId: string;
 }) {
   if (!steps.length) return null;
+  const doneCount = steps.filter((s) => s.done).length;
+  const total = steps.length;
+  const pct = total ? Math.round((doneCount / total) * 100) : 0;
+
   return (
-    <div style={{ marginTop: 14 }} data-testid={testId}>
-      <h4 style={{ fontSize: "0.95rem", marginBottom: 6 }}>{title}</h4>
-      <ul className="xs" style={{ margin: 0, paddingLeft: 18 }}>
+    <div className="isi-sme-checklist" data-testid={testId}>
+      <div className="isi-sme-checklist-head">
+        <h4>{title}</h4>
+        <span className="isi-toolbar-count" aria-live="polite">
+          {doneCount}/{total} complete
+        </span>
+      </div>
+      <div
+        className="grounding-meter isi-sme-progress"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={doneCount}
+        aria-label={`${title}: ${doneCount} of ${total} steps complete`}
+      >
+        <span style={{ width: `${pct}%` }} />
+      </div>
+      <ul className="isi-sme-check-list">
         {steps.map((s) => (
           <li key={s.id}>
-            <input type="checkbox" disabled checked={false} aria-label={s.label} readOnly />{" "}
-            {s.required ? "[required] " : "[optional] "}
-            {s.label}
-            <span className="muted"> — {s.hint}</span>
+            <label className="isi-sme-check">
+              <input type="checkbox" disabled checked={Boolean(s.done)} aria-label={s.label} readOnly />
+              <span>
+                <span className="isi-sme-check-req">{s.required ? "Required" : "Optional"}</span>
+                {s.label}
+                <span className="muted isi-sme-check-hint">{s.hint}</span>
+              </span>
+            </label>
           </li>
         ))}
       </ul>
-      <p className="xs muted" style={{ marginTop: 4 }}>
-        Checkboxes stay unchecked in UI — completion is recorded only via audited SME actions above.
+      <p className="xs muted">
+        Slots stay unchecked here — completion is recorded only via audited SME actions.
       </p>
     </div>
   );
 }
 
-function WorkItemCard({
+function WorkItemRow({
   item,
   selected,
   onSelect,
@@ -583,63 +804,22 @@ function WorkItemCard({
   compact?: boolean;
 }) {
   return (
-    <li
-      className="card"
-      style={{
-        padding: compact ? 10 : 12,
-        outline: selected ? "2px solid var(--accent, #2a6)" : undefined,
-      }}
-    >
-      <div className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-        <strong>
-          {item.id} · {item.status}
-        </strong>
-        <span className="xs muted">
-          {item.honesty} · {item.claimType} · {item.kind}
-        </span>
-      </div>
-      <p className="small" style={{ marginTop: 4 }}>
-        {item.spo}
-      </p>
-      {item.gapClass ? (
-        <p className="xs muted">
-          Gap class: <code>{item.gapClass}</code>
-          {item.dossierHref ? (
-            <>
-              {" "}
-              · <a href={item.dossierHref}>Open dossier</a>
-            </>
-          ) : null}
-        </p>
-      ) : null}
-      {item.relId ? (
-        <p className="xs muted">
-          <code>{item.relId}</code>
-        </p>
-      ) : null}
-      {!compact ? (
-        <>
-          <p className="xs" style={{ marginTop: 4 }}>
-            Coverage: {item.searchCoverageNote}
-          </p>
-          {item.rejectedPmidNotes ? (
-            <p className="xs" style={{ marginTop: 4 }}>
-              Rejected PMID notes: {item.rejectedPmidNotes}
-            </p>
-          ) : null}
-          <p className="xs muted">{item.curatorAction}</p>
-          {item.flags.length ? (
-            <p className="xs" style={{ marginTop: 4 }}>
-              {item.flags.map((f) => (
-                <span key={f} className="chip" style={{ marginRight: 4 }}>
-                  {f}
-                </span>
-              ))}
-            </p>
-          ) : null}
-        </>
-      ) : null}
-      <div className="row" style={{ gap: 6, marginTop: 8 }}>
+    <li className={`isi-sme-item${selected ? " is-selected" : ""}`}>
+      <button type="button" className="isi-sme-item-select" onClick={onSelect}>
+        <div className="isi-sme-item-head">
+          <strong>
+            {item.id} · {item.status}
+          </strong>
+          <span className="xs muted">
+            {item.honesty} · {item.claimType}
+          </span>
+        </div>
+        <p className={`isi-sme-item-spo${compact ? " is-compact" : ""}`}>{item.spo}</p>
+        {!compact && item.flags.length ? (
+          <p className="xs muted isi-sme-flag-text">{item.flags.join(" · ")}</p>
+        ) : null}
+      </button>
+      <div className="isi-sme-item-actions">
         <button type="button" className="btn sm" onClick={onSelect}>
           Select
         </button>
