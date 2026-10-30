@@ -21,6 +21,12 @@ import {
   type RetrievalQueryPlan,
   type RetrievalRunReport,
 } from "@/lib/discovery/retrieve";
+import {
+  activateNewEvidenceMonitorHook,
+  runBoundedCitationChain,
+  type CitationChainReport,
+  type MonitorHookActivation,
+} from "@/lib/discovery/citationChain";
 import type { ResearchGapCandidate } from "@/lib/discovery/types";
 
 export const SCOUT_POLICY = {
@@ -28,6 +34,8 @@ export const SCOUT_POLICY = {
   unboundedScraping: false as const,
   autoGateC: false as const,
   requiresLiveFlags: true as const,
+  /** Hooks may activate per-run; prod cron stays off. */
+  autoScheduleHooks: false as const,
   defaultBudget: {
     maxQueries: 9,
     maxWorksPerCorpus: 20,
@@ -79,10 +87,23 @@ export type ScoutRunReport = {
   retrieval: RetrievalRunReport | null;
   adapterResults: Array<{ corpus: ScoutCorpus; result: AdapterSearchResult }>;
   budget: typeof SCOUT_POLICY.defaultBudget & { queriesRun: number; wallMs: number };
-  /** Hooks for monitor / citation chaining — not executed automatically. */
+  /**
+   * Monitor / citation-chaining hooks.
+   * When activateHooks=true on a run, hooks enable for that run only — never schedules prod cron.
+   */
   hooks: {
-    newEvidenceMonitor: { enabled: false; reason: string };
-    citationChaining: { enabled: false; reason: string; seedPmids: string[] };
+    newEvidenceMonitor:
+      | { enabled: false; reason: string }
+      | (MonitorHookActivation & { reason: string });
+    citationChaining:
+      | { enabled: false; reason: string; seedPmids: string[] }
+      | {
+          enabled: true;
+          reason: string;
+          seedPmids: string[];
+          chain: CitationChainReport;
+          scheduledCron: false;
+        };
   };
   inventedStudies: false;
   provenance: Record<string, unknown>;
@@ -232,6 +253,14 @@ export async function runLiteratureScout(input: {
   /** Prior run key — if matches, return empty replay marker without network. */
   priorIdempotencyKey?: string | null;
   dryRun?: boolean;
+  /**
+   * When true, activate bounded citation-chain + monitor fingerprint for this run.
+   * Idempotent; never schedules prod cron; never invents PMIDs.
+   */
+  activateHooks?: boolean;
+  /** Optional fixture map for citation-chain related-to queries (tests / offline). */
+  citationRelatedFixtures?: Record<string, { hitCount: number | null; pmids?: string[] }>;
+  priorCitationIdempotencyKey?: string | null;
 }): Promise<ScoutRunReport> {
   const budget = resolveBudget(input.budget);
   const idempotencyKey = scoutIdempotencyKey(input.strategy, budget);
@@ -271,6 +300,40 @@ export async function runLiteratureScout(input: {
   }
 
   if (input.dryRun) {
+    let dryHooks: ScoutRunReport["hooks"] = {
+      newEvidenceMonitor: {
+        enabled: false,
+        reason: "Monitor hook recorded only — cron not auto-enabled.",
+      },
+      citationChaining: {
+        enabled: false,
+        reason: "Citation chaining hook only — not executed in this run.",
+        seedPmids: [],
+      },
+    };
+    if (input.activateHooks) {
+      const monitor = activateNewEvidenceMonitorHook({
+        gapKey: input.strategy.gapKey,
+        seedPmids: [],
+        scoutIdempotencyKey: idempotencyKey,
+      });
+      const chain = await runBoundedCitationChain({
+        gapKey: input.strategy.gapKey,
+        seedPmids: [],
+        priorIdempotencyKey: input.priorCitationIdempotencyKey,
+        relatedFixtures: input.citationRelatedFixtures,
+      });
+      dryHooks = {
+        newEvidenceMonitor: { ...monitor, reason: monitor.reason },
+        citationChaining: {
+          enabled: true,
+          reason: "Dry-run bounded citation chain activated — no seeds; prod cron not scheduled.",
+          seedPmids: chain.seedPmids,
+          chain,
+          scheduledCron: false,
+        },
+      };
+    }
     return {
       strategyId: input.strategy.strategyId,
       gapKey: input.strategy.gapKey,
@@ -287,19 +350,14 @@ export async function runLiteratureScout(input: {
       retrieval: null,
       adapterResults: [],
       budget: { ...budget, queriesRun: 0, wallMs: Date.now() - started },
-      hooks: {
-        newEvidenceMonitor: {
-          enabled: false,
-          reason: "Monitor hook recorded only — cron not auto-enabled.",
-        },
-        citationChaining: {
-          enabled: false,
-          reason: "Citation chaining hook only — not executed in this run.",
-          seedPmids: [],
-        },
-      },
+      hooks: dryHooks,
       inventedStudies: false,
-      provenance: { dryRun: true, strategy: input.strategy.provenance, licensing: input.strategy.licensingNote },
+      provenance: {
+        dryRun: true,
+        strategy: input.strategy.provenance,
+        licensing: input.strategy.licensingNote,
+        hooksActivated: Boolean(input.activateHooks),
+      },
     };
   }
 
@@ -351,6 +409,46 @@ export async function runLiteratureScout(input: {
 
   const seedPmids = [...byKey.values()].map((w) => w.pmid).filter(Boolean) as string[];
 
+  let hooks: ScoutRunReport["hooks"] = {
+    newEvidenceMonitor: {
+      enabled: false,
+      reason: "New-evidence monitor hook available for Phase 6 monitor — not auto-scheduled.",
+    },
+    citationChaining: {
+      enabled: false,
+      reason: "Citation chaining deferred — seed PMIDs recorded for future bounded runs only.",
+      seedPmids: seedPmids.slice(0, 12),
+    },
+  };
+
+  if (input.activateHooks) {
+    const monitor = activateNewEvidenceMonitorHook({
+      gapKey: input.strategy.gapKey,
+      seedPmids,
+      scoutIdempotencyKey: idempotencyKey,
+    });
+    const chain = await runBoundedCitationChain({
+      gapKey: input.strategy.gapKey,
+      seedPmids,
+      priorIdempotencyKey: input.priorCitationIdempotencyKey,
+      relatedFixtures: input.citationRelatedFixtures,
+    });
+    hooks = {
+      newEvidenceMonitor: {
+        ...monitor,
+        reason: monitor.reason,
+      },
+      citationChaining: {
+        enabled: true,
+        reason:
+          "Bounded citation chaining activated for this scout run — capped seeds/related; prod cron not scheduled.",
+        seedPmids: chain.seedPmids,
+        chain,
+        scheduledCron: false,
+      },
+    };
+  }
+
   return {
     strategyId: input.strategy.strategyId,
     gapKey: input.strategy.gapKey,
@@ -375,23 +473,14 @@ export async function runLiteratureScout(input: {
       queriesRun: Math.min(input.strategy.queries.length, budget.maxQueries),
       wallMs: Date.now() - started,
     },
-    hooks: {
-      newEvidenceMonitor: {
-        enabled: false,
-        reason: "New-evidence monitor hook available for Phase 6 monitor — not auto-scheduled.",
-      },
-      citationChaining: {
-        enabled: false,
-        reason: "Citation chaining deferred — seed PMIDs recorded for future bounded runs only.",
-        seedPmids: seedPmids.slice(0, 12),
-      },
-    },
+    hooks,
     inventedStudies: false,
     provenance: {
       strategy: input.strategy.provenance,
       licensing: input.strategy.licensingNote,
       rateLimit: "createRateLimitGate / withRetries via adapters",
       idempotencyKey,
+      hooksActivated: Boolean(input.activateHooks),
     },
   };
 }

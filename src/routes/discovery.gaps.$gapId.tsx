@@ -300,12 +300,35 @@ function DiscoveryGapDossierPage() {
         {dossier.intel4 ? (
           <>
             <p className="small" data-testid="intel4-counts">
-              v{dossier.intel4.version} · verified support={dossier.intel4.claimSupport} ·
-              insufficient={dossier.intel4.claimInsufficient} · abstained=
-              {dossier.intel4.claimAbstained} · demoted from prior support=
+              v{dossier.intel4.version} · source={dossier.intel4.source} · verified support=
+              {dossier.intel4.claimSupport} · insufficient={dossier.intel4.claimInsufficient} ·
+              abstained={dossier.intel4.claimAbstained} · demoted from prior support=
               {dossier.intel4.demotedFromPriorSupport}
             </p>
             <p className="small muted">{dossier.intel4.honesty}</p>
+            {dossier.intel4.scoutSummary ? (
+              <p className="small" data-testid="intel4-scout">
+                Scout: {dossier.intel4.scoutSummary}
+              </p>
+            ) : null}
+            {dossier.intel4.verifierSummary ? (
+              <p className="small" data-testid="intel4-verifier">
+                Verifier: {dossier.intel4.verifierSummary}
+              </p>
+            ) : null}
+            {dossier.intel4.crossExamSummary ? (
+              <p className="small" data-testid="intel4-xexam">
+                Cross-exam: {dossier.intel4.crossExamSummary}
+              </p>
+            ) : null}
+            {dossier.intel4.routingSummary ? (
+              <p className="small" data-testid="intel4-route-summary">
+                Routing: {dossier.intel4.routingSummary}
+              </p>
+            ) : null}
+            {dossier.intel4.opportunitySummary ? (
+              <p className="small muted">Opportunity: {dossier.intel4.opportunitySummary}</p>
+            ) : null}
             {dossier.intel4.adjudicatorUncertainty ? (
               <p className="small">{dossier.intel4.adjudicatorUncertainty}</p>
             ) : null}
@@ -424,7 +447,7 @@ function DiscoveryGapDossierPage() {
         </div>
       </Section>
 
-      <Section id="links" title="Continue investigating" lede="Reuse Ask, Atlas, Evidence, Workbench, Pipeline — one knowledge graph.">
+      <Section id="links" title="Continue investigating" lede="One chatbot — Continue in Ask Immune opens the main Ask page with a prefilled question. Atlas, Evidence, Workbench and Pipeline stay deep links into the same knowledge graph.">
         <div className="isi-dossier-links">
           {dossier.links.map((l) => (
             <a key={l.id} className="btn sm" href={l.href}>
@@ -434,7 +457,7 @@ function DiscoveryGapDossierPage() {
         </div>
         {dossier.askPrefillQuestion ? (
           <p className="small muted" style={{ marginTop: 12 }}>
-            Ask prefill: {dossier.askPrefillQuestion}
+            Prefill for Ask Immune: {dossier.askPrefillQuestion}
           </p>
         ) : null}
       </Section>

@@ -20,11 +20,20 @@ import {
   runSkeptic,
 } from "@/lib/discovery/crossExamine";
 import {
+  CITATION_CHAIN_POLICY,
+  citationChainIdempotencyKey,
+  runBoundedCitationChain,
+} from "@/lib/discovery/citationChain";
+import {
   INTEL4_POLICY,
   runIntel4OnWorks,
   intel4IdempotentReplay,
   intel4RetryAllowed,
 } from "@/lib/discovery/intel4";
+import {
+  attachIntel4Panel,
+  clearIntel4OfflineCache,
+} from "@/lib/discovery/intel4Attach";
 import {
   REVIEW_ROUTING_POLICY,
   assertNoAutoApprove,
@@ -417,5 +426,134 @@ describe("Audit doc present", () => {
     expect(text).toContain("a6de865");
     expect(text).toContain("Claim Verifier");
     expect(text).toContain("false-support");
+  });
+});
+
+describe("Intel 4.0 dossier attach", () => {
+  it("attaches offline validation snapshot for a deep gap", () => {
+    clearIntel4OfflineCache();
+    const panel = attachIntel4Panel({ gapKey: "GAP-OPP-A-MHC-PD1-RESIST" });
+    expect(panel).not.toBeNull();
+    expect(panel!.source).toBe("offline_validation");
+    expect(panel!.accuracyVsGold).toBeNull();
+    expect(panel!.routeRisk).toBe("high");
+    expect(panel!.verifierSummary).toContain("demotedFromPriorSupport=");
+    expect(panel!.routingSummary).toBeTruthy();
+    expect(panel!.scoutSummary).toBeTruthy();
+    expect(panel!.crossExamSummary).toBeTruthy();
+  });
+
+  it("prefers DB decisions over offline snapshot", () => {
+    const panel = attachIntel4Panel({
+      gapKey: "GAP-OPP-A-MHC-PD1-RESIST",
+      decisions: [
+        {
+          decisionType: "verify",
+          summary: "Verified 2 works; support=0; abstained=2",
+          provenance: {
+            counts: {
+              support: 0,
+              insufficient: 2,
+              abstained: 2,
+              demotedFromPriorSupport: 1,
+            },
+          },
+          createdAt: "2026-10-30T12:00:00.000Z",
+          version: "4.0.0",
+        },
+        {
+          decisionType: "route",
+          summary: "High-risk route to SME",
+          provenance: {
+            route: { risk: "high", href: "/sme?gapKey=GAP-OPP-A-MHC-PD1-RESIST" },
+          },
+          createdAt: "2026-10-30T12:00:01.000Z",
+        },
+      ],
+    });
+    expect(panel!.source).toBe("db");
+    expect(panel!.claimAbstained).toBe(2);
+    expect(panel!.smeQueued).toBe(true);
+    expect(panel!.routeHref).toContain("/sme?");
+  });
+});
+
+describe("Bounded citation chaining + monitor hooks", () => {
+  it("chains related PMIDs within caps and is idempotent", async () => {
+    expect(CITATION_CHAIN_POLICY.autoScheduleCron).toBe(false);
+    expect(CITATION_CHAIN_POLICY.inventsPmids).toBe(false);
+
+    const first = await runBoundedCitationChain({
+      gapKey: "GAP-TEST-CHAIN",
+      seedPmids: ["25891173", "25891173", "not-a-pmid"],
+      relatedFixtures: {
+        "related-to:25891173": {
+          hitCount: 2,
+          pmids: ["12345678", "87654321", "11111111", "22222222"],
+        },
+      },
+    });
+    expect(first.enabled).toBe(true);
+    expect(first.scheduledCron).toBe(false);
+    expect(first.inventedStudies).toBe(false);
+    expect(first.seedPmids).toEqual(["25891173"]);
+    expect(first.relatedPmids.length).toBeLessThanOrEqual(CITATION_CHAIN_POLICY.maxRelatedPerSeed);
+    expect(first.relatedPmids).not.toContain("25891173");
+
+    const key = citationChainIdempotencyKey("GAP-TEST-CHAIN", ["25891173"]);
+    const replay = await runBoundedCitationChain({
+      gapKey: "GAP-TEST-CHAIN",
+      seedPmids: ["25891173"],
+      priorIdempotencyKey: key,
+      relatedFixtures: {
+        "related-to:25891173": { hitCount: 99, pmids: ["99999999"] },
+      },
+    });
+    expect(replay.replay).toBe(true);
+    expect(replay.relatedPmids).toEqual([]);
+  });
+
+  it("scout activateHooks enables monitor + chain without cron", async () => {
+    const strategy = buildScoutStrategy({
+      gap: {
+        gapKey: "GAP-TEST-HOOKS",
+        pilot: "melanoma_a",
+        subjectId: "R011",
+        objectId: "D012",
+        title: "Hook activation test",
+      },
+      strategyId: "scout-hooks-1",
+      nowIso: "2026-10-30T00:00:00.000Z",
+    });
+    const report = await runLiteratureScout({
+      strategy,
+      dryRun: true,
+      activateHooks: true,
+    });
+    expect(report.hooks.newEvidenceMonitor.enabled).toBe(true);
+    if (report.hooks.newEvidenceMonitor.enabled) {
+      expect(report.hooks.newEvidenceMonitor.scheduledCron).toBe(false);
+      expect(report.hooks.newEvidenceMonitor.scientificReviewImplied).toBe(false);
+    }
+    expect(report.hooks.citationChaining.enabled).toBe(true);
+    if (report.hooks.citationChaining.enabled) {
+      expect(report.hooks.citationChaining.scheduledCron).toBe(false);
+      expect(report.hooks.citationChaining.chain.unbounded).toBe(false);
+    }
+    expect(SCOUT_POLICY.autoScheduleHooks).toBe(false);
+  });
+});
+
+describe("Remaining engineering inventory", () => {
+  it("ships ISI_REMAINING_ENGINEERING.md with A/B/C", () => {
+    const text = readFileSync(
+      resolve(process.cwd(), "docs/ISI_REMAINING_ENGINEERING.md"),
+      "utf8",
+    );
+    expect(text).toContain("## A) Already done");
+    expect(text).toContain("## B) Still needs human / ops");
+    expect(text).toContain("## C) Engineering leftovers");
+    expect(text).toContain("Gate C");
+    expect(text).toContain("E2E_USER");
   });
 });

@@ -23,3 +23,7 @@ bun run db:evidence-intel-4
 ```
 
 Expect: `migration=applied`, `evidence_count` unchanged (e.g. 46).
+
+## Status (2026-10-30)
+
+Re-applied / verified on ep-blue-salad: `migration=applied`, `evidence_count=46`, tables `research_intel4_decisions` + `research_intel4_scout_runs` present, claim columns on `research_gap_evidence_links` present. Idempotent re-run is safe (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).

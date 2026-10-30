@@ -17,11 +17,14 @@ import {
   researchGapSubscriptions,
   researchGapVersions,
   researchGaps,
+  researchIntel4Decisions,
+  researchIntel4ScoutRuns,
   researchProfiles,
   researchSearchCoverage,
 } from "@/lib/db/schema.server";
 import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
 import { buildGapDossier } from "@/lib/discovery/dossier";
+import { attachIntel4Panel } from "@/lib/discovery/intel4Attach";
 import {
   normalizeEntitlement,
   radarListLimit,
@@ -756,6 +759,67 @@ export const getDiscoveryGap = createServerFn({ method: "GET" })
     const gap = fromDetect ?? persisted;
     if (!gap) throw new Error("Gap not found in ISI detection set.");
     const verification = verifyGapCandidate(gap);
+
+    let intel4Decisions: Array<{
+      decisionType: string;
+      summary: string;
+      provenance: Record<string, unknown>;
+      createdAt: string;
+      version?: string;
+    }> = [];
+    let intel4Scout: {
+      strategyId: string;
+      idempotencyKey: string;
+      worksCount: number;
+      hitCountKnown: boolean;
+      totalHits: number | null;
+      scopeNote: string;
+      createdAt: string;
+    } | null = null;
+    try {
+      const db = getDb();
+      const decRows = await db
+        .select()
+        .from(researchIntel4Decisions)
+        .where(eq(researchIntel4Decisions.gapKey, data.gapKey))
+        .orderBy(desc(researchIntel4Decisions.createdAt))
+        .limit(24);
+      intel4Decisions = decRows.map((d) => ({
+        decisionType: d.decisionType,
+        summary: d.summary,
+        provenance: (d.provenance ?? {}) as Record<string, unknown>,
+        createdAt: d.createdAt.toISOString(),
+        version: d.version,
+      }));
+      const [scoutRow] = await db
+        .select()
+        .from(researchIntel4ScoutRuns)
+        .where(eq(researchIntel4ScoutRuns.gapKey, data.gapKey))
+        .orderBy(desc(researchIntel4ScoutRuns.createdAt))
+        .limit(1);
+      if (scoutRow) {
+        intel4Scout = {
+          strategyId: scoutRow.strategyId,
+          idempotencyKey: scoutRow.idempotencyKey,
+          worksCount: scoutRow.worksCount,
+          hitCountKnown: scoutRow.hitCountKnown,
+          totalHits: scoutRow.totalHits,
+          scopeNote: scoutRow.scopeNote,
+          createdAt: scoutRow.createdAt.toISOString(),
+        };
+      }
+    } catch (err) {
+      if (!missingRelation(err)) {
+        // Non-fatal — offline snapshot still attaches for deep dossiers.
+      }
+    }
+
+    const intel4 = attachIntel4Panel({
+      gapKey: data.gapKey,
+      decisions: intel4Decisions,
+      scout: intel4Scout,
+    });
+
     const dossier = buildGapDossier({
       gap,
       persistedStatus: dbStatus,
@@ -765,6 +829,7 @@ export const getDiscoveryGap = createServerFn({ method: "GET" })
       verification,
       coverageRows,
       reviews,
+      intel4,
     });
 
     return {

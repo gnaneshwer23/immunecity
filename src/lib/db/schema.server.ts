@@ -503,6 +503,43 @@ export const researchGapEvidenceLinks = pgTable("research_gap_evidence_links", {
   appraisalLimitations: text("appraisal_limitations"),
   questionKey: text("question_key"),
   identifierValidated: boolean("identifier_validated"),
+  /** 0026 — Evidence Intel 4.0 claim verifier columns (nullable). */
+  claimClassification: text("claim_classification"),
+  claimDirectness: text("claim_directness"),
+  claimAbstained: boolean("claim_abstained"),
+  intel4Version: text("intel4_version"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Evidence Intel 4.0 — versioned decision audit (migration 0026).
+ * auto_approve CHECK false in SQL — never Gate C / reviewed_opportunity.
+ */
+export const researchIntel4Decisions = pgTable("research_intel4_decisions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id"),
+  gapKey: text("gap_key").notNull(),
+  version: text("version").notNull().default("4.0.0"),
+  decisionType: text("decision_type").notNull(),
+  idempotencyKey: text("idempotency_key").notNull().unique(),
+  summary: text("summary").notNull(),
+  autoApprove: boolean("auto_approve").notNull().default(false),
+  smeConfirmed: boolean("sme_confirmed").notNull().default(false),
+  provenance: jsonb("provenance").notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const researchIntel4ScoutRuns = pgTable("research_intel4_scout_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapKey: text("gap_key").notNull(),
+  strategyId: text("strategy_id").notNull(),
+  idempotencyKey: text("idempotency_key").notNull().unique(),
+  worksCount: integer("works_count").notNull().default(0),
+  hitCountKnown: boolean("hit_count_known").notNull().default(false),
+  totalHits: integer("total_hits"),
+  scopeNote: text("scope_note").notNull(),
+  licensingNote: text("licensing_note"),
+  provenance: jsonb("provenance").notNull().default({}),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

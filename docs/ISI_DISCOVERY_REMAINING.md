@@ -59,6 +59,6 @@
 4. Persist-on-first-radar-load policy debate (today: explicit member action).  
 5. Optional scheduled cron wrapping `bun run discovery:monitor` (email still deferred).  
 6. Activate Team collab / Stripe only after explicit product + billing sign-off.  
-7. Apply **0026** on Neon when ops ready (`docs/ISI_NEON_0026_APPLY.md`); wire `getDiscoveryGap` to attach `intel4` panel from latest decisions (optional).  
-8. Bounded citation-chaining / new-evidence monitor hooks (scout hooks exist; not auto-scheduled).  
+7. ~~Apply **0026** + wire `getDiscoveryGap` intel4 panel~~ — **done** (Neon applied; DB decisions or offline validation snapshot; see `ISI_REMAINING_ENGINEERING.md`).  
+8. ~~Bounded citation-chaining / new-evidence monitor hooks~~ — **done** (`citationChain.ts` + scout `activateHooks`; no prod cron).  
 9. SME review of five deep dossiers after Intel 4.0 demotion flags — required before any accuracy % or reviewed_opportunity.

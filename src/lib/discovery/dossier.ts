@@ -86,6 +86,18 @@ export type GapDossierView = {
     smeQueued: boolean;
     accuracyVsGold: null;
     honesty: string;
+    /** db = Neon audit; offline_validation = five-dossier snapshot. */
+    source: "db" | "offline_validation";
+    scoutSummary: string | null;
+    verifierSummary: string | null;
+    crossExamSummary: string | null;
+    routingSummary: string | null;
+    opportunitySummary: string | null;
+    decisions: Array<{
+      type: string;
+      summary: string;
+      createdAt: string | null;
+    }> | null;
   } | null;
 };
 
