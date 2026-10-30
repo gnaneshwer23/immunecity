@@ -199,6 +199,48 @@ function groupByPairing(arm: TrialArmRecord): Map<string, EndpointResultRecord[]
   return m;
 }
 
+/**
+ * Pair endpoints within a soft pairing group by full identity first.
+ * Never rely on array insertion order alone (positional mismatch risk).
+ * Remainders soft-pair after sorting by identity for stable analysis-set diffs.
+ */
+export function pairEndpointsByIdentity(
+  leftEps: readonly EndpointResultRecord[],
+  rightEps: readonly EndpointResultRecord[],
+): Array<{ left?: EndpointResultRecord; right?: EndpointResultRecord }> {
+  const rightById = new Map<string, EndpointResultRecord>();
+  for (const re of rightEps) {
+    rightById.set(endpointIdentityKey(re), re);
+  }
+  const usedRight = new Set<string>();
+  const usedLeft = new Set<string>();
+  const pairs: Array<{ left?: EndpointResultRecord; right?: EndpointResultRecord }> = [];
+
+  for (const le of leftEps) {
+    const key = endpointIdentityKey(le);
+    const re = rightById.get(key);
+    if (re) {
+      pairs.push({ left: le, right: re });
+      usedLeft.add(key);
+      usedRight.add(key);
+    }
+  }
+
+  const leftRemain = leftEps
+    .filter((e) => !usedLeft.has(endpointIdentityKey(e)))
+    .slice()
+    .sort((a, b) => endpointIdentityKey(a).localeCompare(endpointIdentityKey(b)));
+  const rightRemain = rightEps
+    .filter((e) => !usedRight.has(endpointIdentityKey(e)))
+    .slice()
+    .sort((a, b) => endpointIdentityKey(a).localeCompare(endpointIdentityKey(b)));
+  const n = Math.max(leftRemain.length, rightRemain.length);
+  for (let i = 0; i < n; i++) {
+    pairs.push({ left: leftRemain[i], right: rightRemain[i] });
+  }
+  return pairs;
+}
+
 /** Within-trial arm pairs: full endpoint identity — never key only by endpointType. */
 export function compareArms(
   trial: ClinicalTrialRecord,
@@ -217,10 +259,7 @@ export function compareArms(
   for (const k of keys) {
     const leftEps = L.get(k) ?? [];
     const rightEps = R.get(k) ?? [];
-    const n = Math.max(leftEps.length, rightEps.length);
-    for (let i = 0; i < n; i++) {
-      const le = leftEps[i];
-      const re = rightEps[i];
+    for (const { left: le, right: re } of pairEndpointsByIdentity(leftEps, rightEps)) {
       if (!le || !re) {
         mismatches.push({
           dimension: "endpoint_definition",

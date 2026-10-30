@@ -6,6 +6,7 @@
 import { byId, edgeRef, inn, out, type KGEdge } from "@/lib/immune/engine";
 
 export const EVIDENCE_GAP_LABELS = [
+  "insufficient_coverage",
   "no_mapped_evidence",
   "awaiting_curation",
   "no_direct_evidence_after_search",
@@ -23,9 +24,13 @@ export const EVIDENCE_GAP_PROVENANCE_NOTE =
   "Gap labels reflect ISI curated graph coverage and any search you ran in this product’s date-scope — not a claim that no literature exists worldwide.";
 
 export const EVIDENCE_GAP_UI: Record<EvidenceGapLabel, { label: string; desc: string }> = {
+  insufficient_coverage: {
+    label: "ISI coverage unknown",
+    desc: "Gate C / mapped-evidence counts were not loaded for this concept (incomplete signals or service unavailable). Not a verified finding of zero mapped evidence, and not worldwide literature absence.",
+  },
   no_mapped_evidence: {
     label: "No ISI-mapped evidence",
-    desc: "Within ISI curated coverage: no Gate C–approved supporting cite and no bibliographic ref on incident edges. Does not mean worldwide literature is absent.",
+    desc: "Verified within ISI curated coverage: explicit zero Gate C–approved supporting cites and no bibliographic/draft mapped material on incident edges. Does not mean worldwide literature is absent.",
   },
   awaiting_curation: {
     label: "Awaiting ISI curation",
@@ -111,6 +116,9 @@ function hasDraftIncident(conceptId: string): boolean {
  * Returns null when Gate C approved support is present (not a gap).
  * Never fabricates Gate C density — missing counts are treated as unknown, not zero,
  * except when the caller explicitly passes numbers.
+ *
+ * `insufficient_coverage` = Gate C / mapped counts were not provided (unknown).
+ * `no_mapped_evidence` = verified absence of ISI-mapped support (explicit zeros + no draft/bib).
  */
 export function classifyEvidenceGap(
   conceptId: string,
@@ -148,6 +156,14 @@ export function classifyEvidenceGap(
     if (approved === 0 || approved === undefined) return "awaiting_curation";
   }
 
+  const coverageKnown =
+    typeof approved === "number" && typeof signals.unreviewedMappedCount === "number";
+  if (!coverageKnown) {
+    // Missing Gate C counts ≠ verified zero mapped evidence.
+    return "insufficient_coverage";
+  }
+
+  // Explicit approved=0 + unreviewed=0 and no draft/bib → verified ISI absence of mapped support.
   return "no_mapped_evidence";
 }
 

@@ -56,8 +56,9 @@ describe("Phase 4 exit gate — reproducible, reviewable, source-traceable", () 
     expect(fns).not.toMatch(/insert\(evidenceRecords/);
   });
 
-  it("classifies evidence gaps with the five UI labels without inventing Gate C density", () => {
+  it("classifies evidence gaps with UI labels without inventing Gate C density", () => {
     expect(EVIDENCE_GAP_LABELS).toEqual([
+      "insufficient_coverage",
       "no_mapped_evidence",
       "awaiting_curation",
       "no_direct_evidence_after_search",
@@ -66,6 +67,7 @@ describe("Phase 4 exit gate — reproducible, reviewable, source-traceable", () 
     ]);
     expect(evidenceGapLabelText("conflicting")).toMatch(/Conflicting/i);
     expect(evidenceGapLabelText("no_mapped_evidence")).toMatch(/ISI/i);
+    expect(evidenceGapLabelText("insufficient_coverage")).toMatch(/unknown/i);
 
     expect(classifyEvidenceGap("M017")).toBe("emerging");
     expect(classifyEvidenceGap("D012", { approvedSupportsCount: 2 })).toBeNull();
@@ -89,9 +91,16 @@ describe("Phase 4 exit gate — reproducible, reviewable, source-traceable", () 
         unreviewedMappedCount: 0,
       }),
     ).not.toBe("no_direct_evidence_after_search");
-    // Without Neon signals, bibliographic/draft edges → awaiting curation; never a fabricated Gate C count.
+    // Without Neon signals: draft/bib → awaiting; clean concept → insufficient_coverage (not verified absence).
     const gap = classifyEvidenceGap("R001");
-    expect(gap === "awaiting_curation" || gap === "no_mapped_evidence" || gap === "emerging").toBe(true);
+    expect(
+      gap === "awaiting_curation" ||
+        gap === "insufficient_coverage" ||
+        gap === "emerging" ||
+        gap === "no_mapped_evidence",
+    ).toBe(true);
+    expect(classifyEvidenceGap("D012")).toBe("awaiting_curation");
+    expect(classifyEvidenceGap("C002")).toBe("insufficient_coverage");
     expect(classifyEvidenceGap("not-a-node")).toBeNull();
   });
 
@@ -143,6 +152,7 @@ describe("Phase 4 exit gate — reproducible, reviewable, source-traceable", () 
   });
 
   it("wires collections and brief UI on /research without a second backend or KG approve path", () => {
+    // Source-contract reads can be slow under parallel KG loads.
     const route = source("src/routes/research.tsx");
     expect(route).toContain('id="collections"');
     expect(route).toContain("EvidenceCollectionsPanel");
