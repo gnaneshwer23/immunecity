@@ -23,6 +23,7 @@
     "db:neon-schema": "bun scripts/apply-neon-schema.ts",
     "db:trial-intelligence": "bun scripts/apply-trial-intelligence-migration.ts",
     "db:trial-intelligence:check": "bun scripts/check-trial-intelligence-consistency.ts",
+    "db:evidence-collections": "bun scripts/apply-evidence-collections-migration.ts",
     "smoke:neon": "bun scripts/smoke-neon-cutover.ts",
     "seo:indexnow": "bun scripts/ping-indexnow.ts"
   },

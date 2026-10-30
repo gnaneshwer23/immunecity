@@ -12,7 +12,9 @@ import { PageToc, Section } from "@/components/immune/page";
 const TOC = [
   { id: "library", label: "Library" },
   { id: "literature", label: "Literature" },
+  { id: "collections", label: "Collections" },
   { id: "workbench", label: "Workbench" },
+  { id: "brief", label: "Draft brief" },
   { id: "model-registry", label: "Models" },
   { id: "frontier", label: "Frontier" },
   { id: "phases", label: "Phases" },
@@ -21,6 +23,8 @@ const TOC = [
 import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ResearchLibrary from "@/components/immune/ResearchLibrary";
+import EvidenceCollectionsPanel from "@/components/immune/EvidenceCollectionsPanel";
+import ResearchBriefPanel from "@/components/immune/ResearchBriefPanel";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { PRODUCT_NAME } from "@/lib/brand";
@@ -41,7 +45,7 @@ export const Route = createFileRoute("/research")({
     seoHead({
       title: `Research Library & Workbench | ${PRODUCT_NAME}`,
       description:
-        "Search Nature Portfolio immunology journal metadata, start reviewable evidence candidates and organise hypotheses on a partial workbench spine. Nothing is auto-approved or auto-published.",
+        "Search Nature Portfolio immunology journal metadata, save evidence collections, draft source-traceable research briefs, and organise hypotheses on a partial workbench spine. Nothing is auto-approved or auto-published to the knowledge graph.",
       path: "/research",
     }),
   component: Research,
@@ -71,7 +75,7 @@ function Research() {
       <PageHead art={ART.researchArt}
         kicker="Investigate · Research library"
         title="Turn a research question into a reviewable investigation."
-        lede="Organise evidence, trace mechanisms and draft candidate hypotheses — kept separate from approved scientific knowledge until a curator reviews them. Literature candidates stay local until imported at Curation. Ask may separately list provisional PubMed/Europe PMC hits as unreviewed. Model adapters are planned."
+        lede="Organise evidence collections, classify gaps from real coverage signals, draft AI/unreviewed research briefs, and keep candidate hypotheses separate from approved scientific knowledge. Literature candidates stay local until imported at Curation. Nothing from this page writes the curated knowledge graph."
         stats={[
           { v: "6", l: "WORKBENCH STEPS" },
           { v: frontier.length, l: "FRONTIER TOPICS" },
@@ -122,8 +126,17 @@ function Research() {
       </Section>
 
       <Section
-        id="workbench"
+        id="collections"
         n={3}
+        title="Evidence collections"
+        lede="Signed-in members can save named sets of existing graph concept ids plus optional evidence record refs. Additive Neon storage only — never a knowledge-graph write."
+      >
+        <EvidenceCollectionsPanel />
+      </Section>
+
+      <Section
+        id="workbench"
+        n={4}
         title="Workbench"
         lede={
           <>
@@ -144,11 +157,23 @@ function Research() {
         />
       </Section>
 
-      <Section id="model-registry" n={4} title="Advanced model registry" lede={<>Planned interfaces for future omics, structure, pMHC/epitope, genomics and agent adapters. Badges read <b>planned / interface-only · not live</b> — see <Link to="/methods" hash="models">Methods · models</Link>.</>}>
+      <Section
+        id="brief"
+        n={5}
+        title="Research brief (AI/draft)"
+        lede="Draft-only synthesis with rationale, evidence, hypotheses, biomarkers, trials and limitations. Cites retrieved ids only and fails closed on unsupported references. Export JSON or Markdown for human review — cannot approve into the KG."
+      >
+        <ResearchBriefPanel
+          seedQuestion={search.q || undefined}
+          seedConceptIds={[search.start, search.perturb, search.outcome].filter((id): id is string => Boolean(id && byId[id]))}
+        />
+      </Section>
+
+      <Section id="model-registry" n={6} title="Advanced model registry" lede={<>Planned interfaces for future omics, structure, pMHC/epitope, genomics and agent adapters. Badges read <b>planned / interface-only · not live</b> — see <Link to="/methods" hash="models">Methods · models</Link>.</>}>
         <PhoneFold label="Show model registry"><ModelRegistryPanel /></PhoneFold>
       </Section>
 
-      <Section id="frontier" n={5} title="Frontier">
+      <Section id="frontier" n={7} title="Frontier">
         <PhoneFold label="Show all frontier topics">
         <div className="grid auto">
           {frontier.map((f) => (
@@ -165,7 +190,7 @@ function Research() {
         </PhoneFold>
       </Section>
 
-      <Section id="phases" n={6} title="Implementation phases B–E" lede={<>Status reflects shipped, testable code — not marketing claims. See also <Link to="/methods">Methods &amp; trust</Link>.</>}>
+      <Section id="phases" n={8} title="Implementation phases B–E" lede={<>Status reflects shipped, testable code — not marketing claims. See also <Link to="/methods">Methods &amp; trust</Link>.</>}>
         <PhoneFold label="Show all phases">
         <div className="grid auto">
           {IMPLEMENTATION_PHASES.map((p) => (
@@ -185,7 +210,7 @@ function Research() {
         </PhoneFold>
       </Section>
 
-      <Section id="roadmap" n={7} title="Roadmap" lede="What the atlas still needs to become a complete causal model.">
+      <Section id="roadmap" n={9} title="Roadmap" lede="What the atlas still needs to become a complete causal model.">
         <PhoneFold label="Show full roadmap">
         <ol className="small roadmap-tl">
           {roadmap.map((r, i) => (

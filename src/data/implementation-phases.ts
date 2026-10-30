@@ -91,7 +91,7 @@ export const IMPLEMENTATION_PHASES: ImplementationPhase[] = [
     ],
     status: "partial",
     notes:
-      "NOT WIRED to KG write-back. Six-step machine with Ask/lit/mechanism imports, local draft save, versioned export (wb-1), plus human-gated curation-queue handoff download. No lab execution or auto-promotion.",
+      "NOT WIRED to KG write-back. Six-step machine with Ask/lit/mechanism imports, local draft save, versioned export (wb-1), human-gated curation-queue handoff, evidence collections (Neon), gap labels, and AI/draft research brief export (rb-1). No lab execution or auto-promotion.",
   },
 ];
 

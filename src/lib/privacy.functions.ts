@@ -13,6 +13,7 @@ import {
   communityProfiles,
   communitySaves,
   conceptSaves,
+  evidenceCollections,
 } from "@/lib/db/schema.server";
 import {
   DELETE_CONFIRMATION,
@@ -176,6 +177,7 @@ export const deleteMyData = createServerFn({ method: "POST" })
       await skipMissing(() => db.delete(communityPostFollows).where(eq(communityPostFollows.userId, userId)));
       await skipMissing(() => db.delete(communityMemberships).where(eq(communityMemberships.userId, userId)));
       await skipMissing(() => db.delete(conceptSaves).where(eq(conceptSaves.userId, userId)));
+      await skipMissing(() => db.delete(evidenceCollections).where(eq(evidenceCollections.userId, userId)));
     } catch (err) {
       if (missingRelation(err)) throw new Error("Account data is not available on this database yet.");
       console.error("privacy_delete_failed", (err as { code?: string })?.code ?? "error");

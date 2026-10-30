@@ -38,11 +38,12 @@ Journey IA: `JOURNEY_NAV` in `src/data/marketingNav.ts` (Learn / Explore / Inves
 
 ## 3. Schemas (public)
 
-Migrations `drizzle/migrations/0000`–`0015`. Notable tables:
+Migrations `drizzle/migrations/0000`–`0016`. Notable tables:
 
 - Curation: `evidence_records`, `evidence_audit_events`, `claim_candidates`, `user_roles`
 - Community / academy / workspace: profiles, posts, comments, saves, appeals, notifications, journal clubs, `academy_member_progress`, `concept_saves`, `ai_evaluation_runs`
 - **Trial Intelligence (0015):** `clinical_trials`, `trial_arms`, `endpoint_results`
+- **Research Workbench (0016):** `evidence_collections` (member-named concept id sets + optional evidence_id refs; never KG write)
 
 Publication bibliography for pilots lives in fixtures (`src/data/trialIntelligence.ts`); not a separate DB table in 0015.
 
@@ -100,13 +101,13 @@ Note: PMID 28889792 reports different grade 3–4 rates (59 / 21 / 28%); fixture
 
 ## 8. Out of this pass
 
-AI agents expansion, new diseases, Research Workbench MVP, full review workflow UI (A04 beyond existing curation), biomarker schemas (A07), Ask eval overhaul (A10), Workbench A12–A14, commercial validation recruiting, enabling Trial Intelligence for general production.
+AI agents expansion, new diseases, full review workflow UI (A04 beyond existing curation), biomarker schemas (A07), Ask eval overhaul (A10), Workbench A12–A14 beyond MVP, commercial validation recruiting, enabling Trial Intelligence for general production.
 
 ---
 
 ## 9. Next audit phase
 
-Phase 1–3 engineering checklists are below. **Next:** Phase 4 — Research Workbench MVP. Production Trial Intelligence flag stays off until SME sign-off.
+Phase 1–4 engineering checklists are below. **Audit roadmap engineering complete through Phase 4.** Production Trial Intelligence flag stays off until SME sign-off.
 
 ---
 
@@ -196,3 +197,33 @@ Phase 1–3 engineering checklists are below. **Next:** Phase 4 — Research Wor
 - Research Workbench MVP (Phase 4), prod trial flag on, inventing lessons/science, community→KG writes, CDS claims, mass Gate C.
 
 **Next:** Phase 4 — Research Workbench MVP (flag still off until SME).
+
+---
+
+## 13. Phase 4 — Research Workbench MVP (exit checklist)
+
+**Status:** Engineering exit criteria met in code; **human SME sign-off still required** before enabling `VITE_TRIAL_INTELLIGENCE` in production or claiming clinical/CDS use.
+
+**Exit gate:** Research outputs are reproducible, reviewable and source-traceable.
+
+| # | Criterion | Status | Evidence |
+| --- | --- | --- | --- |
+| P4-1 | Evidence collections — signed-in member saves named graph concept ids + optional evidence refs | Met | Neon `evidence_collections` (0016) · `collections.ts` / `collections.functions.ts` · `/research#collections` · `kgWrite=false` |
+| P4-2 | Evidence-gap classifications (5 UI labels; real coverage/status only) | Met | `src/lib/research/evidenceGap.ts` · labels on collections + brief panel · never invents Gate C density |
+| P4-3 | Research brief generator — AI/draft, structured, cite retrieved ids only, fail closed | Met | `src/lib/research/researchBrief.ts` · `/research#brief` · no clinical recommendations |
+| P4-4 | Human review — drafts unreviewed; versioned JSON/Markdown export; cannot approve into KG | Met | `reviewStatus: unreviewed` · `canApproveIntoKg: false` · export buttons · workbench handoff remains stub |
+| P4-5 | Docs + focused tests | Met | This checklist · `bun test src/test/phase4-research-workbench.test.ts` |
+| P4-6 | Production Trial Intelligence flag remains OFF | Required | Do **not** set `VITE_TRIAL_INTELLIGENCE` in Vercel Production until SME review |
+| P4-7 | No KG writes from research surfaces | Met | Collections / brief / workbench exports declare `kgWrite=false`; no `evidence_records` mutation from collection APIs |
+
+### Still needs human SME
+
+- Independent re-check of KEYNOTE-006 / CheckMate 067 abstracts vs stored numerics (eng A02 done; SME confirmation open).
+- Researcher pilot feedback on brief export usefulness.
+- Sign-off before any production Trial Intelligence flag flip.
+
+### Explicitly out of Phase 4
+
+- Prod trial flag on, inventing PMIDs, auto-publish to graph, diagnosis/treatment advice, patient prediction, CDS claims, mass Gate C, full Workbench A12–A14 beyond this MVP.
+
+**Audit roadmap note:** Phase 0 inventory + Phases 1–4 engineering checklists are complete in this baseline. Remaining work is SME validation, Gate C curation, and controlled Trial Intelligence enablement — not a further numbered audit engineering phase in this document.

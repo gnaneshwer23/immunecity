@@ -339,9 +339,21 @@ export const endpointResults = pgTable("endpoint_results", {
  * Future (when curated): trial_biomarkers, biomarker_assays linked to graph BIOMARKER ids.
  */
 
+/** Phase 4 Research Workbench — member evidence collections (migration 0016). Never a KG write. */
+export const evidenceCollections = pgTable("evidence_collections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  name: text("name").notNull(),
+  conceptIds: text("concept_ids").array().notNull().default([]),
+  evidenceRefs: text("evidence_refs").array().notNull().default([]),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type EvidenceRecordRow = typeof evidenceRecords.$inferSelect;
 export type EvidenceAuditEventRow = typeof evidenceAuditEvents.$inferSelect;
 export type ClaimCandidateRow = typeof claimCandidates.$inferSelect;
 export type ClinicalTrialRow = typeof clinicalTrials.$inferSelect;
 export type TrialArmRow = typeof trialArms.$inferSelect;
 export type EndpointResultRow = typeof endpointResults.$inferSelect;
+export type EvidenceCollectionRow = typeof evidenceCollections.$inferSelect;
