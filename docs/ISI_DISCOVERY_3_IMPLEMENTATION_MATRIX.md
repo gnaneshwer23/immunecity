@@ -67,6 +67,6 @@ Failed query → null / fail_closed — **not** zero evidence.
 | --- | --- | --- |
 | Pre-3.0 tip | `479531a` | SME Neon 0023 docs |
 | 3.0 audit docs | `7c9c73f` | Audit + matrix |
-| Gap-class + retrieval + SME + deliverables | *(this push)* | See `ISI_DISCOVERY_3_DELIVERABLES.md` |
+| Gap-class + retrieval + SME + deliverables | `b365588` | See `ISI_DISCOVERY_3_DELIVERABLES.md` |
 
 Update this table after push with the final SHA.
