@@ -19,6 +19,7 @@ export default defineConfig({
       // bun:test — Vitest pool hangs on collection in this environment; run with `bun test`.
       "src/test/trial-intelligence.test.ts",
       "src/test/phase1-evidence-foundation.test.ts",
+      "src/test/phase2-trial-intelligence.test.ts",
     ],
     pool: "forks",
     fileParallelism: false,

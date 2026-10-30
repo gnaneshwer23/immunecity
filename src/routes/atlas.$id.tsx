@@ -18,7 +18,7 @@ import { absoluteUrl, conceptJsonLd, seoHead } from "@/lib/seo";
 import { GRAPH_CORE_VERSION } from "@/lib/immune/graphRelease";
 import { XREF_SOURCES, conceptSameAs, conceptXrefs } from "@/data/xrefs";
 import TranslationalPath from "@/components/immune/TranslationalPath";
-import { TrialIntelligencePanel } from "@/components/immune/TrialIntelligence";
+import { TrialIntelligenceConceptNav, TrialIntelligencePanel } from "@/components/immune/TrialIntelligence";
 import { DOMAIN_ART, ExplainHero, ExplainerSection, KeyTakeaways, SourcesFold, SourcesPill, useSources } from "@/components/immune/explain";
 import EntityActions from "@/components/immune/EntityActions";
 
@@ -241,7 +241,9 @@ function ConceptPage() {
           </ExplainerSection>
 
           <TranslationalPath id={id} />
-          {n.node_type === "TRIAL" ? <TrialIntelligencePanel graphNodeId={id} /> : null}
+          {n.node_type === "TRIAL" ? <TrialIntelligencePanel graphNodeId={id} /> : (
+            <TrialIntelligenceConceptNav conceptId={id} />
+          )}
 
           {(steps.prereq.length || steps.next.length) ? (
             <section className="ex-section">

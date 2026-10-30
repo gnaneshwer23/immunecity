@@ -23,6 +23,12 @@ import { EvidenceDimensionsStrip } from "@/components/immune/EvidenceDimensions"
 import { byId } from "@/lib/immune/engine";
 import { trialEndpointDimensions } from "@/lib/immune/evidenceDimensions";
 import { endpointProvenanceView, VERIFICATION_LABEL } from "@/lib/immune/trialProvenance";
+import { melanomaPilotComparability, type ComparabilityReport } from "@/lib/immune/trialComparability";
+import {
+  graphBiomarkersForTrial,
+  trialBiomarkerStubs,
+  trialIntelligenceNavFromConcept,
+} from "@/lib/immune/trialGraphNav";
 
 function EndpointRow({ ep }: { ep: EndpointResultRecord }) {
   const prov = endpointProvenanceView(ep);
@@ -67,6 +73,97 @@ function EndpointRow({ ep }: { ep: EndpointResultRecord }) {
   );
 }
 
+function ComparabilityFold({ report }: { report: ComparabilityReport }) {
+  return (
+    <details className="isi-ti-compare" data-testid="ti-comparability">
+      <summary>Comparability checks (ISI-A08 light)</summary>
+      <p className="isi-ti-warn" role="note">
+        {report.warning}
+      </p>
+      <p className="xs muted" role="note" data-testid="ti-no-superiority">
+        These checks list context mismatches between {report.leftLabel} and {report.rightLabel}. They never declare
+        treatment superiority or comparative efficacy.
+      </p>
+      {report.mismatches.length === 0 ? (
+        <p className="small muted" data-testid="ti-compare-aligned">
+          No structured mismatches on the checked facets — still do not infer head-to-head superiority.
+        </p>
+      ) : (
+        <div className="isi-ti-table-wrap">
+          <table className="isi-ti-table">
+            <caption className="sr-only">
+              Comparability mismatches between {report.leftLabel} and {report.rightLabel}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Facet</th>
+                <th scope="col">{report.leftLabel}</th>
+                <th scope="col">{report.rightLabel}</th>
+                <th scope="col">Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.mismatches.map((m) => (
+                <tr key={m.dimension + m.left} data-testid={`ti-mismatch-${m.dimension}`}>
+                  <th scope="row">{m.label}</th>
+                  <td className="xs">{m.left}</td>
+                  <td className="xs">{m.right}</td>
+                  <td className="xs muted">{m.detail}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </details>
+  );
+}
+
+function BiomarkerContextBlock({ trial }: { trial: ClinicalTrialRecord }) {
+  const stubs = trialBiomarkerStubs(trial);
+  const graph = graphBiomarkersForTrial(trial.graphNodeId);
+  const hasFixture = stubs.length > 0;
+  const hasGraph = graph.length > 0;
+  return (
+    <section className="isi-ti-biomarker" aria-labelledby={`ti-bio-${trial.trialId}`} data-testid="ti-biomarker-context">
+      <h4 id={`ti-bio-${trial.trialId}`}>Biomarker context</h4>
+      {!hasFixture && !hasGraph ? (
+        <p className="small muted" data-testid="ti-biomarker-empty">
+          No curated biomarker assay rows for this pilot release. Assay cut-offs are not invented.
+        </p>
+      ) : null}
+      {hasFixture ? (
+        <ul>
+          {stubs.map((b, i) => (
+            <li key={b.graphNodeId ?? `stub-${i}`}>
+              {b.name ?? "Unlabelled biomarker"}
+              {b.assayLabel ? <span className="xs muted"> · assay {b.assayLabel}</span> : (
+                <span className="xs muted"> · assay unavailable</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {hasGraph ? (
+        <ul>
+          {graph.map((b) => (
+            <li key={b.graphNodeId ?? b.name}>
+              {b.graphNodeId ? (
+                <Link to="/atlas/$id" params={{ id: b.graphNodeId }}>
+                  {b.name}
+                </Link>
+              ) : (
+                b.name
+              )}
+              <span className="xs muted"> · {b.notes}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+
 function TrialCard({ trial }: { trial: ClinicalTrialRecord }) {
   return (
     <article className="isi-ti-card" aria-labelledby={`ti-${trial.trialId}-title`}>
@@ -80,7 +177,7 @@ function TrialCard({ trial }: { trial: ClinicalTrialRecord }) {
           {" · "}
           {trial.phase} · {trial.design}
           {" · graph "}
-          <Link to="/atlas/$id" params={{ id: trial.graphNodeId }}>
+          <Link to="/atlas/$id" params={{ id: trial.graphNodeId }} hash="trial-intelligence">
             {trial.graphNodeId}
           </Link>
           {" · "}
@@ -92,8 +189,13 @@ function TrialCard({ trial }: { trial: ClinicalTrialRecord }) {
 
       <p className="small">{trial.populationSummary}</p>
       <p className="xs muted" role="note">
+        Condition: {trial.conditionLabel}
+      </p>
+      <p className="xs muted" role="note">
         Analysis sets: {trial.analysisSetNote}
       </p>
+
+      <BiomarkerContextBlock trial={trial} />
 
       {trial.arms.map((arm) => (
         <section key={arm.armId} className="isi-ti-arm" aria-labelledby={`ti-arm-${arm.armId}`}>
@@ -108,28 +210,35 @@ function TrialCard({ trial }: { trial: ClinicalTrialRecord }) {
               {arm.comparatorRole.replace(/_/g, " ")}
             </span>
           </h4>
-          <div className="isi-ti-table-wrap">
-            <table className="isi-ti-table">
-              <caption className="sr-only">
-                Endpoint results for {arm.label} in {trial.acronym}
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Endpoint</th>
-                  <th scope="col">Result</th>
-                  <th scope="col">Verification</th>
-                  <th scope="col">Analysis set</th>
-                  <th scope="col">Follow-up / timepoint</th>
-                  <th scope="col">Provenance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {arm.endpoints.map((ep) => (
-                  <EndpointRow key={ep.resultId} ep={ep} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {arm.endpoints.length === 0 ? (
+            <p className="small muted" role="status">
+              No endpoint rows curated for this arm.
+            </p>
+          ) : (
+            <div className="isi-ti-table-wrap" tabIndex={0} role="region" aria-label={`Endpoint table for ${arm.label}`}>
+              <table className="isi-ti-table">
+                <caption className="sr-only">
+                  Endpoint results for {arm.label} in {trial.acronym}. Columns: endpoint, result, verification, analysis
+                  set, follow-up, provenance.
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Endpoint</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Verification</th>
+                    <th scope="col">Analysis set</th>
+                    <th scope="col">Follow-up / timepoint</th>
+                    <th scope="col">Provenance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {arm.endpoints.map((ep) => (
+                    <EndpointRow key={ep.resultId} ep={ep} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       ))}
 
@@ -168,10 +277,36 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
     enabled: Boolean(fixture),
   });
 
+  if (!fixture) {
+    return (
+      <ExplainerSection
+        id="trial-intelligence"
+        defaultOpen
+        title="Trial Intelligence"
+        summary="No melanoma-pilot Trial Intelligence record is curated for this trial node."
+      >
+        <p className="small muted" role="status" data-testid="ti-unavailable">
+          Arm-level outcomes are unavailable for this concept. Pilot coverage is KEYNOTE-006 (TR003) and CheckMate 067
+          (TR020) only.
+        </p>
+      </ExplainerSection>
+    );
+  }
+
   const trial = q.data?.trial ?? fixture;
-  if (!trial) return null;
+  if (!trial) {
+    return (
+      <ExplainerSection id="trial-intelligence" defaultOpen title="Trial Intelligence" summary="Record unavailable.">
+        <p className="small muted" role="status" data-testid="ti-unavailable">
+          Trial Intelligence could not be loaded.
+        </p>
+      </ExplainerSection>
+    );
+  }
+
   const peers = listMelanomaPilotTrials().filter((t) => t.graphNodeId !== graphNodeId);
   const readSource = q.data?.source ?? "fixture";
+  const compareReports = peers.map((p) => melanomaPilotComparability(trial, p));
 
   return (
     <ExplainerSection
@@ -187,6 +322,16 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
         Provenance columns show PMID/DOI, verification label, and analysis set / follow-up when present. Curation,
         source identifiers and analysis context stay separate — not one confidence score.
       </p>
+      {q.isPending ? (
+        <p className="xs muted" role="status">
+          Checking curated Postgres read…
+        </p>
+      ) : null}
+      {q.data?.unavailable ? (
+        <p className="small muted" role="status" data-testid="ti-db-fallback">
+          Database unavailable — showing fixture seed fallback.
+        </p>
+      ) : null}
       <TrialCard trial={trial} />
       {peers.length ? (
         <div className="isi-ti-peers">
@@ -200,7 +345,7 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
               const node = byId[p.graphNodeId];
               return (
                 <li key={p.trialId}>
-                  <Link to="/atlas/$id" params={{ id: p.graphNodeId }}>
+                  <Link to="/atlas/$id" params={{ id: p.graphNodeId }} hash="trial-intelligence">
                     {node?.name ?? p.acronym}
                   </Link>
                   <span className="xs muted"> · {p.nctId}</span>
@@ -208,6 +353,9 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
               );
             })}
           </ul>
+          {compareReports.map((report) => (
+            <ComparabilityFold key={report.rightId} report={report} />
+          ))}
         </div>
       ) : null}
       <p className="xs muted">
@@ -222,17 +370,68 @@ export function TrialIntelligencePanel({ graphNodeId }: { graphNodeId: string })
   );
 }
 
+/**
+ * Graph → trial deep links on melanoma / PD-1 neighbourhood concept pages (flag-gated).
+ * Exit-gate path: mechanism → therapy/disease → TR003/TR020#trial-intelligence.
+ */
+export function TrialIntelligenceConceptNav({ conceptId }: { conceptId: string }) {
+  if (!isTrialIntelligenceEnabled()) return null;
+  const links = trialIntelligenceNavFromConcept(conceptId).filter((l) => l.graphNodeId !== conceptId);
+  if (!links.length) return null;
+  return (
+    <div data-testid="ti-concept-nav">
+      <ExplainerSection
+        id="trial-intelligence-nav"
+        defaultOpen
+        title="Trial Intelligence — melanoma pilot"
+        summary="Deep links to source-backed arm-level outcomes for KEYNOTE-006 and CheckMate 067."
+      >
+        <p className="isi-ti-warn" role="note" data-testid="trial-noncausal-warning">
+          {NON_CAUSAL_TRIAL_WARNING}
+        </p>
+        <ul className="isi-ti-nav-list" data-testid="ti-concept-nav-list">
+          {links.map((l) => (
+            <li key={l.graphNodeId}>
+              <Link to="/atlas/$id" params={{ id: l.graphNodeId }} hash={l.hash}>
+                {l.acronym}
+              </Link>
+              <span className="xs muted">
+                {" "}
+                · {l.nctId} · {l.reason}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="xs muted">
+          Outcomes open on the trial Atlas panel. Educational — not enrolment or treatment advice.
+        </p>
+      </ExplainerSection>
+    </div>
+  );
+}
+
 /** Compact Methods/Evidence honesty block (always visible copy; detail still flag-gated elsewhere). */
 export function TrialIntelligenceMethodsNote() {
   return (
-    <div className="isi-ti-methods">
+    <div className="isi-ti-methods" id="trial-intelligence-methods">
       <h3>Trial Intelligence (melanoma pilot)</h3>
-      <p>
-        Arm-level ORR, PFS, OS and safety fields for KEYNOTE-006 (<span className="mono">TR003</span>, NCT01866319)
-        and CheckMate 067 (<span className="mono">TR020</span>, NCT01844505) are curated from primary publications.
-        Numbers absent from the verified abstracts stay null and labelled unverified — they are never invented.
-        Each published endpoint shows source PMID/DOI, verification label, and analysis set / follow-up when present.
-      </p>
+      <details className="isi-ti-methods-fold" data-testid="ti-methods-fold">
+        <summary>How arm-level outcomes are shown</summary>
+        <p>
+          Arm-level ORR, PFS, OS and safety fields for KEYNOTE-006 (<span className="mono">TR003</span>, NCT01866319)
+          and CheckMate 067 (<span className="mono">TR020</span>, NCT01844505) are curated from primary publications.
+          Numbers absent from the verified abstracts stay null and labelled unverified — they are never invented.
+          Each published endpoint shows source PMID/DOI, verification label, and analysis set / follow-up when present.
+        </p>
+        <p>
+          Cross-trial views run light comparability checks (disease stage/line, endpoint definition, follow-up, analysis
+          population). Mismatches are listed explicitly; the product never declares treatment superiority.
+        </p>
+        <p>
+          Biomarker assay rows are schema stubs in this release unless curated. Graph biomarker nodes linked to
+          therapies may appear without inventing assay cut-offs.
+        </p>
+      </details>
       <p className="isi-ti-warn" role="note" data-testid="trial-noncausal-warning">
         {NON_CAUSAL_TRIAL_WARNING}
       </p>
@@ -241,7 +440,7 @@ export function TrialIntelligenceMethodsNote() {
         graph journeys stay unchanged. Rollback: unset or set the flag to{" "}
         <span className="mono">0</span> in Vercel Production and redeploy — no route removal required. When enabled,
         curated reads prefer Postgres; fixtures remain the seed/import source of truth. Educational resource — not
-        clinical decision support. Do not enable for general production until Phase 1 exit criteria and SME review.
+        clinical decision support. Do not enable for general production until Phase 1–2 exit criteria and SME review.
       </p>
     </div>
   );

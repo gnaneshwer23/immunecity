@@ -153,6 +153,8 @@ export async function loadTrialIntelligenceFromDb(graphNodeId: string): Promise<
     notes: trialRow.notes,
     sources: sourcesForTrial(trialRow.trialId),
     arms,
+    // Assays not stored in 0015 — keep empty stub; graph biomarkers resolve in UI.
+    biomarkerContext: MELANOMA_PILOT_TRIALS.find((t) => t.trialId === trialRow.trialId)?.biomarkerContext ?? [],
   };
 }
 

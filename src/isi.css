@@ -491,6 +491,18 @@ a.isi-journey-card, a.isi-journey-card:hover { text-decoration: none; }
 .isi-ti-provenance { min-width: 9rem; }
 .isi-ti-ep-dims { margin-top: 4px; }
 .isi-ti-ep-dims > summary { cursor: pointer; color: var(--primary); }
+.isi-ti-compare { margin-top: var(--isi-space-3); font-size: 13px; }
+.isi-ti-compare > summary { cursor: pointer; color: var(--primary); font-weight: 600; }
+.isi-ti-biomarker { display: grid; gap: 4px; padding: var(--isi-space-2) 0; }
+.isi-ti-biomarker h4 { margin: 0; font-size: 0.95rem; }
+.isi-ti-biomarker ul { margin: 4px 0 0; padding-left: 1.1rem; display: grid; gap: 4px; }
+.isi-ti-nav-list { margin: 6px 0; padding-left: 1.1rem; display: grid; gap: 6px; }
+.isi-ti-methods-fold { margin: 4px 0; }
+.isi-ti-methods-fold > summary { cursor: pointer; color: var(--primary); }
+.isi-ti-table-wrap:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
 
 /* Three orthogonal evidence dimensions (curation ≠ evidence_status ≠ quality). */
 .isi-ev-dims {

@@ -107,6 +107,7 @@ describe("trial intelligence feature flag and honesty", () => {
     expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/Association is not causation/i);
     expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/head-to-head comparative efficacy/i);
     expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/not clinical decision support/i);
+    expect(NON_CAUSAL_TRIAL_WARNING).toMatch(/never rank treatments|never declare treatment superiority/i);
     const methods = readFileSync(resolve(process.cwd(), "src/routes/methods.tsx"), "utf8");
     expect(methods).toContain("TrialIntelligenceMethodsNote");
     expect(methods).toContain("trial-intelligence");

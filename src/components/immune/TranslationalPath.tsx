@@ -9,15 +9,19 @@ import { isPipelineDisease } from "@/lib/immune/pipeline";
 import { TRIAL_REGISTRY, ctgStudyUrl } from "@/data/trialRegistry";
 import { getActiveTrials } from "@/lib/liveData.functions";
 import { ExplainerSection } from "@/components/immune/explain";
+import { isTrialIntelligenceEnabled } from "@/lib/trialIntelligenceFlag";
+import { isMelanomaPilotTrialNode } from "@/lib/immune/trialGraphNav";
 
 const statusText = (s: string) => s.replace(/_/g, " ").toLowerCase();
 
 function LandmarkTrial({ id }: { id: string }) {
   const t = byId[id]!;
   const reg = TRIAL_REGISTRY[id];
+  const tiDeep = isTrialIntelligenceEnabled() && isMelanomaPilotTrialNode(id);
   return (
     <li>
-      <Link to="/atlas/$id" params={{ id }}>{t.name}</Link>
+      <Link to="/atlas/$id" params={{ id }} hash={tiDeep ? "trial-intelligence" : undefined}>{t.name}</Link>
+      {tiDeep ? <span className="xs muted"> · Trial Intelligence</span> : null}
       {reg?.studies.map((s) => (
         <a key={s.nctId} className="isi-nct" href={ctgStudyUrl(s.nctId)} target="_blank" rel="noopener noreferrer" title={`${s.label} on ClinicalTrials.gov`}>
           {s.nctId}

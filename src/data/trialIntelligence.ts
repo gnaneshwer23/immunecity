@@ -62,6 +62,18 @@ export interface TrialArmRecord {
   endpoints: EndpointResultRecord[];
 }
 
+/**
+ * Biomarker / assay context for a trial (ISI-A07 light stub).
+ * Leave empty unless a curated assay exists — never invent cut-offs or PMIDs.
+ */
+export interface TrialBiomarkerContext {
+  biomarkerGraphNodeId: string | null;
+  label: string | null;
+  /** Assay name / platform when curated; null means unavailable. */
+  assayLabel: string | null;
+  notes: string | null;
+}
+
 export interface ClinicalTrialRecord {
   trialId: string;
   graphNodeId: string;
@@ -81,11 +93,13 @@ export interface ClinicalTrialRecord {
   notes: string | null;
   sources: TrialSource[];
   arms: TrialArmRecord[];
+  /** Empty until curated assays exist (Phase 2 stub). */
+  biomarkerContext?: TrialBiomarkerContext[];
 }
 
-/** Cross-trial comparison is contextual — never causal comparative efficacy (audit T03). */
+/** Cross-trial comparison is contextual — never causal comparative efficacy (audit T03 / ISI-A08). */
 export const NON_CAUSAL_TRIAL_WARNING =
-  "Association is not causation. Arm-level results are reported within each randomised trial only. Do not treat side-by-side figures as head-to-head comparative efficacy — populations, dosing, follow-up, and concurrent care differ across trials. This view is educational and is not clinical decision support.";
+  "Association is not causation. Arm-level results are reported within each randomised trial only. Do not treat side-by-side figures as head-to-head comparative efficacy or as proof that one regimen is superior — populations, disease stage/line, endpoint definitions, follow-up, analysis sets, dosing, and concurrent care differ across trials. Comparability checks list mismatches; they never rank treatments. This view is educational and is not clinical decision support.";
 
 export const TRIAL_INTELLIGENCE_PROVENANCE = {
   verifiedOn: "2026-10-30",
@@ -185,6 +199,8 @@ export const MELANOMA_PILOT_TRIALS: ClinicalTrialRecord[] = [
     notes:
       "5-year overall-survival percentage rates are not restated from secondary digests; median OS/PFS from the 5-year abstract are stored instead.",
     sources: KEYNOTE_SOURCES,
+    /** No curated assay rows in this release — graph biomarkers may still appear via therapy edges. */
+    biomarkerContext: [],
     arms: [
       {
         armId: "CT-KEYNOTE-006-ARM-P2W",
@@ -416,6 +432,7 @@ export const MELANOMA_PILOT_TRIALS: ClinicalTrialRecord[] = [
     notes:
       "Objective response rates are not stated in the primary PubMed abstract used for verification; ORR fields remain null/unverified rather than copied from secondary digests.",
     sources: CHECKMATE_SOURCES,
+    biomarkerContext: [],
     arms: [
       {
         armId: "CT-CHECKMATE-067-ARM-COMBO",

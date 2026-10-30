@@ -333,6 +333,12 @@ export const endpointResults = pgTable("endpoint_results", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * Phase 2 ISI-A07 light stub — biomarker / assay tables are not migrated yet.
+ * Fixture `biomarkerContext: []` holds the browser-safe slot; do not invent assays.
+ * Future (when curated): trial_biomarkers, biomarker_assays linked to graph BIOMARKER ids.
+ */
+
 export type EvidenceRecordRow = typeof evidenceRecords.$inferSelect;
 export type EvidenceAuditEventRow = typeof evidenceAuditEvents.$inferSelect;
 export type ClaimCandidateRow = typeof claimCandidates.$inferSelect;

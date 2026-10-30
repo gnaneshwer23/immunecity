@@ -106,7 +106,7 @@ AI agents expansion, new diseases, Research Workbench MVP, full review workflow 
 
 ## 9. Next audit phase
 
-**Phase 1 / next:** ISI-A04 curation review hardening (existing workflow only) + remaining Trial P1 (comparison engine still deferred) → then Ask grounding evals (A10 light) before any production flag flip.
+Phase 1 and Phase 2 engineering checklists are below. **Next:** Phase 3 — Integrated education and research. Production Trial Intelligence flag stays off until SME sign-off.
 
 ---
 
@@ -139,3 +139,36 @@ AI agents expansion, new diseases, Research Workbench MVP, full review workflow 
 - Trial comparison engine (A08), biomarker schemas (A07), Workbench MVP, new disease areas, full Ask eval overhaul.
 
 **Next:** Phase 2 — Trial Intelligence experience (UI/comparability/navigation; flag still off until SME).
+
+---
+
+## 11. Phase 2 — Trial Intelligence experience (exit checklist)
+
+**Status:** Engineering exit criteria met in code; **human SME sign-off still required** before enabling `VITE_TRIAL_INTELLIGENCE` in production.
+
+**Exit gate:** Researchers can navigate from a melanoma mechanism to a trial and inspect source-backed outcomes.
+
+| # | Criterion | Status | Evidence |
+| --- | --- | --- | --- |
+| P2-1 | Trial detail UI: arm tables, provenance, analysis set/follow-up, verification labels | Met | `TrialIntelligencePanel` / `TrialCard` on `/atlas/TR003` · `/atlas/TR020` |
+| P2-2 | Methods honesty fold (optional detail) | Met | `TrialIntelligenceMethodsNote` details fold on `/methods#trial-intelligence` |
+| P2-3 | ISI-A08 light comparability: stage/line, endpoint, follow-up, analysis population; never superiority | Met | `src/lib/immune/trialComparability.ts` · peer fold on trial panel |
+| P2-4 | Strengthened non-causal / non-CDS warnings | Met | `NON_CAUSAL_TRIAL_WARNING` + `ti-no-superiority` |
+| P2-5 | Biomarker context light — stubs empty; graph biomarkers without invented assays | Met | `biomarkerContext: []` · `graphBiomarkersForTrial` (e.g. B011 on TR003) |
+| P2-6 | Graph → trial navigation (melanoma / PD-1 → TR003/TR020 `#trial-intelligence`) | Met | `TrialIntelligenceConceptNav` · `trialIntelligenceNavFromConcept` · TranslationalPath deep links when flag on |
+| P2-7 | Accessibility: captions, keyboard scroll region, empty/unavailable states | Met | `sr-only` captions · `tabIndex={0}` table wrap · `ti-unavailable` / `ti-biomarker-empty` |
+| P2-8 | Docs + focused tests | Met | This checklist · `bun test src/test/phase2-trial-intelligence.test.ts` |
+| P2-9 | Production flag remains OFF | Required | Do **not** set `VITE_TRIAL_INTELLIGENCE` in Vercel Production until SME review |
+
+### Still needs human SME (before prod flag flip)
+
+- Independent re-check of KEYNOTE-006 / CheckMate 067 abstracts vs stored numerics (eng A02 done; SME confirmation open).
+- Confirm comparability facet wording (stage/line labels) matches how reviewers describe the two populations.
+- Confirm empty biomarker-assay stance is acceptable until curated assay rows exist.
+- Sign-off before any production Trial Intelligence flag flip.
+
+### Explicitly out of Phase 2
+
+- Full comparison engine / superiority analytics, biomarker assay DB tables (beyond stubs), Research Workbench MVP (Phase 4), Phase 3 education↔research integration, new disease areas, mass Gate C.
+
+**Next:** Phase 3 — Integrated education and research (OS ↔ graph, Ask evals, saved paths; flag still off until SME).
