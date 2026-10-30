@@ -632,6 +632,7 @@ textarea.community-input { min-height: 120px; padding: 10px; }
 
 .isi-radar-meta { display: flex; flex-wrap: wrap; gap: var(--isi-space-2); align-items: center; margin: 4px 0; }
 .isi-radar-why { margin: 6px 0 0; color: var(--muted); font-size: 14px; max-width: var(--isi-measure); }
+.isi-recommend-because { color: var(--text); max-width: var(--isi-measure); }
 .isi-radar-sections { display: grid; gap: var(--isi-space-5); margin-top: var(--isi-space-4); }
 .isi-dossier-links { display: flex; flex-wrap: wrap; gap: var(--isi-space-2); }
 .isi-verify-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--isi-space-2); }
