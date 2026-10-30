@@ -7,6 +7,7 @@
 export const RESEARCH_ENTITLEMENTS = ["free", "researcher_pro", "team", "enterprise"] as const;
 export type ResearchEntitlement = (typeof RESEARCH_ENTITLEMENTS)[number];
 
+/** Review / workflow status — orthogonal to ResearchGapClass (see gapClass.ts). */
 export const RESEARCH_GAP_STATUSES = [
   "candidate",
   "coverage_insufficient",
@@ -56,6 +57,10 @@ export type ResearchGapCandidate = {
   title: string;
   summary: string;
   status: AutoEmitGapStatus;
+  /** Three-class taxonomy — set by classifyGapClass / withGapClass. */
+  gapClass?: import("@/lib/discovery/gapClass").ResearchGapClass;
+  opportunityStatus?: import("@/lib/discovery/gapClass").OpportunityStatus;
+  classReason?: string;
   pilot: "melanoma_a" | "coverage_b" | null;
   subjectId: string | null;
   objectId: string | null;

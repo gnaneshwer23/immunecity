@@ -7,6 +7,8 @@ import {
   type MelanomaMatrixFlag,
   type MelanomaPilotMatrixRow,
 } from "@/data/melanomaPilotValidationMatrix";
+import type { ResearchGapClass } from "@/lib/discovery/gapClass";
+import type { ResearchGapCandidate } from "@/lib/discovery/types";
 import { byId } from "@/lib/immune/engine";
 
 export type SmeWorkItemKind =
@@ -51,6 +53,9 @@ export interface SmeWorkItem {
   /** Suggested fixture PMID for human rematch only — never applied automatically. */
   suggestedPmid: string | null;
   suggestedDoi: string | null;
+  gapKey?: string | null;
+  gapClass?: ResearchGapClass | null;
+  dossierHref?: string | null;
   requiresHumanReview: true;
   autoApprove: false;
   autoRematch: false;
@@ -160,6 +165,67 @@ export function listFlaggedSmeCandidates(opts?: {
     items = items.filter((i) => want.has(i.honesty));
   }
   return items;
+}
+
+/**
+ * Map Discovery gap candidates (esp. isi_curation_gap) into SME work items.
+ * Engineering never marks resolved — decisions stay pending_sme.
+ */
+export function discoveryGapsToSmeWorkItems(
+  gaps: readonly ResearchGapCandidate[],
+): SmeWorkItem[] {
+  return gaps.map((g) => {
+    const subjectName = g.subjectId ? byId[g.subjectId]?.name ?? g.subjectId : null;
+    const objectName = g.objectId ? byId[g.objectId]?.name ?? g.objectId : null;
+    const honesty: SmeHonestyStatus =
+      g.status === "coverage_insufficient" ? "coverage_insufficient" : "candidate";
+    return {
+      id: `SME-DISC-${g.gapKey}`,
+      kind: "discovery_gap" as const,
+      status: "pending_sme" as const,
+      spo:
+        subjectName && objectName
+          ? `${subjectName} → ? → ${objectName}`
+          : subjectName ?? g.title,
+      relId: g.relationshipId,
+      subjectId: g.subjectId,
+      predicate: null,
+      objectId: g.objectId,
+      honesty,
+      claimType: "discovery_gap" as const,
+      flags: [g.gapClass ?? "unclassified", g.detectionSource],
+      rejectedPmidNotes: null,
+      searchCoverageNote: g.searchScope.note,
+      curatorAction:
+        g.gapClass === "isi_curation_gap"
+          ? "Route to curation / rematch — ISI internal gap, not worldwide absence."
+          : g.gapClass === "scientific_evidence_gap"
+            ? "Assess documented-scope evidence; do not invent studies."
+            : "Opportunity requires human review before reviewed_opportunity.",
+      suggestedPmid: null,
+      suggestedDoi: null,
+      gapKey: g.gapKey,
+      gapClass: g.gapClass ?? null,
+      dossierHref: `/discovery/gaps/${encodeURIComponent(g.gapKey)}`,
+      requiresHumanReview: true as const,
+      autoApprove: false as const,
+      autoRematch: false as const,
+    };
+  });
+}
+
+/** Combined melanoma priority + Discovery curation gaps for SME workspace. */
+export function buildSmeUnifiedWorkQueue(opts?: {
+  discoveryGaps?: readonly ResearchGapCandidate[];
+  includeMatrix?: boolean;
+}): SmeWorkItem[] {
+  const matrix = opts?.includeMatrix === false ? [] : buildSmeMelanomaWorkQueue();
+  const disc = discoveryGapsToSmeWorkItems(opts?.discoveryGaps ?? []);
+  const byIdMap = new Map<string, SmeWorkItem>();
+  for (const i of [...buildSmePriorityQueues(), ...matrix, ...disc]) {
+    byIdMap.set(i.id, i);
+  }
+  return [...byIdMap.values()];
 }
 
 export function summariseSmeWorkQueue(items: readonly SmeWorkItem[] = buildSmeMelanomaWorkQueue()) {

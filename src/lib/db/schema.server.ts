@@ -431,6 +431,14 @@ export const researchGaps = pgTable("research_gaps", {
   title: text("title").notNull(),
   summary: text("summary").notNull(),
   status: text("status").notNull().default("candidate"),
+  /** 3.0: isi_curation_gap | scientific_evidence_gap | research_opportunity */
+  gapClass: text("gap_class"),
+  opportunityStatus: text("opportunity_status").notNull().default("none"),
+  opportunityRationale: text("opportunity_rationale"),
+  noveltyNote: text("novelty_note"),
+  feasibilityNote: text("feasibility_note"),
+  classReason: text("class_reason"),
+  classAssignedAt: timestamp("class_assigned_at", { withTimezone: true }),
   pilot: text("pilot"),
   subjectId: text("subject_id"),
   objectId: text("object_id"),
@@ -448,6 +456,20 @@ export const researchGaps = pgTable("research_gaps", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const researchGapClassHistory = pgTable("research_gap_class_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  gapId: uuid("gap_id").notNull(),
+  gapKey: text("gap_key").notNull(),
+  previousClass: text("previous_class"),
+  newClass: text("new_class").notNull(),
+  previousOpportunityStatus: text("previous_opportunity_status"),
+  newOpportunityStatus: text("new_opportunity_status").notNull().default("none"),
+  reason: text("reason").notNull(),
+  actor: text("actor").notNull().default("system"),
+  reviewLocked: boolean("review_locked").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const researchGapCandidates = pgTable("research_gap_candidates", {
   id: uuid("id").primaryKey().defaultRandom(),
   gapKey: text("gap_key").notNull(),
@@ -463,6 +485,15 @@ export const researchGapEvidenceLinks = pgTable("research_gap_evidence_links", {
   relationshipId: text("relationship_id"),
   pmid: text("pmid"),
   doi: text("doi"),
+  nctId: text("nct_id"),
+  title: text("title"),
+  source: text("source"),
+  abstractAvailable: boolean("abstract_available"),
+  fullTextAvailable: boolean("full_text_available"),
+  coverageFrom: text("coverage_from"),
+  coverageTo: text("coverage_to"),
+  exclusionReason: text("exclusion_reason"),
+  provenanceJson: jsonb("provenance_json").notNull().default({}),
   linkRole: text("link_role").notNull().default("background"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

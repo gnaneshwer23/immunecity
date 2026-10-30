@@ -192,9 +192,17 @@ function DiscoveryGapDossierPage() {
         <span className="isi-gap-badge" data-tone={dossier.badge.tone}>
           {dossier.badge.label}
         </span>
+        {dossier.gapClassLabel ? (
+          <span className="isi-gap-badge" data-tone="info" data-testid="gap-class-badge">
+            {dossier.gapClassLabel}
+          </span>
+        ) : null}
         <span className="small muted">
           Detection: {dossier.detectionSource}
           {dossier.pilot ? ` · ${dossier.pilot}` : ""}
+          {dossier.opportunityStatus && dossier.opportunityStatus !== "none"
+            ? ` · opportunity: ${dossier.opportunityStatus}`
+            : ""}
         </span>
         <span className="small muted">
           {dossier.persisted ? "Persisted in Neon" : "Detection only"}
@@ -202,6 +210,9 @@ function DiscoveryGapDossierPage() {
         </span>
       </div>
       <p className="small muted">{dossier.badge.honesty}</p>
+      {dossier.gapClassHonesty ? <p className="small muted">{dossier.gapClassHonesty}</p> : null}
+      {dossier.classReason ? <p className="small muted">Class reason: {dossier.classReason}</p> : null}
+      <p className="small muted">{dossier.noveltyLimitationNote}</p>
       <p className="small muted">Auto-approve: false · {dossier.note}</p>
 
       <div className="row" style={{ gap: 8, flexWrap: "wrap", margin: "12px 0" }}>

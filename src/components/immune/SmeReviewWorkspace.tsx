@@ -229,10 +229,11 @@ export default function SmeReviewWorkspace() {
       </div>
 
       <div className="card" style={{ marginBottom: 16, padding: 12 }} data-testid="sme-flagged-list">
-        <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Flagged melanoma / gap candidates</h3>
+        <h3 style={{ fontSize: "1.05rem", marginBottom: 8 }}>Flagged melanoma / Discovery gap candidates</h3>
         <p className="small muted" style={{ marginBottom: 10 }}>
-          S-P-O, honesty status, rejected PMID notes, search coverage, claim type. All{" "}
-          <code>literature_candidate</code> until reviewed.
+          S-P-O, honesty status, rejected PMID notes, search coverage, claim type. Includes{" "}
+          <code>discovery_gap</code> / <code>isi_curation_gap</code> items routed from Radar — pending_sme
+          until a human decides. Engineering never acts as SME.
         </p>
         <div style={{ maxHeight: 420, overflow: "auto" }}>
           <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
@@ -444,6 +445,17 @@ function WorkItemCard({
       <p className="small" style={{ marginTop: 4 }}>
         {item.spo}
       </p>
+      {item.gapClass ? (
+        <p className="xs muted">
+          Gap class: <code>{item.gapClass}</code>
+          {item.dossierHref ? (
+            <>
+              {" "}
+              · <a href={item.dossierHref}>Open dossier</a>
+            </>
+          ) : null}
+        </p>
+      ) : null}
       {item.relId ? (
         <p className="xs muted">
           <code>{item.relId}</code>

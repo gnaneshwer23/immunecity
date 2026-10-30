@@ -11,7 +11,7 @@ export type AdapterSearchResult = {
   rateLimited?: boolean;
   /** Present only when the adapter returns real identifiers from a live API — never invented. */
   pmids?: string[];
-  source: "stub" | "fixture" | "pubmed_live" | "ctgov_live" | "fail_closed";
+  source: "stub" | "fixture" | "pubmed_live" | "europe_pmc_live" | "ctgov_live" | "fail_closed";
 };
 
 export interface LiteratureSearchAdapter {

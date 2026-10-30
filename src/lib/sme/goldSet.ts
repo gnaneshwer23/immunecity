@@ -15,6 +15,12 @@ export const SME_GOLD_LABELS = [
   "wrong_citation",
   "acceptable_associative",
   "needs_rewrite",
+  /** Discovery 3.0 eval slots — fill only with real SME decisions, never fabricate. */
+  "genuine",
+  "false",
+  "resolved",
+  "contradiction",
+  "incomplete_retrieval",
 ] as const;
 
 export type SmeGoldLabel = (typeof SME_GOLD_LABELS)[number];
@@ -98,6 +104,46 @@ export const SME_GOLD_SET_SCAFFOLD: readonly SmeGoldCase[] = [
     smeScore: null,
     status: "scaffolded",
     notes: "Contradiction-with-context placeholder — no SME score invented.",
+  },
+  {
+    id: "SGOLD-INCOMPLETE-RETRIEVAL-01",
+    workItemId: null,
+    gapKey: null,
+    pilot: "coverage_b",
+    label: null,
+    smeScore: null,
+    status: "scaffolded",
+    notes: "Eval slot: incomplete_retrieval — bind after bounded pilot shows fail_closed/null hits. No fabricated label.",
+  },
+  {
+    id: "SGOLD-RESOLVED-01",
+    workItemId: null,
+    gapKey: null,
+    pilot: "melanoma_a",
+    label: null,
+    smeScore: null,
+    status: "scaffolded",
+    notes: "Eval slot: resolved — only after human SME marks a real candidate resolved.",
+  },
+  {
+    id: "SGOLD-GENUINE-01",
+    workItemId: null,
+    gapKey: null,
+    pilot: "melanoma_a",
+    label: null,
+    smeScore: null,
+    status: "scaffolded",
+    notes: "Eval slot: genuine — fill only with real SME-confirmed gap within documented scope.",
+  },
+  {
+    id: "SGOLD-FALSE-01",
+    workItemId: null,
+    gapKey: null,
+    pilot: "coverage_b",
+    label: null,
+    smeScore: null,
+    status: "scaffolded",
+    notes: "Eval slot: false — fill only when SME rejects a candidate as not a gap in scope.",
   },
 ];
 

@@ -17,24 +17,24 @@
 
 | # | Capability | Code present | Runtime verified | Scientifically validated | Blocked | Missing / gap |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Audit docs (3.0) | This file + `ISI_DISCOVERY_3_AUDIT.md` | Docs authored at audit tip | N/A | — | Keep updated as SHAs land |
-| 2 | `isi_curation_gap` / `scientific_evidence_gap` / `research_opportunity` | **No** at `479531a` | — | — | — | **P0** types + migration + UI + reclass |
-| 2b | Status transitions (candidate…reviewed_gap) | Yes | Unit tests | No (no SME promote in prod data assumed) | SME humans | — |
-| 2c | Reviewed never auto-overwritten | Yes (persist policy) | Unit | — | — | Extend to gap_class reclass |
-| 3 | PubMed adapter (live) | Yes | Fail-closed default; live needs env | No | Opt-in env | Wire to gap assessment + persist links |
-| 3b | Europe PMC | No | — | — | — | **P0** adapter |
-| 3c | ClinicalTrials.gov adapter | Yes | Fail-closed default | No | Opt-in env | Persist NCT + pilot runs |
-| 3d | Bounded pilots A/B retrieval with counts | No end-to-end | — | — | Network + honesty | **P0** script + store |
-| 4 | detect→retrieve→extract→classify→novelty→feasibility→review→personalise | Partial (detect/verify/review/personalise) | Partial | No | SME for reviewed opportunity | Connect retrieve/extract/classify |
-| 5 | SME `/sme` melanoma/KEYNOTE/R011 | Yes | Unit + UI | Pending human SME | Humans | Discovery gap queue + gold slots |
-| 5b | Eval genuine/false/resolved/contradiction/incomplete-retrieval | Partial harness | Honest denoms | No scores until SME | SME labels | Fill only with real candidates |
-| 6 | Radar journey dead ends | Mostly complete | Public smoke | N/A | Auth E2E | Neon-only merge; trial_signal |
-| 7 | Dossier sections (uncertainty, mechanisms, trials, save/follow) | Partial | Unit + route | No | Pro follow quota | Citations panel; class labels |
-| 8 | Monitor bounded run | Yes | Script stub mode | N/A | Prod cron approval | Live pilot separate |
-| 9 | Ranking profile comparison (melanoma vs autoimmunity vs biomarker) | Ranking code yes | Unit | N/A (nav aid) | — | Dedicated comparison tests |
-| 10 | Auth E2E two accounts | Specs exist | **Skip≠pass** | — | `E2E_USER_A_*` / `E2E_USER_B_*` | Report blockers |
-| 11 | Entitlements server-only | Yes | Unit | N/A | Stripe approval | Provisioning fn / ops doc |
-| 12 | Reliability (export quota cold-start, unused tables) | Known defects | — | — | — | Fix confirmed defects |
+| 1 | Audit docs (3.0) | Yes | Authored + pushed | N/A | — | — |
+| 2 | Three gap classes | Yes (`gapClass.ts`, 0024) | Unit + Neon apply | No (SME) | Humans | — |
+| 2b | Status transitions | Yes | Unit | No | SME | — |
+| 2c | Reviewed never auto-overwritten | Yes (status + class) | Unit | — | — | — |
+| 3 | PubMed adapter (live) | Yes | Live pilot: hits returned | No claim support | Opt-in env | — |
+| 3b | Europe PMC | Yes | Live pilot | No | Opt-in env | — |
+| 3c | ClinicalTrials.gov | Yes | Live pilot | No | Opt-in env | NCT detail fetch limited |
+| 3d | Bounded pilots A/B | Yes | **live found=40 / linked=40 / failed=0** (6 gaps) | No | — | Persist hits into Neon links optional follow-up |
+| 4 | Full assessment pipeline | Yes (`pipeline.ts`) | Dry unit + live retrieval script | No | SME review | — |
+| 5 | SME `/sme` + Discovery gaps | Yes unified queue | Unit | Pending SME | Humans | Fill gold only with real reviews |
+| 5b | Eval slots (5 kinds) | Yes scaffold | Honest denoms | No | SME labels | — |
+| 6 | Radar journey | Yes | Prior smoke | N/A | Auth E2E | Neon-only merge; trial_signal still rare |
+| 7 | Dossier class + novelty note | Yes | Unit + route fields | No | Pro follow | — |
+| 8 | Monitor | Yes | Stub + live adapters via pilots | N/A | Prod cron | — |
+| 9 | Ranking profile comparison | Yes | Unit | N/A | — | — |
+| 10 | Auth E2E two accounts | Specs | **Skip≠pass** | — | **E2E_USER_A/B missing** | — |
+| 11 | Entitlements server-only | Yes | Unit | N/A | Stripe | Provisioning API |
+| 12 | Export quota durability | Yes (Neon events) | Code path | N/A | — | — |
 
 ---
 
@@ -66,10 +66,7 @@ Failed query → null / fail_closed — **not** zero evidence.
 | Milestone | SHA | Notes |
 | --- | --- | --- |
 | Pre-3.0 tip | `479531a` | SME Neon 0023 docs |
-| 3.0 audit docs | *(pending)* | This matrix + audit |
-| Gap-class migration | *(pending)* | |
-| Retrieval + pipeline | *(pending)* | |
-| SME + P1/P2 | *(pending)* | |
-| Final deliverables | *(pending)* | |
+| 3.0 audit docs | `7c9c73f` | Audit + matrix |
+| Gap-class + retrieval + SME + deliverables | *(this push)* | See `ISI_DISCOVERY_3_DELIVERABLES.md` |
 
-Update this table on each pushed milestone.
+Update this table after push with the final SHA.

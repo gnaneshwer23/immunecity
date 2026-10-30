@@ -1,6 +1,8 @@
 # Discovery Intelligence rules
 - Research Discovery Radar reuses one KG (`kg.json` + draft `extensions.ts`) — never a second graph and never mass node expansion for Discovery.
 - Gap detection is deterministic from real ISI signals (melanoma matrix, evidenceGap, conflicts, trial linkage). LLM drafts explanations only; never invent PMIDs, papers, metrics, or auto-promote to `reviewed_gap`.
+- **Gap class** (`gapClass.ts`) is orthogonal to review status: `isi_curation_gap` → `/sme` or `/curation`; `scientific_evidence_gap` only within documented search scope; `research_opportunity` only after evidence assessment (rationale/novelty/feasibility) and human review before `reviewed_opportunity`. Never auto-overwrite reviewed class/opportunity. Insufficient coverage blocks confident scientific-gap claims.
+- Retrieval (`retrieve.ts` / `pipeline.ts`) is bounded pilots only; live PubMed / Europe PMC / CT.gov need env flags; failed queries ≠ zero evidence; persist real identifiers only.
 - Missing ISI evidence ≠ worldwide literature absence. Prefer status `coverage_insufficient` when Gate C / search signals are incomplete; never coerce unknown hit counts to zero.
 - `research_profiles` are ownership-scoped like evidence collections — no casual admin list-all; no required sensitive PII.
 - Entitlements `free` | `researcher_pro` | `team` | `enterprise` are server-checked stubs on `research_profiles` — orthogonal to `user_roles`. Quotas (followed gaps, monitor runs, export) enforce in server functions. Team shared profiles / collab are scaffolding only (`team.ts`). No Stripe / payment activation.

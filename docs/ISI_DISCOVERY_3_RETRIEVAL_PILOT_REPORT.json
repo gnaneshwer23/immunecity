@@ -1,0 +1,300 @@
+{
+  "generatedAt": "2026-10-30T17:27:18.687Z",
+  "adapterMode": "live",
+  "liveFlags": {
+    "pubmed": true,
+    "europePmc": true,
+    "ctgov": true
+  },
+  "honesty": "Failed or stubbed queries do not mean zero evidence. Counts are from real adapter responses only; no invented studies.",
+  "pilotReports": [
+    {
+      "pilot": "A",
+      "gapKey": "GAP-MATRIX-REL-R011-drives_immune_exhaustion_in-D012",
+      "gapClass": "isi_curation_gap",
+      "found": 8,
+      "assessed": 8,
+      "linked": 8,
+      "excluded": 0,
+      "failedQueries": 0,
+      "hitCountKnown": true,
+      "inventedStudies": false,
+      "mode": "live",
+      "sampleIds": [
+        {
+          "pmid": "42960497",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960262",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960237",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960125",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42959918",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        }
+      ]
+    },
+    {
+      "pilot": "A",
+      "gapKey": "GAP-MATRIX-REL-I008-treats-D012",
+      "gapClass": "isi_curation_gap",
+      "found": 8,
+      "assessed": 8,
+      "linked": 8,
+      "excluded": 0,
+      "failedQueries": 0,
+      "hitCountKnown": true,
+      "inventedStudies": false,
+      "mode": "live",
+      "sampleIds": [
+        {
+          "pmid": "42960497",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960262",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960237",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960125",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42959918",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        }
+      ]
+    },
+    {
+      "pilot": "A",
+      "gapKey": "GAP-MATRIX-REL-I009-treats-D012",
+      "gapClass": "isi_curation_gap",
+      "found": 9,
+      "assessed": 9,
+      "linked": 9,
+      "excluded": 0,
+      "failedQueries": 0,
+      "hitCountKnown": true,
+      "inventedStudies": false,
+      "mode": "live",
+      "sampleIds": [
+        {
+          "pmid": "42961332",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960497",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960237",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42960125",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        },
+        {
+          "pmid": "42959600",
+          "doi": null,
+          "nctId": null,
+          "source": "pubmed"
+        }
+      ]
+    },
+    {
+      "pilot": "B",
+      "gapKey": "GAP-EVGAP-D012-awaiting_curation",
+      "gapClass": "isi_curation_gap",
+      "found": 5,
+      "assessed": 5,
+      "linked": 5,
+      "excluded": 0,
+      "failedQueries": 0,
+      "hitCountKnown": true,
+      "inventedStudies": false,
+      "mode": "live",
+      "sampleIds": [
+        {
+          "pmid": "41827837",
+          "doi": "10.3390/cells15050403",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42645350",
+          "doi": "10.3390/curroncol33080445",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42614300",
+          "doi": "10.3389/fbioe.2026.1869761",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42528719",
+          "doi": "10.3389/fphar.2026.1810417",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42792133",
+          "doi": "10.3390/antiox15091095",
+          "nctId": null,
+          "source": "europe_pmc"
+        }
+      ]
+    },
+    {
+      "pilot": "B",
+      "gapKey": "GAP-EVGAP-R011-awaiting_curation",
+      "gapClass": "isi_curation_gap",
+      "found": 5,
+      "assessed": 5,
+      "linked": 5,
+      "excluded": 0,
+      "failedQueries": 0,
+      "hitCountKnown": true,
+      "inventedStudies": false,
+      "mode": "live",
+      "sampleIds": [
+        {
+          "pmid": "41827837",
+          "doi": "10.3390/cells15050403",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42660607",
+          "doi": "10.1183/13993003.00258-2026",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42926811",
+          "doi": "10.1016/j.ero.2026.100256",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42639398",
+          "doi": "10.3389/fendo.2026.1894588",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42512634",
+          "doi": "10.3390/healthcare14142117",
+          "nctId": null,
+          "source": "europe_pmc"
+        }
+      ]
+    },
+    {
+      "pilot": "B",
+      "gapKey": "GAP-EVGAP-R012-awaiting_curation",
+      "gapClass": "isi_curation_gap",
+      "found": 5,
+      "assessed": 5,
+      "linked": 5,
+      "excluded": 0,
+      "failedQueries": 0,
+      "hitCountKnown": true,
+      "inventedStudies": false,
+      "mode": "live",
+      "sampleIds": [
+        {
+          "pmid": "42660607",
+          "doi": "10.1183/13993003.00258-2026",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42639398",
+          "doi": "10.3389/fendo.2026.1894588",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42249480",
+          "doi": "10.1186/s12967-026-08335-3",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42812564",
+          "doi": "10.3389/fimmu.2026.1948742",
+          "nctId": null,
+          "source": "europe_pmc"
+        },
+        {
+          "pmid": "42552305",
+          "doi": "10.1038/s41392-026-02851-w",
+          "nctId": null,
+          "source": "europe_pmc"
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "gapsRun": 6,
+    "found": 40,
+    "assessed": 40,
+    "linked": 40,
+    "excluded": 0,
+    "failedQueries": 0
+  },
+  "dryPipelineCounts": {
+    "detected": 12,
+    "retrieved": 0,
+    "classified": 12,
+    "blockedScientific": 0,
+    "pendingExpertReview": 12
+  },
+  "gapClassMix": {
+    "isi_curation_gap": 12
+  }
+}

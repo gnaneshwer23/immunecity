@@ -13,6 +13,7 @@ import {
   type EvidenceGapLabel,
   type EvidenceGapSignals,
 } from "@/lib/research/evidenceGap";
+import { withGapClass } from "@/lib/discovery/gapClass";
 import { assertDetectionEmitStatus, statusFromCoverageLabel } from "@/lib/discovery/gapStatus";
 import {
   DEFAULT_ISI_SEARCH_SCOPE,
@@ -67,7 +68,7 @@ export function detectMelanomaMatrixCandidates(
 
     const subjectName = byId[row.subjectId]?.name ?? row.subjectId;
     const objectName = byId[row.objectId]?.name ?? row.objectId;
-    out.push({
+    const raw: ResearchGapCandidate = {
       gapKey: matrixGapKey(row.relId),
       title: `Uncertainty on ${row.spoLabel}`,
       summary: [
@@ -100,7 +101,8 @@ export function detectMelanomaMatrixCandidates(
       },
       coverageLabel: guarded.status === "coverage_insufficient" ? "insufficient_coverage" : null,
       autoReviewed: false,
-    });
+    };
+    out.push(withGapClass(raw));
   }
   return out;
 }
@@ -116,8 +118,8 @@ export function detectEvidenceGapCandidates(
 ): ResearchGapCandidate[] {
   const out: ResearchGapCandidate[] = [];
   const seen = new Set<string>();
-  for (const raw of conceptIds) {
-    const conceptId = typeof raw === "string" ? raw.trim() : "";
+  for (const conceptRaw of conceptIds) {
+    const conceptId = typeof conceptRaw === "string" ? conceptRaw.trim() : "";
     if (!conceptId || seen.has(conceptId) || !byId[conceptId]) continue;
     seen.add(conceptId);
     const label: EvidenceGapLabel | null = classifyEvidenceGap(
@@ -129,7 +131,8 @@ export function detectEvidenceGapCandidates(
     const guarded = assertDetectionEmitStatus(status);
     if (!guarded.ok) continue;
     const node = byId[conceptId]!;
-    out.push({
+    const signals = signalsById[conceptId] ?? {};
+    const candidate: ResearchGapCandidate = {
       gapKey: `GAP-EVGAP-${conceptId}-${label}`,
       title: `Evidence gap: ${node.name} (${label})`,
       summary: [
@@ -147,11 +150,21 @@ export function detectEvidenceGapCandidates(
       detectionSource: label === "conflicting" ? "conflict" : "evidence_gap",
       detectionDetail: {
         coverageLabel: label,
-        signals: signalsById[conceptId] ?? {},
+        signals,
       },
       coverageLabel: label,
       autoReviewed: false,
-    });
+    };
+    out.push(
+      withGapClass(candidate, {
+        searchAttempted: signals.searchAttempted === true,
+        hitCount:
+          typeof signals.searchHitCount === "number" && Number.isFinite(signals.searchHitCount)
+            ? signals.searchHitCount
+            : null,
+        scopeDocumented: Boolean(scope.note?.trim()),
+      }),
+    );
   }
   return out;
 }

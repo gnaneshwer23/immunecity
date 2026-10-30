@@ -29,8 +29,10 @@ import { smeDecisionAuditReason, validateSmeCitationRematch } from "@/lib/sme/re
 import {
   buildSmeMelanomaWorkQueue,
   buildSmePriorityQueues,
+  buildSmeUnifiedWorkQueue,
   summariseSmeWorkQueue,
 } from "@/lib/sme/workQueue";
+import { detectDiscoveryCandidates } from "@/lib/discovery/detect";
 
 function auditSnapshot(r: typeof evidenceRecords.$inferSelect) {
   return {
@@ -51,10 +53,13 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const powers = await loadAccountPowers(context.userId);
     const canReview = powers.reviewer || powers.administrator;
-    const workItems = buildSmeMelanomaWorkQueue();
+    const discoveryGaps = detectDiscoveryCandidates()
+      .filter((g) => g.gapClass === "isi_curation_gap" || g.detectionSource === "melanoma_matrix")
+      .slice(0, 20);
+    const workItems = buildSmeUnifiedWorkQueue({ discoveryGaps, includeMatrix: true });
     const priority = buildSmePriorityQueues();
     const goldSummary = summariseSmeGoldSet();
-    const evalReport = runSmeEvalHarness();
+    const evalReport = runSmeEvalHarness({ workItems });
 
     let neonGold: SmeGoldCase[] = [...SME_GOLD_SET_SCAFFOLD];
     let workEvents: {

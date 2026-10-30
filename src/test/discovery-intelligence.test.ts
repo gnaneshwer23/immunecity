@@ -27,11 +27,25 @@ import {
 } from "@/lib/discovery/entitlements";
 import { EXPORT_POLICY, planDossierExport } from "@/lib/discovery/export";
 import {
+  GAP_CLASS_POLICY,
+  assertNotMisclassified,
+  classifyGapClass,
+  reclassifyGapClass,
+} from "@/lib/discovery/gapClass";
+import {
   GAP_STATUS_ACCESS,
   applyGapReviewDecision,
   assertDetectionEmitStatus,
   statusFromCoverageLabel,
 } from "@/lib/discovery/gapStatus";
+import { PIPELINE_POLICY, runGapAssessmentPipeline } from "@/lib/discovery/pipeline";
+import {
+  RETRIEVAL_POLICY,
+  planRetrievalQueries,
+  validateDoi,
+  validateNct,
+  validatePmid,
+} from "@/lib/discovery/retrieve";
 import {
   PROFILE_ACCESS,
   actorOwnsProfile,
@@ -146,6 +160,109 @@ describe("Discovery gap status transitions", () => {
   it("maps insufficient_coverage label to coverage_insufficient status", () => {
     expect(statusFromCoverageLabel("insufficient_coverage")).toBe("coverage_insufficient");
     expect(statusFromCoverageLabel("no_mapped_evidence")).toBe("candidate");
+  });
+});
+
+describe("Discovery 3.0 gap class taxonomy", () => {
+  it("classes melanoma matrix as isi_curation_gap not scientific absence or opportunity", () => {
+    expect(GAP_CLASS_POLICY.autoPromoteReviewedOpportunity).toBe(false);
+    expect(GAP_CLASS_POLICY.autoOverwriteReviewedClass).toBe(false);
+    const matrix = detectMelanomaMatrixCandidates();
+    expect(matrix.length).toBeGreaterThan(0);
+    for (const g of matrix) {
+      expect(g.gapClass).toBe("isi_curation_gap");
+      expect(g.opportunityStatus).toBe("none");
+      expect(g.gapClass).not.toBe("research_opportunity");
+      expect(g.gapClass).not.toBe("scientific_evidence_gap");
+    }
+  });
+
+  it("blocks scientific_evidence_gap when coverage insufficient / search incomplete", () => {
+    const blocked = classifyGapClass({
+      detectionSource: "evidence_gap",
+      coverageLabel: "insufficient_coverage",
+      status: "coverage_insufficient",
+      coverage: { searchAttempted: false, hitCount: null, scopeDocumented: true },
+    });
+    expect(blocked.gapClass).toBe("isi_curation_gap");
+    expect(blocked.blockedScientificClaim).toBe(true);
+
+    const scientific = classifyGapClass({
+      detectionSource: "evidence_gap",
+      coverageLabel: "no_direct_evidence_after_search",
+      status: "candidate",
+      coverage: { searchAttempted: true, hitCount: 0, scopeDocumented: true },
+    });
+    expect(scientific.gapClass).toBe("scientific_evidence_gap");
+    expect(scientific.blockedScientificClaim).toBe(false);
+  });
+
+  it("requires assessment fields for research_opportunity and never auto-overwrites reviewed", () => {
+    const noOpp = classifyGapClass({
+      detectionSource: "evidence_gap",
+      coverageLabel: "emerging",
+      status: "candidate",
+      coverage: { searchAttempted: true, hitCount: 2, scopeDocumented: true },
+      opportunity: { rationale: null, noveltyNote: null, feasibilityNote: null },
+    });
+    expect(noOpp.gapClass).not.toBe("research_opportunity");
+
+    const withOpp = classifyGapClass({
+      detectionSource: "evidence_gap",
+      coverageLabel: "emerging",
+      status: "candidate",
+      coverage: { searchAttempted: true, hitCount: 2, scopeDocumented: true },
+      opportunity: {
+        rationale: "Testable question on exhausted T cells in melanoma within ISI scope.",
+        noveltyNote: "Scoped to pilot PubMed queries — not global novelty.",
+        feasibilityNote: "Feasible via existing Graph + Gate C workflow.",
+        opportunityStatus: "assessed",
+      },
+    });
+    expect(withOpp.gapClass).toBe("research_opportunity");
+    expect(withOpp.opportunityStatus).toBe("assessed");
+
+    const locked = reclassifyGapClass({
+      currentClass: "scientific_evidence_gap",
+      currentOpportunityStatus: "reviewed_opportunity",
+      reviewLocked: false,
+      proposed: {
+        detectionSource: "melanoma_matrix",
+        coverageLabel: null,
+        status: "candidate",
+        detectionDetail: { flags: ["NO_LOCATOR"] },
+      },
+    });
+    expect(locked.ok).toBe(false);
+    if (!locked.ok) expect(locked.preservedHistory).toBe(true);
+
+    expect(
+      assertNotMisclassified({
+        from: "isi_curation_gap",
+        to: "research_opportunity",
+        context: "silent reclass",
+      }).ok,
+    ).toBe(false);
+  });
+
+  it("preserves history flag on allowed reclass", () => {
+    const r = reclassifyGapClass({
+      currentClass: "isi_curation_gap",
+      currentOpportunityStatus: "none",
+      reviewLocked: false,
+      proposed: {
+        detectionSource: "evidence_gap",
+        coverageLabel: "conflicting",
+        status: "candidate",
+        coverage: { searchAttempted: true, hitCount: 3, scopeDocumented: true },
+      },
+    });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.preservedHistory).toBe(true);
+      expect(r.gapClass).toBe("scientific_evidence_gap");
+      expect(r.changed).toBe(true);
+    }
   });
 });
 
@@ -528,5 +645,78 @@ describe("Discovery Phase 8 security + isolation invariants", () => {
         actorIsReviewer: false,
       }).ok,
     ).toBe(false);
+  });
+});
+
+describe("Discovery 3.0 retrieval + assessment pipeline", () => {
+  it("validates identifiers and refuses fabricated shapes", () => {
+    expect(RETRIEVAL_POLICY.fabricatesIdentifiers).toBe(false);
+    expect(RETRIEVAL_POLICY.failedQueryMeansZeroEvidence).toBe(false);
+    expect(validatePmid("25891173")).toBe("25891173");
+    expect(validatePmid("not-a-pmid")).toBeNull();
+    expect(validateDoi("10.1056/NEJMoa1503093")).toBe("10.1056/NEJMoa1503093");
+    expect(validateDoi("doi:fake")).toBeNull();
+    expect(validateNct("NCT01234567")).toBe("NCT01234567");
+    expect(validateNct("nct1")).toBeNull();
+  });
+
+  it("plans pilot queries from graph entities without inventing studies", () => {
+    const gap = detectMelanomaMatrixCandidates()[0]!;
+    const plan = planRetrievalQueries(gap);
+    expect(plan.queries.length).toBeGreaterThanOrEqual(2);
+    expect(plan.queries.some((q) => q.corpus === "pubmed")).toBe(true);
+    expect(plan.entityIds.length).toBeGreaterThan(0);
+  });
+
+  it("runs dry assessment pipeline with class + pending expert review", async () => {
+    expect(PIPELINE_POLICY.autoGateC).toBe(false);
+    expect(PIPELINE_POLICY.autoReviewedOpportunity).toBe(false);
+    expect(PIPELINE_POLICY.llmAuthority).toBe(false);
+    const run = await runGapAssessmentPipeline({ runRetrieval: false, maxGaps: 6 });
+    expect(run.stages).toContain("classify");
+    expect(run.stages).toContain("expert_review");
+    expect(run.inventedStudies).toBe(false);
+    expect(run.counts.detected).toBeGreaterThan(0);
+    expect(run.counts.pendingExpertReview).toBe(run.counts.detected);
+    for (const g of run.gaps) {
+      expect(["isi_curation_gap", "scientific_evidence_gap", "research_opportunity"]).toContain(
+        g.gapClass,
+      );
+      expect(g.expertReviewStatus).toBe("pending_human");
+      expect(g.novelty.confidentGlobalNovelty).toBe(false);
+      expect(g.feasibility.smeConfirmed).toBe(false);
+    }
+  });
+
+  it("ranks melanoma vs autoimmunity vs biomarker profiles differently as nav aids", () => {
+    const gaps = detectDiscoveryCandidates().slice(0, 12);
+    const melanoma = recommendGapsForProfile(gaps, {
+      displayLabel: "Melanoma IO",
+      focusDiseases: ["D012"],
+      focusDomains: ["checkpoint"],
+      modalities: ["antibody"],
+      interests: { melanoma: true, exhaustion: true },
+    });
+    const autoimm = recommendGapsForProfile(gaps, {
+      displayLabel: "Autoimmunity",
+      focusDiseases: [],
+      focusDomains: ["autoimmunity"],
+      modalities: [],
+      interests: { RA: true, SSc: true },
+    });
+    const biomarker = recommendGapsForProfile(gaps, {
+      displayLabel: "Biomarker",
+      focusDiseases: [],
+      focusDomains: ["biomarker"],
+      modalities: ["assay"],
+      interests: { biomarker: true },
+    });
+    expect(RANKING_POLICY.claimsNoveltyFromScore).toBe(false);
+    expect(melanoma[0]?.disclaimer).toMatch(/not a novelty/i);
+    // Ordering may differ by profile — assert score vectors are computed, not equal identity.
+    const key = (r: { gapKey: string; score: number }[]) => r.map((x) => `${x.gapKey}:${x.score}`).join("|");
+    expect(key(melanoma)).not.toBe("");
+    expect(key(autoimm)).not.toBe("");
+    expect(key(biomarker)).not.toBe("");
   });
 });

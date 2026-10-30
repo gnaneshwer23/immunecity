@@ -45,25 +45,49 @@ import {
 import { verifyGapCandidate } from "@/lib/discovery/verify";
 import type { ResearchGapCandidate, ResearchGapStatus } from "@/lib/discovery/types";
 
-/** Per-process export counter stub (resets on cold start — honest prep, not billing). */
-const exportUsageByUser = new Map<string, { day: string; count: number }>();
 const discoveryActionRateLimit = createDiscoveryRateLimitStub({ windowMs: 60_000, maxPerWindow: 40 });
 
 function utcDayKey(d = new Date()): string {
   return d.toISOString().slice(0, 10);
 }
 
-function exportsUsedToday(userId: string): number {
-  const row = exportUsageByUser.get(userId);
-  if (!row || row.day !== utcDayKey()) return 0;
-  return row.count;
+/** Durable export quota via Neon change events (survives cold start). */
+async function exportsUsedToday(userId: string): Promise<number> {
+  try {
+    const db = getDb();
+    const day = utcDayKey();
+    const detailed = await db
+      .select()
+      .from(researchGapChangeEvents)
+      .where(
+        and(
+          eq(researchGapChangeEvents.actor, userId),
+          eq(researchGapChangeEvents.eventType, "dossier_export"),
+        ),
+      )
+      .limit(200);
+    return detailed.filter((row) => {
+      const created =
+        row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt ?? "");
+      return created.startsWith(day);
+    }).length;
+  } catch {
+    return 0;
+  }
 }
 
-function bumpExportUsage(userId: string): void {
-  const day = utcDayKey();
-  const row = exportUsageByUser.get(userId);
-  if (!row || row.day !== day) exportUsageByUser.set(userId, { day, count: 1 });
-  else row.count += 1;
+async function bumpExportUsage(userId: string, gapKey: string): Promise<void> {
+  try {
+    const db = getDb();
+    await db.insert(researchGapChangeEvents).values({
+      gapId: null,
+      eventType: "dossier_export",
+      detail: { gapKey, day: utcDayKey() },
+      actor: userId,
+    });
+  } catch {
+    /* best-effort */
+  }
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -133,6 +157,12 @@ function candidateFromRow(
         ? (row.detectionDetail as Record<string, unknown>)
         : (fallback?.detectionDetail ?? {}),
     coverageLabel: row.coverageLabel ?? fallback?.coverageLabel ?? null,
+    gapClass:
+      (row.gapClass as ResearchGapCandidate["gapClass"]) ?? fallback?.gapClass,
+    opportunityStatus:
+      (row.opportunityStatus as ResearchGapCandidate["opportunityStatus"]) ??
+      fallback?.opportunityStatus,
+    classReason: row.classReason ?? fallback?.classReason,
     autoReviewed: false,
   };
 }
@@ -180,6 +210,19 @@ async function upsertCandidates(
       continue;
     }
     if (existing) {
+      // Never overwrite human-reviewed class/opportunity locks.
+      const reviewLocked =
+        existing.status === "reviewed_gap" ||
+        existing.opportunityStatus === "reviewed_opportunity";
+      const classPatch =
+        reviewLocked || existing.opportunityStatus === "reviewed_opportunity"
+          ? {}
+          : {
+              gapClass: g.gapClass ?? existing.gapClass,
+              opportunityStatus: g.opportunityStatus ?? existing.opportunityStatus ?? "none",
+              classReason: g.classReason ?? existing.classReason,
+              classAssignedAt: g.gapClass ? new Date() : existing.classAssignedAt,
+            };
       await db
         .update(researchGaps)
         .set({
@@ -196,13 +239,20 @@ async function upsertCandidates(
           detectionSource: g.detectionSource,
           detectionDetail: g.detectionDetail,
           coverageLabel: g.coverageLabel,
+          ...classPatch,
           updatedAt: new Date(),
         })
         .where(eq(researchGaps.gapKey, g.gapKey));
       await db.insert(researchGapChangeEvents).values({
         gapId: existing.id,
         eventType: "detection_rerun",
-        detail: { gapKey: g.gapKey, status: guarded.status, actor },
+        detail: {
+          gapKey: g.gapKey,
+          status: guarded.status,
+          gapClass: g.gapClass ?? null,
+          actor,
+          reviewLocked,
+        },
         actor,
       });
       // Idempotent coverage row for this gap (one recent stub record).
@@ -223,6 +273,10 @@ async function upsertCandidates(
           title: g.title,
           summary: g.summary,
           status: guarded.status,
+          gapClass: g.gapClass ?? null,
+          opportunityStatus: g.opportunityStatus ?? "none",
+          classReason: g.classReason ?? null,
+          classAssignedAt: g.gapClass ? new Date() : null,
           pilot: g.pilot,
           subjectId: g.subjectId,
           objectId: g.objectId,
@@ -239,7 +293,11 @@ async function upsertCandidates(
       await db.insert(researchGapChangeEvents).values({
         gapId: inserted!.id,
         eventType: "detection_emit",
-        detail: { gapKey: g.gapKey, status: guarded.status },
+        detail: {
+          gapKey: g.gapKey,
+          status: guarded.status,
+          gapClass: g.gapClass ?? null,
+        },
         actor,
       });
       await db.insert(researchSearchCoverage).values({
@@ -966,7 +1024,7 @@ export const exportDiscoveryDossier = createServerFn({ method: "POST" })
       const feature = assertEntitlementAllows(entitlement, "dossier_export");
       if (!feature.ok) throw new Error(feature.error);
       const quota = assertQuotaAllows(entitlement, "exports", {
-        exportsToday: exportsUsedToday(userId),
+        exportsToday: await exportsUsedToday(userId),
       });
       if (!quota.ok) throw new Error(quota.error);
 
@@ -985,7 +1043,7 @@ export const exportDiscoveryDossier = createServerFn({ method: "POST" })
         persistedStatus: persisted?.status ?? null,
         format: data.format,
       });
-      bumpExportUsage(userId);
+      await bumpExportUsage(userId, data.gapKey);
       return {
         ...planned,
         entitlement,

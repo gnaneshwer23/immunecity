@@ -5,6 +5,11 @@
 import { askPrefill } from "@/lib/immune/concepts";
 import { byId } from "@/lib/immune/engine";
 import type { VerificationReport } from "@/lib/discovery/verify";
+import {
+  GAP_CLASS_UI,
+  type ResearchGapClass,
+  type OpportunityStatus,
+} from "@/lib/discovery/gapClass";
 import type {
   ResearchGapCandidate,
   ResearchGapStatus,
@@ -31,6 +36,11 @@ export type GapDossierView = {
   summary: string;
   status: ResearchGapStatus | ResearchGapCandidate["status"];
   badge: GapStatusBadge;
+  gapClass: ResearchGapClass | null;
+  gapClassLabel: string | null;
+  gapClassHonesty: string | null;
+  opportunityStatus: OpportunityStatus | null;
+  classReason: string | null;
   whyItMatters: string;
   searchScope: SearchScope;
   detectionSource: string;
@@ -60,6 +70,7 @@ export type GapDossierView = {
     newStatus: string;
     createdAt: string;
   }>;
+  noveltyLimitationNote: string;
   autoApprove: false;
   note: string;
 };
@@ -165,6 +176,13 @@ export function buildGapDossier(input: {
     links.push({ id: "therapy", label: "Therapy explorer", href: "/therapy" });
   }
   links.push({ id: "radar", label: "Research Radar", href: "/discovery" });
+  const gapClass = gap.gapClass ?? null;
+  if (gapClass === "isi_curation_gap") {
+    links.push({ id: "sme", label: "SME review workspace", href: "/sme" });
+    links.push({ id: "curation", label: "Evidence curation", href: "/curation" });
+  }
+
+  const classUi = gapClass ? GAP_CLASS_UI[gapClass] : null;
 
   return {
     gapKey: gap.gapKey,
@@ -172,6 +190,11 @@ export function buildGapDossier(input: {
     summary: gap.summary,
     status,
     badge: gapStatusBadge(status),
+    gapClass,
+    gapClassLabel: classUi?.label ?? null,
+    gapClassHonesty: classUi?.honesty ?? null,
+    opportunityStatus: gap.opportunityStatus ?? null,
+    classReason: gap.classReason ?? null,
     whyItMatters: gap.whyItMatters,
     searchScope: gap.searchScope,
     detectionSource: gap.detectionSource,
@@ -188,7 +211,9 @@ export function buildGapDossier(input: {
     verification: input.verification ?? null,
     coverageRows: input.coverageRows ?? [],
     reviews: input.reviews ?? [],
+    noveltyLimitationNote:
+      "Novelty notes reflect documented ISI/product search scope and pilot corpora only — not a claim of global literature novelty. Incomplete retrieval blocks confident scientific-gap claims.",
     autoApprove: false,
-    note: "Dossier reuses Ask, Atlas, Evidence, Workbench, and Trials — one knowledge graph. reviewed_gap requires human review.",
+    note: "Dossier reuses Ask, Atlas, Evidence, Workbench, and Trials — one knowledge graph. Gap class is orthogonal to review status; reviewed_gap / reviewed_opportunity require human review.",
   };
 }
