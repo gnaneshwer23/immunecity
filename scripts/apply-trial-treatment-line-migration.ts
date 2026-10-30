@@ -74,7 +74,12 @@ const ddl = readFileSync(
   resolve(process.cwd(), "drizzle/migrations/0018_trial_treatment_line.sql"),
   "utf8",
 );
-if (/\b(evidence_records|evidence_audit_events|claim_candidates|user_roles)\b/.test(ddl)) {
+// Strip -- line comments so safety prose like "does not alter evidence_records" is not a false positive.
+const ddlExecutable = ddl
+  .split("\n")
+  .map((line) => line.replace(/--.*$/, ""))
+  .join("\n");
+if (/\b(evidence_records|evidence_audit_events|claim_candidates|user_roles)\b/.test(ddlExecutable)) {
   console.error("migration_refused=forbidden_table");
   process.exit(1);
 }

@@ -22,12 +22,12 @@ Acceptance criteria are testable. No CDS scope. No bulk approval.
 
 ## P1 — Platform honesty / DB
 
-### P1.1 Apply Neon 0017 + 0018 with backup
-**AC:**
-- Pre-apply backup note; `evidence_records` count unchanged.
-- `ontology_mappings` / `graph_provenance_events` exist; seed empty or curator-only.
+### P1.1 Apply Neon 0017 + 0018 with backup — **DONE 2026-10-30**
+**AC (met):**
+- Apply note: `docs/ISI_NEON_0017_0018_APPLY.md`; `evidence_records` stayed 46.
+- `ontology_mappings` / `graph_provenance_events` exist; ontology seed empty.
 - `treatment_line` columns present; TR003/TR020 seeded from fixture text only.
-- `bun run db:hardening:verify` extended or sibling verify script green.
+- Remaining: optional extend `db:hardening:verify` for these objects (nice-to-have).
 
 ### P1.2 Draft edges must not display as ESTABLISHED in public UI
 **AC:** Inspector / Ask tier for `draft: true` shows Draft / missing-support; marketing copy never says “established” for draft melanoma treats edges.

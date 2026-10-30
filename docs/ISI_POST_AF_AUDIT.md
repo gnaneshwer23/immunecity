@@ -47,14 +47,14 @@
 **Was:** `citeFromEvidenceId` → `Candidate claim linked to brief export (…)`.  
 **Fix:** Source-backed candidates from pilot PMIDs/DOIs + optional `reviewRows`; bare ids mint **no** claims; handoff attaches `candidateManifest` with `wired=true`, `autoPromote=false`.
 
-### D5 — Neon migrations 0017 and 0018 **not applied** on intended host
-**Host:** `ep-blue-salad` (read-only check)  
-| Migration | Expected | Observed |
-| --- | --- | --- |
-| 0017 | `ontology_mappings`, `graph_provenance_events` | **missing** |
-| 0018 | `clinical_trials.treatment_line`, `trial_arms.treatment_line` | **columns absent** |
+### D5 — Neon migrations 0017 and 0018 (audit: unapplied → applied 2026-10-30)
+**Host:** `ep-blue-salad` / `neondb`  
+| Migration | Expected | Audit observation | After apply |
+| --- | --- | --- | --- |
+| 0017 | `ontology_mappings`, `graph_provenance_events` | **missing** | **present** (0 rows; no fabricated ontology) |
+| 0018 | `clinical_trials.treatment_line`, `trial_arms.treatment_line` | **columns absent** | **present**; 2 trials seeded from fixture |
 
-**Preference:** Report unapplied; do **not** apply without backup + explicit review. Fixture `treatmentLine` still overlays in app read model.
+**Apply note:** `docs/ISI_NEON_0017_0018_APPLY.md`. `evidence_records` stayed at 46.
 
 ### D6 — Draft clinical edges marked ESTABLISHED
 `REL-I008/I009/I025-treats-D012` and trial `has_clinical_context` edges are `draft: true` with ESTABLISHED status and no Neon rows.
@@ -100,9 +100,9 @@
 
 - `evidence_records`: 46 total (34 unreviewed, 9 approved, 3 rejected)
 - Melanoma-relevant approved Gate C observed: `REL-I008-blocks-R011` (PMID 25891173)
-- Ontology mapping table: **absent** (0017)
-- `treatment_line`: **absent** (0018)
-- No scientific record mutations performed
+- Ontology mapping table: **present after 2026-10-30 apply** (0017; 0 rows)
+- `treatment_line`: **present after 2026-10-30 apply** (0018; fixture-seeded TR003/TR020)
+- Apply did not mutate evidence approvals or invent ontology crosswalks; see `ISI_NEON_0017_0018_APPLY.md`
 
 ---
 
@@ -114,4 +114,4 @@ See `ISI_MELANOMA_PILOT_VALIDATION_MATRIX.md`. In short: almost all pilot relati
 
 ## 8. Commits from this audit
 
-Listed in the final capability comparison / git log after local commits (docs + minimal fixes). **Not pushed.**
+Post–A–F audit commits pushed to `origin/main` through `67a43bd`. Neon 0017/0018 apply note + apply-script comment false-positive fix committed after.
