@@ -4,6 +4,7 @@
  */
 import { gapStatusBadge, type GapStatusBadge } from "@/lib/discovery/dossier";
 import type { ResearchGapCandidate, ResearchGapStatus } from "@/lib/discovery/types";
+import { reviewStatusUxLabel } from "@/lib/uxLanguage";
 
 export type RadarFeedItem = ResearchGapCandidate & {
   badge: GapStatusBadge;
@@ -44,9 +45,7 @@ function toItem(
     badge: gapStatusBadge(status),
     persistedStatus,
     whySnippet: gap.whyItMatters.slice(0, 180) + (gap.whyItMatters.length > 180 ? "…" : ""),
-    reviewStatusLabel: persistedStatus
-      ? `Persisted · ${persistedStatus}`
-      : "Detection only · not yet persisted",
+    reviewStatusLabel: reviewStatusUxLabel(persistedStatus),
   };
 }
 
@@ -103,8 +102,8 @@ export function shapeRadarFeed(
     persistent: Boolean(opts?.persistent),
     autoApprove: false,
     note: opts?.persistent
-      ? "Radar merges Neon-persisted statuses with deterministic ISI detection. reviewed_gap is human-only."
-      : "Radar lists deterministic ISI detection (not yet reading persisted rows). Missing ISI coverage ≠ worldwide literature absence.",
+      ? "Radar merges saved workspace statuses with ISI detection. Reviewed gaps require human confirmation."
+      : "Radar lists ISI research candidates. Missing ISI coverage ≠ worldwide literature absence.",
   };
 }
 

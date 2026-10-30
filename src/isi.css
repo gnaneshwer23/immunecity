@@ -928,6 +928,63 @@ textarea.community-input { min-height: 120px; padding: 10px; }
 .isi-curation-targets ul { margin: 0; padding-left: 1.1rem; font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
 .isi-curation-detail { padding: var(--isi-space-3); background: var(--bg); border-radius: var(--isi-radius-sm); }
 
+/* Expert / technical provenance — collapsed by default; not primary chrome. */
+.isi-expert-details {
+  margin: var(--isi-space-3) 0 0;
+  padding: var(--isi-space-2) 0 0;
+  border-top: 1px solid var(--border);
+}
+.isi-expert-details > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  list-style: none;
+}
+.isi-expert-details > summary::-webkit-details-marker { display: none; }
+.isi-expert-details > summary::before {
+  content: "▸ ";
+  color: var(--muted);
+}
+.isi-expert-details[open] > summary::before { content: "▾ "; }
+.isi-expert-details > summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.isi-expert-body {
+  margin-top: var(--isi-space-2);
+  display: grid;
+  gap: var(--isi-space-2);
+  max-width: var(--isi-measure);
+}
+
+.isi-concept-picker { display: grid; gap: var(--isi-space-2); width: 100%; }
+.isi-concept-hits {
+  list-style: none; margin: 0; padding: 0;
+  border: 1px solid var(--border); border-radius: var(--isi-radius-sm);
+  max-height: 220px; overflow: auto;
+}
+.isi-concept-hit {
+  display: grid; gap: 2px; width: 100%; text-align: left;
+  padding: 8px 10px; border: 0; border-bottom: 1px solid var(--border);
+  background: transparent; color: var(--text); cursor: pointer; font: inherit;
+}
+.isi-concept-hit:last-child { border-bottom: 0; }
+.isi-concept-hit:hover:not(:disabled) { background: color-mix(in oklab, var(--primary) 6%, transparent); }
+.isi-concept-hit:disabled { opacity: 0.45; cursor: default; }
+.isi-concept-hit:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.isi-concept-selected { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.isi-concept-chip-row { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+.isi-dossier-lede { font-size: 1.05rem; line-height: 1.55; max-width: var(--isi-measure); margin: 0; }
+.isi-dossier-subhead { margin: 0 0 var(--isi-space-2); font-size: 0.95rem; }
+.isi-dossier-primary-actions {
+  display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 var(--isi-space-3);
+}
+.isi-dossier-expert { margin-top: var(--isi-space-4); }
+.isi-collections-form { display: grid; gap: var(--isi-space-3); align-items: start; }
+
 @media (max-width: 900px) {
   .isi-auth-member-grid { grid-template-columns: minmax(0, 1fr); }
 }

@@ -331,11 +331,12 @@ describe("5 — Endpoint comparison: full identity key", () => {
 });
 
 describe("6 — Light: persistence clarity + flag kill switch", () => {
-  it("keeps Neon vs localStorage copy clear", () => {
+  it("keeps collections sync honesty with eng details in expert panel", () => {
     const ui = source("src/components/immune/EvidenceCollectionsPanel.tsx");
     expect(ui).toMatch(/sync across devices/i);
     expect(ui).toMatch(/localStorage/);
-    expect(ui).toMatch(/evidence_records/);
+    expect(ui).toMatch(/evidence records|evidence_id|evidence_records/i);
+    expect(ui).toContain('testId="collections-expert-panel"');
   });
 
   it("documents env-driven flag; runtime kill = unset/redeploy", () => {

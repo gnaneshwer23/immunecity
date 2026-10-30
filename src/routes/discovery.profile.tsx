@@ -10,7 +10,9 @@ import {
   upsertMyResearchProfile,
 } from "@/lib/discovery/profiles.functions";
 import type { ResearchProfileRow } from "@/lib/discovery/types";
+import ExpertDetails from "@/components/immune/ExpertDetails";
 import { seoHead } from "@/lib/seo";
+import { paidPlanAvailabilityCopy } from "@/lib/uxLanguage";
 
 const TOC = [
   { id: "plan", label: "Plan & quotas" },
@@ -80,7 +82,7 @@ function DiscoveryProfilePage() {
         },
       });
       setProfile(res.profile);
-      setMsg("Saved. Entitlement was not changed from the client.");
+      setMsg("Saved. Plan entitlements cannot be changed from this form.");
     } catch (err) {
       setMsg(safeClientError(err));
     }
@@ -99,7 +101,6 @@ function DiscoveryProfilePage() {
             ? [
                 { v: entitlement?.label ?? profile?.entitlement ?? "free", l: "Plan" },
                 { v: String(radarLimit), l: "Radar limit" },
-                { v: "Stub", l: "Billing" },
               ]
             : undefined
         }
@@ -119,18 +120,18 @@ function DiscoveryProfilePage() {
           <Section
             id="plan"
             title="Plan & quotas"
-            lede="Entitlements are server-checked stubs, orthogonal to account roles. Billing is not activated."
+            lede={`Entitlements are server-checked and separate from account roles. ${paidPlanAvailabilityCopy()}.`}
           >
             <Facts
               items={[
                 {
                   label: "Plan",
-                  children: <code>{entitlement?.label ?? profile?.entitlement ?? "free"}</code>,
+                  children: entitlement?.label ?? profile?.entitlement ?? "free",
                 },
                 { label: "Radar limit", children: String(radarLimit) },
                 {
-                  label: "Billing",
-                  children: entitlement?.billingCopy ?? "Researcher Pro — billing not activated",
+                  label: "Availability",
+                  children: paidPlanAvailabilityCopy(),
                 },
               ]}
             />
@@ -138,11 +139,8 @@ function DiscoveryProfilePage() {
               <ul className="isi-library-list" style={{ marginTop: "var(--isi-space-3)" }}>
                 <li>
                   <span>
-                    <strong>Followed gaps</strong>
-                    <span className="muted">
-                      {" "}
-                      · up to {quotas.maxFollowedGaps} (server-enforced; UI hide is not enough)
-                    </span>
+                    <strong>Followed research questions</strong>
+                    <span className="muted"> · up to {quotas.maxFollowedGaps} (server-enforced)</span>
                   </span>
                 </li>
                 <li>
@@ -162,21 +160,20 @@ function DiscoveryProfilePage() {
                     <strong>Team shared profiles</strong>
                     <span className="muted">
                       {" "}
-                      · {team?.policy.activated ? "active" : "scaffolding only — billing not activated"}
-                    </span>
-                  </span>
-                </li>
-                <li>
-                  <span>
-                    <strong>Account roles</strong>
-                    <span className="muted">
-                      {" "}
-                      · <code>user_roles</code> stay orthogonal to Discovery plans
+                      · {team?.policy.activated ? "active" : "not available yet"}
                     </span>
                   </span>
                 </li>
               </ul>
             ) : null}
+            <ExpertDetails summary="Technical details" testId="profile-billing-expert">
+              <p className="xs muted">
+                {entitlement?.billingCopy ?? "Researcher Pro — billing not activated"}
+                {team ? ` · team: ${team.policy.activated ? "active" : "scaffolding"}` : ""}
+                {" · "}
+                Account roles stay orthogonal to Discovery plans.
+              </p>
+            </ExpertDetails>
           </Section>
 
           <Section

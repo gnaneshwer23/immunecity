@@ -84,10 +84,11 @@ describe("P0/P1 research-gap label provenance", () => {
 });
 
 describe("P1 persistence clarity", () => {
-  it("distinguishes Neon collections vs localStorage workbench drafts", () => {
+  it("distinguishes collections sync vs localStorage workbench drafts", () => {
     const panel = source("src/components/immune/EvidenceCollectionsPanel.tsx");
     expect(panel).toMatch(/sync across devices/i);
     expect(panel).toMatch(/localStorage/i);
+    expect(panel).toContain('testId="collections-expert-panel"');
     const wb = source("src/components/immune/ScientificWorkbench.tsx");
     expect(wb).toMatch(/localStorage/i);
     expect(wb).toMatch(/does not sync to Neon|does not sync/i);

@@ -1,10 +1,12 @@
 /**
  * SME review workspace — melanoma / KEYNOTE / R011 queues + gold-set + rematch.
  * Reviewer-gated actions; never bulk-approves or invents PMIDs / gold scores.
+ * Primary copy is scientific; engineering identifiers live in Technical details.
  */
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import ExpertDetails from "@/components/immune/ExpertDetails";
 import { DetailPanel, Facts, Toolbar } from "@/components/immune/page";
 import {
   getSmeWorkspaceSnapshot,
@@ -19,6 +21,12 @@ import { SME_GOLD_LABELS, type SmeGoldCase, type SmeGoldLabel } from "@/lib/sme/
 import type { SmeWorkItem } from "@/lib/sme/workQueue";
 import type { SmeEvalReport } from "@/lib/sme/evalRunner";
 import type { SmeHumanChecklistStep } from "@/lib/sme/workItemStatus";
+import {
+  goldLabelDisplay,
+  smeKindLabel,
+  smeStatusLabel,
+  smeWorkItemTitle,
+} from "@/lib/uxLanguage";
 
 type Snapshot = Awaited<ReturnType<typeof getSmeWorkspaceSnapshot>>;
 
@@ -31,7 +39,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
   const goldFn = useServerFn(upsertSmeGoldLabel);
   const eventsFn = useServerFn(listSmeWorkItemEvents);
 
-  const gapKeyParam = (gapKey ?? "").trim();
+  const focusGap = (gapKey ?? "").trim();
 
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const [msg, setMsg] = useState("");
@@ -60,7 +68,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
       setSnap(s);
       setMsg(
         s.canReview
-          ? `Loaded ${s.workItems.length} work items · pending_sme=${s.workSummary.pendingSme} · resolved=${s.workSummary.resolvedBySme}`
+          ? `Loaded ${s.workItems.length} items · ${s.workSummary.pendingSme} awaiting review · ${s.workSummary.resolvedBySme} resolved`
           : "Signed in — scientific reviewer role required for decisions.",
       );
       if (s.canReview) {
@@ -68,18 +76,18 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
         const slice = await queueFn({ data: { relationshipIds: relIds.length ? relIds : undefined, limit: 40 } });
         setIdByEvidence(slice.idByEvidence);
       }
-      if (gapKeyParam) {
+      if (focusGap) {
         const match =
-          s.workItems.find((i) => i.gapKey === gapKeyParam) ??
-          s.workItems.find((i) => i.id === `SME-DISC-${gapKeyParam}`);
+          s.workItems.find((i) => i.gapKey === focusGap) ??
+          s.workItems.find((i) => i.id === `SME-DISC-${focusGap}`);
         if (match) setSelected(match);
       }
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : "SME workspace failed to load.");
+      setMsg(e instanceof Error ? e.message : "Scientific review workspace failed to load.");
       setSnap(null);
     }
     setBusy(false);
-  }, [snapFn, queueFn, gapKeyParam]);
+  }, [snapFn, queueFn, focusGap]);
 
   useEffect(() => {
     void load();
@@ -93,10 +101,13 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
 
   const runDecision = async (action: "approve" | "reject" | "request_changes") => {
     if (!selected || !evidenceUuid || rationale.trim().length < 8) {
-      setMsg("Select a work item, paste evidence UUID, and write a rationale (≥8 chars).");
+      setMsg("Select a work item, choose an evidence record, and write a rationale (≥8 chars).");
       return;
     }
-    if (action === "approve" && !window.confirm("Approve as Gate C support? Human decision only — never automatic.")) {
+    if (
+      action === "approve" &&
+      !window.confirm("Approve this claim as supported evidence? Human decision only — never automatic.")
+    ) {
       return;
     }
     setBusy(true);
@@ -109,7 +120,13 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
           rationale: rationale.trim(),
         },
       });
-      setMsg(`${action} recorded (audited).`);
+      setMsg(
+        action === "approve"
+          ? "Approval recorded (audited)."
+          : action === "reject"
+            ? "Rejection recorded (audited)."
+            : "Change request recorded (audited).",
+      );
       setRationale("");
       await load();
     } catch (e) {
@@ -120,7 +137,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
 
   const runRematch = async () => {
     if (!selected?.relId || !evidenceUuid) {
-      setMsg("Rematch needs a work item with relId and evidence UUID.");
+      setMsg("Rematch needs a selected item with a relationship and an evidence record.");
       return;
     }
     setBusy(true);
@@ -149,7 +166,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
     if (!goldCase) return;
     const parsedScore = goldScore.trim() === "" ? null : Number(goldScore);
     if (parsedScore !== null && (Number.isNaN(parsedScore) || parsedScore < 0 || parsedScore > 1)) {
-      setMsg("Optional smeScore must be empty (null) or a number from 0–1 — never invent.");
+      setMsg("Optional expert score must be empty or a number from 0–1 — never invent.");
       return;
     }
     setBusy(true);
@@ -164,23 +181,21 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
           notes: rationale.trim() || goldCase.notes,
         },
       });
-      setMsg(
-        `Gold label ${goldLabel} saved for ${goldCase.id} (score=${parsedScore === null ? "null" : String(parsedScore)}).`,
-      );
+      setMsg(`Expert label “${goldLabelDisplay(goldLabel)}” saved.`);
       await load();
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Gold label save failed.");
+      setMsg(e instanceof Error ? e.message : "Expert label save failed.");
     }
     setBusy(false);
   };
 
   const runSpoProposal = async () => {
     if (!selected || selected.kind !== "r011_spo_rewrite") {
-      setMsg("Select the R011 S-P-O work item before recording a rewrite proposal.");
+      setMsg("Select the relationship-rewrite work item before recording a proposal.");
       return;
     }
     if (!spoSubject.trim() || !spoPredicate.trim() || !spoObject.trim() || rationale.trim().length < 8) {
-      setMsg("Proposed S / P / O and rationale (≥8 chars) required. Do not invent — scientist fills.");
+      setMsg("Proposed subject / predicate / object and rationale (≥8 chars) required.");
       return;
     }
     setBusy(true);
@@ -199,7 +214,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
       setMsg(res.note);
       await load();
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : "S-P-O proposal failed.");
+      setMsg(e instanceof Error ? e.message : "Relationship proposal failed.");
     }
     setBusy(false);
   };
@@ -231,24 +246,15 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
   }, [queueFilter, priority, workItems]);
 
   const gapMatch =
-    gapKeyParam &&
-    (selected?.gapKey === gapKeyParam || selected?.id === `SME-DISC-${gapKeyParam}`);
+    focusGap &&
+    (selected?.gapKey === focusGap || selected?.id === `SME-DISC-${focusGap}`);
 
   const statusFacts = useMemo(() => {
     if (!snap) return [];
     return [
-      { label: "Pending SME", children: String(snap.workSummary.pendingSme) },
+      { label: "Awaiting review", children: String(snap.workSummary.pendingSme) },
       { label: "Resolved", children: String(snap.workSummary.resolvedBySme) },
-      { label: "Gold labelled", children: snap.goldSummary.labelledRate },
-      {
-        label: "Safeguards",
-        children: (
-          <span className="isi-sme-safeguards">
-            autoApprove={String(snap.autoApprove)} · autoRematch={String(snap.autoRematch)} · TI=
-            {String(snap.trialIntelligenceEnabled)}
-          </span>
-        ),
-      },
+      { label: "Expert labelled", children: snap.goldSummary.labelledRate },
     ];
   }, [snap]);
 
@@ -257,7 +263,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
       <Toolbar
         count={
           snap
-            ? `${snap.workSummary.pendingSme} pending · ${snap.workSummary.resolvedBySme} resolved`
+            ? `${snap.workSummary.pendingSme} awaiting · ${snap.workSummary.resolvedBySme} resolved`
             : busy
               ? "Loading…"
               : "—"
@@ -285,29 +291,43 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
       {snap ? (
         <div className="isi-sme-overview">
           <p className="isi-note isi-sme-edu">
-            Educational / research review tooling — not CDS. Priority KEYNOTE and R011 stay{" "}
-            <em>pending_sme</em> until a human scientist decides.
+            Educational / research review tooling — not clinical decision support. Priority citation and
+            relationship items stay awaiting review until a human scientist decides.
           </p>
           <Facts items={statusFacts} />
+          <ExpertDetails summary="Technical details" testId="sme-expert-panel">
+            <p className="xs muted isi-sme-safeguards">
+              autoApprove={String(snap.autoApprove)} · autoRematch={String(snap.autoRematch)} · TI=
+              {String(snap.trialIntelligenceEnabled)}
+            </p>
+            {focusGap ? (
+              <p className="xs muted" data-testid="sme-gapkey-deeplink">
+                Deep-link focus: <code>{focusGap}</code>
+                {gapMatch ? " — matching work item selected." : " — no matching candidate in this snapshot yet."}
+              </p>
+            ) : (
+              <p className="xs muted" data-testid="sme-gapkey-deeplink">
+                No deep-link focus — browse priority and Discovery queues below.
+              </p>
+            )}
+          </ExpertDetails>
         </div>
       ) : null}
 
-      {gapKeyParam ? (
+      {focusGap ? (
         <div
           className={`isi-sme-deeplink${gapMatch ? " is-matched" : ""}`}
-          data-testid="sme-gapkey-deeplink"
           role="status"
         >
-          <span className="isi-detail-eyebrow">Deep-link</span>
+          <span className="isi-detail-eyebrow">Focused candidate</span>
           <p>
-            Focusing gap <code>{gapKeyParam}</code>
             {gapMatch
-              ? " — matching work item selected in the queue."
-              : " — no matching Discovery work item in this snapshot yet (persist the gap or refresh)."}
+              ? "Matching research candidate selected in the queue."
+              : "No matching Discovery candidate in this snapshot yet — save the candidate from Discovery, then refresh."}
           </p>
           {selected && gapMatch ? (
             <p className="xs muted">
-              Selected <code>{selected.id}</code> · {selected.status}
+              {smeWorkItemTitle(selected)} · {smeStatusLabel(selected.status)}
             </p>
           ) : null}
         </div>
@@ -315,22 +335,22 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
         <div className="isi-sme-deeplink isi-sme-deeplink-empty" role="status">
           <span className="isi-detail-eyebrow">Queue overview</span>
           <p>
-            No <code>gapKey</code> filter — browse priority KEYNOTE / R011 items and Discovery candidates below.
-            Open a dossier with <code>?gapKey=…</code> to jump to one gap.
+            Browse priority citation rematch / relationship rewrite items and Discovery research candidates
+            below. Open a dossier’s “Open in scientific review” link to jump to one candidate.
           </p>
         </div>
       )}
 
       {evalReport ? (
         <details className="isi-sme-eval">
-          <summary>Eval denominators (honest)</summary>
+          <summary>Evaluation denominators (honest)</summary>
           <ul className="isi-sme-eval-list">
             {evalReport.denominators.map((d) => (
               <li key={d.name}>
                 <code>{d.name}</code>
                 <span>
                   {d.display}
-                  {d.pendingHuman ? " · awaiting SME" : ""}
+                  {d.pendingHuman ? " · awaiting reviewer" : ""}
                 </span>
               </li>
             ))}
@@ -348,8 +368,8 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
             {(
               [
                 ["all", "All items"],
-                ["priority", "KEYNOTE / R011"],
-                ["discovery", "Discovery gaps"],
+                ["priority", "Citation / relationship"],
+                ["discovery", "Research candidates"],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -367,10 +387,10 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
 
           {queueFilter !== "discovery" ? (
             <div className="isi-sme-priority-block">
-              <h4 className="isi-sme-subhead">Priority (KEYNOTE / R011)</h4>
+              <h4 className="isi-sme-subhead">Priority (citation rematch / relationship rewrite)</h4>
               <p className="xs muted isi-sme-lede-tight">
-                Explicit work — no silent fix. Status leaves <code>pending_sme</code> only after audited human
-                events.
+                Explicit human work — no silent fix. Status leaves “awaiting review” only after audited
+                scientific decisions.
               </p>
               <ul className="isi-library-list isi-sme-item-list">
                 {priority.map((item) => (
@@ -389,7 +409,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                 testId="sme-keynote-checklist"
               />
               <HumanChecklist
-                title="R011 S-P-O rewrite"
+                title="Exhaustion relationship rewrite"
                 steps={snap?.checklists?.r011 ?? []}
                 testId="sme-r011-checklist"
               />
@@ -401,11 +421,12 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
               {queueFilter === "priority" ? "Priority only" : "Flagged melanoma / Discovery candidates"}
             </h4>
             {queueFilter === "priority" ? (
-              <p className="xs muted">Switch to All or Discovery gaps to browse the wider candidate list.</p>
+              <p className="xs muted">Switch to All or Research candidates to browse the wider list.</p>
             ) : (
               <>
                 <p className="xs muted isi-sme-lede-tight">
-                  S-P-O, honesty, rejected PMID notes, claim type. Engineering never acts as SME.
+                  Subject–predicate–object honesty, rejected citation notes, and claim type. Automation never
+                  acts as the scientific reviewer.
                 </p>
                 <ul className="isi-library-list isi-sme-item-list isi-sme-scroll">
                   {filteredQueue.map((item) => (
@@ -427,26 +448,26 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
         <div className="isi-panel-sticky isi-sme-detail">
           {selected ? (
             <DetailPanel
-              eyebrow={`${selected.kind} · ${selected.status}`}
-              title={selected.id}
+              eyebrow={`${smeKindLabel(selected.kind)} · ${smeStatusLabel(selected.status)}`}
+              title={smeWorkItemTitle(selected)}
               action={
                 <button type="button" className="btn sm" onClick={() => void loadEvents(selected.id)}>
-                  Audit log
+                  Decision history
                 </button>
               }
             >
               <p className="isi-sme-spo">{selected.spo}</p>
               <Facts
                 items={[
-                  { label: "Honesty", children: selected.honesty },
-                  { label: "Claim type", children: selected.claimType },
+                  { label: "Honesty", children: selected.honesty.replace(/_/g, " ") },
+                  { label: "Claim type", children: selected.claimType.replace(/_/g, " ") },
                   ...(selected.gapClass
                     ? [
                         {
-                          label: "Gap class",
+                          label: "Research class",
                           children: (
                             <>
-                              <code>{selected.gapClass}</code>
+                              {selected.gapClass.replace(/_/g, " ")}
                               {selected.dossierHref ? (
                                 <>
                                   {" "}
@@ -458,14 +479,11 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                         },
                       ]
                     : []),
-                  ...(selected.relId
-                    ? [{ label: "Relationship", children: <code>{selected.relId}</code> }]
-                    : []),
                   { label: "Coverage", children: selected.searchCoverageNote },
                   ...(selected.rejectedPmidNotes
-                    ? [{ label: "Rejected PMID notes", children: selected.rejectedPmidNotes }]
+                    ? [{ label: "Rejected citation notes", children: selected.rejectedPmidNotes }]
                     : []),
-                  { label: "Curator action", children: selected.curatorAction },
+                  { label: "Suggested next step", children: selected.curatorAction },
                   ...(selected.flags.length
                     ? [
                         {
@@ -478,13 +496,31 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                     : []),
                 ]}
               />
+              <ExpertDetails summary="Technical details" testId="sme-item-expert-panel">
+                <p className="xs muted">
+                  Work item <code>{selected.id}</code>
+                  {selected.relId ? (
+                    <>
+                      {" "}
+                      · relationship <code>{selected.relId}</code>
+                    </>
+                  ) : null}
+                  {selected.gapKey ? (
+                    <>
+                      {" "}
+                      · gap <code>{selected.gapKey}</code>
+                    </>
+                  ) : null}
+                </p>
+              </ExpertDetails>
             </DetailPanel>
           ) : (
             <div className="isi-sme-empty-detail">
               <span className="isi-detail-eyebrow">Selection</span>
               <h3>Select a work item</h3>
               <p className="muted">
-                Choose KEYNOTE, R011, or a Discovery candidate from the queue. Reviewer actions appear here.
+                Choose a priority citation rematch, relationship rewrite, or Discovery candidate. Reviewer
+                actions appear here.
               </p>
             </div>
           )}
@@ -492,25 +528,12 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
           {snap?.canReview ? (
             <div className="isi-sme-actions" data-testid="sme-actions">
               <h3 className="isi-sme-subhead">Reviewer actions</h3>
-              <p className="xs muted">
-                Evidence UUIDs available from Neon queue: {Object.keys(idByEvidence).length}
-              </p>
 
               <fieldset className="isi-fieldset">
-                <legend>Decision</legend>
+                <legend>Evidence decision</legend>
                 <label className="isi-sme-field">
-                  <span>Evidence UUID</span>
-                  <input
-                    className="input"
-                    value={evidenceUuid}
-                    onChange={(e) => setEvidenceUuid(e.target.value)}
-                    placeholder="Paste evidence_records.id (uuid)"
-                    autoComplete="off"
-                  />
-                </label>
-                {Object.keys(idByEvidence).length ? (
-                  <label className="isi-sme-field">
-                    <span>Pick from queue slice</span>
+                  <span>Evidence record</span>
+                  {Object.keys(idByEvidence).length ? (
                     <select
                       className="input"
                       value={
@@ -521,17 +544,40 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                         if (uuid) setEvidenceUuid(uuid);
                       }}
                     >
-                      <option value="">—</option>
+                      <option value="">Select from review queue…</option>
                       {Object.entries(idByEvidence)
                         .slice(0, 24)
-                        .map(([eid, uuid]) => (
+                        .map(([eid]) => (
                           <option key={eid} value={eid}>
-                            {eid} → {uuid.slice(0, 8)}…
+                            {eid}
                           </option>
                         ))}
                     </select>
+                  ) : (
+                    <input
+                      className="input"
+                      value={evidenceUuid}
+                      onChange={(e) => setEvidenceUuid(e.target.value)}
+                      placeholder="Paste evidence record id"
+                      autoComplete="off"
+                    />
+                  )}
+                </label>
+                <ExpertDetails summary="Technical details" testId="sme-evidence-expert-panel">
+                  <p className="xs muted">
+                    Queue slice records available: {Object.keys(idByEvidence).length}
+                  </p>
+                  <label className="isi-sme-field">
+                    <span>Evidence UUID (advanced)</span>
+                    <input
+                      className="input"
+                      value={evidenceUuid}
+                      onChange={(e) => setEvidenceUuid(e.target.value)}
+                      placeholder="evidence_records.id"
+                      autoComplete="off"
+                    />
                   </label>
-                ) : null}
+                </ExpertDetails>
                 <label className="isi-sme-field">
                   <span>Rationale</span>
                   <textarea
@@ -549,7 +595,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                     disabled={busy}
                     onClick={() => void runDecision("approve")}
                   >
-                    Approve (human)
+                    Approve evidence
                   </button>
                   <button type="button" className="btn sm" disabled={busy} onClick={() => void runDecision("reject")}>
                     Reject
@@ -594,15 +640,15 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                   disabled={busy || !selected?.relId}
                   onClick={() => void runRematch()}
                 >
-                  Rematch (resets approval)
+                  Rematch citation
                 </button>
               </fieldset>
 
               {selected?.kind === "r011_spo_rewrite" ? (
                 <fieldset className="isi-fieldset" data-testid="sme-spo-rewrite">
-                  <legend>R011 S-P-O rewrite proposal</legend>
+                  <legend>Relationship rewrite proposal</legend>
                   <p className="xs muted">
-                    Scientist fills proposed S / P / O. Does not rewrite the graph edge or approve Gate C.
+                    Propose subject / predicate / object. Does not rewrite the graph edge or approve evidence.
                   </p>
                   <div className="isi-sme-field-row">
                     <label className="isi-sme-field">
@@ -611,7 +657,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                         className="input"
                         value={spoSubject}
                         onChange={(e) => setSpoSubject(e.target.value)}
-                        placeholder="Curator-supplied"
+                        placeholder="Scientist-supplied"
                       />
                     </label>
                     <label className="isi-sme-field">
@@ -620,7 +666,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                         className="input"
                         value={spoPredicate}
                         onChange={(e) => setSpoPredicate(e.target.value)}
-                        placeholder="Curator-supplied"
+                        placeholder="Scientist-supplied"
                       />
                     </label>
                     <label className="isi-sme-field">
@@ -629,12 +675,12 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                         className="input"
                         value={spoObject}
                         onChange={(e) => setSpoObject(e.target.value)}
-                        placeholder="Curator-supplied"
+                        placeholder="Scientist-supplied"
                       />
                     </label>
                   </div>
                   <button type="button" className="btn sm" disabled={busy} onClick={() => void runSpoProposal()}>
-                    Record S-P-O proposal
+                    Record rewrite proposal
                   </button>
                 </fieldset>
               ) : null}
@@ -649,8 +695,8 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
             </div>
           ) : (
             <p className="isi-note" style={{ marginTop: "var(--isi-space-4)" }}>
-              Decisions, rematch, and gold labels require scientific reviewer or administrator access. Members can
-              read the queue snapshot after sign-in.
+              Decisions, rematch, and expert labels require scientific reviewer or administrator access. Members
+              can read the queue snapshot after sign-in.
             </p>
           )}
         </div>
@@ -658,33 +704,44 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
 
       <div className="isi-sme-gold" data-testid="sme-gold-set">
         <div className="isi-panel-head">
-          <h3>Gold-set harness</h3>
+          <h3>Expert labelling set</h3>
           <span className="isi-toolbar-count">
-            labelled={snap?.goldSummary.labelledRate ?? "—"} · pending_sme={snap?.goldSummary.pendingSme ?? "—"}
+            labelled {snap?.goldSummary.labelledRate ?? "—"} · awaiting {snap?.goldSummary.pendingSme ?? "—"}
           </span>
         </div>
         <p className="xs muted isi-sme-lede-tight">
-          Expert labels stay null-scored until an SME fills them. Evaluation runners use honest denominators.
+          Expert labels stay unscored until a scientific reviewer fills them. Evaluation uses honest
+          denominators.
         </p>
         <ul className="isi-library-list isi-sme-item-list">
           {goldCases.map((c) => (
             <li key={c.id} className="isi-sme-gold-row">
               <div className="isi-sme-item-head">
-                <strong>
-                  <code>{c.id}</code>
-                </strong>
+                <strong>{c.notes.slice(0, 80) || c.id}</strong>
                 <span className="isi-gap-badge" data-tone={c.label ? "ok" : "info"}>
-                  {c.status}
+                  {c.status === "labelled_by_sme" ? "labelled" : "awaiting"}
                 </span>
               </div>
               <p className="xs muted">
-                label={c.label ?? "null"} · score={c.smeScore === null ? "null" : String(c.smeScore)}
+                {goldLabelDisplay(c.label)}
+                {c.smeScore !== null ? ` · score ${c.smeScore}` : ""}
               </p>
               <p className="small">{c.notes}</p>
+              <ExpertDetails summary="Technical details">
+                <p className="xs muted">
+                  Case <code>{c.id}</code>
+                  {c.gapKey ? (
+                    <>
+                      {" "}
+                      · <code>{c.gapKey}</code>
+                    </>
+                  ) : null}
+                </p>
+              </ExpertDetails>
               {snap?.canReview ? (
                 <button
                   type="button"
-                  className="btn sm"
+                  className="btn sm primary"
                   onClick={() => {
                     setGoldCase(c);
                     if (c.label) setGoldLabel(c.label);
@@ -698,9 +755,7 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
         </ul>
         {goldCase && snap?.canReview ? (
           <fieldset className="isi-fieldset isi-sme-gold-form">
-            <legend>
-              Labelling <code>{goldCase.id}</code>
-            </legend>
+            <legend>Labelling this case</legend>
             <div className="isi-sme-field-row">
               <label className="isi-sme-field">
                 <span>Label</span>
@@ -711,18 +766,18 @@ export default function SmeReviewWorkspace({ gapKey }: { gapKey?: string } = {})
                 >
                   {SME_GOLD_LABELS.map((l) => (
                     <option key={l} value={l}>
-                      {l}
+                      {goldLabelDisplay(l)}
                     </option>
                   ))}
                 </select>
               </label>
               <label className="isi-sme-field">
-                <span>Optional score 0–1 (empty = null)</span>
+                <span>Optional score 0–1 (empty = none)</span>
                 <input
                   className="input"
                   value={goldScore}
                   onChange={(e) => setGoldScore(e.target.value)}
-                  placeholder="null"
+                  placeholder="leave empty"
                   inputMode="decimal"
                 />
               </label>
@@ -784,7 +839,7 @@ function HumanChecklist({
         ))}
       </ul>
       <p className="xs muted">
-        Slots stay unchecked here — completion is recorded only via audited SME actions.
+        Slots stay unchecked here — completion is recorded only via audited reviewer actions.
       </p>
     </div>
   );
@@ -807,11 +862,9 @@ function WorkItemRow({
     <li className={`isi-sme-item${selected ? " is-selected" : ""}`}>
       <button type="button" className="isi-sme-item-select" onClick={onSelect}>
         <div className="isi-sme-item-head">
-          <strong>
-            {item.id} · {item.status}
-          </strong>
+          <strong>{smeWorkItemTitle(item)}</strong>
           <span className="xs muted">
-            {item.honesty} · {item.claimType}
+            {smeStatusLabel(item.status)} · {item.honesty.replace(/_/g, " ")}
           </span>
         </div>
         <p className={`isi-sme-item-spo${compact ? " is-compact" : ""}`}>{item.spo}</p>
@@ -820,11 +873,11 @@ function WorkItemRow({
         ) : null}
       </button>
       <div className="isi-sme-item-actions">
-        <button type="button" className="btn sm" onClick={onSelect}>
-          Select
+        <button type="button" className="btn sm primary" onClick={onSelect}>
+          Review
         </button>
         <button type="button" className="btn sm" onClick={onAudit}>
-          Audit
+          History
         </button>
       </div>
     </li>

@@ -1,11 +1,13 @@
 /**
- * Named evidence collections on /research — Neon-backed for signed-in members.
+ * Named evidence collections on /research — signed-in workspace.
  * Never writes the knowledge graph.
  */
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import ConceptIdPicker from "@/components/immune/ConceptIdPicker";
+import ExpertDetails from "@/components/immune/ExpertDetails";
 import { useMember } from "@/components/immune/community/chrome";
 import { NodeChip } from "@/components/immune/ui";
 import { byId } from "@/lib/immune/engine";
@@ -35,7 +37,7 @@ export default function EvidenceCollectionsPanel() {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
-  const [conceptText, setConceptText] = useState("R001, P001");
+  const [conceptIds, setConceptIds] = useState<string[]>([]);
   const [evidenceText, setEvidenceText] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function EvidenceCollectionsPanel() {
   function resetForm() {
     setEditingId(null);
     setName("");
-    setConceptText("R001, P001");
+    setConceptIds([]);
     setEvidenceText("");
   }
 
@@ -66,8 +68,8 @@ export default function EvidenceCollectionsPanel() {
           <Link to="/auth" search={{ redirect: "/research" }}>
             Sign in
           </Link>{" "}
-          as a member to save named evidence collections (graph concept ids + optional evidence record refs).
-          Collections never write the knowledge graph.
+          as a member to save named evidence collections of atlas concepts. Collections never write the
+          knowledge graph.
         </p>
       </div>
     );
@@ -81,19 +83,17 @@ export default function EvidenceCollectionsPanel() {
     <div className="isi-workspace isi-auth-workspace">
       <div className="isi-auth-panel">
         <p className="isi-auth-lede">
-          Save a named collection of existing atlas concept ids and optional Neon <code>evidence_id</code> refs.
-          Collections sync across devices for your signed-in account (Neon). Workbench local drafts stay in this
-          browser’s localStorage and do not sync. <strong>kgWrite=false</strong> — this does not approve claims or
-          mutate the curated graph. Evidence refs must already exist in <code>evidence_records</code>.
+          Save a named set of atlas concepts for later investigation. Collections sync across devices for your
+          signed-in research workspace. This does not approve claims or change the curated graph.
         </p>
         <p className="xs muted">{EVIDENCE_GAP_PROVENANCE_NOTE}</p>
         {!available ? (
           <p className="callout" role="status">
-            Evidence collections are not available on this database yet (migration 0016 pending).
+            Evidence collections are not available on this database yet.
           </p>
         ) : null}
 
-        <div className="isi-auth-field-row">
+        <div className="isi-auth-field-row isi-collections-form">
           <label className="field">
             Name
             <input
@@ -103,30 +103,34 @@ export default function EvidenceCollectionsPanel() {
               placeholder="Melanoma PD-1 path"
             />
           </label>
-          <label className="field">
-            Concept ids
-            <input
-              value={conceptText}
-              onChange={(e) => setConceptText(e.target.value)}
-              placeholder="R001, P001, TR003"
-            />
-          </label>
-          <label className="field">
-            Evidence refs (optional)
-            <input
-              value={evidenceText}
-              onChange={(e) => setEvidenceText(e.target.value)}
-              placeholder="Existing evidence_id only"
-            />
-          </label>
+          <ConceptIdPicker
+            selected={conceptIds}
+            onChange={setConceptIds}
+            label="Concepts"
+            placeholder="Search concepts (e.g. melanoma, PD-1)"
+          />
+          <ExpertDetails summary="Technical details" testId="collections-expert-panel">
+            <p className="xs muted">
+              Optional refs must already exist in evidence records. Workbench local drafts stay on this device
+              (localStorage) and do not sync. kgWrite=false — collections never mutate the curated graph.
+              Backend: Neon evidence_id refs when provided.
+            </p>
+            <label className="field">
+              Evidence refs (optional, advanced)
+              <input
+                value={evidenceText}
+                onChange={(e) => setEvidenceText(e.target.value)}
+                placeholder="Existing evidence record ids"
+              />
+            </label>
+          </ExpertDetails>
           <button
             type="button"
             className="btn sm primary"
-            disabled={busy || !available}
+            disabled={busy || !available || !name.trim() || conceptIds.length === 0}
             onClick={() => {
               setBusy(true);
               setMsg(null);
-              const conceptIds = conceptText.split(/[\s,;]+/).filter(Boolean);
               const evidenceRefs = evidenceText.split(/[\s,;]+/).filter(Boolean);
               const req = isEditing
                 ? updateFn({ data: { id: editingId!, name, conceptIds, evidenceRefs } })
@@ -134,7 +138,7 @@ export default function EvidenceCollectionsPanel() {
               req
                 .then(() => {
                   resetForm();
-                  setMsg(isEditing ? "Collection updated (kgWrite=false)." : "Collection saved (kgWrite=false).");
+                  setMsg(isEditing ? "Collection updated." : "Collection saved to your research workspace.");
                   return queryClient.invalidateQueries({ queryKey: ["evidence-collections", member.id] });
                 })
                 .catch((err) => setMsg(safeErr(err)))
@@ -161,7 +165,7 @@ export default function EvidenceCollectionsPanel() {
         {collections.length === 0 ? (
           <div className="isi-auth-empty">
             <h3>No collections yet</h3>
-            <p>Save a named set of existing graph concept ids. Nothing here writes the knowledge graph.</p>
+            <p>Search and select atlas concepts, then save a named collection.</p>
           </div>
         ) : (
           <ul className="isi-auth-queue">
@@ -177,7 +181,7 @@ export default function EvidenceCollectionsPanel() {
                       onClick={() => {
                         setEditingId(c.id);
                         setName(c.name);
-                        setConceptText(c.conceptIds.join(", "));
+                        setConceptIds(c.conceptIds);
                         setEvidenceText(c.evidenceRefs.join(", "));
                         setMsg(null);
                       }}
@@ -205,9 +209,7 @@ export default function EvidenceCollectionsPanel() {
                     </button>
                   </div>
                 </div>
-                <p className="xs muted">
-                  Updated {new Date(c.updatedAt).toLocaleString()} · kgWrite={String(c.kgWrite)}
-                </p>
+                <p className="xs muted">Updated {new Date(c.updatedAt).toLocaleString()}</p>
                 <div className="isi-auth-queue-meta">
                   {c.conceptIds.map((id) => {
                     const gap = classifyEvidenceGap(id);
@@ -228,7 +230,11 @@ export default function EvidenceCollectionsPanel() {
                   })}
                 </div>
                 {c.evidenceRefs.length ? (
-                  <p className="xs muted">Evidence refs: {c.evidenceRefs.join(", ")}</p>
+                  <ExpertDetails summary="Technical details">
+                    <p className="xs muted">
+                      Evidence refs: {c.evidenceRefs.join(", ")} · kgWrite={String(c.kgWrite)}
+                    </p>
+                  </ExpertDetails>
                 ) : null}
               </li>
             ))}

@@ -163,8 +163,8 @@ function DiscoveryAlertsPage() {
           <div className="isi-auth-empty">
             <h3>No alerts yet</h3>
             <p>
-              Follow a persisted gap (Researcher Pro — billing not activated; server quota enforced) or set
-              profile interests, then run the monitor.
+              Follow a saved research question (paid follows are not available yet; server quota enforced) or
+              set profile interests, then run the monitor.
             </p>
           </div>
         ) : null}

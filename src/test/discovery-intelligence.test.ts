@@ -403,8 +403,10 @@ describe("Discovery Phase 7 entitlements + quotas + team scaffolding", () => {
     expect(source("src/lib/discovery/profiles.functions.ts")).toContain("entitlementSummary");
     expect(source("src/lib/discovery/profiles.functions.ts")).toContain("rolesOrthogonal");
     expect(source("drizzle/migrations/0022_research_entitlements_team.sql")).toContain("enterprise");
-    expect(source("src/routes/discovery.profile.tsx")).toMatch(/billing not activated/i);
-    expect(source("src/routes/discovery.gaps.$gapId.tsx")).toMatch(/Researcher Pro — billing not activated/);
+    expect(source("src/routes/discovery.profile.tsx")).toMatch(/billing not activated|not available yet/i);
+    expect(source("src/routes/discovery.profile.tsx")).toContain('testId="profile-billing-expert"');
+    expect(source("src/routes/discovery.gaps.$gapId.tsx")).toMatch(/Follow/);
+    expect(source("src/routes/discovery.gaps.$gapId.tsx")).not.toMatch(/profile interest stub/i);
   });
 
   it("refuses client entitlement elevation and keeps owner isolation", () => {

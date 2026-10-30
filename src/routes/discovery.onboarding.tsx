@@ -1,12 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, type FormEvent } from "react";
+import ConceptIdPicker from "@/components/immune/ConceptIdPicker";
+import ExpertDetails from "@/components/immune/ExpertDetails";
 import { PageHead } from "@/components/immune/ui";
 import { Section } from "@/components/immune/page";
 import { useMember, safeClientError } from "@/components/immune/community/chrome";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { upsertMyResearchProfile } from "@/lib/discovery/profiles.functions";
 import { seoHead } from "@/lib/seo";
+import { paidPlanAvailabilityCopy } from "@/lib/uxLanguage";
 
 export const Route = createFileRoute("/discovery/onboarding")({
   head: () =>
@@ -25,9 +28,9 @@ function DiscoveryOnboardingPage() {
   const navigate = useNavigate();
   const upsert = useServerFn(upsertMyResearchProfile);
   const [label, setLabel] = useState("");
-  const [diseases, setDiseases] = useState("D012");
-  const [domains, setDomains] = useState("checkpoint");
-  const [modalities, setModalities] = useState("pd1");
+  const [diseaseIds, setDiseaseIds] = useState<string[]>([]);
+  const [domains, setDomains] = useState("");
+  const [modalities, setModalities] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -40,13 +43,18 @@ function DiscoveryOnboardingPage() {
     setBusy(true);
     setMsg("");
     try {
+      const domainList = domains.split(/[\s,]+/).filter(Boolean);
+      const modalityList = modalities.split(/[\s,]+/).filter(Boolean);
       await upsert({
         data: {
           displayLabel: label || null,
-          focusDiseases: diseases.split(/[\s,]+/).filter(Boolean),
-          focusDomains: domains.split(/[\s,]+/).filter(Boolean),
-          modalities: modalities.split(/[\s,]+/).filter(Boolean),
-          interests: { onboarding: true, topics: ["melanoma", "checkpoint"] },
+          focusDiseases: diseaseIds,
+          focusDomains: domainList,
+          modalities: modalityList,
+          interests: {
+            onboarding: true,
+            topics: [...domainList, ...modalityList].slice(0, 12),
+          },
         },
       });
       await navigate({ to: "/discovery" });
@@ -64,8 +72,7 @@ function DiscoveryOnboardingPage() {
         title="Set a research focus"
         lede="Tell ISI which disease and modality lenses matter for your radar. We do not require sensitive personal data. Profiles never write the curated knowledge graph."
         stats={[
-          { v: "free", l: "Starting plan" },
-          { v: "Stub", l: "Billing" },
+          { v: "Free", l: "Starting plan" },
           { v: "No PII", l: "Required" },
         ]}
       />
@@ -82,7 +89,7 @@ function DiscoveryOnboardingPage() {
         <Section
           id="focus"
           title="Research focus"
-          lede="Concept ids and short modality labels only. Entitlement starts at free (server-side stub)."
+          lede="Search atlas concepts for diseases. Add short domain or modality labels if helpful."
         >
           <form className="isi-auth-form isi-form" onSubmit={save}>
             <label>
@@ -91,24 +98,38 @@ function DiscoveryOnboardingPage() {
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 maxLength={80}
-                placeholder="e.g. Melanoma IO"
+                placeholder="e.g. Melanoma immuno-oncology"
+              />
+            </label>
+            <ConceptIdPicker
+              selected={diseaseIds}
+              onChange={setDiseaseIds}
+              label="Focus diseases"
+              placeholder="Search diseases (e.g. melanoma)"
+              max={12}
+            />
+            <label>
+              Focus domains (optional keywords)
+              <input
+                value={domains}
+                onChange={(e) => setDomains(e.target.value)}
+                placeholder="e.g. checkpoint, exhaustion"
               />
             </label>
             <label>
-              Focus disease concept ids
-              <input value={diseases} onChange={(e) => setDiseases(e.target.value)} placeholder="D012" />
+              Modalities (optional keywords)
+              <input
+                value={modalities}
+                onChange={(e) => setModalities(e.target.value)}
+                placeholder="e.g. PD-1, LAG-3"
+              />
             </label>
-            <label>
-              Focus domains
-              <input value={domains} onChange={(e) => setDomains(e.target.value)} placeholder="checkpoint" />
-            </label>
-            <label>
-              Modalities
-              <input value={modalities} onChange={(e) => setModalities(e.target.value)} placeholder="pd1" />
-            </label>
-            <p className="isi-auth-lede">
-              Entitlement starts at <code>free</code> (server-side stub). Billing is not activated.
-            </p>
+            <ExpertDetails summary="Technical details" testId="onboarding-expert-panel">
+              <p className="xs muted">
+                Entitlement starts at free. {paidPlanAvailabilityCopy()}. Concept ids stored for ranking:{" "}
+                {diseaseIds.length ? diseaseIds.join(", ") : "none yet"}.
+              </p>
+            </ExpertDetails>
             {msg ? (
               <p className="callout" role="alert">
                 {msg}

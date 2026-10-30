@@ -61,10 +61,12 @@ describe("Auth member workspace UI", () => {
     expect(onboarding).toContain("isi-auth-sign-in");
   });
 
-  it("evidence collections keep Neon/localStorage honesty without nested cards", () => {
+  it("evidence collections keep sync honesty; eng details in expert panel", () => {
     const ui = source("src/components/immune/EvidenceCollectionsPanel.tsx");
     expect(ui).toContain("EVIDENCE_GAP_PROVENANCE_NOTE");
     expect(ui).toMatch(/sync across devices/i);
+    expect(ui).toContain("ConceptIdPicker");
+    expect(ui).toContain('testId="collections-expert-panel"');
     expect(ui).toMatch(/localStorage/i);
     expect(ui).toContain("updateEvidenceCollection");
     expect(ui).toContain("Update collection");

@@ -9,6 +9,7 @@ import { listDiscoveryRadar, listMyDiscoveryRadar, persistDetectedGapCandidates 
 import { recommendedBecauseLine, type RecommendReason } from "@/lib/discovery/recommend";
 import { shapeRadarFeed, type RadarFeedItem } from "@/lib/discovery/radar";
 import { seoHead } from "@/lib/seo";
+import { detectionSourceLabel, paidPlanAvailabilityCopy } from "@/lib/uxLanguage";
 
 const TOC = [
   { id: "radar", label: "Radar feed" },
@@ -43,7 +44,10 @@ function GapRow({
         <span className="isi-gap-badge" data-tone={g.badge.tone}>
           {g.badge.label}
         </span>
-        <span className="small muted">{g.detectionSource}{g.pilot ? ` · ${g.pilot}` : ""}</span>
+        <span className="small muted">
+          {detectionSourceLabel(g.detectionSource)}
+          {g.pilot === "melanoma_a" ? " · Melanoma pilot" : g.pilot === "coverage_b" ? " · Coverage pilot" : ""}
+        </span>
         <span className="small muted">{g.reviewStatusLabel}</span>
       </div>
       <Link to="/discovery/gaps/$gapId" params={{ gapId: g.gapKey }}>
@@ -123,7 +127,7 @@ function DiscoveryRadarPage() {
     setPersistMsg("");
     try {
       const res = await persistFn({ data: {} });
-      setPersistMsg(`Persisted ${res.upserted} candidate(s). ${res.note}`);
+      setPersistMsg(`Saved ${res.upserted} research candidate(s) to your workspace.`);
       const refreshed = await listMine({ data: { limit: 25, status: filter === "all" ? "all" : filter } }).catch(
         () => listPublic({ data: { limit: 25, status: filter === "all" ? "all" : filter } }),
       );
@@ -137,7 +141,7 @@ function DiscoveryRadarPage() {
         setPersonalised(true);
       }
     } catch (e) {
-      setPersistMsg(e instanceof Error ? e.message : "Persist failed (sign in required).");
+      setPersistMsg(e instanceof Error ? e.message : "Save failed (sign in required).");
     } finally {
       setPersisting(false);
     }
@@ -155,7 +159,7 @@ function DiscoveryRadarPage() {
       <Section
         id="radar"
         title="Radar feed"
-        lede="Pilot A (melanoma matrix) and Pilot B (evidence-gap labels) only. Status stays candidate or coverage_insufficient until a scientific reviewer decides."
+        lede="Melanoma evidence analysis and coverage-gap pilots. Status stays candidate or coverage insufficient until a scientific reviewer decides."
       >
         <div className="row" style={{ gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
           {(
@@ -175,7 +179,7 @@ function DiscoveryRadarPage() {
             </button>
           ))}
           <Link className="btn sm" to="/discovery/gaps">
-            Full gap list
+            Full candidate list
           </Link>
           <Link className="btn sm" to="/discovery/alerts">
             Alerts
@@ -183,12 +187,12 @@ function DiscoveryRadarPage() {
           <Link className="btn sm" to="/discovery/onboarding">
             Set research focus
           </Link>
-          <button type="button" className="btn sm" disabled={persisting} onClick={() => void onPersist()}>
-            {persisting ? "Persisting…" : "Persist detection to Neon"}
+          <button type="button" className="btn sm primary" disabled={persisting} onClick={() => void onPersist()}>
+            {persisting ? "Saving…" : "Save research candidates"}
           </button>
         </div>
         <p className="small muted">
-          {note} · Source {persistent ? "Neon + detection" : "detection only"}
+          {note} · {persistent ? "Workspace + detection" : "New research candidates"}
           {personalised ? " · Personalised ordering" : ""}
         </p>
         {rankingDisclaimer ? <p className="small muted">{rankingDisclaimer}</p> : null}
@@ -240,19 +244,20 @@ function DiscoveryRadarPage() {
       >
         <p>
           Every candidate carries a documented search scope. Labels such as{" "}
-          <em>coverage_insufficient</em> mean Gate C or product-search signals were incomplete — not that zero
-          papers exist worldwide. Human review is mandatory before any row becomes a <code>reviewed_gap</code>.
+          <em>coverage insufficient</em> mean evidence or product-search signals were incomplete — not that
+          zero papers exist worldwide. Human review is mandatory before any row becomes a reviewed research
+          gap.
         </p>
       </Section>
 
       <Section
         id="next"
         title="Get started"
-        lede="Profiles stay ownership-scoped. Free / Researcher Pro / Team / Enterprise are server-checked stubs — Researcher Pro — billing not activated. Quotas are not UI-only."
+        lede={`Profiles stay ownership-scoped. ${paidPlanAvailabilityCopy()}. Quotas are enforced on the server.`}
       >
         <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
           <Link className="btn primary" to="/discovery/onboarding">
-            Onboarding
+            Set research focus
           </Link>
           <Link className="btn" to="/discovery/profile">
             Profile

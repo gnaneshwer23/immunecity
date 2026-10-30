@@ -204,12 +204,14 @@ describe("SME workspace wiring", () => {
     expect(ui).toContain('data-testid="sme-gapkey-deeplink"');
     expect(ui).toContain('data-testid="sme-actions"');
     expect(ui).toContain('data-testid="sme-gold-set"');
+    expect(ui).toContain('testId="sme-expert-panel"');
     expect(ui).toContain("isi-workspace");
     expect(ui).toContain("DetailPanel");
     expect(source("src/components/immune/MelanomaPilotChecklist.tsx")).toContain(
       'data-testid="melanoma-pilot-checklist"',
     );
     expect(source("src/isi.css")).toContain(".isi-sme");
+    expect(source("src/isi.css")).toContain(".isi-expert-details");
   });
 
   it("refuses silent KEYNOTE rematch and bulk approve in source policy", () => {

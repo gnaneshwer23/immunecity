@@ -13,7 +13,7 @@ import { seoHead } from "@/lib/seo";
 
 const TOC = [
   { id: "workspace", label: "Review workspace" },
-  { id: "checklist", label: "Melanoma matrix" },
+  { id: "checklist", label: "Melanoma evidence matrix" },
   { id: "links", label: "Related tools" },
 ];
 
@@ -25,9 +25,9 @@ export const Route = createFileRoute("/_authenticated/sme")({
   ),
   head: () =>
     seoHead({
-      title: `SME review workspace — ${PRODUCT_NAME}`,
+      title: `Scientific review workspace — ${PRODUCT_NAME}`,
       description:
-        "Scientific reviewer workspace for Gate C, melanoma pilot, KEYNOTE rematch, and gold-set labelling. Educational — not CDS. No bulk approve.",
+        "Scientific reviewer workspace for evidence decisions, citation rematch, and gold-set labelling. Educational — not CDS. No bulk approve.",
       path: "/sme",
       noIndex: true,
     }),
@@ -53,12 +53,12 @@ function SmePage() {
     <main className="page isi-sme-page">
       <PageHead
         kicker="Investigate · Trust"
-        title="SME review workspace"
-        lede="Human-only Gate C, KEYNOTE rematch, R011 S-P-O proposals, and gold-set labelling for the melanoma pilot. Decisions are audited; engineering never invents PMIDs or bulk-approves claims. Educational beta — not clinical decision support."
+        title="Scientific review workspace"
+        lede="Human-only evidence decisions, citation rematch, relationship rewrite proposals, and expert labelling for the melanoma pilot. Every decision is audited. Educational beta — not clinical decision support."
         stats={[
           { v: roleLabel, l: "Signed-in role" },
-          { v: "Human", l: "Gate C decisions" },
-          { v: "Audited", l: "Rematch writes" },
+          { v: "Human", l: "Evidence decisions" },
+          { v: "Audited", l: "Citation rematch" },
         ]}
       />
       <PageToc items={TOC} />
@@ -66,15 +66,15 @@ function SmePage() {
       <Section
         id="workspace"
         title="Review workspace"
-        lede="Priority KEYNOTE and R011 queues, Discovery gap candidates, honest eval denominators, and reviewer actions — pending_sme until a scientist decides."
+        lede="Priority citation and relationship queues, Discovery research candidates, honest evaluation denominators, and reviewer actions — items stay awaiting review until a scientist decides."
       >
         <SmeReviewWorkspace gapKey={gapKey || undefined} />
       </Section>
 
       <Section
         id="checklist"
-        title="Melanoma pilot matrix"
-        lede="Engineering validation matrix mirror. Every row stays unreviewed until an SME records a decision elsewhere."
+        title="Melanoma evidence matrix"
+        lede="Validation checklist for the melanoma pilot. Every row stays unreviewed until a scientific reviewer records a decision."
       >
         <MelanomaPilotChecklist />
       </Section>
@@ -82,7 +82,7 @@ function SmePage() {
       <Section
         id="links"
         title="Related tools"
-        lede="Reuse Neon curation and Discovery gap review — this page does not replace them."
+        lede="Reuse evidence curation and Discovery gap review — this page does not replace them."
       >
         <ul className="isi-library-list isi-sme-links">
           <li>
@@ -94,7 +94,7 @@ function SmePage() {
           <li>
             <Link to="/discovery">
               <strong>Discovery Radar</strong>
-              <span className="muted"> Gap candidates before reviewed_gap</span>
+              <span className="muted"> Research candidates before human-reviewed gaps</span>
             </Link>
           </li>
           <li>
@@ -108,7 +108,7 @@ function SmePage() {
               <strong>Operator guide</strong>
               <span className="muted">
                 {" "}
-                <code>docs/ISI_SME_WORKSPACE.md</code> in the repo
+                Repository docs for reviewers (<code>docs/ISI_SME_WORKSPACE.md</code>)
               </span>
             </span>
           </li>
