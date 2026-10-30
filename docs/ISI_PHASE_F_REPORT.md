@@ -3,7 +3,7 @@
 **Date:** 2026-10-30  
 **Product:** Immune Super Intelligence (educational — not CDS)  
 **Baseline:** Phase E `23aabbd`  
-**Phase F commit:** `(this commit)`  
+**Phase F commit:** `74d357c`  
 
 ---
 
@@ -96,7 +96,7 @@ Same as Phase E — brief candidates, Gate C density, biomarker assays (none inv
 | Item | Value |
 | --- | --- |
 | Phase E | `23aabbd` |
-| Phase F HEAD | `(filled after commit)` |
+| Phase F HEAD | `74d357c` |
 
 **Rollback:** `git revert <PHASE_F_SHA>` (docs + tests only; no DDL in Phase F).
 

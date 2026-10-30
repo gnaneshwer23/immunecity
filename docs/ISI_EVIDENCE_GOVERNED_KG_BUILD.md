@@ -22,7 +22,7 @@ In metastatic melanoma, which immune-escape mechanisms associate with PD-1 inhib
 | **C** | Evidence intelligence | **Complete (engineering)** | `docs/ISI_PHASE_C_REPORT.md` · `2056b2f` |
 | **D** | Ask Immune GraphRAG | **Partial** (neighbourhood + conflict lines; SME eval open) | `docs/ISI_PHASE_D_REPORT.md` · `2056b2f` |
 | **E** | Clinical / research workflows | **Complete (engineering)** | `docs/ISI_PHASE_E_REPORT.md` · `23aabbd` |
-| **F** | End-to-end QA | **Complete (focused bun suite)** | `docs/ISI_PHASE_F_REPORT.md` · SHA after F commit |
+| **F** | End-to-end QA | **Complete (focused bun suite)** | `docs/ISI_PHASE_F_REPORT.md` · `74d357c` |
 
 Prior hardening / correction sprints (2026-10-30) remain prerequisites: `docs/ISI_HARDENING_SPRINT_2026-10-30.md`, `docs/ISI_AUDIT_BASELINE_2026-10-30.md`.
 
