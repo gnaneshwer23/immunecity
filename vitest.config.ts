@@ -23,6 +23,7 @@ export default defineConfig({
       "src/test/phase2-trial-intelligence.test.ts",
       "src/test/claim-review-kind.test.ts",
       "src/test/melanoma-curation-matrix.test.ts",
+      "src/test/discovery-intelligence.test.ts",
       "src/test/post-af-scientific-brief-audit.test.ts",
       "src/test/phase-c-evidence-intelligence.test.ts",
     ],
