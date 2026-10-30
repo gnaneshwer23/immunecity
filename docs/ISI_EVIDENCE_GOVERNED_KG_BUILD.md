@@ -17,9 +17,9 @@ In metastatic melanoma, which immune-escape mechanisms associate with PD-1 inhib
 
 | Phase | Title | Status | Report / notes |
 | --- | --- | --- | --- |
-| **A** | Immediate corrections | **Complete (engineering)** | `docs/ISI_PHASE_A_REPORT.md` |
-| **B** | Scientific graph model | Not started | Typed relations, ontology map, provenance, neighbourhood API |
-| **C** | Evidence intelligence | Not started | Claim records, conflict, review queue; quality ≠ status ≠ curation |
+| **A** | Immediate corrections | **Complete (engineering)** | `docs/ISI_PHASE_A_REPORT.md` · `40d9bbc` |
+| **B** | Scientific graph model | **Complete (engineering)** | `docs/ISI_PHASE_B_REPORT.md` |
+| **C** | Evidence intelligence | In progress / next | Claim records, conflict, review queue; quality ≠ status ≠ curation |
 | **D** | Ask Immune GraphRAG | Partial baseline exists (`askGrounding.ts`) | Entity resolve, bounded paths, abstain, evals |
 | **E** | Clinical / research workflows | Partial (Trial Intelligence P0–P2, Workbench MVP) | Biomarkers, mechanism↔trial links, brief handoff |
 | **F** | End-to-end QA | Not started | Full journey + a11y + isolation |
@@ -36,18 +36,20 @@ Prior hardening / correction sprints (2026-10-30) remain prerequisites: `docs/IS
 4. Positive / negative / boundary regressions in `src/test/phase-a-evidence-governed.test.ts`
 
 **Tests:** 31 pass across phase-a + phase4 + correction-sprint suites.  
-**SHA:** see Phase A report after commit.
+**SHA:** `40d9bbc`
 
 ---
 
-## Phase B plan (next)
+## Phase B exit (done)
 
-1. **Inventory** — document canonical KG (`src/data/kg.json` + `extensions.ts` merge) vs Neon persistence (evidence only today; graph remains browser JSON).
-2. **Typed relations** — formalise direction + context from existing `relation_semantics` / edge fields; no competing graph store.
-3. **Ontology mappings** — additive map table/module retaining ISI IDs (MeSH/Uberon/etc. only when curator-supplied — no fabricated crosswalks).
-4. **Versioned provenance + review metadata** — extend edge panel fields already stubbed in `graphPhase2.ts`; additive columns on evidence path only unless KG JSON gains optional fields.
-5. **Safe migrations + backfill** — additive SQL only; scripts fail-closed; never rewrite `evidence_records` approvals.
-6. **Bounded neighbourhood API** — server or browser-safe helper over existing `out`/`inn` with depth/limit; powers Ask + Research without loading full graph over the wire.
+1. Inventory — `graphInventory.ts` (single KG; Neon = evidence/trials/collections only)
+2. Typed relations — `typedRelations.ts` (direction, polarity from `relation_semantics`, context)
+3. Ontology mappings — empty seed + migration 0017 `ontology_mappings` (curator backfill only)
+4. Provenance — `graphProvenance.ts` + `graph_provenance_events`
+5. Safe apply/backfill scripts — evidence count fail-closed; dry-run default
+6. Bounded neighbourhood — `neighbourhood.ts` + `neighbourhood.functions.ts`
+
+**Tests:** 15 Phase B + 9 Phase A pass. **SHA:** see Phase B report after commit.
 
 ---
 

@@ -3,7 +3,7 @@
 **Date:** 2026-10-30  
 **Product:** Immune Super Intelligence (educational — not CDS)  
 **Baseline:** `207e58f` (main)  
-**Phase A commit:** _(filled after commit)_  
+**Phase A commit:** `40d9bbc`  
 
 ---
 
@@ -88,7 +88,7 @@ Open SME items (unchanged from hardening sprint):
 | Item | Value |
 | --- | --- |
 | Baseline | `207e58f` |
-| Phase A HEAD | _(see git log after commit)_ |
+| Phase A HEAD | `40d9bbc` |
 
 **Rollback (safe, no history rewrite):**
 

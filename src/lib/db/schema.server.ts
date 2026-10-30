@@ -357,3 +357,42 @@ export type ClinicalTrialRow = typeof clinicalTrials.$inferSelect;
 export type TrialArmRow = typeof trialArms.$inferSelect;
 export type EndpointResultRow = typeof endpointResults.$inferSelect;
 export type EvidenceCollectionRow = typeof evidenceCollections.$inferSelect;
+
+/**
+ * Phase B — Ontology crosswalks retaining ISI ids (migration 0017).
+ * Not a second KG. Curator-supplied external ids only — never invent accessions.
+ */
+export const ontologyMappings = pgTable(
+  "ontology_mappings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    isiId: text("isi_id").notNull(),
+    system: text("system").notNull(),
+    externalId: text("external_id").notNull(),
+    label: text("label"),
+    reviewStatus: text("review_status").notNull().default("unreviewed"),
+    notes: text("notes"),
+    reviewedBy: text("reviewed_by"),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("ontology_mappings_isi_ext_uniq").on(t.isiId, t.system, t.externalId)],
+);
+
+/** Phase B — append-only graph provenance / release notes (not claim approval). */
+export const graphProvenanceEvents = pgTable("graph_provenance_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  entityKind: text("entity_kind").notNull(),
+  isiId: text("isi_id"),
+  relationshipId: text("relationship_id"),
+  graphCoreVersion: text("graph_core_version").notNull(),
+  graphExtensionsVersion: text("graph_extensions_version"),
+  eventType: text("event_type").notNull(),
+  actor: text("actor").notNull().default("system"),
+  detail: jsonb("detail").notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type OntologyMappingRow = typeof ontologyMappings.$inferSelect;
+export type GraphProvenanceEventRow = typeof graphProvenanceEvents.$inferSelect;
