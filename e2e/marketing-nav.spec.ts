@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
+import { JOURNEY_NAV, JOURNEY_PRIMARY, JOURNEY_SECONDARY } from "../src/data/marketingNav";
 
-const JOURNEYS = ["Learn", "Explore", "Investigate", "Trust"];
-const DESTINATIONS = ["Platform", "Academy", "Cell atlas", "Knowledge graph", "Evidence", "Methods", "Reasoning & AI", "Research library", "Research", "Simulate", "Vision", "About"];
+const JOURNEYS = JOURNEY_NAV.map((g) => g.label);
 
 async function expectDesktopNav(page: Page) {
   const nav = page.getByRole("navigation", { name: "Primary" });
@@ -9,19 +9,21 @@ async function expectDesktopNav(page: Page) {
   for (const label of JOURNEYS) {
     await expect(nav.getByRole("button", { name: label, exact: true })).toBeVisible();
   }
+  // Ask Immune lives inside Learn — not a top-level header link.
   await expect(nav.getByRole("link", { name: "Ask Immune", exact: true })).toHaveCount(0);
-  await expect(nav.getByRole("link", { name: "Research", exact: true })).toBeVisible();
-  await expect(nav.getByRole("link", { name: "Simulate", exact: true })).toBeVisible();
+  for (const item of JOURNEY_PRIMARY) {
+    await expect(nav.getByRole("link", { name: item.label, exact: true })).toBeVisible();
+  }
+  for (const item of JOURNEY_SECONDARY) {
+    await expect(nav.getByRole("link", { name: item.label, exact: true })).toBeVisible();
+  }
   await expect(nav.getByRole("link", { name: "Community", exact: true })).toHaveCount(0);
   await expect(nav.getByRole("link", { name: "Collaborate", exact: true })).toHaveCount(0);
-  await expect(nav.getByRole("link", { name: "Vision", exact: true })).toBeVisible();
-  await expect(nav.getByRole("link", { name: "About", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /More/i })).toHaveCount(0);
   const header = page.getByRole("banner");
   await expect(header.getByRole("search")).toHaveCount(0);
   await expect(header.getByRole("link", { name: "Explore the Immune System" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Explore Immune City" }).first()).toBeVisible();
-  // Insights, Community, Collaborate stay out of primary header
   await expect(nav.getByRole("link", { name: "Insights" })).toHaveCount(0);
 }
 
@@ -34,26 +36,29 @@ async function openCompactNav(page: Page) {
   return panel;
 }
 
-test.describe("marketing navigation", () => {
-  test("desktop shows primary links and organisation links; no search or explore pill", async ({ page }, testInfo) => {
+test.describe("marketing navigation (current journey IA)", () => {
+  test("desktop shows Learn/Explore/Investigate/Trust + Research/Simulate", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "desktop viewport only");
     await page.goto("/");
     await expectDesktopNav(page);
     await page.getByRole("navigation", { name: "Primary" }).getByRole("button", { name: "Learn", exact: true }).click();
-    await page.getByRole("menu", { name: "Learn", exact: true }).getByRole("menuitem", { name: /Academy/ }).click();
+    await page.getByRole("menu", { name: "Learn", exact: true }).getByRole("menuitem", { name: /Immune system foundations|Academy/ }).click();
     await expect(page).toHaveURL(/\/academy/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
-  test("1024px dead-zone boundary: hamburger + compact panel with every destination", async ({ page }, testInfo) => {
+  test("1024px dead-zone: hamburger + compact panel with journey destinations", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "tablet-deadzone", "1024 viewport only");
     await page.goto("/");
-    // Desktop strip must be gone; toggle must remain (fixes 801–1100 dead zone)
     await expect(page.getByRole("navigation", { name: "Primary", exact: true })).toBeHidden();
     const panel = await openCompactNav(page);
-    for (const label of DESTINATIONS) {
-      await expect(panel.getByRole("link", { name: label, exact: true })).toBeVisible();
-    }
+    // Compact nav lists journey item titles (not legacy Platform/Academy flat list).
+    await expect(panel.getByRole("link", { name: "Ask Immune", exact: true })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Knowledge graph", exact: true })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Evidence explorer", exact: true })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Research", exact: true })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Simulate", exact: true })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Methods", exact: true })).toBeVisible();
     await expect(panel.getByRole("link", { name: "Explore the Immune System" })).toHaveCount(0);
     await page.keyboard.press("Escape");
     await expect(panel).toBeHidden();
@@ -76,7 +81,7 @@ test.describe("marketing navigation", () => {
     test.skip(testInfo.project.name !== "desktop", "once is enough");
     await page.goto("/");
     const footer = page.getByRole("contentinfo");
-    await expect(footer.getByRole("link", { name: "Community", exact: true })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Discussions", exact: true })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Journal clubs", exact: true })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Collaborate", exact: true })).toBeVisible();
     await footer.getByRole("link", { name: "Insights" }).click();
@@ -86,7 +91,9 @@ test.describe("marketing navigation", () => {
   test("local concept lookup opens details without asking AI", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "once is enough");
     let aiRequests = 0;
-    page.on("request", (r) => { if (r.url().endsWith("/api/ask")) aiRequests += 1; });
+    page.on("request", (r) => {
+      if (r.url().endsWith("/api/ask")) aiRequests += 1;
+    });
     await page.goto("/reasoning");
     await page.getByRole("textbox", { name: "Ask the atlas a question" }).fill("TNF");
     await page.locator(".ask-quick-matches").getByRole("button", { name: "TNF Molecule", exact: true }).click();

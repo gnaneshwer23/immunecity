@@ -335,7 +335,7 @@ describe("Phase E workbench", () => {
     s = addEvidenceNote(s, "Mapped candidate note", "user label", ["EM02", "REL-EM02-promotes-EM03"]);
     const handoff = buildWorkbenchCurationHandoff(s);
     expect(handoff.kind).toBe("workbench_curation_queue_handoff");
-    expect(handoff.wired).toBe(false);
+    expect(handoff.wired).toBe(true);
     expect(handoff.kgWrite).toBe(false);
     expect(handoff.autoPromote).toBe(false);
     expect(handoff.openRoute).toBe("/curation");

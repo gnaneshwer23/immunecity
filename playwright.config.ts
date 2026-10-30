@@ -17,7 +17,9 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `bunx vite preview --host 127.0.0.1 --port ${port}`,
+        // Prefer built preview when dist exists; set E2E_BASE_URL for an already-running server.
+        // Does not require Vercel. Use lean NODE_OPTIONS on memory-constrained hosts.
+        command: `node ./node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port ${port}`,
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

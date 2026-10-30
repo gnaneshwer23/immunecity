@@ -1,6 +1,7 @@
 /**
- * Hardening sprint — verify 0015 + 0016 on ep-blue-salad.
- * Prints table presence and counts only. Never prints DATABASE_URL.
+ * Hardening sprint — verify 0015 + 0016 + 0017 + 0018 on ep-blue-salad.
+ * Prints table/column presence and counts only. Never prints DATABASE_URL.
+ * Does not seed ontology_mappings (empty-by-design; no fabricated crosswalks).
  *
  * Usage: bun scripts/verify-hardening-migrations.ts
  * npm: bun run db:hardening:verify
@@ -94,11 +95,34 @@ try {
     "evidence_collections",
     "evidence_records",
     "user_roles",
+    "ontology_mappings",
+    "graph_provenance_events",
   ] as const;
 
   for (const t of tables) {
     const ok = await present(`public.${t}`);
     console.log(`table.${t}=${ok ? "present" : "missing"}`);
+    if (!ok) failed += 1;
+  }
+
+  const columnPresent = async (table: string, column: string) => {
+    const rows = await sql`
+      SELECT 1 AS ok
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = ${table}
+        AND column_name = ${column}
+      LIMIT 1
+    `;
+    return rows.length > 0;
+  };
+
+  for (const [table, column] of [
+    ["clinical_trials", "treatment_line"],
+    ["trial_arms", "treatment_line"],
+  ] as const) {
+    const ok = await columnPresent(table, column);
+    console.log(`column.${table}.${column}=${ok ? "present" : "missing"}`);
     if (!ok) failed += 1;
   }
 
@@ -109,6 +133,10 @@ try {
   const collections = collectionsPresent ? await count("evidence_collections") : -1;
   const evidence = await count("evidence_records");
   const roles = await count("user_roles");
+  const ontologyPresent = await present("public.ontology_mappings");
+  const ontology = ontologyPresent ? await count("ontology_mappings") : -1;
+  const provenancePresent = await present("public.graph_provenance_events");
+  const provenance = provenancePresent ? await count("graph_provenance_events") : -1;
 
   console.log(`clinical_trials=${trials} expected=${expectedTrials}`);
   console.log(`trial_arms=${arms} expected=${expectedArms}`);
@@ -116,12 +144,18 @@ try {
   console.log(`evidence_collections=${collections}`);
   console.log(`evidence_records=${evidence}`);
   console.log(`user_roles=${roles}`);
+  console.log(`ontology_mappings=${ontology} (empty-by-design ok; no fabricated seed)`);
+  console.log(`graph_provenance_events=${provenance}`);
 
   if (trials !== expectedTrials) failed += 1;
   if (arms !== expectedArms) failed += 1;
   if (eps !== expectedEps) failed += 1;
   if (!collectionsPresent) {
     console.error("evidence_collections_missing");
+    failed += 1;
+  }
+  if (!ontologyPresent || !provenancePresent) {
+    console.error("ontology_or_provenance_tables_missing");
     failed += 1;
   }
 

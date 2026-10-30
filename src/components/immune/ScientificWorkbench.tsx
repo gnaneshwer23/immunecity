@@ -21,7 +21,7 @@ import {
   createWorkbenchSession,
   experimentCompleteness,
   exportWorkbench,
-  exportWorkbenchCurationHandoff,
+  buildWorkbenchCurationHandoff,
   importLiteraturePayload,
   importMechanismResult,
   parseLocalDraft,
@@ -859,7 +859,8 @@ export default function ScientificWorkbench({
                   : "Download a candidate package for manual /curation import — does not write the KG"
               }
               onClick={() => {
-                const text = exportWorkbenchCurationHandoff(session);
+                const handoff = buildWorkbenchCurationHandoff(session);
+                const text = JSON.stringify(handoff, null, 2);
                 const blob = new Blob([text], { type: "application/json" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
@@ -868,18 +869,20 @@ export default function ScientificWorkbench({
                 a.click();
                 URL.revokeObjectURL(url);
                 setHandoffMsg(
-                  "Downloaded curation-queue handoff (wired=false). Open Curation to import manually — nothing was written to the curated graph.",
+                  handoff.wired
+                    ? "Downloaded curation-queue handoff (wired=true, autoPromote=false). Open Curation to import — unreviewed stays unapproved; nothing was written to the curated graph."
+                    : "Downloaded notes-only handoff (no importable candidateManifest). Nothing was written to the curated graph.",
                 );
               }}
             >
-              Promote to curation queue (export stub)
+              Promote to curation queue (export)
             </button>
             <Link to="/curation" className="btn sm">
               Open Curation
             </Link>
           </div>
           <p className="xs muted">
-            Handoff is human-gated: download → paste/import in Curation → admin review. Not wired for silent KG mutation.
+            Handoff is human-gated: download → paste/import in Curation → admin review. Wired for auditable import only — never silent KG mutation or auto-approve.
           </p>
           {handoffMsg ? <p className="xs muted" role="status">{handoffMsg}</p> : null}
           {session.importLog.length > 0 && (

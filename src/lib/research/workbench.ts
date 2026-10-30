@@ -15,6 +15,7 @@ import {
 } from "./claimLedger";
 import { createHypothesisDraft, type HypothesisDraft } from "./hypothesisDraft";
 import type { CandidateClaim, CurationManifestExport, LiteratureProject } from "./literatureWorkflow";
+import { validateManifestForImport } from "./literatureWorkflow";
 import { buildExportProvenanceTrail, type ExportProvenanceTrail } from "./exportProvenance";
 
 /** Bump when export shape changes in a breaking way. */
@@ -1159,7 +1160,8 @@ export function exportWorkbench(session: WorkbenchSession): string {
 export interface WorkbenchCurationHandoff {
   kind: "workbench_curation_queue_handoff";
   schemaVersion: typeof WORKBENCH_SCHEMA_VERSION;
-  wired: false;
+  /** True when candidateManifest passes validateManifestForImport (auth still required at /curation). */
+  wired: boolean;
   kgWrite: false;
   autoPromote: false;
   experimentallySupported: false;
@@ -1215,7 +1217,7 @@ export function buildWorkbenchCurationHandoff(session: WorkbenchSession): Workbe
     });
   }
 
-  const candidateManifest: CurationManifestExport | null =
+  const draftManifest: CurationManifestExport | null =
     groups.size > 0
       ? {
           meta: {
@@ -1232,18 +1234,23 @@ export function buildWorkbenchCurationHandoff(session: WorkbenchSession): Workbe
         }
       : null;
 
+  const candidateManifest =
+    draftManifest && validateManifestForImport(draftManifest).ok ? draftManifest : null;
+  const wired = Boolean(candidateManifest);
+
   return {
     kind: "workbench_curation_queue_handoff",
     schemaVersion: WORKBENCH_SCHEMA_VERSION,
-    wired: false,
+    wired,
     kgWrite: false,
     autoPromote: false,
     experimentallySupported: false,
     session_id: session.session_id,
     exportedAt: new Date().toISOString(),
     openRoute: "/curation",
-    note:
-      "Human-gated stub: download this package and import manually in Curation. Nothing is written to the curated knowledge graph from the workbench.",
+    note: wired
+      ? "Handoff wired: import candidateManifest at /curation (authenticated). Unreviewed stays unapproved. autoPromote=false. Not a KG write."
+      : "No importable candidate manifest — download notes only. Nothing is written to the curated knowledge graph from the workbench.",
     draftNotes,
     hypothesisClaim: session.hypothesis.claim.trim(),
     reviewDisposition: session.reviewDisposition,
