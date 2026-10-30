@@ -4,6 +4,9 @@ import { conceptExtras } from "@/lib/immune/concepts";
 import { partitionEvidencePolarity } from "@/lib/immune/evidenceInvariants";
 import {
   counterCitationsFor,
+  honestEvidenceStatus,
+  REJECTED_SUPPORT_PMIDS,
+  relationshipHonestyNote,
   relationshipStatus,
   STATUS_INFO,
   supportingCitationsFor,
@@ -25,7 +28,7 @@ import {
 
 export const MAX_QUESTION_CHARS = 500;
 /** Bump when SYSTEM prompt or structured-answer rules change (FR-028). */
-export const PROMPT_VERSION = "ask-grounding-v11";
+export const PROMPT_VERSION = "ask-grounding-v12";
 
 /** Unreviewed literature hits (PubMed / Europe PMC). Never Gate C approved. */
 export interface ProvisionalLitItem {
@@ -102,6 +105,8 @@ export interface GroundedLink {
   hasClaimSupport: boolean;
   /** Assessed contradicts/partial on this edge (separate from Gate C support). */
   counterEvidenceCount: number;
+  /** S-P-O / Gate C honesty note when demoted — never invents science. */
+  honestyNote?: string | null;
 }
 
 export interface CausalChainHop {
@@ -345,21 +350,30 @@ export function classifyAskQuery(question: string): AskQueryClass {
 function evidenceTier(edge: KGEdge, review: ReviewStatus): EvidenceTier {
   if (edge.draft || review === "draft") return "draft";
   if (review === "unreviewed" || review === "rejected") return "missing-support";
-  const st = (edge.evidence_status || "").toUpperCase();
+  // Honest teaching label — never let raw ESTABLISHED outrank Gate C gaps.
+  const st = honestEvidenceStatus(edge).toUpperCase();
   if (st === "HYPOTHESIS") return "hypothesis";
   if (st === "EMERGING") return "emerging";
-  if (st === "EVIDENCE-SUPPORTED" || review === "claim-assessed" || review === "source-verified") return "evidence-supported";
-  if (st === "ESTABLISHED" || review === "approved") return "established";
+  if (st === "EVIDENCE-SUPPORTED" || review === "claim-assessed" || review === "source-verified") {
+    return "evidence-supported";
+  }
+  // ESTABLISHED display tier only when Gate C approved; otherwise demote.
+  if (review === "approved" && st === "ESTABLISHED") return "established";
+  if (st === "ESTABLISHED") return "evidence-supported";
+  if (review === "approved") return "established";
   return "missing-support";
 }
 
 export function groundLink(edge: KGEdge, cites: CitationLike[] = []): GroundedLink {
   const review = relationshipStatus(edge, cites);
-  const supporting = supportingCitationsFor(edge, cites);
+  const supporting = supportingCitationsFor(edge, cites).filter(
+    (c) => !(c.pmid && REJECTED_SUPPORT_PMIDS.has(c.pmid)),
+  );
   const counter = counterCitationsFor(edge, cites);
   const reviewedPmids = [
     ...new Set(supporting.map((c) => c.pmid).filter((p): p is string => !!p && /^\d+$/.test(p))),
   ];
+  const honesty = relationshipHonestyNote(edge);
   return {
     relId: relId(edge),
     subjectId: edge.subject_id,
@@ -367,7 +381,7 @@ export function groundLink(edge: KGEdge, cites: CitationLike[] = []): GroundedLi
     relation: edge.relation,
     mechanism: edge.mechanism,
     confidence: edge.confidence,
-    evidenceStatus: edge.evidence_status,
+    evidenceStatus: honestEvidenceStatus(edge),
     review,
     reviewLabel: STATUS_INFO[review].label,
     tier: evidenceTier(edge, review),
@@ -378,6 +392,7 @@ export function groundLink(edge: KGEdge, cites: CitationLike[] = []): GroundedLi
     reviewedPmids,
     hasClaimSupport: supporting.some((c) => c.claim_support === "supports"),
     counterEvidenceCount: counter.length,
+    honestyNote: honesty,
   };
 }
 
@@ -584,10 +599,11 @@ export function graphContext(question: string, queryClass?: AskQueryClass, cites
         ? `reviewed-evidence=${g.reviewedEvidenceCount}${g.hasClaimSupport ? ", claim-supported" : ""}`
         : "reviewed-evidence=0";
     const tierNote = g.tier === "missing-support" ? ", MISSING-SUPPORT" : "";
+    const honesty = g.honestyNote ? ` HONESTY: ${g.honestyNote}` : "";
     lines.push(
       `LINK ${id} ${s.name} --${human(e.relation)}--> ${o.name}: ${e.mechanism}` +
-        ` (evidence: ${e.evidence_status}, review: ${g.reviewLabel}, tier: ${g.tier}, support: ${support}, ${reviewed}` +
-        `${e.draft ? ", DRAFT" : ""}${tierNote}${e.location ? `, tissue: ${e.location}` : ""})`,
+        ` (evidence: ${g.evidenceStatus}, review: ${g.reviewLabel}, tier: ${g.tier}, support: ${support}, ${reviewed}` +
+        `${e.draft ? ", DRAFT" : ""}${tierNote}${e.location ? `, tissue: ${e.location}` : ""})${honesty}`,
     );
   }
 
@@ -1018,6 +1034,14 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
     const pmid = m[1]!;
     const idx = m.index ?? 0;
     const window = nearbyWindow(text, idx, 160);
+    // Rejected locators never count as support — even if somehow present on a graph edge.
+    if (REJECTED_SUPPORT_PMIDS.has(pmid)) {
+      inventedRelIds.push(`PMID:${pmid}:rejected`);
+      if (STRONG_SUPPORT_LANG.test(window) || !/\b(rejected|wrong|incorrect|not\s+support)/i.test(window)) {
+        unsupportedSupportClaims.push(`PMID:${pmid}:rejected-as-support`);
+      }
+      continue;
+    }
     const inGateC = gateCPmids.has(pmid) || gateCByPmid.has(pmid);
     const inProvisional = provisionalPmids.has(pmid);
     const inCounter = counterPmids.has(pmid);
@@ -1051,6 +1075,28 @@ export function validateAnswerCitations(text: string, grounding: AskGrounding): 
   // Strong support language with zero Gate C rows on the retrieval → fail closed.
   if (STRONG_SUPPORT_LANG.test(text) && grounding.coverage.reviewedEvidenceCount === 0) {
     unsupportedSupportClaims.push("gate-c-language-without-reviewed-cites");
+  }
+
+  // Causal / ESTABLISHED overclaim on demoted or unreviewed melanoma pilot edges.
+  const CAUSAL_OVERCLAIM =
+    /\b(causally\s+drives|definitively\s+(causes|drives)|established\s+causal|proven\s+causality)\b/i;
+  if (CAUSAL_OVERCLAIM.test(text)) {
+    const demoted = grounding.links.filter(
+      (l) =>
+        l.honestyNote ||
+        l.tier === "missing-support" ||
+        l.tier === "hypothesis" ||
+        l.tier === "draft" ||
+        !l.hasClaimSupport,
+    );
+    if (demoted.length && grounding.coverage.reviewedEvidenceCount === 0) {
+      unsupportedSupportClaims.push("causal-overclaim-without-gate-c");
+    }
+    for (const l of demoted) {
+      if (l.relId.includes("drives_immune_exhaustion") && text.includes(l.relId)) {
+        unsupportedSupportClaims.push(`causal-overclaim:${l.relId}`);
+      }
+    }
   }
 
   // Edges cited beside strong support language must have Gate C supports + endpoint names.
@@ -1241,6 +1287,7 @@ Rules:
 - PROVISIONAL_LITERATURE (if present) is unreviewed PubMed/Europe PMC search — never treat it as approved evidence or "supports". If you mention those items, label them explicitly as "unreviewed literature" / provisional. Do not invent extra PMIDs.
 - Only mention PMIDs/DOIs that appear in REVIEWED_EVIDENCE, COUNTER_EVIDENCE, COUNTEREVIDENCE_HARVEST, PROVISIONAL_LITERATURE, or on the LINK line itself.
 - Never claim Gate C / approved / scientifically verified support unless REVIEWED_EVIDENCE lists that PMID for the link. If you cite provisional PMIDs, keep the words "unreviewed" or "provisional" in the same sentence.
+- HONESTY lines / demoted evidence labels mean the graph teaching status is not Gate C. Do not call those links ESTABLISHED causal facts. Never cite rejected PMIDs (e.g. wrong-paper rematches) as support.
 - If OVERVIEW_REQUEST is present: give a plain-language layered overview of the immune system built from those concepts (what each layer does and how it hands off to the next), linking each concept. Do not say the graph lacks coverage. Suggest 2–3 concepts to explore next.
 - For QUERY_CLASS hypothesis_request: label every suggestion as a candidate hypothesis and include at least one alternative or disconfirming consideration.
 - Concise: a short explanation, then compact bullets of key connections, then the causal chain used.

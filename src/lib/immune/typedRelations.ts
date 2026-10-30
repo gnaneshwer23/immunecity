@@ -4,6 +4,7 @@
  * Does not invent predicates or signs beyond what kg.json already records.
  */
 import { SEM, byId, edgeByRel, human, inn, out, relId, type KGEdge } from "@/lib/immune/engine";
+import { honestEvidenceStatus } from "@/lib/immune/evidenceStatus";
 
 /** Polarity as recorded in kg.json relation_semantics. */
 export type RelationPolarity = "+" | "-" | "0" | "r+" | "unknown";
@@ -51,7 +52,7 @@ export function typeRelationship(edge: KGEdge): TypedRelation {
     polarity: relationPolarity(edge.relation),
     context: edge.location?.trim() || null,
     mechanism: edge.mechanism?.trim() || null,
-    evidenceStatus: edge.evidence_status,
+    evidenceStatus: honestEvidenceStatus(edge),
     draft: Boolean(edge.draft),
     version,
   };

@@ -299,9 +299,10 @@ export const EXT_EDGES: E[] = [
   // draft-ext-5 · connectivity gaps (2026-10-21): approved-indication therapy → disease links,
   // landmark trial → disease context, and bridges for the HLA pharmacogenetics island.
   // Approvals / trials named in each mechanism; no PMIDs added. Expert review required.
-  e("I008", "treats", "D012", "Anti-PD-1 approved for advanced melanoma (FDA 2014); superior to ipilimumab in KEYNOTE-006.", "clinical"),
-  e("I009", "treats", "D012", "Anti-PD-1 approved for advanced melanoma (FDA 2014); CheckMate 067 alone and with ipilimumab.", "clinical"),
-  e("I025", "treats", "D012", "Anti-CTLA-4 approved for advanced melanoma (FDA 2011); first therapy to extend overall survival.", "clinical"),
+  // Draft clinical edges: never ESTABLISHED — Gate C / durable locators still required (post–A–F honesty).
+  e("I008", "treats", "D012", "Anti-PD-1 approved for advanced melanoma (FDA 2014); superior to ipilimumab in KEYNOTE-006.", "clinical", "EVIDENCE-SUPPORTED", "medium"),
+  e("I009", "treats", "D012", "Anti-PD-1 approved for advanced melanoma (FDA 2014); CheckMate 067 alone and with ipilimumab.", "clinical", "EVIDENCE-SUPPORTED", "medium"),
+  e("I025", "treats", "D012", "Anti-CTLA-4 approved for advanced melanoma (FDA 2011); first therapy to extend overall survival.", "clinical", "EVIDENCE-SUPPORTED", "medium"),
   e("I011", "treats", "D001", "Anti-CD20 B-cell depletion approved for RA with methotrexate after inadequate TNF-inhibitor response (FDA 2006).", "clinical"),
   e("I011", "treats", "D014", "Rituximab non-inferior to cyclophosphamide for remission induction in ANCA vasculitis (RAVE; FDA 2011).", "clinical"),
   e("I002", "treats", "D001", "Anti-TNF monoclonal antibody approved for rheumatoid arthritis (FDA 2002).", "clinical"),
@@ -318,7 +319,7 @@ export const EXT_EDGES: E[] = [
 
   e("TR001", "has_clinical_context", "D001", "ATTRACT: infliximab plus methotrexate in rheumatoid arthritis.", "clinical trial"),
   e("TR002", "has_clinical_context", "D019", "CANTOS: canakinumab after myocardial infarction with raised hsCRP.", "clinical trial"),
-  e("TR003", "has_clinical_context", "D012", "KEYNOTE-006: pembrolizumab versus ipilimumab in advanced melanoma.", "clinical trial"),
+  e("TR003", "has_clinical_context", "D012", "KEYNOTE-006: pembrolizumab versus ipilimumab in advanced melanoma.", "clinical trial", "EVIDENCE-SUPPORTED", "medium"),
   e("TR004", "has_clinical_context", "D003", "ERASURE: secukinumab in plaque psoriasis.", "clinical trial"),
   e("TR005", "has_clinical_context", "D006", "LIBERTY AD (SOLO 1/2): dupilumab in atopic dermatitis.", "clinical trial"),
   e("TR006", "has_clinical_context", "D014", "RAVE: rituximab versus cyclophosphamide in ANCA vasculitis.", "clinical trial"),
@@ -335,7 +336,7 @@ export const EXT_EDGES: E[] = [
   e("TR017", "has_clinical_context", "D021", "TOWER: blinatumomab versus chemotherapy in relapsed/refractory B-cell ALL.", "clinical trial"),
   e("TR018", "has_clinical_context", "D024", "N-MOmentum: inebilizumab in neuromyelitis optica spectrum disorder.", "clinical trial"),
   e("TR019", "has_clinical_context", "D004", "GEMINI 1: vedolizumab in ulcerative colitis.", "clinical trial"),
-  e("TR020", "has_clinical_context", "D012", "CheckMate 067: nivolumab with or without ipilimumab in advanced melanoma.", "clinical trial"),
+  e("TR020", "has_clinical_context", "D012", "CheckMate 067: nivolumab with or without ipilimumab in advanced melanoma.", "clinical trial", "EVIDENCE-SUPPORTED", "medium"),
   e("TR021", "has_clinical_context", "D007", "TULIP-2: anifrolumab in systemic lupus erythematosus.", "clinical trial"),
   e("TR022", "has_clinical_context", "D007", "BLISS-52: belimumab in systemic lupus erythematosus.", "clinical trial"),
   e("TR023", "has_clinical_context", "D005", "NAVIGATOR: tezepelumab in severe asthma.", "clinical trial"),

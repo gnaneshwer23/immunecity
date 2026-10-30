@@ -12,7 +12,7 @@ describe("Phase D — Ask neighbourhood + abstention honesty", () => {
     expect(g.nodeIds.length).toBeGreaterThan(0);
     expect(g.text).toMatch(/GRAPH_NEIGHBOURHOOD/);
     expect(g.text).toMatch(/NPATH/);
-    expect(PROMPT_VERSION).toBe("ask-grounding-v11");
+    expect(PROMPT_VERSION).toBe("ask-grounding-v12");
   });
 
   it("negative: clinical-personal questions abstain (no CDS)", () => {

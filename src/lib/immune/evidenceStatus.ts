@@ -1,7 +1,75 @@
 /* Relationship-level review status. A link is only "approved" when an approved
    source has been mapped to that exact directional claim and assessed as supporting it.
    Concept-level citations never count as support for a link. */
-import { edgeRef, relId, type KGEdge } from "./engine";
+import { edgeRef, REF_PLACEHOLDER, relId, type KGEdge } from "./engine";
+
+/**
+ * Melanoma pilot honesty overrides (post–A–F audit).
+ * Demote display/status without inventing PMIDs or auto-approving Gate C.
+ * Keys are REL-* ids; values are honest teaching labels from kg evidence_statuses.
+ */
+const HONEST_STATUS_OVERRIDES: Readonly<Record<string, string>> = {
+  // Neon partial + S-P-O mismatch (Dong 2002 is PD-L1/B7-H1 apoptosis, not PD-1→exhaustion causal).
+  "REL-R011-drives_immune_exhaustion_in-D012": "HYPOTHESIS",
+  // Wrong PMID previously mapped and rejected; no approved KEYNOTE-006 rematch yet.
+  "REL-I008-demonstrates_in-TR003": "EVIDENCE-SUPPORTED",
+};
+
+/** Known rejected PMIDs that must never appear as supporting evidence. */
+export const REJECTED_SUPPORT_PMIDS: ReadonlySet<string> = new Set([
+  "31166680", // dabrafenib+trametinib — wrongly mapped to KEYNOTE-006 demonstrates_in
+]);
+
+/** Curator-facing honesty note when graph S-P-O / Gate C diverge (never invents science). */
+export function relationshipHonestyNote(edgeOrRelId: KGEdge | string): string | null {
+  const id = typeof edgeOrRelId === "string" ? edgeOrRelId : relId(edgeOrRelId);
+  if (id === "REL-R011-drives_immune_exhaustion_in-D012") {
+    return "Causal predicate demoted: Neon evidence is partial with subject–predicate–object mismatch (Dong 2002 describes PD-L1/B7-H1→apoptosis, not PD-1 driving exhaustion). Graph teaching only until Gate C rematch.";
+  }
+  if (id === "REL-I008-demonstrates_in-TR003") {
+    return "Prior PMID 31166680 was rejected (wrong paper). No approved KEYNOTE-006 locator rematch — do not treat this edge as Gate C supported.";
+  }
+  return null;
+}
+
+/** True when the edge has no durable PMID/DOI/reference — only TO_BE_CURATED or empty refs. */
+export function lacksDurableLocator(edge: KGEdge): boolean {
+  if (edge.pmid && /^\d{6,9}$/.test(String(edge.pmid).trim())) return false;
+  if (edge.doi && String(edge.doi).trim()) return false;
+  const raw = (edge.reference || "").trim();
+  if (raw) {
+    if (/^(?:PMID[:\s]*)?\d{6,9}$/i.test(raw)) return false;
+    const doi = raw.replace(/^doi[:\s]*/i, "");
+    if (/^10\.\d{4,9}\//.test(doi)) return false;
+    // Named citation string counts as a locator candidate (still not Gate C).
+    if (raw !== REF_PLACEHOLDER) return false;
+  }
+  const refs = (edge.source_refs || []).filter((r) => r && r.trim());
+  if (!refs.length) return true;
+  return refs.every((r) => r === REF_PLACEHOLDER);
+}
+
+/**
+ * Display / Ask evidence_status that cannot imply approved causality when the edge is
+ * draft, placeholder-only, or on the audit demotion list. Raw kg.json stays source of truth;
+ * this is the honest presentation layer.
+ */
+export function honestEvidenceStatus(edge: KGEdge): string {
+  const id = relId(edge);
+  const override = HONEST_STATUS_OVERRIDES[id];
+  if (override) return override;
+
+  const raw = (edge.evidence_status || "").trim() || "UNSPECIFIED";
+  const upper = raw.toUpperCase();
+
+  if (edge.draft && upper === "ESTABLISHED") {
+    return "EVIDENCE-SUPPORTED";
+  }
+  if (upper === "ESTABLISHED" && lacksDurableLocator(edge)) {
+    return "HYPOTHESIS";
+  }
+  return raw;
+}
 
 export interface CitationLike {
   relationship_id: string | null;

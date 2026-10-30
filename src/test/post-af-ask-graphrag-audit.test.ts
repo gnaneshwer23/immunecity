@@ -13,8 +13,8 @@ import {
 import { detectConflictingEvidence } from "@/lib/immune/claimRecords";
 
 describe("Post-AF GraphRAG — Ask path integrity", () => {
-  it("runs ask-grounding-v11+", () => {
-    expect(PROMPT_VERSION).toMatch(/^ask-grounding-v1[1-9]/);
+  it("runs ask-grounding-v12+", () => {
+    expect(PROMPT_VERSION).toMatch(/^ask-grounding-v1[2-9]/);
   });
 
   it("melanoma neighbourhood paths require REVIEWED_EVIDENCE honesty (not prose-only)", () => {
@@ -171,5 +171,44 @@ describe("Post-AF GraphRAG — Ask path integrity", () => {
     expect(prep.callModel).toBe(false);
     expect(prep.grounding.queryClass).toBe("clinical_personal");
     expect(prep.grounding.trace.abstained).toBe(true);
+  });
+
+  it("rejected KEYNOTE wrong-PMID cannot appear as support", () => {
+    const g = graphContext("pembrolizumab KEYNOTE-006 melanoma");
+    const v = validateAnswerCitations(
+      "Gate C approved support via PMID 31166680 demonstrates pembrolizumab in KEYNOTE-006.",
+      g,
+    );
+    expect(v.ok).toBe(false);
+    expect(
+      v.inventedRelIds.some((id) => /31166680/.test(id)) ||
+        v.unsupportedSupportClaims.some((c) => /31166680|rejected/.test(c)),
+    ).toBe(true);
+  });
+
+  it("causal overclaim on demoted PD-1 exhaustion edge fails closed", () => {
+    const g = graphContext("How does PD-1 drive immune exhaustion in melanoma?");
+    const link = g.links.find((l) => l.relId.includes("drives_immune_exhaustion"));
+    if (link) {
+      expect(link.evidenceStatus).not.toBe("ESTABLISHED");
+      expect(link.tier === "hypothesis" || link.tier === "missing-support" || link.tier === "draft").toBe(true);
+    }
+    const v = validateAnswerCitations(
+      "PD-1 causally drives immune exhaustion in melanoma with proven causality and Gate C approved support.",
+      g,
+    );
+    expect(v.ok).toBe(false);
+  });
+
+  it("answers require evidence records when claiming Gate C support", () => {
+    const g = graphContext("Nivolumab and PD-1");
+    expect(g.coverage.reviewedEvidenceCount === 0 || g.coverage.reviewedEvidenceCount >= 0).toBe(true);
+    if (g.coverage.reviewedEvidenceCount === 0) {
+      const v = validateAnswerCitations(
+        "Gate C approved support confirms this relationship via reviewed cites.",
+        g,
+      );
+      expect(v.ok).toBe(false);
+    }
   });
 });

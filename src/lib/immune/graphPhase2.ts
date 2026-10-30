@@ -4,6 +4,7 @@
  * Edge copy keeps evidence status and drops user-facing confidence and weight.
  */
 import { edgeRef, type KGEdge } from "@/lib/immune/engine";
+import { honestEvidenceStatus, relationshipHonestyNote } from "@/lib/immune/evidenceStatus";
 
 function fieldPresent(rows: readonly object[], key: string): boolean {
   return rows.some((row) => {
@@ -58,6 +59,7 @@ export interface EdgePanelFields {
   version: string;
   timestamp: string;
   evidenceStatus: string;
+  honestyNote: string | null;
 }
 
 /** User-facing edge panel. Reviewer, decision, version, and timestamp say “Not recorded” when absent. */
@@ -74,6 +76,7 @@ export function edgePanelFields(edge: KGEdge, sourceName: string, targetName: st
     reviewDecision: recordedText(edge, ["review_decision", "reviewDecision"]) ?? "Not recorded",
     version: recordedText(edge, ["version"]) ?? "Not recorded",
     timestamp: recordedText(edge, ["timestamp", "updated_at", "reviewed_at"]) ?? "Not recorded",
-    evidenceStatus: edge.evidence_status,
+    evidenceStatus: honestEvidenceStatus(edge),
+    honestyNote: relationshipHonestyNote(edge),
   };
 }

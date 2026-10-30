@@ -109,7 +109,7 @@ export function getGraphNeighbourhood(
           polarity: relationPolarity(edge.relation),
           depth: depth + 1,
           draft: Boolean(edge.draft),
-          evidenceStatus: edge.evidence_status,
+          evidenceStatus: typed.evidenceStatus,
           context: edge.location?.trim() || null,
           typed,
         });

@@ -7,7 +7,7 @@
  * 3. Quality — recorded link confidence only (not Gate C, not invented)
  */
 import type { KGEdge } from "./engine";
-import { STATUS_INFO, type ReviewStatus } from "./evidenceStatus";
+import { honestEvidenceStatus, STATUS_INFO, type ReviewStatus } from "./evidenceStatus";
 import { VERIFICATION_LABEL, type EndpointProvenanceView } from "./trialProvenance";
 import type { EndpointResultRecord } from "@/data/trialIntelligence";
 
@@ -31,7 +31,7 @@ const AXIS: Record<EvidenceDimensionKind, string> = {
 /** Graph edge: review status ≠ evidence_status ≠ confidence. */
 export function edgeEvidenceDimensions(edge: KGEdge, review: ReviewStatus): EvidenceDimension[] {
   const reviewInfo = STATUS_INFO[review];
-  const statusRaw = edge.evidence_status?.trim();
+  const statusRaw = honestEvidenceStatus(edge).trim();
   const confidence = edge.confidence;
   return [
     {
@@ -45,7 +45,7 @@ export function edgeEvidenceDimensions(edge: KGEdge, review: ReviewStatus): Evid
       axis: AXIS.evidence_status,
       value: statusRaw ? statusRaw.toLowerCase().replace(/_/g, " ") : "unspecified",
       description:
-        "Teaching evidence class on the link (established / evidence-supported / emerging / hypothesis). Not curator approval.",
+        "Honest teaching evidence class on the link (may demote ESTABLISHED when draft, TO_BE_CURATED, or audit override). Not curator approval.",
     },
     {
       kind: "quality",

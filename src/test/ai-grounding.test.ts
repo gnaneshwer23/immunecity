@@ -364,7 +364,7 @@ describe("AI grounding", () => {
     expect(extract).not.toMatch(/\bconfidence\s*[:=]/i);
     expect(extract).not.toMatch(/\bmeasured weight\b/i);
     expect(extract).toMatch(/\bevidence:/i);
-    expect(PROMPT_VERSION).toBe("ask-grounding-v10");
+    expect(PROMPT_VERSION).toBe("ask-grounding-v12");
     expect(SYSTEM).toMatch(/Not fully evidence-grounded AI/);
     expect(SYSTEM).toMatch(/RESPONSE_CONTRACT/);
   });

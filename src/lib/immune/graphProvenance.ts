@@ -8,7 +8,7 @@ import { byId, edgeByRel, relId } from "@/lib/immune/engine";
 import { GRAPH_CORE_VERSION, GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { edgePanelFields } from "@/lib/immune/graphPhase2";
 import type { CitationLike, ReviewStatus } from "@/lib/immune/evidenceStatus";
-import { relationshipStatus } from "@/lib/immune/evidenceStatus";
+import { honestEvidenceStatus, relationshipHonestyNote, relationshipStatus } from "@/lib/immune/evidenceStatus";
 
 export interface ConceptProvenance {
   isiId: string;
@@ -28,7 +28,12 @@ export interface RelationshipProvenance {
   recordVersion: string | null;
   graphCoreVersion: string;
   graphExtensionsVersion: string;
+  /** Honest teaching label (may demote ESTABLISHED when draft / TO_BE_CURATED / audit override). */
   evidenceStatus: string;
+  /** Raw kg.json evidence_status before honesty demotion. */
+  recordedEvidenceStatus: string;
+  /** Optional S-P-O / Gate C honesty note — never invents science. */
+  honestyNote: string | null;
   /** Review status derived from provided citations only — missing cites → unreviewed/draft. */
   reviewStatus: ReviewStatus;
   reviewer: string;
@@ -76,7 +81,9 @@ export function relationshipProvenance(
     recordVersion: recordVersion(edge),
     graphCoreVersion: GRAPH_CORE_VERSION,
     graphExtensionsVersion: GRAPH_EXTENSIONS_VERSION,
-    evidenceStatus: edge.evidence_status,
+    evidenceStatus: honestEvidenceStatus(edge),
+    recordedEvidenceStatus: edge.evidence_status,
+    honestyNote: relationshipHonestyNote(edge),
     reviewStatus: relationshipStatus(edge, cites),
     reviewer: panel.reviewer,
     reviewDecision: panel.reviewDecision,

@@ -70,6 +70,9 @@ describe("Phase 1 — three evidence dimensions (not one score)", () => {
       mechanism: "test",
       confidence: "high",
       evidence_status: "ESTABLISHED",
+      // Durable locator so honesty demotion does not treat this fixture as TO_BE_CURATED.
+      pmid: "25891173",
+      source_refs: ["PMID 25891173"],
     } as KGEdge;
     const dims = edgeEvidenceDimensions(edge, "approved");
     expect(dimensionsAreOrthogonal(dims)).toBe(true);

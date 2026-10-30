@@ -63,6 +63,11 @@ export default function GraphEdgeDetail({
           curation gap, not a negative finding. Reviewer, review decision, version, and timestamp say “Not recorded”
           when the graph record does not carry them.
         </p>
+        {fields.honestyNote ? (
+          <p className="xs" role="note" style={{ marginTop: 8 }}>
+            {fields.honestyNote}
+          </p>
+        ) : null}
       </div>
       <button className="btn sm" style={{ marginTop: 10 }} onClick={() => inspect({ kind: "relationship", id: relId(edge) })}>Full scientific detail</button>
     </div>
