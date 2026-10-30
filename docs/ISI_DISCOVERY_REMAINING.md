@@ -42,7 +42,7 @@
 ## Next engineering (when unblocked)
 
 1. ~~Curator UI panel for gap review queue~~ — **shipped** SME workspace `/sme` (Investigate I8 / Trust T5); dossier still has inline gap decisions.  
-2. Apply migration 0022 on Neon (`bun run db:research-entitlements-team`) when ops is ready (0019–0021 already documented); apply **0023** (`bun run db:sme-workspace`) for gold labels / work-item audit.  
+2. ~~Apply migration 0022 / **0023** on Neon~~ — **done** on ep-blue-salad; see `docs/ISI_NEON_0023_APPLY.md` (0023) and Phase 7–8 report (0022).  
 3. Fill gold-set expected statuses only after SME review — never invent scores (`bun run sme:eval` reports honest denominators).  
 4. Persist-on-first-radar-load policy debate (today: explicit member action).  
 5. Optional scheduled cron wrapping `bun run discovery:monitor` (email still deferred).  

@@ -46,7 +46,7 @@ Apply (ops, ep-blue-salad):
 bun run db:sme-workspace
 ```
 
-Schema-only; does not change `evidence_records` row counts or invent gold scores.
+**Applied** on ep-blue-salad / neondb — see `docs/ISI_NEON_0023_APPLY.md`. Schema-only; `evidence_records` stayed at 46; no invented gold scores.
 
 ## Gold-set / eval commands
 
