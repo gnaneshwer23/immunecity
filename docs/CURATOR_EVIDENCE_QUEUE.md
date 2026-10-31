@@ -55,6 +55,7 @@ Teaching caveat remains: whole RA biology is not evidence-complete. No further P
 | relId | Live Gate C | Next curator action |
 |-------|-------------|---------------------|
 | `REL-C015-expresses-R011` | **approved+supports** | Barber 2006 (PMID 16382236) — done |
+| `REL-R011-drives-P015` | **none** (HSI bridge: evidence-linked · Gate C pending) | HSI seed `HSI-E-IO-001` carries real PMID **16382236** (Barber 2006 Nature; PubMed-verified) as `source-verified` only — **not** Neon approved. Same PMID is already on `expresses-R011`; re-read for drives→P015 S-P-O before Check → claim_support → Approve. Do not invent a second PMID. |
 | `REL-R012-suppresses-C015` | verified, `claim_support=partial` (Chemnitz PMID 15240681) | **Re-read** Chemnitz; set `supports` only if the paper supports this directional claim, else keep partial. PubMed: `Chemnitz PD-L1 PD-1 CD8 T cell 2004` |
 | `REL-B011-measures-R012` | **none** | Manual pick — auto-seed blocked (noisy ranking). PubMed: `PD-L1 immunohistochemistry companion diagnostic 22C3 OR SP263 assay` |
 | `REL-B011-predicts_response_to-I008` | **none** | Map a biomarker–response cite to **this** relId (KEYNOTE-006 is on `REL-I008-blocks-R011`, off this path). PubMed: `pembrolizumab PD-L1 biomarker KEYNOTE-001 Garon` |

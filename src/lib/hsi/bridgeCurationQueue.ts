@@ -10,10 +10,13 @@ import {
   HSI_T2D_IMMUNO_SEED_CLAIMS,
   HSI_T2D_IMMUNO_SEED_EDGES,
   claimsWithIsiMappings,
+  hsiEvidenceHandoff,
   listBridgeCandidates,
   listIsiRelSuggestions,
   summarizeIsiRelMappings,
   type HsiEdge,
+  type HsiEvidenceLinkStatus,
+  type HsiGateCHandoffStatus,
   type HsiGrade,
   type HsiTeachingStatus,
   type IsiRelMatchKind,
@@ -42,6 +45,15 @@ export type HsiBridgeQueueItem = {
   /** Human-readable SPO when the REL exists. */
   relLabel: string | null;
   isiNodeLabels: string[];
+  /** Real PMID from HSI provenance when linked — never invented. */
+  pmid: string | null;
+  doi: string | null;
+  /** HSI evidence link axis (locator present vs absent). */
+  evidenceLink: HsiEvidenceLinkStatus;
+  /** HSI Gate C handoff — not Neon approve+supports. */
+  gateCHandoff: HsiGateCHandoffStatus;
+  /** Curator-facing compound label (e.g. evidence-linked · Gate C pending). */
+  evidenceHandoffLabel: string;
   /** Always false — documentation invariant. */
   autoApprove: false;
   /** Always false until Gate C + established grade. */
@@ -60,6 +72,8 @@ export type HsiBridgeCurationQueue = {
     exactConceptPair: number;
     relatedAxis: number;
     unmapped: number;
+    evidenceLinked: number;
+    gateCPending: number;
     mapping: ReturnType<typeof summarizeIsiRelMappings>;
   };
   items: HsiBridgeQueueItem[];
@@ -111,6 +125,7 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
 
     const relId = s.suggestedIsiRelationshipId;
     const relExistsInGraph = Boolean(relId && resolveGraphRelationshipId(relId));
+    const handoff = hsiEvidenceHandoff(edge);
 
     items.push({
       edgeId: edge.id,
@@ -130,6 +145,11 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
       relExistsInGraph,
       relLabel: relExistsInGraph ? relLabelFor(relId) : null,
       isiNodeLabels: nodeLabels(s.isiNodeIds),
+      pmid: handoff.pmid,
+      doi: handoff.doi,
+      evidenceLink: handoff.evidenceLink,
+      gateCHandoff: handoff.gateC,
+      evidenceHandoffLabel: handoff.label,
       autoApprove: false,
       cdsSurfacable: false,
     });
@@ -160,6 +180,8 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
       exactConceptPair: items.filter((i) => i.matchKind === "exact_concept_pair").length,
       relatedAxis: items.filter((i) => i.matchKind === "related_axis").length,
       unmapped: items.filter((i) => i.matchKind === "none").length,
+      evidenceLinked: items.filter((i) => i.evidenceLink === "evidence_linked").length,
+      gateCPending: items.filter((i) => i.gateCHandoff === "pending").length,
       mapping,
     },
     items,

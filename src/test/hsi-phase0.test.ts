@@ -145,12 +145,21 @@ describe("HSI bridge → REL curation queue", () => {
     const pd1 = queue.items.find((i) => i.edgeId === "HSI-E-IO-001");
     expect(pd1?.suggestedIsiRelationshipId).toBe("REL-R011-drives-P015");
     expect(pd1?.relExistsInGraph).toBe(true);
+    expect(pd1?.suggestionStatus).toBe("accepted_for_curation");
+    expect(pd1?.pmid).toBe("16382236");
+    expect(pd1?.evidenceLink).toBe("evidence_linked");
+    expect(pd1?.gateCHandoff).toBe("pending");
+    expect(pd1?.evidenceHandoffLabel).toContain("Gate C pending");
+    expect(pd1?.curationReview).toBe("source-verified");
+    expect(pd1?.hsiGrade).toBe("uncertain");
+    expect(pd1?.teachingStatus).toBe("associative");
     expect(resolveGraphRelationshipId("REL-R011-drives-P015")).toBe("REL-R011-drives-P015");
 
     // Mapping must not collapse axes or open CDS.
     for (const edge of HSI_T2D_IMMUNO_SEED_EDGES) {
       expect(isCdsSurfacable(edge)).toBe(false);
       expect(edge.hsiGrade).not.toBe("established");
+      expect(edge.curationReview).not.toBe("approved");
     }
   });
 });

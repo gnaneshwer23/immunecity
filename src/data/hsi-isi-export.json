@@ -2,7 +2,7 @@
   "schemaVersion": "hsi-isi-export-1",
   "productLabel": "immune-super-intelligence",
   "notCds": true,
-  "generatedAt": "2026-10-31T23:14:16.179Z",
+  "generatedAt": "2026-10-31T23:37:02.282Z",
   "grades": [
     "established",
     "uncertain",
@@ -10,8 +10,8 @@
   ],
   "gradeCounts": {
     "established": 0,
-    "uncertain": 11,
-    "unexplored": 14
+    "uncertain": 12,
+    "unexplored": 13
   },
   "loincCoverage": {
     "edgeCount": 25,
@@ -488,16 +488,16 @@
       "objectId": "HSI-N-tcell-exhaustion",
       "objectLabel": "T-cell exhaustion",
       "claimId": "HSI-C-IO-001",
-      "curationReview": "draft",
-      "hsiGrade": "unexplored",
-      "teachingStatus": "hypothesized",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
       "domain": "io",
       "provenance": {
-        "pmid": null,
-        "doi": null,
-        "citationLabel": null,
-        "sourceUrl": null,
-        "notes": "Align with ISI honesty overrides; placeholder for HSI mapping.",
+        "pmid": "16382236",
+        "doi": "10.1038/nature04444",
+        "citationLabel": "Barber DL et al. Nature 2006 — Restoring function in exhausted CD8 T cells during chronic viral infection.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16382236/",
+        "notes": "PMID 16382236 verified via PubMed/E-utilities. Maps to ISI REL-R011-drives-P015 for Gate C handoff. Same paper is also cited on REL-C015-expresses-R011 (expression axis) — curator must re-assess claim_support=supports for drives→P015 S-P-O before approve. Do not treat HSI source-verified as Neon Gate C pass.",
         "recordedAt": "2026-10-31T00:00:00.000Z"
       },
       "bridgeCandidate": false,

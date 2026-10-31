@@ -14,6 +14,7 @@ export default function HsiBridgeCurationPanel() {
         Bridge-candidate seeds from <code>hsi-core</code> with suggested Immune City{" "}
         <code>REL-*</code> matches. Use this as a Gate C handoff list — inspect the relationship, then
         curate evidence separately. <strong>No automatic approval.</strong> Not clinical decision support.
+        HSI <code>source-verified</code> / PMID ≠ Neon Gate C pass (approve + supports on the REL).
       </p>
       <p className="mkt-aside">{queue.axesNote}</p>
       <dl className="mkt-ev-metrics">
@@ -38,6 +39,12 @@ export default function HsiBridgeCurationPanel() {
           </dd>
         </div>
         <div>
+          <dt>Evidence-linked / Gate C pending</dt>
+          <dd>
+            {queue.summary.evidenceLinked} / {queue.summary.gateCPending}
+          </dd>
+        </div>
+        <div>
           <dt>CDS-surfacable</dt>
           <dd>0</dd>
         </div>
@@ -49,6 +56,7 @@ export default function HsiBridgeCurationPanel() {
             <tr>
               <th scope="col">HSI seed</th>
               <th scope="col">Grade / teaching</th>
+              <th scope="col">Evidence / Gate C</th>
               <th scope="col">Suggested REL-*</th>
               <th scope="col">Match</th>
               <th scope="col">Notes</th>
@@ -79,6 +87,32 @@ export default function HsiBridgeCurationPanel() {
                   <div className="mkt-aside">
                     review: <code>{row.curationReview}</code>
                   </div>
+                  <div className="mkt-aside">
+                    map: <code>{row.suggestionStatus}</code>
+                  </div>
+                </td>
+                <td>
+                  <div
+                    className={
+                      row.evidenceLink === "evidence_linked" ? "mkt-aside res-positive" : "mkt-aside"
+                    }
+                  >
+                    {row.evidenceHandoffLabel}
+                  </div>
+                  {row.pmid ? (
+                    <div className="mkt-aside">
+                      <a
+                        href={`https://pubmed.ncbi.nlm.nih.gov/${row.pmid}/`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        PMID {row.pmid}
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="mkt-aside">No PMID yet</div>
+                  )}
+                  {row.doi ? <div className="mkt-aside">DOI {row.doi}</div> : null}
                 </td>
                 <td>
                   {row.suggestedIsiRelationshipId ? (
