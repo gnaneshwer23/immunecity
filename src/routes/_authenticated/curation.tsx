@@ -20,6 +20,7 @@ import HealthReport from "@/components/immune/HealthReport";
 import MelanomaPilotChecklist from "@/components/immune/MelanomaPilotChecklist";
 import OntologyMappingPanel from "@/components/immune/OntologyMappingPanel";
 import ScientificReviewQueuePanel from "@/components/immune/ScientificReviewQueuePanel";
+import HsiBridgeCurationPanel from "@/components/immune/HsiBridgeCurationPanel";
 import manifest from "@/data/citation-manifest.json";
 import relationshipQueue from "@/data/relationship-evidence-queue.json";
 import { byId, human, inn, out, relId } from "@/lib/immune/engine";
@@ -36,6 +37,7 @@ import { PRODUCT_NAME } from "@/lib/brand";
 
 const TOC = [
   { id: "gates", label: "Review gates" },
+  { id: "hsi-bridge", label: "HSI bridge map" },
   { id: "review-queue", label: "Review queue" },
   { id: "ontology", label: "Ontology" },
   { id: "import", label: "Import" },
@@ -390,6 +392,14 @@ function Curation() {
           <Link to="/methods">Methods</Link>
           <Link to="/discovery">Discovery Radar</Link>
         </p>
+      </Section>
+
+      <Section
+        id="hsi-bridge"
+        title="HSI bridge → REL map"
+        lede="Suggested mappings from hsi-core immuno-metabolic / IO seeds onto existing Immune City REL-* ids. Curation pointers only — never auto-approved into the knowledge graph, never CDS."
+      >
+        <HsiBridgeCurationPanel />
       </Section>
 
       <Section

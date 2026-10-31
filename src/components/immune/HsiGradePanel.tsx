@@ -7,11 +7,13 @@ import {
   HSI_GRADES,
   discoverySeedSummary,
   loadIsiHsiExportSnapshot,
+  summarizeIsiRelMappings,
 } from "@/lib/hsi";
 
 export function HsiGradePanel() {
   const summary = discoverySeedSummary();
   const snap = loadIsiHsiExportSnapshot();
+  const map = summarizeIsiRelMappings();
 
   return (
     <div className="mkt-ev-panel" aria-labelledby="hsi-grades-heading">
@@ -33,14 +35,21 @@ export function HsiGradePanel() {
           <dd>{summary.bridgeCandidates}</dd>
         </div>
         <div>
+          <dt>Suggested REL-* maps</dt>
+          <dd>
+            {map.withRelId} ({map.exactConceptPair} exact)
+          </dd>
+        </div>
+        <div>
           <dt>CDS-surfacable (must stay 0 until Gate C)</dt>
           <dd>{summary.cdsSurfacableCount}</dd>
         </div>
       </dl>
       <p className="mkt-aside">
         Seed edges: {summary.edgeCount} · export <code>{snap.schemaVersion}</code> · generated{" "}
-        <code>{snap.generatedAt}</code> · <code>notCds: true</code>. Map seeds into curation before any
-        graph write.{" "}
+        <code>{snap.generatedAt}</code> · <code>notCds: true</code>. Suggested REL maps are curation
+        pointers only — open{" "}
+        <Link to="/curation">Curation · HSI bridge</Link> before any graph write.{" "}
         <Link to="/ask">Ask Immune</Link> may later cite graded discovery context — never auto-approve.
       </p>
     </div>

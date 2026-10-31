@@ -2,7 +2,7 @@
   "schemaVersion": "hsi-isi-export-1",
   "productLabel": "immune-super-intelligence",
   "notCds": true,
-  "generatedAt": "2026-10-31T22:27:41.719Z",
+  "generatedAt": "2026-10-31T23:14:16.179Z",
   "grades": [
     "established",
     "uncertain",
@@ -664,7 +664,7 @@
       "id": "HSI-C-T2D-010",
       "assertion": "Systemic glucocorticoids can worsen hyperglycemia and unmask diabetes.",
       "domain": "t2d",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-I010-suppresses-P001",
       "akshNodeId": null
     },
     {
@@ -678,35 +678,35 @@
       "id": "HSI-C-IM-002",
       "assertion": "TNF-α signalling can impair insulin action in metabolic tissues.",
       "domain": "immuno_metabolic",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-M001-contributes_to-D001",
       "akshNodeId": null
     },
     {
       "id": "HSI-C-IM-003",
       "assertion": "Circulating IL-6 is associated with T2D risk and inflammatory tone.",
       "domain": "immuno_metabolic",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-M003-contributes_to-D001",
       "akshNodeId": null
     },
     {
       "id": "HSI-C-IM-004",
       "assertion": "hs-CRP is a clinical marker of systemic inflammatory burden.",
       "domain": "immuno_metabolic",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-P021-produces-B001",
       "akshNodeId": null
     },
     {
       "id": "HSI-C-IM-005",
       "assertion": "Adipose tissue macrophage infiltration associates with insulin resistance.",
       "domain": "immuno_metabolic",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-C003-produces-M001",
       "akshNodeId": null
     },
     {
       "id": "HSI-C-IM-006",
       "assertion": "NLRP3 inflammasome activation contributes to metabolic inflammation.",
       "domain": "immuno_metabolic",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-R004-activates-P003",
       "akshNodeId": null
     },
     {
@@ -734,14 +734,14 @@
       "id": "HSI-C-IM-010",
       "assertion": "IL-1 pathway blockade has been studied for metabolic inflammation (research only).",
       "domain": "immuno_metabolic",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-I023-targets-M002",
       "akshNodeId": null
     },
     {
       "id": "HSI-C-IO-001",
       "assertion": "PD-1 signalling contributes to T-cell exhaustion phenotypes (educational graph).",
       "domain": "io",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-R011-drives-P015",
       "akshNodeId": null
     },
     {
@@ -762,7 +762,7 @@
       "id": "HSI-C-AU-001",
       "assertion": "Islet autoantibodies mark autoimmune β-cell targeting in T1D (contrast with T2D).",
       "domain": "autoimmunity",
-      "isiRelationshipId": null,
+      "isiRelationshipId": "REL-B015-predicts_eligibility_for-I013",
       "akshNodeId": null
     },
     {
@@ -899,5 +899,15 @@
     "HSI-SAFE-004",
     "HSI-SAFE-005",
     "HSI-SAFE-006"
-  ]
+  ],
+  "isiRelMapping": {
+    "suggestions": 16,
+    "withRelId": 9,
+    "unmapped": 7,
+    "exactConceptPair": 1,
+    "relatedAxis": 8,
+    "bridgeCandidatesCovered": 6,
+    "bridgeCandidatesTotal": 12,
+    "autoApproveIntoKg": false
+  }
 }

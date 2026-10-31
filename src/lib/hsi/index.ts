@@ -19,8 +19,10 @@ export {
   HSI_T2D_IMMUNO_SEED_CLAIMS,
   HSI_T2D_IMMUNO_SEED_EDGES,
   HSI_TEACHING_STATUSES,
+  ISI_REL_SUGGESTIONS,
   buildIsiExportBundle,
   buildSchemaGapReport,
+  claimsWithIsiMappings,
   criterionIds,
   gradeForSeed,
   hsiGradeFromCuration,
@@ -34,13 +36,17 @@ export {
   isHsiTeachingStatus,
   linkClaimToMarker,
   listBridgeCandidates,
+  listIsiRelSuggestions,
   loincCoverageSummary,
   markerByNodeId,
   markersWithLoinc,
   seedClaimLoincMap,
   serializeGapReport,
   serializeIsiExport,
+  suggestionForClaim,
+  suggestionForEdge,
   summarizeGradeCounts,
+  summarizeIsiRelMappings,
   validateHsiEdge,
   validateProvenancePmid,
   validateTranslationCard,
@@ -63,6 +69,10 @@ export {
   type HsiValidationIssue,
   type HsiValidationResult,
   type IsiHsiExportBundle,
+  type IsiRelMatchKind,
+  type IsiRelMappingSummary,
+  type IsiRelSuggestion,
+  type IsiRelSuggestionStatus,
 } from "hsi-core";
 
 export {
@@ -73,3 +83,9 @@ export {
   type HsiAxisPanel,
   type IsiDiscoverySeedSummary,
 } from "./isiBridge";
+
+export {
+  buildHsiBridgeCurationQueue,
+  type HsiBridgeCurationQueue,
+  type HsiBridgeQueueItem,
+} from "./bridgeCurationQueue";

@@ -12,16 +12,21 @@ import {
   HSI_SAFETY_RELEASE_CRITERIA_V0,
   HSI_T2D_IMMUNO_SEED_EDGES,
   HSI_TEACHING_STATUSES,
+  buildHsiBridgeCurationQueue,
+  claimsWithIsiMappings,
   discoverySeedSummary,
   hsiAxesForEdge,
   hsiGradeFromCuration,
   isCdsSurfacable,
   listBridgeCandidates,
+  listIsiRelSuggestions,
   loadIsiHsiExportSnapshot,
   summarizeGradeCounts,
+  summarizeIsiRelMappings,
   validateHsiEdge,
   validateTranslationCard,
 } from "@/lib/hsi";
+import { resolveGraphRelationshipId } from "@/lib/immune/graphInventory";
 
 describe("HSI package import", () => {
   it("maps ISI curation reviews onto coarse HSI grades without silent promotion", () => {
@@ -114,5 +119,38 @@ describe("HSI safety release criteria v0", () => {
     expect(text.toLowerCase()).toMatch(/llm|phi/);
     expect(text.toLowerCase()).toContain("cds");
     expect(HSI_SAFETY_RELEASE_CRITERIA_V0.length).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe("HSI bridge → REL curation queue", () => {
+  it("maps suggestions onto live REL-* ids without auto-approve or CDS", () => {
+    const suggestions = listIsiRelSuggestions();
+    expect(suggestions.length).toBeGreaterThanOrEqual(12);
+    expect(suggestions.every((s) => s.autoApprove === false)).toBe(true);
+
+    const mapped = claimsWithIsiMappings();
+    expect(mapped.filter((c) => c.isiRelationshipId?.startsWith("REL-")).length).toBeGreaterThanOrEqual(8);
+
+    const map = summarizeIsiRelMappings();
+    expect(map.autoApproveIntoKg).toBe(false);
+    expect(map.withRelId).toBeGreaterThanOrEqual(8);
+
+    const queue = buildHsiBridgeCurationQueue();
+    expect(queue.notCds).toBe(true);
+    expect(queue.autoApproveIntoKg).toBe(false);
+    expect(queue.summary.relValidatedInGraph).toBeGreaterThanOrEqual(8);
+    expect(queue.summary.exactConceptPair).toBeGreaterThanOrEqual(1);
+    expect(queue.items.every((i) => i.autoApprove === false && i.cdsSurfacable === false)).toBe(true);
+
+    const pd1 = queue.items.find((i) => i.edgeId === "HSI-E-IO-001");
+    expect(pd1?.suggestedIsiRelationshipId).toBe("REL-R011-drives-P015");
+    expect(pd1?.relExistsInGraph).toBe(true);
+    expect(resolveGraphRelationshipId("REL-R011-drives-P015")).toBe("REL-R011-drives-P015");
+
+    // Mapping must not collapse axes or open CDS.
+    for (const edge of HSI_T2D_IMMUNO_SEED_EDGES) {
+      expect(isCdsSurfacable(edge)).toBe(false);
+      expect(edge.hsiGrade).not.toBe("established");
+    }
   });
 });
