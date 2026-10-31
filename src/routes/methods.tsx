@@ -13,6 +13,7 @@ import { seoHead } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { MarketingBody, MarketingHero, MarketingSection } from "@/components/immune/marketing";
 import { TrialIntelligenceMethodsNote } from "@/components/immune/TrialIntelligence";
+import { HsiGradePanel } from "@/components/immune/HsiGradePanel";
 import { ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/methods")({
@@ -92,6 +93,7 @@ const METHODS_TOC = [
   { href: "#live-ev-heading", label: "Live coverage" },
   { href: "#ask-quality", label: "Ask quality (admin)" },
   { href: "#statuses", label: "Review statuses" },
+  { href: "#hsi-grades", label: "HSI grades" },
   { href: "#ontology", label: "Graph ontology" },
   { href: "#trial-intelligence", label: "Trial Intelligence" },
   { href: "#models", label: "Model assumptions" },
@@ -195,6 +197,15 @@ function Methods() {
             <LiveEvidencePanel />
           </div>
           <AskQualityDashboard />
+        </MarketingSection>
+
+        <MarketingSection
+          id="hsi-grades"
+          eyebrow="Shared substrate"
+          title="Discovery grades from Human Systems Intelligence."
+          lede="Phase 0 seed bands from private hsi-core — established / uncertain / unexplored for discovery honesty. Teaching labels stay on a separate axis. Not clinical decision support."
+        >
+          <HsiGradePanel />
         </MarketingSection>
 
         <MarketingSection

@@ -14,6 +14,7 @@
     "types": ["vite/client", "vitest/globals"],
 
     "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": false,
     "noEmit": true,
@@ -30,7 +31,9 @@
     "exactOptionalPropertyTypes": false,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "hsi-core": ["/Users/gnaneshwerjadav/Projects/hsi-core/src/index.ts"],
+      "hsi-core/*": ["/Users/gnaneshwerjadav/Projects/hsi-core/src/*"]
     }
   }
 }

@@ -12,6 +12,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "hsi:check": "bun test src/test/hsi-phase0.test.ts",
+    "hsi:sync-export": "bun run --cwd /Users/gnaneshwerjadav/Projects/hsi-core export:isi && cp /Users/gnaneshwerjadav/Projects/hsi-core/exports/hsi-isi-export.json src/data/hsi-isi-export.json",
     "test:e2e": "node ./node_modules/@playwright/test/cli.js test",
     "test:e2e:nav": "node ./node_modules/@playwright/test/cli.js test e2e/marketing-nav.spec.ts",
     "playwright": "node ./node_modules/@playwright/test/cli.js",
@@ -118,7 +120,8 @@
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2",
     "vite-tsconfig-paths": "^6.0.2",
-    "zod": "^4.6.5"
+    "zod": "^4.6.5",
+    "hsi-core": "file:/Users/gnaneshwerjadav/Projects/hsi-core"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

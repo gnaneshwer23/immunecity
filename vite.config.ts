@@ -9,6 +9,9 @@ import type { Plugin } from "vite";
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 const clientDbDriverStub = fileURLToPath(new URL("./src/lib/db/driver.client.ts", import.meta.url));
+const hsiCoreEntry = fileURLToPath(
+  new URL("../../Projects/hsi-core/src/index.ts", import.meta.url),
+);
 
 /** Keep `postgres` out of the browser graph. The server build still resolves driver.server.ts. */
 function clientDbDriverStubPlugin(): Plugin {
@@ -40,10 +43,15 @@ export default defineConfig({
   },
   plugins: [clientDbDriverStubPlugin()],
   vite: {
+    resolve: {
+      // Durable when bun file: install is flaky; matches tsconfig paths.
+      alias: { "hsi-core": hsiCoreEntry },
+    },
     ssr: {
       // Bundle the driver into the server chunk. A bare runtime import is not
       // traced into the Vercel function, which 500s every page.
-      noExternal: ["postgres"],
+      // hsi-core is a local/private path package — bundle it for SSR.
+      noExternal: ["postgres", "hsi-core"],
     },
   },
 });

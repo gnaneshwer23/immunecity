@@ -1,0 +1,903 @@
+{
+  "schemaVersion": "hsi-isi-export-1",
+  "productLabel": "immune-super-intelligence",
+  "notCds": true,
+  "generatedAt": "2026-10-31T22:27:41.719Z",
+  "grades": [
+    "established",
+    "uncertain",
+    "unexplored"
+  ],
+  "gradeCounts": {
+    "established": 0,
+    "uncertain": 11,
+    "unexplored": 14
+  },
+  "loincCoverage": {
+    "edgeCount": 25,
+    "claimsWithLoincMarker": 4,
+    "markersWithLoinc": 4,
+    "markersMissingLoinc": 1
+  },
+  "edges": [
+    {
+      "id": "HSI-E-T2D-001",
+      "edgeType": "biomarker_of",
+      "subjectId": "HSI-N-hba1c",
+      "subjectLabel": "HbA1c",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-001",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "established",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "ADA Standards of Care (placeholder citation label)",
+        "sourceUrl": null,
+        "notes": "Clinical practice standard — map to durable locator in evidence sprint.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-002",
+      "edgeType": "biomarker_of",
+      "subjectId": "HSI-N-fpg",
+      "subjectLabel": "Fasting plasma glucose",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-002",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "established",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "WHO / ADA diagnostic criteria (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-003",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-insulin-resistance",
+      "subjectLabel": "Insulin resistance",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-003",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "associative",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-004",
+      "edgeType": "contributes_to",
+      "subjectId": "HSI-N-beta-cell-dysfunction",
+      "subjectLabel": "Pancreatic β-cell dysfunction",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-004",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "associative",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-005",
+      "edgeType": "treats",
+      "subjectId": "HSI-N-metformin",
+      "subjectLabel": "Metformin",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-005",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "established",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "ADA pharmacologic therapy guidance (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-006",
+      "edgeType": "treats",
+      "subjectId": "HSI-N-sglt2i",
+      "subjectLabel": "SGLT2 inhibitors",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-006",
+      "curationReview": "claim-assessed",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "Cardiorenal outcome trials class (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-007",
+      "edgeType": "treats",
+      "subjectId": "HSI-N-glp1ra",
+      "subjectLabel": "GLP-1 receptor agonists",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-007",
+      "curationReview": "claim-assessed",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-008",
+      "edgeType": "risk_factor_for",
+      "subjectId": "HSI-N-obesity",
+      "subjectLabel": "Obesity",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-008",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "established",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "Epidemiologic risk literature (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-009",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-cgm-tir",
+      "subjectLabel": "CGM time-in-range",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-T2D-009",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-T2D-010",
+      "edgeType": "worsens",
+      "subjectId": "HSI-N-glucocorticoids",
+      "subjectLabel": "Systemic glucocorticoids",
+      "objectId": "HSI-N-hyperglycemia",
+      "objectLabel": "Hyperglycemia",
+      "claimId": "HSI-C-T2D-010",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "t2d",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "Drug-induced hyperglycemia reviews (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-001",
+      "edgeType": "bridges_domain",
+      "subjectId": "HSI-N-chronic-inflammation",
+      "subjectLabel": "Low-grade chronic inflammation",
+      "objectId": "HSI-N-insulin-resistance",
+      "objectLabel": "Insulin resistance",
+      "claimId": "HSI-C-IM-001",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-002",
+      "edgeType": "upregulates",
+      "subjectId": "HSI-N-tnf-alpha",
+      "subjectLabel": "TNF-α",
+      "objectId": "HSI-N-insulin-resistance",
+      "objectLabel": "Insulin resistance",
+      "claimId": "HSI-C-IM-002",
+      "curationReview": "draft",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-003",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-il6",
+      "subjectLabel": "IL-6",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-IM-003",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-004",
+      "edgeType": "biomarker_of",
+      "subjectId": "HSI-N-crp",
+      "subjectLabel": "hs-CRP",
+      "objectId": "HSI-N-chronic-inflammation",
+      "objectLabel": "Low-grade chronic inflammation",
+      "claimId": "HSI-C-IM-004",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "Inflammation biomarker practice (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-005",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-adipose-macrophages",
+      "subjectLabel": "Adipose tissue macrophages",
+      "objectId": "HSI-N-insulin-resistance",
+      "objectLabel": "Insulin resistance",
+      "claimId": "HSI-C-IM-005",
+      "curationReview": "draft",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-006",
+      "edgeType": "contributes_to",
+      "subjectId": "HSI-N-nlrp3",
+      "subjectLabel": "NLRP3 inflammasome",
+      "objectId": "HSI-N-metabolic-inflammation",
+      "objectLabel": "Metabolic inflammation",
+      "claimId": "HSI-C-IM-006",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-007",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-t2d",
+      "subjectLabel": "Type 2 diabetes mellitus",
+      "objectId": "HSI-N-infection-risk",
+      "objectLabel": "Infection susceptibility",
+      "claimId": "HSI-C-IM-007",
+      "curationReview": "claim-assessed",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-008",
+      "edgeType": "worsens",
+      "subjectId": "HSI-N-hyperglycemia",
+      "subjectLabel": "Hyperglycemia",
+      "objectId": "HSI-N-innate-dysfunction",
+      "objectLabel": "Innate immune dysfunction",
+      "claimId": "HSI-C-IM-008",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-009",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-pcos-autoimmune-overlap",
+      "subjectLabel": "Autoimmune–metabolic comorbidity",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-IM-009",
+      "curationReview": "draft",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "unknown",
+      "domain": "autoimmunity",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IM-010",
+      "edgeType": "inhibits",
+      "subjectId": "HSI-N-anti-il1",
+      "subjectLabel": "IL-1 pathway blockade",
+      "objectId": "HSI-N-metabolic-inflammation",
+      "objectLabel": "Metabolic inflammation",
+      "claimId": "HSI-C-IM-010",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "ISI discovery only — not Aksh CDS-actionable.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IO-001",
+      "edgeType": "drives",
+      "subjectId": "HSI-N-pd1",
+      "subjectLabel": "PD-1",
+      "objectId": "HSI-N-tcell-exhaustion",
+      "objectLabel": "T-cell exhaustion",
+      "claimId": "HSI-C-IO-001",
+      "curationReview": "draft",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "io",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Align with ISI honesty overrides; placeholder for HSI mapping.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IO-002",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-checkpoint-therapy",
+      "subjectLabel": "Immune checkpoint therapy",
+      "objectId": "HSI-N-irae",
+      "objectLabel": "Immune-related adverse events",
+      "claimId": "HSI-C-IO-002",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "io",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "irAE clinical reviews (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-IO-003",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-irae",
+      "subjectLabel": "Immune-related adverse events",
+      "objectId": "HSI-N-hyperglycemia",
+      "objectLabel": "Hyperglycemia",
+      "claimId": "HSI-C-IO-003",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-AU-001",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-t1d-autoimmunity",
+      "subjectLabel": "Type 1 diabetes autoimmunity",
+      "objectId": "HSI-N-islet-autoantibodies",
+      "objectLabel": "Islet autoantibodies",
+      "claimId": "HSI-C-AU-001",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "autoimmunity",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "Islet autoantibody consensus (placeholder)",
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-AU-002",
+      "edgeType": "bridges_domain",
+      "subjectId": "HSI-N-lada",
+      "subjectLabel": "LADA / latent autoimmune diabetes",
+      "objectId": "HSI-N-t2d",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "claimId": "HSI-C-AU-002",
+      "curationReview": "unreviewed",
+      "hsiGrade": "unexplored",
+      "teachingStatus": "associative",
+      "domain": "autoimmunity",
+      "provenance": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "notes": "Phase 0 placeholder — awaiting citation + Gate C review.",
+        "recordedAt": "2026-10-31T00:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    }
+  ],
+  "claims": [
+    {
+      "id": "HSI-C-T2D-001",
+      "assertion": "Elevated HbA1c is used to diagnose and monitor type 2 diabetes.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-002",
+      "assertion": "Fasting plasma glucose above diagnostic thresholds indicates T2D.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-003",
+      "assertion": "Insulin resistance is a core pathophysiologic feature of T2D.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-004",
+      "assertion": "Progressive β-cell dysfunction contributes to hyperglycemia in T2D.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-005",
+      "assertion": "Metformin is first-line pharmacotherapy for many adults with T2D.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-006",
+      "assertion": "SGLT2 inhibitors lower glucose and reduce cardiorenal risk in selected T2D patients.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-007",
+      "assertion": "GLP-1 receptor agonists improve glycemic control and weight in T2D.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-008",
+      "assertion": "Obesity is a major modifiable risk factor for incident T2D.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-009",
+      "assertion": "CGM time-in-range complements HbA1c for glycemic assessment in T2D.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-T2D-010",
+      "assertion": "Systemic glucocorticoids can worsen hyperglycemia and unmask diabetes.",
+      "domain": "t2d",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-001",
+      "assertion": "Low-grade chronic inflammation is linked to insulin resistance (immuno-metabolic bridge).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-002",
+      "assertion": "TNF-α signalling can impair insulin action in metabolic tissues.",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-003",
+      "assertion": "Circulating IL-6 is associated with T2D risk and inflammatory tone.",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-004",
+      "assertion": "hs-CRP is a clinical marker of systemic inflammatory burden.",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-005",
+      "assertion": "Adipose tissue macrophage infiltration associates with insulin resistance.",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-006",
+      "assertion": "NLRP3 inflammasome activation contributes to metabolic inflammation.",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-007",
+      "assertion": "T2D is associated with increased susceptibility to certain infections.",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-008",
+      "assertion": "Sustained hyperglycemia can impair aspects of innate immune function.",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-009",
+      "assertion": "Some autoimmune conditions co-occur with higher T2D risk (bridge shortlist).",
+      "domain": "autoimmunity",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IM-010",
+      "assertion": "IL-1 pathway blockade has been studied for metabolic inflammation (research only).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IO-001",
+      "assertion": "PD-1 signalling contributes to T-cell exhaustion phenotypes (educational graph).",
+      "domain": "io",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IO-002",
+      "assertion": "Immune checkpoint therapy is associated with immune-related adverse events.",
+      "domain": "io",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-IO-003",
+      "assertion": "Some irAEs and steroid treatment can present with hyperglycemia (bridge-relevant).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-AU-001",
+      "assertion": "Islet autoantibodies mark autoimmune β-cell targeting in T1D (contrast with T2D).",
+      "domain": "autoimmunity",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-AU-002",
+      "assertion": "LADA can present with adult-onset diabetes phenotypes overlapping T2D clinics.",
+      "domain": "autoimmunity",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    }
+  ],
+  "markers": [
+    {
+      "id": "HSI-N-hba1c",
+      "name": "Hemoglobin A1c",
+      "loinc": "4548-4",
+      "unit": "%",
+      "description": "Glycated hemoglobin — glycemic control / diagnosis support."
+    },
+    {
+      "id": "HSI-N-fpg",
+      "name": "Fasting plasma glucose",
+      "loinc": "1558-6",
+      "unit": "mg/dL",
+      "description": "Fasting glucose for diagnosis and monitoring."
+    },
+    {
+      "id": "HSI-N-crp",
+      "name": "C-reactive protein (high sensitivity)",
+      "loinc": "30522-7",
+      "unit": "mg/L",
+      "description": "Systemic inflammatory marker (immuno-metabolic bridge)."
+    },
+    {
+      "id": "HSI-N-il6",
+      "name": "Interleukin-6",
+      "loinc": "26881-3",
+      "unit": "pg/mL",
+      "description": "Cytokine often elevated in inflammatory / metabolic contexts."
+    },
+    {
+      "id": "HSI-N-cgm-tir",
+      "name": "CGM time in range",
+      "loinc": null,
+      "unit": "%",
+      "description": "Proportion of CGM readings in target range (LOINC TBD)."
+    }
+  ],
+  "claimLoincLinks": [
+    {
+      "claimId": "HSI-C-T2D-001",
+      "edgeId": "HSI-E-T2D-001",
+      "marker": {
+        "id": "HSI-N-hba1c",
+        "name": "Hemoglobin A1c",
+        "loinc": "4548-4",
+        "unit": "%",
+        "description": "Glycated hemoglobin — glycemic control / diagnosis support."
+      },
+      "linkKind": "subject_node",
+      "claim": {
+        "id": "HSI-C-T2D-001",
+        "assertion": "Elevated HbA1c is used to diagnose and monitor type 2 diabetes.",
+        "domain": "t2d",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      "loinc": "4548-4"
+    },
+    {
+      "claimId": "HSI-C-T2D-002",
+      "edgeId": "HSI-E-T2D-002",
+      "marker": {
+        "id": "HSI-N-fpg",
+        "name": "Fasting plasma glucose",
+        "loinc": "1558-6",
+        "unit": "mg/dL",
+        "description": "Fasting glucose for diagnosis and monitoring."
+      },
+      "linkKind": "subject_node",
+      "claim": {
+        "id": "HSI-C-T2D-002",
+        "assertion": "Fasting plasma glucose above diagnostic thresholds indicates T2D.",
+        "domain": "t2d",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      "loinc": "1558-6"
+    },
+    {
+      "claimId": "HSI-C-IM-003",
+      "edgeId": "HSI-E-IM-003",
+      "marker": {
+        "id": "HSI-N-il6",
+        "name": "Interleukin-6",
+        "loinc": "26881-3",
+        "unit": "pg/mL",
+        "description": "Cytokine often elevated in inflammatory / metabolic contexts."
+      },
+      "linkKind": "subject_node",
+      "claim": {
+        "id": "HSI-C-IM-003",
+        "assertion": "Circulating IL-6 is associated with T2D risk and inflammatory tone.",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      "loinc": "26881-3"
+    },
+    {
+      "claimId": "HSI-C-IM-004",
+      "edgeId": "HSI-E-IM-004",
+      "marker": {
+        "id": "HSI-N-crp",
+        "name": "C-reactive protein (high sensitivity)",
+        "loinc": "30522-7",
+        "unit": "mg/L",
+        "description": "Systemic inflammatory marker (immuno-metabolic bridge)."
+      },
+      "linkKind": "subject_node",
+      "claim": {
+        "id": "HSI-C-IM-004",
+        "assertion": "hs-CRP is a clinical marker of systemic inflammatory burden.",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      "loinc": "30522-7"
+    }
+  ],
+  "safetyCriteriaIds": [
+    "HSI-SAFE-001",
+    "HSI-SAFE-002",
+    "HSI-SAFE-003",
+    "HSI-SAFE-004",
+    "HSI-SAFE-005",
+    "HSI-SAFE-006"
+  ]
+}

@@ -27,6 +27,7 @@ export default defineConfig({
       "src/test/ask-entry-points.test.ts",
       "src/test/post-af-scientific-brief-audit.test.ts",
       "src/test/phase-c-evidence-intelligence.test.ts",
+      "src/test/hsi-phase0.test.ts",
     ],
     pool: "forks",
     fileParallelism: false,
@@ -35,6 +36,11 @@ export default defineConfig({
     hookTimeout: 20_000,
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      "hsi-core": path.resolve(
+        "/Users/gnaneshwerjadav/Projects/hsi-core/src/index.ts",
+      ),
+    },
   },
 });
