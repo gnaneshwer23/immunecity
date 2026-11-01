@@ -3,7 +3,7 @@
   "phase": "P0.2-HSI",
   "notCds": true,
   "containsPhi": false,
-  "generatedAt": "2026-11-01T21:22:52.034Z",
+  "generatedAt": "2026-11-01T21:52:13.887Z",
   "partnerSigned": true,
   "lockedPilot": true,
   "scopeLocked": true,
@@ -42,7 +42,7 @@
       "label": "Source licensing / attribution",
       "requirement": "Agree source licensing / attribution for the partner source set.",
       "status": "pass",
-      "evidence": "Apolo Pharma Stage 1 corpus clearance (operator-asserted 2026-11-01): partnerClearedCount=38 (oa_reuse=11, cite_metadata_pilot=27, uncleared=10). Cite-metadata pilot ≠ FT redistribution; unknown left needs_confirm.",
+      "evidence": "Apolo Pharma Stage 1 corpus clearance (operator-asserted 2026-11-01): partnerClearedCount=48 (oa_reuse=11, cite_metadata_pilot=37, uncleared=0). Cite-metadata pilot ≠ FT redistribution; pack PMIDs fully cleared for Stage 1 cite/OA scopes (no invented CC).",
       "blocksPartnerSigned": true
     },
     {
@@ -99,7 +99,7 @@
   },
   "nextHumanActions": [
     "Named partner active: Apolo Pharma (partner:apolo-pharma) — MoU paperwork operator-asserted; still not CDS.",
-    "Apolo Pharma Stage 1 corpus licensing clearance applied (oa_reuse + cite_metadata_pilot; unknown uncleared/needs_confirm). See docs/HOW_TO_SOURCE_LICENSING.md.",
+    "Apolo Pharma Stage 1 corpus licensing clearance applied (oa_reuse + cite_metadata_pilot; pack PMIDs cleared — uncleared=0). See docs/HOW_TO_SOURCE_LICENSING.md.",
     "Stage 1 numeric rubric thresholds are partner_agreed with Apolo Pharma (2026-11-01) — keep pack depth ≥ 12/4/6.",
     "Keep Gate C human-only — never auto-approve into ISI product KG.",
     "Refresh bun run outputs + re-sync immunecity public/hsi-discovery after pack depth changes.",
@@ -108,7 +108,7 @@
   "honesty": [
     "readyToFlipPartnerSigned=true once named_partner + legalBinding + partnerSigned (Apolo Pharma path).",
     "satisfied_by_fixture ≠ pass for production MoU claims.",
-    "Apolo Pharma Stage 1 KPIs are partner_agreed; licensing clearanceScope=oa_reuse|cite_metadata_pilot applied (unknown uncleared).",
+    "Apolo Pharma Stage 1 KPIs are partner_agreed; licensing clearanceScope=oa_reuse|cite_metadata_pilot applied (uncleared=0).",
     "Named partner: partnerSigned=true + legalBinding=true → lockedPilot=true; MoU operator-asserted — still not CDS / no auto Gate C.",
     "This pack must never invent emails, phones, or named PI contacts.",
     "scopeLocked=true is engineering lock for RA/anti-TNF; dual-track secondary packs continue.",

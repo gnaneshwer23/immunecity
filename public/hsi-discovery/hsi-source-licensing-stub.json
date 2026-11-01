@@ -4,7 +4,7 @@
   "notCds": true,
   "containsPhi": false,
   "partnerSigned": false,
-  "generatedAt": "2026-11-01T21:22:52.034Z",
+  "generatedAt": "2026-11-01T21:52:13.887Z",
   "reviewDate": "2026-11-01",
   "reviewMethod": "Europe PMC REST search resultType=core (isOpenAccess, inPMC, license, pmcid) + Crossref /works license URLs for ambiguous OA; conservative — no invented CC-BY; free PMC without clear CC → unknown; paywall/no OA → restricted; explicit CC → ok_oa. Bibliographic PMID citation always OK regardless of status.",
   "partnerClearance": {
@@ -16,18 +16,18 @@
   },
   "summary": {
     "pmidCount": 48,
-    "okCiteCount": 0,
+    "okCiteCount": 10,
     "okOaCount": 11,
     "restrictedCount": 27,
-    "unknownCount": 10,
+    "unknownCount": 0,
     "needsReviewCount": 0,
-    "partnerClearedCount": 38,
+    "partnerClearedCount": 48,
     "clearanceScopeCounts": {
       "oa_reuse": 11,
-      "cite_metadata_pilot": 27,
-      "uncleared": 10
+      "cite_metadata_pilot": 37,
+      "uncleared": 0
     },
-    "blockedCount": 10
+    "blockedCount": 0
   },
   "rows": [
     {
@@ -415,18 +415,18 @@
       "packs": [
         "gut_scfa"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/19625695",
       "doi": "10.3945/jn.109.104638",
       "pmcid": "PMC2728689",
       "publisherLicense": null,
-      "reviewNotes": "J Nutr; free in PMC but Europe PMC license null; Crossref lists Elsevier OA userlicense (not CC) — do not invent CC-BY.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "J Nutr; recheck EPMC license null + Crossref Elsevier OA userlicense (not CC) — Apolo cite_metadata_pilot; PMC free link-out OK; no FT republication / no invented CC-BY.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "20699241",
@@ -450,18 +450,18 @@
       "packs": [
         "gut_scfa"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/21205640",
       "doi": "10.1126/science.1198469",
       "pmcid": "PMC3969237",
       "publisherLicense": null,
-      "reviewNotes": "Science; author manuscript in PMC (green); publisher HTML still subscription; no clear CC on VoR — cite + link PMC; no FT republication claim.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Science; recheck EPMC isOA=N + Crossref no license URL — Apolo cite_metadata_pilot; green PMC MS link-out OK; VoR subscription; no FT republication.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "21314428",
@@ -485,36 +485,36 @@
       "packs": [
         "neuro_vagus"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/21921156",
       "doi": "10.1126/science.1209985",
       "pmcid": "PMC4548937",
       "publisherLicense": null,
-      "reviewNotes": "Science; PMC author manuscript free; no clear CC on VoR — unknown beyond citation/link.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Science; recheck EPMC license null + Crossref empty licenses — Apolo cite_metadata_pilot; PMC MS link-out OK; no invented CC / no FT republication.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "23828891",
       "packs": [
         "gut_scfa"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/23828891",
       "doi": "10.1126/science.1241165",
       "pmcid": "PMC3807819",
       "publisherLicense": null,
-      "reviewNotes": "Science; PMC free author manuscript; no Europe PMC CC — unknown reuse beyond citation/link.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Science; recheck EPMC license null + Crossref empty licenses — Apolo cite_metadata_pilot; PMC MS link-out OK; no invented CC / no FT republication.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "23842501",
@@ -625,18 +625,18 @@
       "packs": [
         "gut_scfa"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/24412617",
       "doi": "10.1016/j.immuni.2013.12.007",
       "pmcid": "PMC4305274",
       "publisherLicense": null,
-      "reviewNotes": "Immunity 2014; NIHMS/PMC manuscript — cite + link; no invented CC-BY.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Immunity 2014; recheck EPMC license null + Crossref Elsevier OA userlicense (not CC) — Apolo cite_metadata_pilot; NIHMS/PMC MS link-out OK; no invented CC-BY.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24586782",
@@ -661,54 +661,54 @@
       "packs": [
         "gut_scfa"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/24917457",
       "doi": "10.1038/mi.2014.44",
       "pmcid": "PMC4263689",
       "publisherLicense": null,
-      "reviewNotes": "Mucosal Immunol; EPMC isOpenAccess=Y + PMC but license null; Crossref Elsevier OA userlicense (not CC) — unknown for CC-style reuse.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Mucosal Immunol; recheck EPMC isOA=Y + license null; Crossref Elsevier OA userlicense (not CC) — Apolo cite_metadata_pilot; no invented CC-BY / no FT republication.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "25865369",
       "packs": [
         "gut_scfa"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/25865369",
       "doi": "10.1016/j.chom.2015.03.005",
-      "pmcid": "PMC4430144",
+      "pmcid": "PMC4433427",
       "publisherLicense": null,
-      "reviewNotes": "Cell Host Microbe 2015 Kelly SCFA/HIF; PMC manuscript — cite + link; no invented CC-BY.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Cell Host Microbe 2015 Kelly SCFA/HIF; recheck EPMC license null + Crossref Elsevier OA userlicense (not CC) — Apolo cite_metadata_pilot; PMC MS link-out OK; no invented CC-BY.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "27382171",
       "packs": [
         "neuro_vagus"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/27382171",
       "doi": "10.1073/pnas.1605635113",
       "pmcid": "PMC4961187",
       "publisherLicense": null,
-      "reviewNotes": "PNAS 2016; free in PMC; Europe PMC license null / Crossref no CC URL — unknown (do not invent CC-BY).",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "PNAS 2016; recheck EPMC isOA=N + license null; Crossref no CC URL — Apolo cite_metadata_pilot; PMC free link-out OK; no invented CC-BY.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "29163504",
@@ -801,18 +801,18 @@
       "packs": [
         "gut_scfa"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/30918945",
       "doi": "10.1093/ibd/izz046",
       "pmcid": "PMC6701512",
       "publisherLicense": null,
-      "reviewNotes": "Inflamm Bowel Dis; free in PMC; Crossref CHORUS/standard OUP model (not CC) — unknown for redistribution.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Inflamm Bowel Dis; recheck EPMC license null + Crossref CHORUS/standard OUP model (not CC) — Apolo cite_metadata_pilot; PMC free link-out OK; no FT republication.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "33175976",
@@ -836,18 +836,18 @@
       "packs": [
         "ssc_tfh_b_il21"
       ],
-      "licenseStatus": "unknown",
-      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "licenseStatus": "ok_cite",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Curator cleared citation-only use; full-text / figure republication not cleared.",
       "europePmcUrl": "https://europepmc.org/article/MED/34031030",
       "doi": "10.1136/annrheumdis-2021-220209",
       "pmcid": "PMC8516708",
       "publisherLicense": null,
-      "reviewNotes": "Ann Rheum Dis 2021; PMC author manuscript — cite + link; no invented CC-BY.",
-      "partnerCleared": false,
-      "clearanceScope": "uncleared",
-      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
-      "partnerId": null,
-      "partnerClearedAt": null
+      "reviewNotes": "Ann Rheum Dis 2021; recheck EPMC license null + Crossref TDM-only (no CC) — Apolo cite_metadata_pilot; PMC author MS link-out OK; no FT republication.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "37763102",
@@ -871,7 +871,7 @@
   "honesty": [
     "Curator reviewDate=2026-11-01; method recorded on bundle.reviewMethod.",
     "Statuses: ok_cite (citation-only cleared) · ok_oa (CC / clear reuse) · restricted (paywall ARR — metadata cite only) · unknown (unclear — no invented CC).",
-    "Apolo Pharma Stage 1 partner clearance (2026-11-01): partnerClearedCount=38 (oa_reuse=11, cite_metadata_pilot=27, uncleared=10).",
+    "Apolo Pharma Stage 1 partner clearance (2026-11-01): partnerClearedCount=48 (oa_reuse=11, cite_metadata_pilot=37, uncleared=0).",
     "clearanceScope=cite_metadata_pilot ≠ full-text redistribution rights; oa_reuse still bound by publisher CC/OA terms (NC/SA).",
     "Stub partnerSigned stays false (not a publisher MoU); partnerCleared* records Stage 1 pilot attribution scope only.",
     "PMID presence ≠ republication rights for PDFs or figures beyond what the row license + clearanceScope allow.",
