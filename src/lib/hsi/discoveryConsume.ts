@@ -9,8 +9,13 @@ export type HsiGradeBand = "established" | "uncertain" | "unexplored";
 export type HonestyFlags = {
   notCds?: boolean;
   autoApproveIntoKg?: boolean;
+  /** Must never be true — HSI/ISI consume is not live CDS. */
+  autoSurfaceCds?: boolean;
   partnerSigned?: boolean;
   containsPhi?: boolean;
+  /** Must never be true on Discovery consume paths. */
+  mayUseLivePhi?: boolean;
+  clinicalActive?: boolean;
   isHypothetical?: boolean;
   legalBinding?: boolean;
   notALegalAgreement?: boolean;
@@ -158,8 +163,17 @@ export function assertHonestyFlags(
   if (doc.autoApproveIntoKg !== false && doc.autoApproveIntoKg !== undefined) {
     throw new Error(`${label}: expected autoApproveIntoKg=false`);
   }
+  if (doc.autoSurfaceCds === true) {
+    throw new Error(`${label}: autoSurfaceCds must not be true (live CDS rejected)`);
+  }
   if (doc.containsPhi === true) {
     throw new Error(`${label}: containsPhi must not be true`);
+  }
+  if (doc.mayUseLivePhi === true) {
+    throw new Error(`${label}: mayUseLivePhi must not be true (PHI rejected)`);
+  }
+  if (doc.clinicalActive === true) {
+    throw new Error(`${label}: clinicalActive must not be true (live CDS rejected)`);
   }
   if (doc.partnerSigned === true) {
     const allow = opts?.allowHypothetical ?? allowHypotheticalPartner();

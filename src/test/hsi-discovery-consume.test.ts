@@ -20,6 +20,39 @@ function loadVendor<T>(name: string): T {
 }
 
 describe("HSI Discovery consume honesty", () => {
+  it("rejects PHI payloads and live CDS surface claims", () => {
+    expect(() =>
+      assertHonestyFlags(
+        { notCds: true, autoApproveIntoKg: false, containsPhi: true },
+        "phi-payload",
+      ),
+    ).toThrow(/containsPhi/);
+    expect(() =>
+      assertHonestyFlags(
+        { notCds: true, autoApproveIntoKg: false, mayUseLivePhi: true },
+        "live-phi",
+      ),
+    ).toThrow(/mayUseLivePhi|PHI/);
+    expect(() =>
+      assertHonestyFlags(
+        { notCds: true, autoApproveIntoKg: false, autoSurfaceCds: true },
+        "live-cds",
+      ),
+    ).toThrow(/autoSurfaceCds|live CDS/);
+    expect(() =>
+      assertHonestyFlags(
+        { notCds: false, autoApproveIntoKg: false },
+        "cds-claim",
+      ),
+    ).toThrow(/notCds/);
+    expect(() =>
+      assertHonestyFlags(
+        { notCds: true, autoApproveIntoKg: false, clinicalActive: true },
+        "clinical-active",
+      ),
+    ).toThrow(/clinicalActive|live CDS/);
+  });
+
   it("rejects partnerSigned without fixture / named / allow flag", () => {
     expect(() =>
       assertHonestyFlags(
