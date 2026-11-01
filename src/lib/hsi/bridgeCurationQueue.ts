@@ -54,6 +54,13 @@ export type HsiBridgeQueueItem = {
   gateCHandoff: HsiGateCHandoffStatus;
   /** Curator-facing compound label (e.g. evidence-linked · Gate C pending). */
   evidenceHandoffLabel: string;
+  /**
+   * Ready for human Neon Gate C path when curated + REL in graph + PMID present.
+   * Still autoApprove=false — curator must Check → claim_support → Approve.
+   */
+  neonGateCReady: boolean;
+  /** Deep-link hash + query for /curation evidence filter. */
+  neonGateCHref: string | null;
   /** Always false — documentation invariant. */
   autoApprove: false;
   /** Always false until Gate C + established grade. */
@@ -64,6 +71,13 @@ export type HsiBridgeCurationQueue = {
   notCds: true;
   autoApproveIntoKg: false;
   axesNote: string;
+  /** Human-only Neon path copy for the panel. */
+  neonGateCPath: readonly [
+    "1. Check identifiers (PubMed/Crossref)",
+    "2. Map relationship_id to the suggested REL-*",
+    "3. Assess claim_support = supports (or contradicts/partial)",
+    "4. Approve — only then Gate C counts",
+  ];
   summary: {
     items: number;
     bridgeCandidates: number;
@@ -72,8 +86,10 @@ export type HsiBridgeCurationQueue = {
     exactConceptPair: number;
     relatedAxis: number;
     unmapped: number;
+    curated: number;
     evidenceLinked: number;
     gateCPending: number;
+    neonGateCReady: number;
     mapping: ReturnType<typeof summarizeIsiRelMappings>;
   };
   items: HsiBridgeQueueItem[];
@@ -126,6 +142,13 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
     const relId = s.suggestedIsiRelationshipId;
     const relExistsInGraph = Boolean(relId && resolveGraphRelationshipId(relId));
     const handoff = hsiEvidenceHandoff(edge);
+    const neonGateCReady = Boolean(
+      relId &&
+        relExistsInGraph &&
+        handoff.pmid &&
+        (s.status === "curated" || s.status === "accepted_for_curation") &&
+        s.autoApprove === false,
+    );
 
     items.push({
       edgeId: edge.id,
@@ -150,17 +173,23 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
       evidenceLink: handoff.evidenceLink,
       gateCHandoff: handoff.gateC,
       evidenceHandoffLabel: handoff.label,
+      neonGateCReady,
+      neonGateCHref: relId
+        ? `/curation?q=${encodeURIComponent(relId)}#import`
+        : null,
       autoApprove: false,
       cdsSurfacable: false,
     });
   }
 
-  // Stable: bridges first, then exact matches, then related, then unmapped.
+  // Stable: Neon-ready first, then bridges, then exact, related, unmapped.
   const rank = (i: HsiBridgeQueueItem) => {
     let score = 0;
+    if (i.neonGateCReady) score += 200;
     if (i.bridgeCandidate) score += 100;
     if (i.matchKind === "exact_concept_pair") score += 50;
     else if (i.matchKind === "related_axis") score += 30;
+    if (i.suggestionStatus === "curated") score += 20;
     if (i.relExistsInGraph) score += 10;
     return -score;
   };
@@ -172,6 +201,12 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
     notCds: true,
     autoApproveIntoKg: false,
     axesNote: HSI_AXES_NOTE,
+    neonGateCPath: [
+      "1. Check identifiers (PubMed/Crossref)",
+      "2. Map relationship_id to the suggested REL-*",
+      "3. Assess claim_support = supports (or contradicts/partial)",
+      "4. Approve — only then Gate C counts",
+    ] as const,
     summary: {
       items: items.length,
       bridgeCandidates: items.filter((i) => i.bridgeCandidate).length,
@@ -180,8 +215,10 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
       exactConceptPair: items.filter((i) => i.matchKind === "exact_concept_pair").length,
       relatedAxis: items.filter((i) => i.matchKind === "related_axis").length,
       unmapped: items.filter((i) => i.matchKind === "none").length,
+      curated: items.filter((i) => i.suggestionStatus === "curated").length,
       evidenceLinked: items.filter((i) => i.evidenceLink === "evidence_linked").length,
       gateCPending: items.filter((i) => i.gateCHandoff === "pending").length,
+      neonGateCReady: items.filter((i) => i.neonGateCReady).length,
       mapping,
     },
     items,

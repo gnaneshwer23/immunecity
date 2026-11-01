@@ -7,15 +7,37 @@ import { buildHsiBridgeCurationQueue } from "@/lib/hsi/bridgeCurationQueue";
 
 export default function HsiBridgeCurationPanel() {
   const queue = buildHsiBridgeCurationQueue();
+  const neonReady = queue.items.filter((i) => i.neonGateCReady);
 
   return (
     <div className="isi-auth-panel" data-testid="hsi-bridge-curation-queue">
       <p className="isi-auth-lede">
         Bridge-candidate seeds from <code>hsi-core</code> with suggested Immune City{" "}
-        <code>REL-*</code> matches. Use this as a Gate C handoff list — inspect the relationship, then
-        curate evidence separately. <strong>No automatic approval.</strong> Not clinical decision support.
-        HSI <code>source-verified</code> / PMID ≠ Neon Gate C pass (approve + supports on the REL).
+        <code>REL-*</code> matches. HSI <code>curated</code> + PMID ≠ Neon Gate C pass.
+        Human path only: <strong>Check → claim_support → Approve</strong> on the mapped REL.
+        <strong> autoApprove stays false.</strong> Not clinical decision support.
       </p>
+
+      <div className="isi-auth-panel" data-testid="hsi-neon-gate-c-path">
+        <p className="isi-auth-lede">
+          Human Neon Gate C path for curated / PMID-linked RELs ({queue.summary.neonGateCReady}{" "}
+          ready):
+        </p>
+        <ol className="mkt-aside">
+          {queue.neonGateCPath.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
+        <p className="isi-auth-links">
+          <a href="#import">Open evidence import · filter by REL</a>
+          {neonReady[0]?.neonGateCHref ? (
+            <a href={neonReady[0].neonGateCHref}>
+              Focus first ready REL ({neonReady[0].suggestedIsiRelationshipId})
+            </a>
+          ) : null}
+        </p>
+      </div>
+
       <p className="mkt-aside">{queue.axesNote}</p>
       <dl className="mkt-ev-metrics">
         <div>
@@ -33,10 +55,18 @@ export default function HsiBridgeCurationPanel() {
           </dd>
         </div>
         <div>
+          <dt>Curated (HSI-side)</dt>
+          <dd>{queue.summary.curated}</dd>
+        </div>
+        <div>
           <dt>Exact / related / unmapped</dt>
           <dd>
             {queue.summary.exactConceptPair} / {queue.summary.relatedAxis} / {queue.summary.unmapped}
           </dd>
+        </div>
+        <div>
+          <dt>Neon Gate C ready (human)</dt>
+          <dd>{queue.summary.neonGateCReady}</dd>
         </div>
         <div>
           <dt>Evidence-linked / Gate C pending</dt>
@@ -58,18 +88,26 @@ export default function HsiBridgeCurationPanel() {
               <th scope="col">Grade / teaching</th>
               <th scope="col">Evidence / Gate C</th>
               <th scope="col">Suggested REL-*</th>
+              <th scope="col">Human Neon action</th>
               <th scope="col">Match</th>
               <th scope="col">Notes</th>
             </tr>
           </thead>
           <tbody>
             {queue.items.map((row) => (
-              <tr key={row.edgeId}>
+              <tr
+                key={row.edgeId}
+                data-neon-ready={row.neonGateCReady ? "true" : "false"}
+                className={row.neonGateCReady ? "res-positive" : undefined}
+              >
                 <td>
                   <div>
                     <code>{row.edgeId}</code>
                     {row.bridgeCandidate ? (
                       <span className="isi-auth-pill"> bridge</span>
+                    ) : null}
+                    {row.suggestionStatus === "curated" ? (
+                      <span className="isi-auth-pill"> curated</span>
                     ) : null}
                   </div>
                   <div className="mkt-aside">
@@ -130,6 +168,28 @@ export default function HsiBridgeCurationPanel() {
                   )}
                 </td>
                 <td>
+                  {row.neonGateCReady && row.neonGateCHref ? (
+                    <>
+                      <div className="mkt-aside res-positive">
+                        Ready — Check → supports → Approve
+                      </div>
+                      <a href={row.neonGateCHref} className="mkt-aside">
+                        Open in evidence queue
+                      </a>
+                      <div className="mkt-aside">
+                        Paste PMID {row.pmid}; set <code>relationship_id</code> ={" "}
+                        <code>{row.suggestedIsiRelationshipId}</code>
+                      </div>
+                    </>
+                  ) : row.suggestedIsiRelationshipId ? (
+                    <div className="mkt-aside">
+                      Mapped but not Neon-ready yet (need curated + PMID + in-graph)
+                    </div>
+                  ) : (
+                    <div className="mkt-aside">Unmapped — leave honest; do not invent REL</div>
+                  )}
+                </td>
+                <td>
                   <code>{row.matchKind}</code>
                 </td>
                 <td>
@@ -147,6 +207,7 @@ export default function HsiBridgeCurationPanel() {
       <p className="isi-auth-links">
         <Link to="/methods">Methods · HSI grades</Link>
         <Link to="/ask">Ask Immune</Link>
+        <a href="#import">Evidence import (human Gate C)</a>
       </p>
     </div>
   );

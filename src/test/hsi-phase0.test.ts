@@ -145,15 +145,35 @@ describe("HSI bridge → REL curation queue", () => {
     const pd1 = queue.items.find((i) => i.edgeId === "HSI-E-IO-001");
     expect(pd1?.suggestedIsiRelationshipId).toBe("REL-R011-drives-P015");
     expect(pd1?.relExistsInGraph).toBe(true);
-    expect(pd1?.suggestionStatus).toBe("accepted_for_curation");
+    expect(pd1?.suggestionStatus).toBe("curated");
     expect(pd1?.pmid).toBe("16382236");
     expect(pd1?.evidenceLink).toBe("evidence_linked");
     expect(pd1?.gateCHandoff).toBe("pending");
     expect(pd1?.evidenceHandoffLabel).toContain("Gate C pending");
+    expect(pd1?.neonGateCReady).toBe(true);
     expect(pd1?.curationReview).toBe("source-verified");
     expect(pd1?.hsiGrade).toBe("uncertain");
     expect(pd1?.teachingStatus).toBe("associative");
     expect(resolveGraphRelationshipId("REL-R011-drives-P015")).toBe("REL-R011-drives-P015");
+
+    // Evidence sprint: related-axis maps show real PMIDs + curated (HSI) + Gate C pending (not Neon-approved).
+    const cantos = queue.items.find((i) => i.edgeId === "HSI-E-IM-010");
+    expect(cantos?.suggestedIsiRelationshipId).toBe("REL-I023-targets-M002");
+    expect(cantos?.suggestionStatus).toBe("curated");
+    expect(cantos?.pmid).toBe("28845751");
+    expect(cantos?.gateCHandoff).toBe("pending");
+    expect(cantos?.evidenceHandoffLabel).toContain("Gate C pending");
+    expect(cantos?.neonGateCReady).toBe(true);
+
+    expect(queue.summary.curated).toBeGreaterThanOrEqual(9);
+    expect(queue.summary.neonGateCReady).toBeGreaterThanOrEqual(9);
+    expect(queue.neonGateCPath.length).toBe(4);
+
+    const withPmid = queue.items.filter((i) => i.pmid);
+    expect(withPmid.length).toBeGreaterThanOrEqual(9);
+    expect(withPmid.every((i) => i.gateCHandoff === "pending" || i.gateCHandoff === "hsi_passed")).toBe(true);
+    expect(withPmid.every((i) => i.curationReview !== "approved")).toBe(true);
+    expect(withPmid.every((i) => i.autoApprove === false)).toBe(true);
 
     // Mapping must not collapse axes or open CDS.
     for (const edge of HSI_T2D_IMMUNO_SEED_EDGES) {

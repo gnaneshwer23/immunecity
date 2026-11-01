@@ -1,8 +1,10 @@
 import { seoHead } from "@/lib/seo";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useServerFn } from "@tanstack/react-start";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 import { neonAuth } from "@/integrations/neon/auth-client";
 import { PageHead } from "@/components/immune/ui";
 import { PageToc, Section, Toolbar } from "@/components/immune/page";
@@ -33,6 +35,7 @@ import {
   exemplarQueueFocus,
 } from "@/lib/immune/exemplarPathways";
 import { isReadyForSupportsApproval } from "@/lib/immune/evidenceInvariants";
+import { buildHsiBridgeCurationQueue } from "@/lib/hsi/bridgeCurationQueue";
 import { PRODUCT_NAME } from "@/lib/brand";
 
 const TOC = [
@@ -45,6 +48,12 @@ const TOC = [
 ];
 
 export const Route = createFileRoute("/_authenticated/curation")({
+  validateSearch: zodValidator(
+    z.object({
+      q: fallback(z.string(), "").default(""),
+      hsi: fallback(z.enum(["", "ready"]), "").default(""),
+    }),
+  ),
   head: () =>
     seoHead({
       title: `Evidence curation — ${PRODUCT_NAME}`,
@@ -74,6 +83,7 @@ const STATUS_CLASS: Record<string, string> = {
 
 function Curation() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const roleFn = useServerFn(getMyRole);
   const listFn = useServerFn(listEvidenceRecords);
   const importFn = useServerFn(importManifest);
@@ -95,11 +105,31 @@ function Curation() {
   const [pageHistory, setPageHistory] = useState<(string | undefined)[]>([]);
   const [msg, setMsg] = useState("");
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
-  const [filter, setFilter] = useState({ q: "", status: "all", type: "all", curation: "all" });
+  const [filter, setFilter] = useState({
+    q: search.q ?? "",
+    status: "all",
+    type: "all",
+    curation: "all",
+  });
   const [p0Only, setP0Only] = useState(false);
+  const [hsiReadyOnly, setHsiReadyOnly] = useState(search.hsi === "ready");
   const [open, setOpen] = useState<string | null>(null);
   const isAdmin = administrator;
   const p0RelIds = useMemo(() => new Set(EXEMPLAR_CURATOR_TARGETS.map((t) => t.relId)), []);
+  const hsiReadyRelIds = useMemo(
+    () =>
+      new Set(
+        buildHsiBridgeCurationQueue()
+          .items.filter((i) => i.neonGateCReady && i.suggestedIsiRelationshipId)
+          .map((i) => i.suggestedIsiRelationshipId!),
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    if (search.q) setFilter((f) => ({ ...f, q: search.q }));
+    if (search.hsi === "ready") setHsiReadyOnly(true);
+  }, [search.q, search.hsi]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -308,7 +338,8 @@ function Curation() {
     (filter.type === "all" || r.node_type === filter.type) &&
     (filter.curation === "all" || r.curation === filter.curation) &&
     (!filter.q || `${r.node_name} ${r.evidence_id} ${r.source_ref ?? ""} ${r.relationship_id ?? ""}`.toLowerCase().includes(filter.q.toLowerCase())) &&
-    (!p0Only || (!!r.relationship_id && p0RelIds.has(r.relationship_id))),
+    (!p0Only || (!!r.relationship_id && p0RelIds.has(r.relationship_id))) &&
+    (!hsiReadyOnly || (!!r.relationship_id && hsiReadyRelIds.has(r.relationship_id))),
   );
   const types = [...new Set(KG.nodes.map((r) => r.node_type))];
 
@@ -397,7 +428,7 @@ function Curation() {
       <Section
         id="hsi-bridge"
         title="HSI bridge → REL map"
-        lede="Suggested mappings from hsi-core immuno-metabolic / IO seeds onto existing Immune City REL-* ids. Curation pointers only — never auto-approved into the knowledge graph, never CDS."
+        lede="Curated HSI bridges with real PMIDs await human Neon Gate C: Check identifiers → set claim_support → Approve on the mapped REL. Still autoApprove=false — never CDS."
       >
         <HsiBridgeCurationPanel />
       </Section>
@@ -474,12 +505,42 @@ function Curation() {
                 <strong>Priority pathway gaps</strong> ({EXEMPLAR_CURATOR_TARGETS.length} targets). PubMed queries
                 are search starts. Verify identifiers before you approve. Do not invent PMIDs or approve in bulk.
               </p>
-              <Toolbar count={p0Only ? "P0 page filter on" : undefined}>
+              <Toolbar
+                count={
+                  hsiReadyOnly
+                    ? "HSI Gate C filter on"
+                    : p0Only
+                      ? "P0 page filter on"
+                      : undefined
+                }
+              >
                 <div className="isi-auth-btn-row">
                   <button
                     type="button"
+                    className={`btn sm${hsiReadyOnly ? " primary" : ""}`}
+                    onClick={() => {
+                      const next = !hsiReadyOnly;
+                      setHsiReadyOnly(next);
+                      setP0Only(false);
+                      void navigate({
+                        to: "/curation",
+                        search: (prev: { q?: string; hsi?: string }) => ({
+                          ...prev,
+                          hsi: next ? "ready" : "",
+                        }),
+                      });
+                    }}
+                    title="Show only rows mapped to HSI curated REL-* ids ready for human Neon Gate C"
+                  >
+                    {hsiReadyOnly ? "HSI Gate C filter on" : "HSI Gate C filter"}
+                  </button>
+                  <button
+                    type="button"
                     className={`btn sm${p0Only ? " primary" : ""}`}
-                    onClick={() => setP0Only((v) => !v)}
+                    onClick={() => {
+                      setP0Only((v) => !v);
+                      setHsiReadyOnly(false);
+                    }}
                     title="Show only rows on this page whose relationship_id is a P0 PD-1/IFN exemplar target"
                   >
                     {p0Only ? "P0 page filter on" : "P0 page filter off"}
