@@ -4,7 +4,7 @@
   "notCds": true,
   "containsPhi": false,
   "partnerSigned": false,
-  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "generatedAt": "2026-11-01T21:11:52.891Z",
   "reviewDate": "2026-11-01",
   "reviewMethod": "Europe PMC REST search resultType=core (isOpenAccess, inPMC, license, pmcid) + Crossref /works license URLs for ambiguous OA; conservative — no invented CC-BY; free PMC without clear CC → unknown; paywall/no OA → restricted; explicit CC → ok_oa. Bibliographic PMID citation always OK regardless of status.",
   "summary": {

@@ -15,7 +15,7 @@
   "testPilotMode": false,
   "testFixtureBanner": null,
   "allowHypotheticalPartnerEnv": "ALLOW_HYPOTHETICAL_PARTNER",
-  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "generatedAt": "2026-11-01T21:11:52.891Z",
   "package": "hsi-core",
   "outputsManifestSchema": "hsi-outputs-manifest-1",
   "compatibility": {
@@ -213,7 +213,7 @@
         "partner_readiness"
       ],
       "autoApproveIntoKg": false,
-      "notes": "Review checklist; Stage 1 numeric thresholds may be set_for_test under hypothetical fixture (replaceWithPartnerAgreedThresholds=true)."
+      "notes": "Review checklist; Apolo Pharma Stage 1 numeric thresholds are partner_agreed (2026-11-01); fixture path may still be set_for_test."
     },
     {
       "manifestKey": "pilotAcceptanceJson",

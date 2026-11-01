@@ -3,7 +3,7 @@
   "notCds": true,
   "noPatientLevelActions": true,
   "autoApproveIntoKg": false,
-  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "generatedAt": "2026-11-01T21:11:52.891Z",
   "disease": "Rheumatoid arthritis",
   "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
   "lockedPilot": true,
@@ -98,7 +98,7 @@
       "region": "unspecified",
       "contactChannel": "programme_introduction",
       "outreachStatus": "confirmed",
-      "notes": "Named pilot partner Apolo Pharma (id partner:apolo-pharma). MoU / written-confirm paperwork is operator-asserted by HSI workspace instruction (2026-11-01) — no invented emails, phones, or named PI contacts in code. Still not CDS; Gate C never auto-approves. RA Stage 1 activeScope unchanged; dual-track SSc/gut/neuro continues. partnerClearedCount licensing + rubric numeric re-agree remain open."
+      "notes": "Named pilot partner Apolo Pharma (id partner:apolo-pharma). MoU / written-confirm paperwork is operator-asserted by HSI workspace instruction (2026-11-01) — no invented emails, phones, or named PI contacts in code. Still not CDS; Gate C never auto-approves. RA Stage 1 activeScope unchanged; dual-track SSc/gut/neuro continues. Stage 1 numeric KPIs partner_agreed (2026-11-01); partnerClearedCount licensing remains open."
     },
     "agreementKind": "legal_mou",
     "replaceWithRealPartner": false,
@@ -347,7 +347,7 @@
         "region": "unspecified",
         "contactChannel": "programme_introduction",
         "outreachStatus": "confirmed",
-        "notes": "Named pilot partner Apolo Pharma (id partner:apolo-pharma). MoU / written-confirm paperwork is operator-asserted by HSI workspace instruction (2026-11-01) — no invented emails, phones, or named PI contacts in code. Still not CDS; Gate C never auto-approves. RA Stage 1 activeScope unchanged; dual-track SSc/gut/neuro continues. partnerClearedCount licensing + rubric numeric re-agree remain open."
+        "notes": "Named pilot partner Apolo Pharma (id partner:apolo-pharma). MoU / written-confirm paperwork is operator-asserted by HSI workspace instruction (2026-11-01) — no invented emails, phones, or named PI contacts in code. Still not CDS; Gate C never auto-approves. RA Stage 1 activeScope unchanged; dual-track SSc/gut/neuro continues. Stage 1 numeric KPIs partner_agreed (2026-11-01); partnerClearedCount licensing remains open."
       },
       "agreementKind": "legal_mou",
       "replaceWithRealPartner": false,
@@ -438,9 +438,9 @@
     "scopeLocked": true,
     "partnerSigned": true,
     "provisionalLock": false,
-    "evidenceSnapshotRef": "dist/outputs/hsi-core-0.1.0-20261101T205800457Z/hsi-isi-export.json",
-    "createdAt": "2026-11-01T20:58:00.457Z",
-    "updatedAt": "2026-11-01T20:58:00.457Z"
+    "evidenceSnapshotRef": "dist/outputs/hsi-core-0.1.0-20261101T211152891Z/hsi-isi-export.json",
+    "createdAt": "2026-11-01T21:11:52.891Z",
+    "updatedAt": "2026-11-01T21:11:52.891Z"
   },
   "evidenceMap": [
     {

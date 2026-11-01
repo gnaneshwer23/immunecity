@@ -3,7 +3,7 @@
   "phase": "P0.2-HSI",
   "notCds": true,
   "containsPhi": false,
-  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "generatedAt": "2026-11-01T21:11:52.891Z",
   "partnerSigned": true,
   "lockedPilot": true,
   "scopeLocked": true,
@@ -49,8 +49,8 @@
       "id": "thresholds",
       "label": "Numeric review thresholds",
       "requirement": "Agree scientific review rubric thresholds (partner-scoped edges, competing frames, LOINC claims, Gate C pending policy, qualitative KPIs) with the partner.",
-      "status": "pending",
-      "evidence": "hsi-pilot-review-rubric.* framing exists; cut-offs still TBD with real partner.",
+      "status": "pass",
+      "evidence": "partner_agreed under thresholdSource=partner_agreed; partnerId=partner:apolo-pharma; replaceWithPartnerAgreedThresholds=false: minPartnerScopedEdges=12, minCompetingExplanations=4, minLoincLinkedClaims=6, gateCPendingAllowed=true, acceptanceOverallAllowed=green_with_pending. Apolo Pharma operator-agreed 2026-11-01.",
       "blocksPartnerSigned": true
     },
     {
@@ -88,22 +88,21 @@
   ],
   "summary": {
     "total": 8,
-    "pass": 6,
+    "pass": 7,
     "fail": 0,
-    "pending": 2,
+    "pending": 1,
     "satisfiedByFixture": 0,
     "setForTest": 0,
     "readyToFlipPartnerSigned": true,
     "readyForRealPartnerReplacement": false,
     "blockingIds": [
-      "licensing",
-      "thresholds"
+      "licensing"
     ]
   },
   "nextHumanActions": [
     "Named partner active: Apolo Pharma (partner:apolo-pharma) — MoU paperwork operator-asserted; still not CDS.",
     "Agree partner attribution for the PMID corpus (ok_oa ≠ partner clearance; partnerClearedCount still 0). See docs/HOW_TO_SOURCE_LICENSING.md.",
-    "Re-agree Stage 1 numeric rubric thresholds with Apolo Pharma (engineering defaults / pending until partner_agreed).",
+    "Stage 1 numeric rubric thresholds are partner_agreed with Apolo Pharma (2026-11-01) — keep pack depth ≥ 12/4/6.",
     "Keep Gate C human-only — never auto-approve into ISI product KG.",
     "Refresh bun run outputs + re-sync immunecity public/hsi-discovery after pack depth changes.",
     "Never invent emails, phones, or named PI contacts in code."
@@ -111,7 +110,7 @@
   "honesty": [
     "readyToFlipPartnerSigned=true once named_partner + legalBinding + partnerSigned (Apolo Pharma path).",
     "satisfied_by_fixture ≠ pass for production MoU claims.",
-    "set_for_test / pending thresholds ≠ partner-agreed KPIs — replaceWithPartnerAgreedThresholds=true until re-agreed.",
+    "Apolo Pharma Stage 1 KPIs are partner_agreed (replaceWithPartnerAgreedThresholds=false); licensing partnerClearedCount still 0.",
     "Named partner: partnerSigned=true + legalBinding=true → lockedPilot=true; MoU operator-asserted — still not CDS / no auto Gate C.",
     "This pack must never invent emails, phones, or named PI contacts.",
     "scopeLocked=true is engineering lock for RA/anti-TNF; dual-track secondary packs continue.",
