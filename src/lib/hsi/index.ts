@@ -90,7 +90,11 @@ export {
 } from "./isiBridge";
 
 export {
+  NEON_GATE_C_CURATOR_WARNINGS,
   buildHsiBridgeCurationQueue,
+  isNeonGateCReadyItem,
+  listNeonGateCReadyItems,
   type HsiBridgeCurationQueue,
   type HsiBridgeQueueItem,
+  type HsiBridgeSpo,
 } from "./bridgeCurationQueue";

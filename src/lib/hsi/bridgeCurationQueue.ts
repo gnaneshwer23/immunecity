@@ -25,6 +25,17 @@ import {
 import { byId, edgeByRel } from "@/lib/immune/engine";
 import { resolveGraphRelationshipId } from "@/lib/immune/graphInventory";
 
+/** Parsed S-P-O for the mapped ISI REL (curator re-read reminder). */
+export type HsiBridgeSpo = {
+  subjectId: string;
+  subjectName: string;
+  predicate: string;
+  objectId: string;
+  objectName: string;
+  /** e.g. "PD-1 —drives→ T-cell exhaustion programme" */
+  label: string;
+};
+
 export type HsiBridgeQueueItem = {
   edgeId: string;
   claimId: string;
@@ -44,6 +55,8 @@ export type HsiBridgeQueueItem = {
   relExistsInGraph: boolean;
   /** Human-readable SPO when the REL exists. */
   relLabel: string | null;
+  /** Structured S-P-O for Gate C re-read (null if REL missing from graph). */
+  spo: HsiBridgeSpo | null;
   isiNodeLabels: string[];
   /** Real PMID from HSI provenance when linked — never invented. */
   pmid: string | null;
@@ -55,8 +68,9 @@ export type HsiBridgeQueueItem = {
   /** Curator-facing compound label (e.g. evidence-linked · Gate C pending). */
   evidenceHandoffLabel: string;
   /**
-   * Ready for human Neon Gate C path when curated + REL in graph + PMID present.
-   * Still autoApprove=false — curator must Check → claim_support → Approve.
+   * Ready for human Neon Gate C when:
+   * evidence-linked + Gate C pending + PMID + curated map + REL-* in live KG.
+   * Still autoApprove=false — curator must Check → claim_support=supports → Approve.
    */
   neonGateCReady: boolean;
   /** Deep-link hash + query for /curation evidence filter. */
@@ -66,6 +80,33 @@ export type HsiBridgeQueueItem = {
   /** Always false until Gate C + established grade. */
   cdsSurfacable: false;
 };
+
+/**
+ * Gate C–ready filter: evidence-linked + Gate C pending + PMID + mapped REL-* in graph
+ * + curated (or accepted_for_curation). Never true when autoApprove would be set.
+ */
+export function isNeonGateCReadyItem(
+  item: Pick<
+    HsiBridgeQueueItem,
+    | "evidenceLink"
+    | "gateCHandoff"
+    | "pmid"
+    | "suggestedIsiRelationshipId"
+    | "relExistsInGraph"
+    | "suggestionStatus"
+    | "autoApprove"
+  >,
+): boolean {
+  return (
+    item.evidenceLink === "evidence_linked" &&
+    item.gateCHandoff === "pending" &&
+    Boolean(item.pmid) &&
+    Boolean(item.suggestedIsiRelationshipId?.startsWith("REL-")) &&
+    item.relExistsInGraph === true &&
+    (item.suggestionStatus === "curated" || item.suggestionStatus === "accepted_for_curation") &&
+    item.autoApprove === false
+  );
+}
 
 export type HsiBridgeCurationQueue = {
   notCds: true;
@@ -95,14 +136,22 @@ export type HsiBridgeCurationQueue = {
   items: HsiBridgeQueueItem[];
 };
 
-function relLabelFor(relId: string | null): string | null {
+function spoFor(relId: string | null): HsiBridgeSpo | null {
   if (!relId) return null;
   const edge = edgeByRel[relId];
   if (!edge) return null;
   const s = byId[edge.subject_id];
   const o = byId[edge.object_id];
   if (!s || !o) return null;
-  return `${s.name} —${edge.relation}→ ${o.name}`;
+  const label = `${s.name} —${edge.relation}→ ${o.name}`;
+  return {
+    subjectId: edge.subject_id,
+    subjectName: s.name,
+    predicate: edge.relation,
+    objectId: edge.object_id,
+    objectName: o.name,
+    label,
+  };
 }
 
 function nodeLabels(ids: string[]): string[] {
@@ -142,15 +191,8 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
     const relId = s.suggestedIsiRelationshipId;
     const relExistsInGraph = Boolean(relId && resolveGraphRelationshipId(relId));
     const handoff = hsiEvidenceHandoff(edge);
-    const neonGateCReady = Boolean(
-      relId &&
-        relExistsInGraph &&
-        handoff.pmid &&
-        (s.status === "curated" || s.status === "accepted_for_curation") &&
-        s.autoApprove === false,
-    );
-
-    items.push({
+    const spo = relExistsInGraph ? spoFor(relId) : null;
+    const draft: Omit<HsiBridgeQueueItem, "neonGateCReady"> = {
       edgeId: edge.id,
       claimId: claim.id,
       assertion: claim.assertion,
@@ -166,19 +208,23 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
       suggestionStatus: s.status,
       rationale: s.rationale,
       relExistsInGraph,
-      relLabel: relExistsInGraph ? relLabelFor(relId) : null,
+      relLabel: spo?.label ?? null,
+      spo,
       isiNodeLabels: nodeLabels(s.isiNodeIds),
       pmid: handoff.pmid,
       doi: handoff.doi,
       evidenceLink: handoff.evidenceLink,
       gateCHandoff: handoff.gateC,
       evidenceHandoffLabel: handoff.label,
-      neonGateCReady,
       neonGateCHref: relId
-        ? `/curation?q=${encodeURIComponent(relId)}#import`
+        ? `/curation?q=${encodeURIComponent(relId)}&hsi=ready#import`
         : null,
       autoApprove: false,
       cdsSurfacable: false,
+    };
+    items.push({
+      ...draft,
+      neonGateCReady: isNeonGateCReadyItem(draft),
     });
   }
 
@@ -224,3 +270,18 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
     items,
   };
 }
+
+/** Curator sprint slice: only Neon Gate C–ready rows (human path; never auto-approve). */
+export function listNeonGateCReadyItems(
+  queue: HsiBridgeCurationQueue = buildHsiBridgeCurationQueue(),
+): HsiBridgeQueueItem[] {
+  return queue.items.filter((i) => i.neonGateCReady && isNeonGateCReadyItem(i));
+}
+
+/** Fixed curator warnings shown on the Gate C–ready panel (not CDS). */
+export const NEON_GATE_C_CURATOR_WARNINGS = [
+  "Re-read the mapped S-P-O before claim_support=supports — the paper must support this directional claim, not a nearby axis.",
+  "HSI source-verified / curated ≠ Neon Gate C approved. Only Check → claim_support=supports → Approve on the REL counts.",
+  "autoApprove stays false everywhere — never bulk-approve or invent PMIDs.",
+  "Not clinical decision support (CDS). teachingStatus ≠ hsiGrade ≠ Neon Gate C.",
+] as const;

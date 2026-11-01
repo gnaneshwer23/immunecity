@@ -12,14 +12,17 @@ import {
   HSI_SAFETY_RELEASE_CRITERIA_V0,
   HSI_T2D_IMMUNO_SEED_EDGES,
   HSI_TEACHING_STATUSES,
+  NEON_GATE_C_CURATOR_WARNINGS,
   buildHsiBridgeCurationQueue,
   claimsWithIsiMappings,
   discoverySeedSummary,
   hsiAxesForEdge,
   hsiGradeFromCuration,
   isCdsSurfacable,
+  isNeonGateCReadyItem,
   listBridgeCandidates,
   listIsiRelSuggestions,
+  listNeonGateCReadyItems,
   loadIsiHsiExportSnapshot,
   summarizeGradeCounts,
   summarizeIsiRelMappings,
@@ -181,5 +184,36 @@ describe("HSI bridge → REL curation queue", () => {
       expect(edge.hsiGrade).not.toBe("established");
       expect(edge.curationReview).not.toBe("approved");
     }
+  });
+
+  it("filters Gate C–ready rows (evidence-linked + pending + PMID + REL) without auto-approve", () => {
+    const queue = buildHsiBridgeCurationQueue();
+    const ready = listNeonGateCReadyItems(queue);
+
+    expect(queue.autoApproveIntoKg).toBe(false);
+    expect(ready.length).toBe(queue.summary.neonGateCReady);
+    expect(ready.length).toBeGreaterThanOrEqual(9);
+    expect(ready.every((i) => isNeonGateCReadyItem(i))).toBe(true);
+    expect(ready.every((i) => i.autoApprove === false)).toBe(true);
+    expect(ready.every((i) => i.cdsSurfacable === false)).toBe(true);
+    expect(ready.every((i) => i.evidenceLink === "evidence_linked")).toBe(true);
+    expect(ready.every((i) => i.gateCHandoff === "pending")).toBe(true);
+    expect(ready.every((i) => Boolean(i.pmid))).toBe(true);
+    expect(ready.every((i) => i.suggestedIsiRelationshipId?.startsWith("REL-"))).toBe(true);
+    expect(ready.every((i) => i.relExistsInGraph && i.spo != null)).toBe(true);
+    expect(ready.every((i) => i.neonGateCHref?.includes("hsi=ready"))).toBe(true);
+
+    // Non-ready rows must fail at least one Gate C–ready predicate.
+    const notReady = queue.items.filter((i) => !i.neonGateCReady);
+    expect(notReady.every((i) => !isNeonGateCReadyItem(i))).toBe(true);
+
+    const pd1 = ready.find((i) => i.edgeId === "HSI-E-IO-001");
+    expect(pd1?.suggestedIsiRelationshipId).toBe("REL-R011-drives-P015");
+    expect(pd1?.spo?.predicate).toBe("drives");
+    expect(pd1?.pmid).toBe("16382236");
+
+    expect(NEON_GATE_C_CURATOR_WARNINGS.some((w) => w.includes("source-verified"))).toBe(true);
+    expect(NEON_GATE_C_CURATOR_WARNINGS.some((w) => w.toLowerCase().includes("cds"))).toBe(true);
+    expect(NEON_GATE_C_CURATOR_WARNINGS.some((w) => w.includes("autoApprove"))).toBe(true);
   });
 });

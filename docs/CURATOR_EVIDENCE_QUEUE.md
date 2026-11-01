@@ -85,6 +85,45 @@ Also approved off-exemplar-path (counts toward Gate C numerator, not these waypo
 
 Use `EXEMPLAR_CURATOR_TARGETS` / curation UI callout for the same hints. Maturity stays `scaffold` / `partially-reviewed` until live approved+supports cover unique on-path edges.
 
+---
+
+## Sprint: human Neon Gate C on curated HSI REL maps
+
+**Filter (HSI bridge panel + queue helper):** evidence-linked · Gate C pending · has real PMID · mapped `REL-*` in live KG · HSI suggestion `curated` · **`autoApprove=false` always**.
+
+**UI:** `/curation` → **HSI bridge → REL map** → **Gate C ready only**. Per row: REL id, S-P-O re-read, PMID/DOI link, steps **Check → claim_support=supports → Approve**. Deep link: `/curation?q=<REL-*>&hsi=ready#import`.
+
+**Warnings (do not skip):**
+
+- Re-read S-P-O — paper must support **this** directional claim (related-axis maps are bridges, not T2D/CDS proof).
+- HSI `source-verified` / curated ≠ Neon Gate C approved.
+- Never invent PMIDs; never auto-approve into the live KG; not CDS.
+- Axes stay separate: `teachingStatus` ≠ `hsiGrade` ≠ Neon Gate C ≠ CDS.
+
+### How a human runs Gate C (this sprint)
+
+1. Sign in as admin/reviewer → `/curation`.
+2. Open **HSI bridge → REL map**; leave **Gate C ready only** on (or use **HSI Gate C filter** on the import toolbar).
+3. For each ready row: open the PMID, re-read the listed S-P-O, then **Open in evidence queue**.
+4. **Check** identifiers → set `relationship_id` to the suggested REL → set `claim_support=supports` only if the source truly supports that S-P-O → **Approve**.
+5. Stop if the paper is off-claim (`partial` / `contradicts` / leave unassessed). Do **not** call Neon APIs to bulk-approve.
+
+### Curated REL queue (ready for human review)
+
+| Priority | HSI seed | REL id | S-P-O (ISI) | PMID | Match | Curator note |
+|----------|----------|--------|-------------|------|-------|--------------|
+| **P0** | `HSI-E-IO-001` | `REL-R011-drives-P015` | PD-1 —drives→ T-cell exhaustion programme | [16382236](https://pubmed.ncbi.nlm.nih.gov/16382236/) | exact | Same PMID already on `REL-C015-expresses-R011` — re-read for **drives→P015** before supports |
+| P1 | `HSI-E-IM-006` | `REL-R004-activates-P003` | NLRP3 —activates→ NLRP3 inflammasome | [15030775](https://pubmed.ncbi.nlm.nih.gov/15030775/) | related_axis | Metabolic-inflammation object is not a KG node — not T2D proof |
+| P1 | `HSI-E-IM-004` | `REL-P021-produces-B001` | Acute-phase response —produces→ CRP | [12813013](https://pubmed.ncbi.nlm.nih.gov/12813013/) | related_axis | Marker-axis bridge; not a T2D edge |
+| P1 | `HSI-E-IM-010` | `REL-I023-targets-M002` | Canakinumab —targets→ IL-1β | [28845751](https://pubmed.ncbi.nlm.nih.gov/28845751/) | related_axis | Discovery only — not CDS |
+| P1 | `HSI-E-AU-001` | `REL-B015-predicts_eligibility_for-I013` | Islet autoantibodies —predicts_eligibility_for→ Teplizumab | [31180194](https://pubmed.ncbi.nlm.nih.gov/31180194/) | related_axis | T1D contrast with T2D clinics |
+| P2 | `HSI-E-IM-002` | `REL-M001-contributes_to-D001` | TNF —contributes_to→ RA | [11244034](https://pubmed.ncbi.nlm.nih.gov/11244034/) | related_axis | May already have Gate C on TNF→RA exemplar — do not double-approve blindly; HSI insulin-resistance object absent |
+| P2 | `HSI-E-IM-003` | `REL-M003-contributes_to-D001` | IL-6 —contributes_to→ RA | [18625622](https://pubmed.ncbi.nlm.nih.gov/18625622/) | related_axis | Related-axis; no T2D node |
+| P2 | `HSI-E-IM-005` | `REL-C003-produces-M001` | Macrophage —produces→ TNF | [2993897](https://pubmed.ncbi.nlm.nih.gov/2993897/) | related_axis | May already be approved on TNF→RA path — verify claim match |
+| P2 | `HSI-E-T2D-010` | `REL-I010-suppresses-P001` | Corticosteroid —suppresses→ NF-κB signalling | [7569976](https://pubmed.ncbi.nlm.nih.gov/7569976/) | related_axis | Hyperglycemia consequence is **not** this paper |
+
+**Count:** 9 Gate C–ready curated maps from `listNeonGateCReadyItems()` / `buildHsiBridgeCurationQueue().summary.neonGateCReady`. Export sync: `bun run hsi:sync-export` (symlink `node_modules/hsi-core` → `~/Projects/hsi-core`).
+
 ## What not to do
 
 - Do not bulk-approve identifier-verified rows without claim assessment (UI + server block this).

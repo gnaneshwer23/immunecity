@@ -35,7 +35,7 @@ import {
   exemplarQueueFocus,
 } from "@/lib/immune/exemplarPathways";
 import { isReadyForSupportsApproval } from "@/lib/immune/evidenceInvariants";
-import { buildHsiBridgeCurationQueue } from "@/lib/hsi/bridgeCurationQueue";
+import { listNeonGateCReadyItems } from "@/lib/hsi/bridgeCurationQueue";
 import { PRODUCT_NAME } from "@/lib/brand";
 
 const TOC = [
@@ -119,9 +119,9 @@ function Curation() {
   const hsiReadyRelIds = useMemo(
     () =>
       new Set(
-        buildHsiBridgeCurationQueue()
-          .items.filter((i) => i.neonGateCReady && i.suggestedIsiRelationshipId)
-          .map((i) => i.suggestedIsiRelationshipId!),
+        listNeonGateCReadyItems()
+          .map((i) => i.suggestedIsiRelationshipId)
+          .filter((id): id is string => Boolean(id)),
       ),
     [],
   );
