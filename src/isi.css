@@ -1052,6 +1052,8 @@ textarea.community-input { min-height: 120px; padding: 10px; }
 .isi-hsi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .isi-hsi-table th, .isi-hsi-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; text-align: left; }
 .isi-hsi-table th { background: var(--surface-2, var(--surface)); font-weight: 600; white-space: nowrap; }
+.isi-hsi-btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.isi-hsi-gate-c-panel { margin-top: 8px; }
 .isi-hsi-spo { display: grid; gap: 2px; min-width: 140px; }
 .isi-hsi-spo em { font-style: normal; color: var(--muted); font-size: 12px; }
 .isi-hsi-map-graph { display: grid; gap: var(--isi-space-3); margin-top: var(--isi-space-3); }

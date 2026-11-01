@@ -706,6 +706,32 @@ export const researchTeamInvites = pgTable("research_team_invites", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * HSI Discovery Gate C human decisions (migration 0028).
+ * ISI autumn-snow only — never red-wave. auto_approve + hsi_grade_flipped forced false.
+ */
+export const hsiGateCDecisions = pgTable("hsi_gate_c_decisions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  edgeId: text("edge_id").notNull().unique(),
+  claimId: text("claim_id").notNull(),
+  isiRelationshipId: text("isi_relationship_id"),
+  pmid: text("pmid"),
+  doi: text("doi"),
+  spoNote: text("spo_note"),
+  assertion: text("assertion"),
+  pinSource: text("pin_source").notNull().default("hsi-discovery"),
+  status: text("status").notNull().default("pending"),
+  decision: text("decision"),
+  reviewerNote: text("reviewer_note"),
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  autoApprove: boolean("auto_approve").notNull().default(false),
+  hsiGradeFlipped: boolean("hsi_grade_flipped").notNull().default(false),
+  previousStatus: text("previous_status"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type ResearchProfileDbRow = typeof researchProfiles.$inferSelect;
 export type ResearchGapDbRow = typeof researchGaps.$inferSelect;
 export type ResearchDiscoveryAlertDbRow = typeof researchDiscoveryAlerts.$inferSelect;

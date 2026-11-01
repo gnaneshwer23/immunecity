@@ -121,3 +121,18 @@ export {
   type DiscoveryLoopTab,
   type EvidenceRowView,
 } from "./discoveryLoopView";
+
+export {
+  GATE_C_DECISIONS,
+  GATE_C_STATUSES,
+  applyGateCDecision,
+  assertIsiNeonHostForGateC,
+  buildGateCQueue,
+  listPublishPendingRows,
+  parseGateCChecklistRows,
+  type GateCDecision,
+  type GateCQueueItem,
+  type GateCQueueSnapshot,
+  type GateCStatus,
+  type GateCStoredDecision,
+} from "./gateCQueue";

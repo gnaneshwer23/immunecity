@@ -55,9 +55,14 @@ export type DiscoveryIndex = HonestyFlags & {
 
 export type GateCChecklist = {
   schemaVersion?: string;
+  notCds?: boolean;
+  autoApproveIntoKg?: boolean;
+  /** Published checklist rows (hsi-gate-c-checklist-1). */
+  rows?: unknown[];
   pending?: unknown[];
   items?: unknown[];
   modelProposals?: unknown[];
+  summary?: Record<string, unknown>;
 };
 
 export type PartnerLock = HonestyFlags & {

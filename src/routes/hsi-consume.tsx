@@ -173,15 +173,16 @@ function HsiConsumePage() {
         id="gate-c"
         n={4}
         title="Gate C queue (pending)"
-        lede="Human curation only. Approve+supports target ISI Neon autumn-snow — never HSI red-wave, never auto-merge."
+        lede="Human curation only. Approve / reject / defer on /hsi/discovery REVIEW → ISI Neon autumn-snow — never HSI red-wave, never auto-merge."
       >
         <p>
-          Checklist rows stay <strong>pending</strong>
+          Checklist rows stay <strong>pending</strong> until a reviewer acts
           {pendingCount != null ? ` · ~${pendingCount} pending entries in published JSON` : ""}.
         </p>
         <p className="small muted">
-          Curators: <Link to="/curation">/curation</Link> (admin) · HSI bridge map section. Model proposals in the
-          checklist are drafts only and must not flip <code>hsiGrade</code>.
+          Human queue: <Link to="/hsi/discovery">/hsi/discovery</Link> → REVIEW. Evidence claim path:{" "}
+          <Link to="/curation">/curation</Link> (Check → supports → Approve). Model proposals are drafts only and
+          must not flip <code>hsiGrade</code>.
         </p>
       </Section>
 

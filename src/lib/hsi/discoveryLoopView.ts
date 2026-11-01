@@ -264,6 +264,23 @@ export function translationCandidates(
 }
 
 export function gateCPendingCount(gateC: ConsumeLoadResult["gateC"]): number {
+  // Prefer published checklist rows with gateCStatus=pending (+ mapped REL).
+  const rows = Array.isArray(gateC.rows)
+    ? gateC.rows
+    : Array.isArray(gateC.pending)
+      ? gateC.pending
+      : Array.isArray(gateC.items)
+        ? gateC.items
+        : [];
+  let pending = 0;
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    const r = row as Record<string, unknown>;
+    const status = String(r.gateCStatus ?? r.gate_c_status ?? "");
+    const rel = r.isiRelationshipId ?? r.isi_relationship_id;
+    if (status === "pending" && typeof rel === "string" && rel.length > 0) pending += 1;
+  }
+  if (pending > 0) return pending;
   if (Array.isArray(gateC.pending)) return gateC.pending.length;
   if (Array.isArray(gateC.items)) return gateC.items.length;
   return 0;

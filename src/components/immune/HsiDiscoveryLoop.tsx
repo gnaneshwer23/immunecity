@@ -5,6 +5,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import type { ConsumeLoadResult } from "@/lib/hsi/discoveryConsume";
+import { HsiGateCQueuePanel } from "@/components/immune/HsiGateCQueuePanel";
 import {
   DISCOVERY_LOOP_TABS,
   entitySliceFromPack,
@@ -351,6 +352,9 @@ export function HsiDiscoveryLoop({ result }: { result: ConsumeLoadResult }) {
               </li>
             ))}
           </ul>
+          <div style={{ marginTop: 20 }}>
+            <HsiGateCQueuePanel consume={result} />
+          </div>
           <p className="small muted" style={{ marginTop: 12 }}>
             Curators: <Link to="/curation">/curation</Link> · diagnostics{" "}
             <Link to="/hsi-consume">/hsi-consume</Link>
