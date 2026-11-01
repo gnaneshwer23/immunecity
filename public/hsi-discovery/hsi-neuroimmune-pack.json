@@ -1,0 +1,724 @@
+{
+  "schemaVersion": "hsi-neuroimmune-pack-1",
+  "notCds": true,
+  "autoApproveIntoKg": false,
+  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "pathway": {
+    "id": "neuro-vagus-cholinergic-reflex",
+    "label": "Neuroimmune · vagus / cholinergic anti-inflammatory reflex",
+    "role": "systems_secondary_axis",
+    "verticalStrategy": "dual_track",
+    "deepSeedsPresent": true,
+    "neighbourhoodChoiceRationale": "Clearest landmark PMID chain (Borovikova → Tracey → Wang α7 → de Jonge STAT3 → Rosas-Ballina ChAT-T → Koopman VNS pilot) vs microglia–cytokine or BBB cytokine atlases; coherent S–P–O without inventing MS/neurodegeneration disease packs.",
+    "rationale": "P2.1 first honest neuroimmune literature slice for systems vision. Secondary Discovery axis only — does not replace RA ASK. Human VNS–RA kept hypothesized; animal mechanism edges uncertain/associative. No clinical cure claims.",
+    "primaryClaimIds": [
+      "HSI-C-NI-001",
+      "HSI-C-NI-002",
+      "HSI-C-NI-003",
+      "HSI-C-NI-004",
+      "HSI-C-NI-005",
+      "HSI-C-NI-006",
+      "HSI-C-NI-007",
+      "HSI-C-NI-008",
+      "HSI-C-NI-009",
+      "HSI-C-NI-010",
+      "HSI-C-NI-011"
+    ],
+    "primaryEdgeIds": [
+      "HSI-E-NI-001",
+      "HSI-E-NI-002",
+      "HSI-E-NI-003",
+      "HSI-E-NI-004",
+      "HSI-E-NI-005",
+      "HSI-E-NI-006",
+      "HSI-E-NI-007",
+      "HSI-E-NI-008",
+      "HSI-E-NI-009",
+      "HSI-E-NI-010",
+      "HSI-E-NI-011"
+    ],
+    "primaryPmids": [
+      "10839541",
+      "12490958",
+      "12508119",
+      "16025117",
+      "21921156",
+      "27382171",
+      "16785311",
+      "18669662",
+      "11901203",
+      "19542466",
+      "12469056"
+    ],
+    "deepenPhase": "p2_1_neuro_pharmacologic_trafficking_ir_depth",
+    "entities": [
+      {
+        "id": "HSI-N-vagus-efferent",
+        "label": "Efferent vagus stimulation",
+        "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-inflammatory-reflex",
+        "label": "Inflammatory reflex",
+        "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-cholinergic-antiinflam-pathway",
+        "label": "Cholinergic anti-inflammatory pathway",
+        "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-cholinergic-agonist",
+        "label": "Pharmacologic cholinergic stimulation",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-alpha7-nachr",
+        "label": "α7 nAChR (macrophage)",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-alpha7-jak2-stat3",
+        "label": "α7–Jak2–STAT3 programme",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-chat-memory-tcell",
+        "label": "ACh-synthesizing memory T cells",
+        "kind": "glial_or_barrier_cell"
+      },
+      {
+        "id": "HSI-N-macrophage-tnf-release",
+        "label": "Macrophage TNF release",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-peripheral-tnf-tone",
+        "label": "Peripheral TNF inflammatory tone",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-ischemia-reperfusion-tnf",
+        "label": "Ischemia–reperfusion TNF response",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-leukocyte-trafficking-cd11b",
+        "label": "Leukocyte trafficking (CD11b)",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-implantable-vns",
+        "label": "Implantable VNS (experimental)",
+        "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-spleen-innate",
+        "label": "Spleen (innate cytokine reservoir)",
+        "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-splenic-nerve",
+        "label": "Splenic nerve (catecholaminergic)",
+        "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-splenic-cholinergic-signal",
+        "label": "Cholinergic neural signals to spleen",
+        "kind": "neuroimmune_axis"
+      }
+    ]
+  },
+  "verticalDecision": {
+    "schemaVersion": "hsi-vertical-decision-1",
+    "option": "A",
+    "verticalStrategy": "dual_track",
+    "activeScope": "ra-tnf",
+    "prdMvpTarget": "ssc-tfh-b-il21",
+    "raComparisonFraming": "release2",
+    "decidedAt": "2026-11-01T17:00:00.000Z"
+  },
+  "stage1ActiveScope": {
+    "diseaseId": "ra",
+    "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+    "scopeLocked": true,
+    "partnerSigned": true
+  },
+  "discoveryRole": "systems_secondary_axis",
+  "deepSeedsPresent": true,
+  "evidenceMap": [
+    {
+      "edgeId": "HSI-E-NI-001",
+      "claimId": "HSI-C-NI-001",
+      "subject": "Efferent vagus nerve stimulation",
+      "predicate": "inhibits",
+      "systemsPredicate": "suppresses_peripheral_inflammation",
+      "systemsPredicateMapsToHsi": "inhibits",
+      "object": "Peripheral / systemic TNF inflammatory tone",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "10839541",
+      "citationLabel": "Borovikova LV et al. Nature 2000 — Vagus nerve stimulation attenuates the systemic inflammatory response to endotoxin.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/10839541/"
+    },
+    {
+      "edgeId": "HSI-E-NI-002",
+      "claimId": "HSI-C-NI-002",
+      "subject": "Inflammatory reflex (cholinergic axis)",
+      "predicate": "bridges_domain",
+      "systemsPredicate": "signals_via_axis",
+      "systemsPredicateMapsToHsi": "bridges_domain",
+      "object": "Peripheral / systemic TNF inflammatory tone",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "12490958",
+      "citationLabel": "Tracey KJ. Nature 2002 — The inflammatory reflex.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12490958/"
+    },
+    {
+      "edgeId": "HSI-E-NI-003",
+      "claimId": "HSI-C-NI-003",
+      "subject": "Nicotinic ACh receptor α7 subunit (macrophage)",
+      "predicate": "inhibits",
+      "systemsPredicate": "suppresses_peripheral_inflammation",
+      "systemsPredicateMapsToHsi": "inhibits",
+      "object": "Macrophage TNF synthesis / release",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "12508119",
+      "citationLabel": "Wang H et al. Nature 2003 — Nicotinic acetylcholine receptor alpha7 subunit is an essential regulator of inflammation.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12508119/"
+    },
+    {
+      "edgeId": "HSI-E-NI-004",
+      "claimId": "HSI-C-NI-004",
+      "subject": "Efferent vagus nerve stimulation",
+      "predicate": "associated_with",
+      "systemsPredicate": "associates_neuroimmune",
+      "systemsPredicateMapsToHsi": "associated_with",
+      "object": "α7 nAChR–Jak2–STAT3 macrophage programme",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "16025117",
+      "citationLabel": "de Jonge WJ et al. Nat Immunol 2005 — Stimulation of the vagus nerve attenuates macrophage activation by activating the Jak2-STAT3 signaling pathway.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16025117/"
+    },
+    {
+      "edgeId": "HSI-E-NI-005",
+      "claimId": "HSI-C-NI-005",
+      "subject": "Acetylcholine-synthesizing memory T cells",
+      "predicate": "bridges_domain",
+      "systemsPredicate": "signals_via_axis",
+      "systemsPredicateMapsToHsi": "bridges_domain",
+      "object": "Macrophage TNF synthesis / release",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "21921156",
+      "citationLabel": "Rosas-Ballina M et al. Science 2011 — Acetylcholine-synthesizing T cells relay neural signals in a vagus nerve circuit.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21921156/"
+    },
+    {
+      "edgeId": "HSI-E-NI-006",
+      "claimId": "HSI-C-NI-006",
+      "subject": "Implantable vagus nerve stimulator (experimental)",
+      "predicate": "associated_with",
+      "systemsPredicate": "hypothesized_brain_immune",
+      "systemsPredicateMapsToHsi": "associated_with",
+      "object": "Peripheral / systemic TNF inflammatory tone",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "pmid": "27382171",
+      "citationLabel": "Koopman FA et al. PNAS 2016 — Vagus nerve stimulation inhibits cytokine production and attenuates disease severity in rheumatoid arthritis.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27382171/"
+    },
+    {
+      "edgeId": "HSI-E-NI-007",
+      "claimId": "HSI-C-NI-007",
+      "subject": "Spleen (innate cytokine reservoir)",
+      "predicate": "associated_with",
+      "systemsPredicate": "hypothesized_brain_immune",
+      "systemsPredicateMapsToHsi": "associated_with",
+      "object": "Inflammatory reflex",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "16785311",
+      "citationLabel": "Huston JM et al. J Exp Med 2006 — Splenectomy inactivates the cholinergic antiinflammatory pathway during lethal endotoxemia and polymicrobial sepsis.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16785311/"
+    },
+    {
+      "edgeId": "HSI-E-NI-008",
+      "claimId": "HSI-C-NI-008",
+      "subject": "Splenic nerve (catecholaminergic)",
+      "predicate": "inhibits",
+      "systemsPredicate": "suppresses_peripheral_inflammation",
+      "systemsPredicateMapsToHsi": "inhibits",
+      "object": "Macrophage TNF release",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "18669662",
+      "citationLabel": "Rosas-Ballina M et al. PNAS 2008 — Splenic nerve is required for cholinergic antiinflammatory pathway control of TNF in endotoxemia.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18669662/"
+    },
+    {
+      "edgeId": "HSI-E-NI-009",
+      "claimId": "HSI-C-NI-009",
+      "subject": "Pharmacologic cholinergic anti-inflammatory stimulation",
+      "predicate": "inhibits",
+      "systemsPredicate": "suppresses_peripheral_inflammation",
+      "systemsPredicateMapsToHsi": "inhibits",
+      "object": "Peripheral / systemic TNF inflammatory tone",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "11901203",
+      "citationLabel": "Bernik TR et al. J Exp Med 2002 — Pharmacological stimulation of the cholinergic antiinflammatory pathway.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/11901203/"
+    },
+    {
+      "edgeId": "HSI-E-NI-010",
+      "claimId": "HSI-C-NI-010",
+      "subject": "Cholinergic neural signals to the spleen",
+      "predicate": "inhibits",
+      "systemsPredicate": "suppresses_peripheral_inflammation",
+      "systemsPredicateMapsToHsi": "inhibits",
+      "object": "Leukocyte trafficking via CD11b",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "19542466",
+      "citationLabel": "Huston JM et al. J Immunol 2009 — Cholinergic neural signals to the spleen down-regulate leukocyte trafficking via CD11b.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19542466/"
+    },
+    {
+      "edgeId": "HSI-E-NI-011",
+      "claimId": "HSI-C-NI-011",
+      "subject": "Cholinergic anti-inflammatory pathway",
+      "predicate": "inhibits",
+      "systemsPredicate": "suppresses_peripheral_inflammation",
+      "systemsPredicateMapsToHsi": "inhibits",
+      "object": "Ischemia–reperfusion TNF response",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "12469056",
+      "citationLabel": "Bernik TR et al. J Vasc Surg 2002 — Cholinergic antiinflammatory pathway inhibition of tumor necrosis factor during ischemia reperfusion.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12469056/"
+    }
+  ],
+  "competingExplanations": [
+    {
+      "id": "expl-ni-vagus-suppresses-tnf",
+      "label": "Efferent vagus stimulation → lower systemic / hepatic TNF",
+      "status": "from_literature_slice",
+      "relatedClaimIds": [
+        "HSI-C-NI-001"
+      ],
+      "note": "Landmark endotoxaemia frame (Borovikova 2000). Rodent — keep grades uncertain; not human cure."
+    },
+    {
+      "id": "expl-ni-inflammatory-reflex-axis",
+      "label": "Inflammatory reflex as hard-wired autonomic cytokine control",
+      "status": "from_literature_slice",
+      "relatedClaimIds": [
+        "HSI-C-NI-002"
+      ],
+      "note": "Conceptual axis (Tracey 2002 review). Framing only — not a protocol or CDS claim."
+    },
+    {
+      "id": "expl-ni-alpha7-macrophage-tnf",
+      "label": "α7 nAChR required for cholinergic macrophage TNF inhibition",
+      "status": "from_literature_slice",
+      "relatedClaimIds": [
+        "HSI-C-NI-003"
+      ],
+      "note": "Receptor node (Wang 2003). Mouse genetics — do not invent human dosing edges."
+    },
+    {
+      "id": "expl-ni-alpha7-jak2-stat3",
+      "label": "Vagus / α7 → Jak2–STAT3 attenuates macrophage activation",
+      "status": "from_literature_slice",
+      "relatedClaimIds": [
+        "HSI-C-NI-004"
+      ],
+      "note": "Mechanism companion (de Jonge 2005). Keep separate from human VNS pilot."
+    },
+    {
+      "id": "expl-ni-chat-tcell-relay",
+      "label": "ACh-synthesizing T cells relay vagus → macrophage TNF brake",
+      "status": "from_literature_slice",
+      "relatedClaimIds": [
+        "HSI-C-NI-005"
+      ],
+      "note": "Neural→lymphoid hop (Rosas-Ballina 2011). Mouse circuit — associative only."
+    },
+    {
+      "id": "expl-ni-vns-ra-human-pilot",
+      "label": "Implantable VNS modulates TNF / RA scores (human pilot)",
+      "status": "hypothesized_branch",
+      "relatedClaimIds": [
+        "HSI-C-NI-006"
+      ],
+      "note": "Koopman 2016 PNAS pilot — teaching=hypothesized. NEVER overclaim clinical brain–immune cure or CDS."
+    },
+    {
+      "id": "expl-ni-spleen-required",
+      "label": "Spleen required for cholinergic anti-inflammatory pathway",
+      "status": "from_literature_slice",
+      "relatedClaimIds": [
+        "HSI-C-NI-007"
+      ],
+      "note": "Depth deepen (Huston 2006). Splenectomy abolishes VNS TNF brake — rodent organ hop."
+    },
+    {
+      "id": "expl-ni-splenic-nerve-tnf",
+      "label": "Splenic nerve required for cholinergic TNF control",
+      "status": "from_literature_slice",
+      "relatedClaimIds": [
+        "HSI-C-NI-008"
+      ],
+      "note": "Depth deepen (Rosas-Ballina 2008). Catecholaminergic splenic nerve wiring — not human CDS."
+    }
+  ],
+  "claims": [
+    {
+      "id": "HSI-C-NI-001",
+      "assertion": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-002",
+      "assertion": "The inflammatory reflex frames a hard-wired autonomic (vagal cholinergic) pathway that reflexively monitors and adjusts acute inflammatory cytokine responses in real time (conceptual neighbourhood frame — not a disease cure claim).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-003",
+      "assertion": "The nicotinic acetylcholine receptor α7 subunit is required for acetylcholine- and vagus-mediated inhibition of macrophage TNF synthesis (essential receptor node of the cholinergic anti-inflammatory pathway).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-004",
+      "assertion": "Vagus / nicotinic α7 signalling attenuates macrophage activation via Jak2–STAT3 phosphorylation in experimental inflammation (mechanism companion to α7 TNF inhibition).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-005",
+      "assertion": "Acetylcholine-producing memory-phenotype T cells relay vagus nerve signals required for inflammatory-reflex inhibition of macrophage TNF (neural → lymphoid → innate immune hop).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-006",
+      "assertion": "Implantable vagus nerve stimulation can modulate peripheral blood TNF production and RA clinical composite scores in small human pilot cohorts (hypothesized translational frame — not a settled clinical cure; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-007",
+      "assertion": "Splenectomy inactivates the cholinergic anti-inflammatory pathway during lethal endotoxemia and polymicrobial sepsis — spleen as required effector organ for vagus-mediated TNF brake (rodent).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-008",
+      "assertion": "The splenic nerve is required for cholinergic anti-inflammatory pathway control of TNF in endotoxemia (vagus → celiac/superior mesenteric → splenic nerve → spleen macrophage TNF brake).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-009",
+      "assertion": "Pharmacological stimulation of the cholinergic anti-inflammatory pathway attenuates systemic TNF responses (drug-pathway hop parallel to electrical VNS — rodent; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-010",
+      "assertion": "Cholinergic neural signals to the spleen down-regulate leukocyte trafficking via CD11b (trafficking hop beyond TNF-only frames — rodent).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-011",
+      "assertion": "The cholinergic anti-inflammatory pathway can inhibit tumor necrosis factor during ischemia–reperfusion injury (context expand beyond endotoxin — rodent; not clinical cure).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    }
+  ],
+  "edges": [
+    {
+      "id": "HSI-E-NI-001",
+      "edgeType": "inhibits",
+      "subjectId": "HSI-N-vagus-efferent",
+      "subjectLabel": "Efferent vagus nerve stimulation",
+      "objectId": "HSI-N-peripheral-tnf-tone",
+      "objectLabel": "Peripheral / systemic TNF inflammatory tone",
+      "claimId": "HSI-C-NI-001",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "10839541",
+        "doi": "10.1038/35013070",
+        "citationLabel": "Borovikova LV et al. Nature 2000 — Vagus nerve stimulation attenuates the systemic inflammatory response to endotoxin.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/10839541/",
+        "notes": "P2.1 primary vagus→TNF suppression edge. PMID 10839541 verified. Rodent endotoxaemia + macrophage culture — teaching=associative; hsiGrade uncertain. Do not overclaim human therapeutic cure. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-002",
+      "edgeType": "bridges_domain",
+      "subjectId": "HSI-N-inflammatory-reflex",
+      "subjectLabel": "Inflammatory reflex (cholinergic axis)",
+      "objectId": "HSI-N-peripheral-tnf-tone",
+      "objectLabel": "Peripheral / systemic TNF inflammatory tone",
+      "claimId": "HSI-C-NI-002",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "12490958",
+        "doi": "10.1038/nature01321",
+        "citationLabel": "Tracey KJ. Nature 2002 — The inflammatory reflex.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12490958/",
+        "notes": "P2.1 conceptual axis frame. PMID 12490958 verified (review). Maps signals_via_axis → bridges_domain. Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-003",
+      "edgeType": "inhibits",
+      "subjectId": "HSI-N-alpha7-nachr",
+      "subjectLabel": "Nicotinic ACh receptor α7 subunit (macrophage)",
+      "objectId": "HSI-N-macrophage-tnf-release",
+      "objectLabel": "Macrophage TNF synthesis / release",
+      "claimId": "HSI-C-NI-003",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "12508119",
+        "doi": "10.1038/nature01339",
+        "citationLabel": "Wang H et al. Nature 2003 — Nicotinic acetylcholine receptor alpha7 subunit is an essential regulator of inflammation.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12508119/",
+        "notes": "P2.1 α7 receptor node. PMID 12508119 verified. Mouse genetics + macrophage assays — keep uncertain grades; not human dosing. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-004",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-vagus-efferent",
+      "subjectLabel": "Efferent vagus nerve stimulation",
+      "objectId": "HSI-N-alpha7-jak2-stat3",
+      "objectLabel": "α7 nAChR–Jak2–STAT3 macrophage programme",
+      "claimId": "HSI-C-NI-004",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "16025117",
+        "doi": "10.1038/ni1229",
+        "citationLabel": "de Jonge WJ et al. Nat Immunol 2005 — Stimulation of the vagus nerve attenuates macrophage activation by activating the Jak2-STAT3 signaling pathway.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16025117/",
+        "notes": "P2.1 mechanism companion. PMID 16025117 verified. Mouse postoperative ileus / macrophage STAT3 — teaching=associative. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-005",
+      "edgeType": "bridges_domain",
+      "subjectId": "HSI-N-chat-memory-tcell",
+      "subjectLabel": "Acetylcholine-synthesizing memory T cells",
+      "objectId": "HSI-N-macrophage-tnf-release",
+      "objectLabel": "Macrophage TNF synthesis / release",
+      "claimId": "HSI-C-NI-005",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "21921156",
+        "doi": "10.1126/science.1209985",
+        "citationLabel": "Rosas-Ballina M et al. Science 2011 — Acetylcholine-synthesizing T cells relay neural signals in a vagus nerve circuit.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21921156/",
+        "notes": "P2.1 T-cell relay hop. PMID 21921156 verified. Mouse circuit — teaching=associative; do not invent human CDS. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-006",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-implantable-vns",
+      "subjectLabel": "Implantable vagus nerve stimulator (experimental)",
+      "objectId": "HSI-N-peripheral-tnf-tone",
+      "objectLabel": "Peripheral / systemic TNF inflammatory tone",
+      "claimId": "HSI-C-NI-006",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "27382171",
+        "doi": "10.1073/pnas.1605635113",
+        "citationLabel": "Koopman FA et al. PNAS 2016 — Vagus nerve stimulation inhibits cytokine production and attenuates disease severity in rheumatoid arthritis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27382171/",
+        "notes": "P2.1 human translational pilot ONLY. PMID 27382171 verified. teaching=hypothesized — small open-label / pilot; NEVER overclaim clinical brain–immune cure, dosing, or EHR CDS. Does not flip partnerSigned or replace RA ASK evidence map. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-007",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-spleen-innate",
+      "subjectLabel": "Spleen (innate cytokine reservoir)",
+      "objectId": "HSI-N-inflammatory-reflex",
+      "objectLabel": "Inflammatory reflex",
+      "claimId": "HSI-C-NI-007",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "16785311",
+        "doi": "10.1084/jem.20052362",
+        "citationLabel": "Huston JM et al. J Exp Med 2006 — Splenectomy inactivates the cholinergic antiinflammatory pathway during lethal endotoxemia and polymicrobial sepsis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16785311/",
+        "notes": "Depth deepen: PMID 16785311 verified. Rodent circuit organ — teaching=associative; not human CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-008",
+      "edgeType": "inhibits",
+      "subjectId": "HSI-N-splenic-nerve",
+      "subjectLabel": "Splenic nerve (catecholaminergic)",
+      "objectId": "HSI-N-macrophage-tnf-release",
+      "objectLabel": "Macrophage TNF release",
+      "claimId": "HSI-C-NI-008",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "18669662",
+        "doi": "10.1073/pnas.0803237105",
+        "citationLabel": "Rosas-Ballina M et al. PNAS 2008 — Splenic nerve is required for cholinergic antiinflammatory pathway control of TNF in endotoxemia.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18669662/",
+        "notes": "Depth deepen: PMID 18669662 verified. Rodent wiring — teaching=associative; do not invent human nerve-stimulation CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-009",
+      "edgeType": "inhibits",
+      "subjectId": "HSI-N-cholinergic-agonist",
+      "subjectLabel": "Pharmacologic cholinergic anti-inflammatory stimulation",
+      "objectId": "HSI-N-peripheral-tnf-tone",
+      "objectLabel": "Peripheral / systemic TNF inflammatory tone",
+      "claimId": "HSI-C-NI-009",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "11901203",
+        "doi": "10.1084/jem.20011714",
+        "citationLabel": "Bernik TR et al. J Exp Med 2002 — Pharmacological stimulation of the cholinergic antiinflammatory pathway.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/11901203/",
+        "notes": "Depth deepen: PMID 11901203 verified. Rodent pharmacologic frame — teaching=associative; never invent human cholinergic-drug CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-010",
+      "edgeType": "inhibits",
+      "subjectId": "HSI-N-splenic-cholinergic-signal",
+      "subjectLabel": "Cholinergic neural signals to the spleen",
+      "objectId": "HSI-N-leukocyte-trafficking-cd11b",
+      "objectLabel": "Leukocyte trafficking via CD11b",
+      "claimId": "HSI-C-NI-010",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "19542466",
+        "doi": "10.4049/jimmunol.0802684",
+        "citationLabel": "Huston JM et al. J Immunol 2009 — Cholinergic neural signals to the spleen down-regulate leukocyte trafficking via CD11b.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19542466/",
+        "notes": "Depth deepen: PMID 19542466 verified. Rodent trafficking — teaching=associative; not human CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-011",
+      "edgeType": "inhibits",
+      "subjectId": "HSI-N-cholinergic-antiinflam-pathway",
+      "subjectLabel": "Cholinergic anti-inflammatory pathway",
+      "objectId": "HSI-N-ischemia-reperfusion-tnf",
+      "objectLabel": "Ischemia–reperfusion TNF response",
+      "claimId": "HSI-C-NI-011",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "12469056",
+        "doi": "10.1067/mva.2002.129643",
+        "citationLabel": "Bernik TR et al. J Vasc Surg 2002 — Cholinergic antiinflammatory pathway inhibition of tumor necrosis factor during ischemia reperfusion.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12469056/",
+        "notes": "Depth deepen: PMID 12469056 verified. Rodent IR context — teaching=associative; never invent perioperative VNS CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    }
+  ],
+  "honesty": [
+    "Systems secondary axis only — Discovery ASK question remains the RA / anti-TNF research question.",
+    "SSc dual-track A + gut P1.3 packs untouched; RA Stage 1 scopeLocked packs untouched.",
+    "partnerSigned=true; lockedPilot=true; legalBinding=true; isHypothetical=false — MoU operator-asserted when named; still not CDS.",
+    "Neighbourhood choice: vagus / cholinergic anti-inflammatory reflex — clearest landmark PMID chain vs microglia or BBB atlases.",
+    "Human VNS–RA (Koopman) is hypothesized only — never a clinical brain–immune cure claim.",
+    "Most mechanism PMIDs are rodent — hsiGrade stays uncertain (source-verified); not human therapeutic claims.",
+    "Not clinical decision support. autoApproveIntoKg=false. No PHI.",
+    "deepSeedsPresent=true because verified PMID edges landed.",
+    "P2.1 slice: 11 edges · 11 PMIDs."
+  ]
+}

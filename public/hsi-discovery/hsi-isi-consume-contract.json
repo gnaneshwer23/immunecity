@@ -6,16 +6,16 @@
   "autoApproveIntoKg": false,
   "containsPhi": false,
   "partnerSigned": true,
-  "lockedPilot": false,
-  "productionPartnerSigned": false,
-  "agreementKind": "hypothetical_test_only",
-  "legalBinding": false,
-  "isHypothetical": true,
-  "notALegalAgreement": true,
-  "testPilotMode": true,
-  "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
+  "lockedPilot": true,
+  "productionPartnerSigned": true,
+  "agreementKind": "legal_mou",
+  "legalBinding": true,
+  "isHypothetical": false,
+  "notALegalAgreement": false,
+  "testPilotMode": false,
+  "testFixtureBanner": null,
   "allowHypotheticalPartnerEnv": "ALLOW_HYPOTHETICAL_PARTNER",
-  "generatedAt": "2026-11-01T20:21:39.173Z",
+  "generatedAt": "2026-11-01T20:58:00.457Z",
   "package": "hsi-core",
   "outputsManifestSchema": "hsi-outputs-manifest-1",
   "compatibility": {
@@ -27,8 +27,8 @@
       "Do not edit immunecity from the hsi-core workspace — consume published exports only.",
       "HSI Neon is red-wave only; Gate C approve+supports stays in ISI Neon autumn-snow (out of repo).",
       "Manifest invariants: notCds=true, autoApproveIntoKg=false, autoSurfaceCds=false.",
-      "Partner lock at publish: scopeLocked=true, partnerSigned=true, lockedPilot=false, agreementKind=hypothetical_test_only, legalBinding=false, isHypothetical=true.",
-      "TEST FIXTURE — replace before real pilot Production ISI must ignore partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true. Swap via src/hypotheticalPartnerFixture.ts.",
+      "Partner lock at publish: scopeLocked=true, partnerSigned=true, lockedPilot=true, agreementKind=legal_mou, legalBinding=true, isHypothetical=false.",
+      "No hypothetical fixture active.",
       "Vertical: dual_track · activeScope=ra-tnf · prdMvpTarget=ssc-tfh-b-il21.",
       "Technical adapter spikes (RDKit/OpenMM/REINVENT4/ESM) are optional_proposal — do not block ISI Discovery core load.",
       "Further hsi-core BUILD NEXT without a real named partner should not invent more adapter spikes — prefer real partnerNamed or out-of-repo ISI wiring."
@@ -541,7 +541,7 @@
     }
   ],
   "loadOrderHint": [
-    "1. MANIFEST.json — verify notCds / autoApproveIntoKg=false / lockedPilot=false; if partnerSigned=true require isHypothetical + ALLOW_HYPOTHETICAL_PARTNER for prod use.",
+    "1. MANIFEST.json — verify notCds / autoApproveIntoKg=false; if partnerSigned=true under hypothetical_test_only require ALLOW_HYPOTHETICAL_PARTNER; named legalBinding partners may set lockedPilot=true (still not CDS / no auto Gate C).",
     "2. required_core: hsi-isi-export.json + hsi-isi-rel-map.json + gate-c-checklist.*",
     "3. required_pilot: partner lock + vertical decision + pilot pack/rubric/acceptance/walkthrough + flip-readiness + this contract",
     "4. recommended_secondary: gap / R2 / SSc / gut / neuro / translation / systems vision / licensing stub",
@@ -557,12 +557,11 @@
     "discoveryPathCount": 12
   },
   "honesty": [
-    "P0.2-HSI documents ISI consume + partner flip-readiness — does not invent a named legal partner.",
-    "Hypothetical fixture may set partnerSigned=true under agreementKind=hypothetical_test_only; productionPartnerSigned=false; lockedPilot=false while legalBinding=false.",
+    "P0.2-HSI documents ISI consume + partner flip-readiness — MoU paperwork for named partners is operator-asserted; never invent emails/phones.",
+    "Named partner partner:apolo-pharma: partnerSigned=true; legalBinding=true; lockedPilot=true; productionPartnerSigned=true. Still not CDS; Gate C never auto-approves.",
     "Production ISI must ignore fixture partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true.",
-    "Replace fixture via src/hypotheticalPartnerFixture.ts before a real pilot.",
-    "Technical adapter track paused for further spikes without real partnerNamed.",
-    "No CDS / PHI / shared Neon.",
-    "immunecity wiring is OUT OF REPO — this contract is the hsi-core-side handoff."
+    "Swap / inspect partner via src/hypotheticalPartnerFixture.ts.",
+    "No CDS / PHI / shared Neon (HSI = red-wave only).",
+    "immunecity may vendor Discovery JSON under freeze-lift HSI-consume scope only — Gate C stays human."
   ]
 }

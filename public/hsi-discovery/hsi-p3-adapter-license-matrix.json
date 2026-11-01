@@ -1,0 +1,267 @@
+{
+  "schemaVersion": "hsi-p3-adapter-license-matrix-1",
+  "runtimeSchema": "hsi-p3-adapter-license-matrix-runtime-1",
+  "slotSchemaRef": "hsi-p3-adapter-license-matrix-1",
+  "rfcDoc": "docs/P3_ADAPTER_RFC.md",
+  "positionDoc": "docs/HSI_AI_NEURAL_FUTURE_HEALTHCARE.md",
+  "notCds": true,
+  "autoApproveIntoKg": false,
+  "mayFlipEvidenceGrade": false,
+  "vendorsModelWeights": false,
+  "emitsModelProposalOnly": true,
+  "containsPhi": false,
+  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "summary": {
+    "adapterCount": 8,
+    "blockedUntilSignOffCount": 0,
+    "researchOkDocumentedCount": 6,
+    "signedResearchTestOnlyCount": 2,
+    "needsReviewCount": 0,
+    "nonCommercialOnlyCount": 0,
+    "notSignedCount": 0,
+    "researchSignOffFixtureActive": true
+  },
+  "researchSignOffFixture": {
+    "useFixture": true,
+    "banner": "RESEARCH SIGN-OFF FIXTURE — not commercial rights; replaceWithLegalSignOff=true; legalBinding=false",
+    "notCommercial": true,
+    "replaceWithLegalSignOff": true,
+    "legalBinding": false,
+    "adapterIds": [
+      "adapter-af3",
+      "adapter-tdc",
+      "adapter-isi-agents"
+    ],
+    "records": [
+      {
+        "adapterId": "adapter-af3",
+        "label": "AlphaFold3",
+        "signOffStatus": "signed_research_test_only",
+        "notCommercial": true,
+        "replaceWithLegalSignOff": true,
+        "legalBinding": false,
+        "isHypothetical": true,
+        "blockedUntilSignOff": false,
+        "banner": "RESEARCH SIGN-OFF FIXTURE — AF3 non-commercial / research-test only; NOT commercial AF3 rights; replaceWithLegalSignOff=true",
+        "notes": "Unlocks stub ModelProposalArtifacts only. Model parameters remain under AlphaFold 3 Model Parameters Terms of Use. Never vendor weights. Never claim commercialLicenseSigned."
+      },
+      {
+        "adapterId": "adapter-tdc",
+        "label": "Therapeutics Data Commons (TDC)",
+        "signOffStatus": "research_ok_documented",
+        "notCommercial": true,
+        "replaceWithLegalSignOff": true,
+        "legalBinding": false,
+        "isHypothetical": true,
+        "blockedUntilSignOff": false,
+        "banner": "RESEARCH SIGN-OFF FIXTURE — TDC research-test only; per-dataset licenses still need curator review before download; replaceWithLegalSignOff=true",
+        "notes": "Codebase MIT; each dataset has its own license. Fixture unlocks stub eval proposals only — re-check task/provider terms before any download/run."
+      },
+      {
+        "adapterId": "adapter-isi-agents",
+        "label": "ISI 12-agent research workbench",
+        "signOffStatus": "signed_research_test_only",
+        "notCommercial": true,
+        "replaceWithLegalSignOff": true,
+        "legalBinding": false,
+        "isHypothetical": true,
+        "blockedUntilSignOff": false,
+        "banner": "RESEARCH SIGN-OFF FIXTURE — ISI agents catalog/stub proposals only; runtime remains ISI product; replaceWithLegalSignOff=true",
+        "notes": "hsi-core holds catalog + proposal stubs. Executable agent runtime = ISI product (out of repo). No commercial agent MoU invented."
+      }
+    ],
+    "policyDoc": "docs/P3_WEIGHTS_AND_LICENSE_POLICY.md"
+  },
+  "weightsPolicyDoc": "docs/P3_WEIGHTS_AND_LICENSE_POLICY.md",
+  "adapters": [
+    {
+      "adapterId": "adapter-tdc",
+      "label": "Therapeutics Data Commons (TDC)",
+      "purpose": "Offline ML eval / benchmarks against graded claims; not seed authority",
+      "licenseClass": "mixed_per_dataset",
+      "commercialRisk": "medium",
+      "signOffStatus": "research_ok_documented",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/mims-harvard/TDC/blob/main/LICENSE",
+      "secondaryDocsUrls": [
+        "https://github.com/mims-harvard/TDC",
+        "https://tdcommons.ai"
+      ],
+      "notes": "Codebase MIT; each dataset has its own license. Fixture unlocks stub eval proposals only — re-check task/provider terms before any download/run. Fixture banner: RESEARCH SIGN-OFF FIXTURE — TDC research-test only; per-dataset licenses still need curator review before download; replaceWithLegalSignOff=true",
+      "notCommercial": true,
+      "replaceWithLegalSignOff": true,
+      "researchSignOffFixture": true,
+      "banner": "RESEARCH SIGN-OFF FIXTURE — TDC research-test only; per-dataset licenses still need curator review before download; replaceWithLegalSignOff=true",
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    },
+    {
+      "adapterId": "adapter-af3",
+      "label": "AlphaFold3",
+      "purpose": "Structure prediction for mechanism hypotheses (discovery-only)",
+      "licenseClass": "weights_restricted",
+      "commercialRisk": "high",
+      "signOffStatus": "signed_research_test_only",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md",
+      "secondaryDocsUrls": [
+        "https://github.com/google-deepmind/alphafold3",
+        "https://github.com/google-deepmind/alphafold3/blob/main/LICENSE"
+      ],
+      "notes": "Unlocks stub ModelProposalArtifacts only. Model parameters remain under AlphaFold 3 Model Parameters Terms of Use. Never vendor weights. Never claim commercialLicenseSigned. NEVER claim commercial AF3 rights. Stub proposals only.",
+      "notCommercial": true,
+      "replaceWithLegalSignOff": true,
+      "researchSignOffFixture": true,
+      "banner": "RESEARCH SIGN-OFF FIXTURE — AF3 non-commercial / research-test only; NOT commercial AF3 rights; replaceWithLegalSignOff=true",
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    },
+    {
+      "adapterId": "adapter-boltz",
+      "label": "Boltz",
+      "purpose": "Open structure / complex (+ affinity) prediction alternative; discovery-only",
+      "licenseClass": "mit",
+      "commercialRisk": "low",
+      "signOffStatus": "research_ok_documented",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/jwohlwend/boltz/blob/main/LICENSE",
+      "secondaryDocsUrls": [
+        "https://github.com/jwohlwend/boltz"
+      ],
+      "notes": "Upstream documents MIT for code and weights (academic + commercial). Still: no weight vendoring in hsi-core; proposals only; require WEIGHTS_POLICY_ACK=true before stub proposals (docs/P3_WEIGHTS_AND_LICENSE_POLICY.md); optional BOLTZ_WEIGHTS_CACHE external path only.",
+      "notCommercial": false,
+      "replaceWithLegalSignOff": false,
+      "researchSignOffFixture": false,
+      "banner": null,
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    },
+    {
+      "adapterId": "adapter-esm",
+      "label": "ESM (FAIR facebookresearch/esm)",
+      "purpose": "Protein language embeddings / similarity helpers for discovery edges",
+      "licenseClass": "mit",
+      "commercialRisk": "medium",
+      "signOffStatus": "research_ok_documented",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/facebookresearch/esm/blob/main/LICENSE",
+      "secondaryDocsUrls": [
+        "https://github.com/facebookresearch/esm",
+        "https://www.evolutionaryscale.ai/policies/terms-of-use"
+      ],
+      "notes": "Scoped to archived FAIR ESM (MIT code + weights for ESM-2/ESMFold). P3.3 thin embedding stub → ModelProposalArtifacts + embedding sidecar refs (runtime stub|esm; import-only live path). EvolutionaryScale ESM-3 / ESMC use Cambrian Open / Non-Commercial terms — treat as a separate adapter/review; never clinic PHI sequences; never vendor multi-GB weights here.",
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    },
+    {
+      "adapterId": "adapter-openmm",
+      "label": "OpenMM",
+      "purpose": "Molecular dynamics simulation plugin (lab lane; not Gate C evidence)",
+      "licenseClass": "lgpl_family",
+      "commercialRisk": "low",
+      "signOffStatus": "research_ok_documented",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/openmm/openmm/blob/master/LICENSE",
+      "secondaryDocsUrls": [
+        "https://github.com/openmm/openmm"
+      ],
+      "notes": "OpenMM license family (MIT/LGPL components historically) — research MD OK under documented terms; compute cost; simulation trajectories are not Gate C evidence alone.",
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    },
+    {
+      "adapterId": "adapter-rdkit",
+      "label": "RDKit",
+      "purpose": "Cheminformatics descriptors / fingerprints for research claims",
+      "licenseClass": "bsd_style",
+      "commercialRisk": "low",
+      "signOffStatus": "research_ok_documented",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/rdkit/rdkit/blob/master/license.txt",
+      "secondaryDocsUrls": [
+        "https://github.com/rdkit/rdkit"
+      ],
+      "notes": "BSD-style permissive toolkit. Descriptors never invent clinical edges; proposals only.",
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    },
+    {
+      "adapterId": "adapter-reinvent4",
+      "label": "REINVENT4",
+      "purpose": "Generative molecular design sandbox (ISI lab only)",
+      "licenseClass": "apache_2",
+      "commercialRisk": "medium",
+      "signOffStatus": "research_ok_documented",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/MolecularAI/REINVENT4/blob/main/LICENSE",
+      "secondaryDocsUrls": [
+        "https://github.com/MolecularAI/REINVENT4"
+      ],
+      "notes": "Apache-2.0 typical for REINVENT4. P3.2 thin spike → ModelProposalArtifacts only (runtime stub|reinvent; import-only live path). Never clinic recommendation path; never auto-promote generative designs into graded KG; no multi-GB weight vendoring.",
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    },
+    {
+      "adapterId": "adapter-isi-agents",
+      "label": "ISI 12-agent research workbench",
+      "purpose": "Supervised research agents (orchestrator + specialists) — runtime out of hsi-core",
+      "licenseClass": "out_of_repo_runtime",
+      "commercialRisk": "medium",
+      "signOffStatus": "signed_research_test_only",
+      "blockedUntilSignOff": false,
+      "docsUrl": "https://github.com/gnaneshwer23/hsi-core/blob/main/docs/HSI_AI_NEURAL_FUTURE_HEALTHCARE.md",
+      "secondaryDocsUrls": [
+        "https://github.com/gnaneshwer23/hsi-core/blob/main/docs/ISI_TECHNICAL_BLUEPRINT_ALIGNMENT.md"
+      ],
+      "notes": "hsi-core holds catalog + proposal stubs. Executable agent runtime = ISI product (out of repo). No commercial agent MoU invented. Fixture banner: RESEARCH SIGN-OFF FIXTURE — ISI agents catalog/stub proposals only; runtime remains ISI product; replaceWithLegalSignOff=true",
+      "notCommercial": true,
+      "replaceWithLegalSignOff": true,
+      "researchSignOffFixture": true,
+      "banner": "RESEARCH SIGN-OFF FIXTURE — ISI agents catalog/stub proposals only; runtime remains ISI product; replaceWithLegalSignOff=true",
+      "mayFlipEvidenceGrade": false,
+      "vendorsModelWeights": false,
+      "emitsModelProposalOnly": true,
+      "autoApproveIntoKg": false,
+      "containsPhi": false
+    }
+  ],
+  "signOffVocabulary": [
+    "not_signed",
+    "needs_review",
+    "non_commercial_only",
+    "research_ok_documented",
+    "signed_research_test_only"
+  ],
+  "instructions": [
+    "Read docs/P3_ADAPTER_RFC.md + docs/P3_WEIGHTS_AND_LICENSE_POLICY.md before wiring any adapter.",
+    "Refuse to run / download / vendor when blockedUntilSignOff=true.",
+    "Emit ModelProposalArtifact only → Gate C pending (autoApprove=false).",
+    "Never flip hsiGrade / curationReview; never autoApproveIntoKg.",
+    "Never vendor multi-GB model weights into hsi-core.",
+    "Never claim commercialLicenseSigned without written evidence in-repo.",
+    "Boltz: require WEIGHTS_POLICY_ACK=true before stub proposals; optional BOLTZ_WEIGHTS_CACHE only.",
+    "AF3 research fixture ≠ commercial AF3 rights (notCommercial=true; replaceWithLegalSignOff=true).",
+    "signOffStatus vocabulary: not_signed | needs_review | non_commercial_only | research_ok_documented | signed_research_test_only."
+  ]
+}

@@ -1,0 +1,703 @@
+{
+  "schemaVersion": "hsi-model-eval-harness-1",
+  "runtimeSchema": "hsi-model-eval-harness-runtime-1",
+  "stubSchemaRef": "hsi-model-eval-harness-1",
+  "status": "wired_offline_stub",
+  "notCds": true,
+  "offlineOnly": true,
+  "mayUseLivePhi": false,
+  "mayTrainModels": false,
+  "mayFlipEvidenceGrade": false,
+  "autoApprove": false,
+  "autoApproveIntoKg": false,
+  "containsPhi": false,
+  "packsRemainAuthority": true,
+  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "fixtureSummary": {
+    "packIds": [
+      "hsi-gut-immune-pack",
+      "hsi-neuroimmune-pack",
+      "hsi-pilot-ra-tnf",
+      "hsi-ssc-pathway-pack"
+    ],
+    "edgeCount": 50,
+    "byPack": {
+      "hsi-pilot-ra-tnf": 12,
+      "hsi-ssc-pathway-pack": 15,
+      "hsi-gut-immune-pack": 12,
+      "hsi-neuroimmune-pack": 11
+    }
+  },
+  "checks": [
+    {
+      "id": "cited_edge_ids_exist",
+      "label": "Cited edge ids exist in frozen packs",
+      "detail": "Any edge:HSI-E-* / citedEdgeIds must resolve to RA/SSc/gut/neuro fixture edges",
+      "failClosed": true
+    },
+    {
+      "id": "grade_not_flipped",
+      "label": "Grade not flipped",
+      "detail": "Subject must not set hsiGrade / curationReview / mayFlipEvidenceGrade or override fixture grades",
+      "failClosed": true
+    },
+    {
+      "id": "required_fields_present",
+      "label": "Required fields present",
+      "detail": "Model proposals need MODEL_PROPOSAL requiredFields; sidecars need modelId/dim/locator/doesNotSetHsiGrade",
+      "failClosed": true
+    },
+    {
+      "id": "fail_closed_clinical_phi",
+      "label": "Fail-closed on clinical / PHI claims",
+      "detail": "Detectable clinical-cure / dosing / EHR / PHI / patient-identifiable language fails closed",
+      "failClosed": true
+    },
+    {
+      "id": "sidecar_locators_present",
+      "label": "Sidecar locators present",
+      "detail": "Embedding sidecars require vectorRef and/or contentHash",
+      "failClosed": true
+    },
+    {
+      "id": "pack_authority_unchanged",
+      "label": "Pack authority unchanged",
+      "detail": "Subjects must not claim packsAreAuthority=false or overridePackGrades; fixture grades stay frozen",
+      "failClosed": true
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "EVAL-PASS-PROPOSAL-SSC-001",
+      "kind": "model_proposal",
+      "label": "Safe SSc model proposal citing pack edge",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "Cites existing SSc pack edge; no grade/PHI/clinical claims"
+    },
+    {
+      "caseId": "EVAL-PASS-RDKIT-MTX-001",
+      "kind": "model_proposal",
+      "label": "P3.0 RDKit MTX descriptor proposal (stub runtime)",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-rdkit proposal cites HSI-E-RA-012; no grade/PHI/clinical/dosing claims"
+    },
+    {
+      "caseId": "EVAL-PASS-OPENMM-ACH-001",
+      "kind": "model_proposal",
+      "label": "P3.1 OpenMM ACh MD proposal (stub runtime)",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-openmm proposal cites HSI-E-NI-003; no grade/PHI/clinical/dosing claims; MD ≠ Gate C evidence alone"
+    },
+    {
+      "caseId": "EVAL-PASS-REINVENT4-MTX-001",
+      "kind": "model_proposal",
+      "label": "P3.2 REINVENT4 MTX generative sandbox proposal (stub runtime)",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-reinvent4 proposal cites HSI-E-RA-012; no grade/PHI/clinical/dosing claims; never clinic recommendation path"
+    },
+    {
+      "caseId": "EVAL-PASS-ESM2-TNF-001",
+      "kind": "model_proposal",
+      "label": "P3.3 FAIR ESM-2 TNF embedding proposal (stub runtime)",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-esm proposal cites HSI-E-RA-001; hash/ref sidecar; no grade/PHI/clinical claims; no weight vendoring"
+    },
+    {
+      "caseId": "EVAL-PASS-AF3-TNF-001",
+      "kind": "model_proposal",
+      "label": "AF3 research-test stub TNF structure proposal",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-af3 stub cites HSI-E-RA-001; notCommercial; NOT commercial AF3 rights; no weight vendoring"
+    },
+    {
+      "caseId": "EVAL-PASS-TDC-ADMET-001",
+      "kind": "model_proposal",
+      "label": "TDC research-test stub ADMET proposal",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-tdc stub cites HSI-E-RA-012; no dataset download; no grade/PHI claims"
+    },
+    {
+      "caseId": "EVAL-PASS-BOLTZ-TNF-001",
+      "kind": "model_proposal",
+      "label": "Boltz weights-policy-gated stub TNF proposal",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-boltz stub cites HSI-E-RA-001; WEIGHTS_POLICY_ACK; vendorsModelWeights=false"
+    },
+    {
+      "caseId": "EVAL-PASS-ISI-AGENTS-LIT-001",
+      "kind": "model_proposal",
+      "label": "ISI agents research-test stub literature proposal",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "adapter-isi-agents stub cites HSI-E-RA-001; runtime out of repo; no grade flips"
+    },
+    {
+      "caseId": "EVAL-PASS-SIDECAR-RA-001",
+      "kind": "embedding_sidecar",
+      "label": "Safe RA embedding sidecar with hash/ref",
+      "expectPass": true,
+      "passed": true,
+      "failClosed": false,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "Sidecar required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "Sidecar locator(s) present"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "Hash/ref sidecar; doesNotSetHsiGrade; packs remain authority"
+    },
+    {
+      "caseId": "EVAL-FAIL-UNKNOWN-EDGE",
+      "kind": "model_proposal",
+      "label": "Proposal cites non-existent edge id",
+      "expectPass": false,
+      "passed": false,
+      "failClosed": true,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": false,
+          "detail": "Unknown edge ids (not in frozen packs): HSI-E-FAKE-999"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "Fail-closed: cited edge must exist in frozen packs"
+    },
+    {
+      "caseId": "EVAL-FAIL-GRADE-FLIP",
+      "kind": "model_proposal",
+      "label": "Proposal tries to set hsiGrade",
+      "expectPass": false,
+      "passed": false,
+      "failClosed": true,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": false,
+          "detail": "Forbidden field \"hsiGrade\" on eval subject — models may not set grades"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "Fail-closed: models never flip hsiGrade"
+    },
+    {
+      "caseId": "EVAL-FAIL-CLINICAL-PHI",
+      "kind": "model_proposal",
+      "label": "Proposal claims clinical cure / PHI",
+      "expectPass": false,
+      "passed": false,
+      "failClosed": true,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "All model-proposal required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": false,
+          "detail": "Fail-closed clinical/PHI patterns: phi_flag, mrn, clinical_cure"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "Fail-closed on detectable clinical/PHI language"
+    },
+    {
+      "caseId": "EVAL-FAIL-SIDECAR-NO-LOCATOR",
+      "kind": "embedding_sidecar",
+      "label": "Sidecar missing vectorRef and contentHash",
+      "expectPass": false,
+      "passed": false,
+      "failClosed": true,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "All 1 cited edge id(s) resolve in frozen packs"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": true,
+          "detail": "Sidecar required fields present"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": false,
+          "detail": "Sidecar requires vectorRef and/or contentHash"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "Fail-closed: sidecar requires a locator"
+    },
+    {
+      "caseId": "EVAL-FAIL-MISSING-FIELDS",
+      "kind": "model_proposal",
+      "label": "Proposal missing required fields",
+      "expectPass": false,
+      "passed": false,
+      "failClosed": true,
+      "checks": [
+        {
+          "checkId": "cited_edge_ids_exist",
+          "passed": true,
+          "detail": "No edge ids cited (ok for pure draft stubs)"
+        },
+        {
+          "checkId": "grade_not_flipped",
+          "passed": true,
+          "detail": "No grade / curation flip fields present"
+        },
+        {
+          "checkId": "required_fields_present",
+          "passed": false,
+          "detail": "Missing proposal fields: proposedSubject, proposedPredicate, proposedObject, contextNote, evidenceHints, suggestedTeachingStatus"
+        },
+        {
+          "checkId": "fail_closed_clinical_phi",
+          "passed": true,
+          "detail": "No detectable clinical/PHI claims"
+        },
+        {
+          "checkId": "sidecar_locators_present",
+          "passed": true,
+          "detail": "N/A for model_proposal"
+        },
+        {
+          "checkId": "pack_authority_unchanged",
+          "passed": true,
+          "detail": "Packs remain authority; no auto-approve"
+        }
+      ],
+      "notes": "Fail-closed: required proposal fields must be present"
+    }
+  ],
+  "summary": {
+    "caseCount": 15,
+    "passed": 10,
+    "failed": 5,
+    "failClosedHits": 5,
+    "intentionalFailCorrect": 5,
+    "stubBehaviorGreen": true
+  },
+  "instructions": [
+    "P2.3 offline eval harness — scores model proposals / embedding sidecars against frozen public pack fixtures.",
+    "No training loop · no live PHI · mayFlipEvidenceGrade=false · autoApprove=false · packs remain authority.",
+    "Checks: cited edge ids exist · grade not flipped · required fields · fail-closed clinical/PHI · sidecar locators · pack authority.",
+    "RA / SSc / gut / neuro evidence packs stay the graded truth store; harness never writes KG or Gate C approve.",
+    "Intentional fail cases document fail-closed behavior; stubBehaviorGreen means demos matched expectPass.",
+    "TDC-style retrieval metrics deferred until broader P3 adapters — P3.0 RDKit + P3.1 OpenMM + P3.2 REINVENT4 + P3.3 FAIR ESM-2 proposals are scored as ModelProposalArtifacts here.",
+    "See docs/HSI_AI_NEURAL_FUTURE_HEALTHCARE.md · MODEL_EVAL_HARNESS_STUB · src/modelEvalHarness.ts."
+  ]
+}
