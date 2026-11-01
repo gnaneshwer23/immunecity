@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "hsi-partner-lock-1",
+  "scopeLocked": true,
+  "provisionalLock": false,
+  "disease": {
+    "id": "ra",
+    "label": "Rheumatoid arthritis",
+    "shortLabel": "RA"
+  },
+  "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+  "candidateQuestions": [
+    "Why do some patients respond differently to a particular therapy?",
+    "Which biomarkers or immune mechanisms are supported by evidence for a defined subgroup?",
+    "What evidence gaps should inform the next experiment or study?"
+  ],
+  "seedPathway": {
+    "id": "ra-tnf-response-heterogeneity",
+    "label": "RA · TNF / ACPA / ADA · anti-TNF response heterogeneity",
+    "rationale": "Phase 3 deepened partner-scoped slice: TNF→RA + anti-CCP/RF (LOINC) + IL-6 / anti-TNF-refractory + ADA/immunogenicity + serology competing frames + MTX+anti-TNF combo background. Matches pilot-brief questions on therapy response and subgroup biomarkers. Working Stage 1 scope (scopeLocked); fixture partnerSigned is path-testing only.",
+    "primaryClaimIds": [
+      "HSI-C-RA-001",
+      "HSI-C-RA-002",
+      "HSI-C-RA-003",
+      "HSI-C-RA-004",
+      "HSI-C-RA-005",
+      "HSI-C-RA-006",
+      "HSI-C-RA-007",
+      "HSI-C-RA-008",
+      "HSI-C-RA-009",
+      "HSI-C-RA-010",
+      "HSI-C-RA-011",
+      "HSI-C-RA-012",
+      "HSI-C-IM-002",
+      "HSI-C-IM-003"
+    ],
+    "primaryEdgeIds": [
+      "HSI-E-RA-001",
+      "HSI-E-RA-002",
+      "HSI-E-RA-003",
+      "HSI-E-RA-004",
+      "HSI-E-RA-005",
+      "HSI-E-RA-006",
+      "HSI-E-RA-007",
+      "HSI-E-RA-008",
+      "HSI-E-RA-009",
+      "HSI-E-RA-010",
+      "HSI-E-RA-011",
+      "HSI-E-RA-012",
+      "HSI-E-IM-002",
+      "HSI-E-IM-003"
+    ],
+    "primaryPmids": [
+      "11244034",
+      "10662881",
+      "11087881",
+      "18625622",
+      "2993897",
+      "16508927",
+      "17133559",
+      "18375541",
+      "24586782",
+      "20699241",
+      "10622295"
+    ]
+  },
+  "verticalStrategy": "dual_track",
+  "activeScope": "ra-tnf",
+  "prdMvpTarget": "ssc-tfh-b-il21",
+  "verticalDecision": {
+    "schemaVersion": "hsi-vertical-decision-1",
+    "option": "A",
+    "verticalStrategy": "dual_track",
+    "activeScope": "ra-tnf",
+    "prdMvpTarget": "ssc-tfh-b-il21",
+    "raComparisonFraming": "release2",
+    "decidedAt": "2026-11-01T17:00:00.000Z"
+  },
+  "updatedAt": "2026-11-01T20:00:00.000Z",
+  "partnerSigned": true,
+  "lockedPilot": false,
+  "status": "scope_locked",
+  "partner": {
+    "id": "test:hypothetical-isi-pilot-partner",
+    "label": "Hypothetical ISI Pilot Partner (replace with real org)",
+    "type": "hypothetical_test_fixture",
+    "region": "unspecified",
+    "contactChannel": "none",
+    "outreachStatus": "test_fixture",
+    "notes": "TEST FIXTURE — replace before real pilot. Not a legal MoU/MoA or named org. agreementKind=hypothetical_test_only; legalBinding=false; replaceWithRealPartner=true. Production ISI must ignore partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true. Swap via src/hypotheticalPartnerFixture.ts."
+  },
+  "agreementKind": "hypothetical_test_only",
+  "replaceWithRealPartner": true,
+  "legalBinding": false,
+  "isHypothetical": true,
+  "notALegalAgreement": true,
+  "testPilotMode": true,
+  "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
+  "flipRequirements": [
+    "REPLACE FIXTURE: set USE_HYPOTHETICAL_PARTNER_FIXTURE=false in src/hypotheticalPartnerFixture.ts and fill REAL_PARTNER_REPLACEMENT with a real named org (never invent).",
+    "Named partner confirms disease = rheumatoid arthritis (or explicitly chooses a different disease — then re-lock scope).",
+    "Named partner confirms or rewrites the research question in their words.",
+    "Record real outreach row in ISI_PILOT_PARTNER_SHORTLIST.md (org, type, region, status) — still no invented emails.",
+    "Agree source licensing / attribution for the partner source set.",
+    "Agree scientific review rubric thresholds (time saved, usefulness, rejections) with the partner.",
+    "Set legalBinding=true, agreementKind=written_confirm|legal_mou, partner.type=named_partner, outreachStatus=confirmed, replaceWithRealPartner=false, isHypothetical=false → lockedPilot becomes true.",
+    "Re-run bun run outputs and refresh the pilot evidence pack + review rubric against the signed question."
+  ],
+  "honesty": [
+    "TEST FIXTURE — replace before real pilot. Banner must stay visible in packs / MANIFEST / walkthrough.",
+    "partnerSigned=true under agreementKind=hypothetical_test_only is PATH-TESTING ONLY — not a MoU.",
+    "legalBinding=false → lockedPilot=false even when partnerSigned=true.",
+    "Production ISI must ignore fixture partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true.",
+    "Phase 2 done = scopeLocked=true (disease + researchQuestion are working Stage 1 scope).",
+    "Phase 3 done = partner-scoped evidence depth for this locked RA/anti-TNF question (ADA, serology tension, RF LOINC, MTX combo).",
+    "Phase 5 done = pilot acceptance pack (checklist + walkthrough; real named partner still pending).",
+    "scopeLocked does NOT mean a commercial partner signed or locked a MoU.",
+    "Hypothetical fixture partners are not MoUs; do not invent personal contacts.",
+    "Exports must surface isHypothetical=true + notALegalAgreement=true + testFixtureBanner."
+  ]
+}

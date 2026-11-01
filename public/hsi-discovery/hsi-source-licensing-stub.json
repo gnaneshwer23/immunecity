@@ -1,0 +1,425 @@
+{
+  "schemaVersion": "hsi-source-licensing-stub-1",
+  "phase": "P0.3-reviewed",
+  "notCds": true,
+  "containsPhi": false,
+  "partnerSigned": false,
+  "generatedAt": "2026-11-01T20:21:39.173Z",
+  "reviewDate": "2026-11-01",
+  "reviewMethod": "Europe PMC REST search resultType=core (isOpenAccess, inPMC, license, pmcid) + Crossref /works license URLs for ambiguous OA; conservative — no invented CC-BY; free PMC without clear CC → unknown; paywall/no OA → restricted; explicit CC → ok_oa. Bibliographic PMID citation always OK regardless of status.",
+  "summary": {
+    "pmidCount": 32,
+    "okCiteCount": 0,
+    "okOaCount": 5,
+    "restrictedCount": 20,
+    "unknownCount": 7,
+    "needsReviewCount": 0,
+    "partnerClearedCount": 0,
+    "blockedCount": 0
+  },
+  "rows": [
+    {
+      "pmid": "2993897",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/2993897",
+      "doi": "10.1038/316552a0",
+      "publisherLicense": null,
+      "reviewNotes": "Nature 1985; no OA/PMC; paywall — cite metadata / PMID locator only."
+    },
+    {
+      "pmid": "10622295",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/10622295",
+      "doi": "10.1016/s0140-6736(99)05246-0",
+      "publisherLicense": null,
+      "reviewNotes": "Lancet 1999; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "10662881",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/10662881",
+      "doi": "10.1093/rheumatology/39.1.97",
+      "publisherLicense": null,
+      "reviewNotes": "Rheumatology (OUP) 2000; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "10839541",
+      "packs": [
+        "neuro_vagus"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/10839541",
+      "doi": "10.1038/35013070",
+      "publisherLicense": null,
+      "reviewNotes": "Nature 2000; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "11087881",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/11087881",
+      "doi": "10.1056/nejm200011233432103",
+      "publisherLicense": null,
+      "reviewNotes": "NEJM 2000; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "11244034",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/11244034",
+      "doi": "10.1146/annurev.immunol.19.1.163",
+      "publisherLicense": null,
+      "reviewNotes": "Annu Rev Immunol 2001; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "12490958",
+      "packs": [
+        "neuro_vagus"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/12490958",
+      "doi": "10.1038/nature01321",
+      "publisherLicense": null,
+      "reviewNotes": "Nature 2002; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "12508119",
+      "packs": [
+        "neuro_vagus"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/12508119",
+      "doi": "10.1038/nature01339",
+      "publisherLicense": null,
+      "reviewNotes": "Nature 2003; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "16025117",
+      "packs": [
+        "neuro_vagus"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/16025117",
+      "doi": "10.1038/ni1229",
+      "publisherLicense": null,
+      "reviewNotes": "Nat Immunol 2005; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "16339522",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/16339522",
+      "doi": "10.4049/jimmunol.175.12.7867",
+      "publisherLicense": null,
+      "reviewNotes": "J Immunol 2005; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "16508927",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/16508927",
+      "doi": "10.1002/art.21671",
+      "publisherLicense": null,
+      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "17133559",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/17133559",
+      "doi": "10.1002/art.22214",
+      "publisherLicense": null,
+      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "18375541",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "ok_oa",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Open access with publisher license cc by; verify attribution and any NC/SA terms before redistribution of PDF/figures.",
+      "europePmcUrl": "https://europepmc.org/article/MED/18375541",
+      "doi": "10.1136/ard.2007.084715",
+      "pmcid": "PMC2596303",
+      "publisherLicense": "cc by",
+      "reviewNotes": "ARD; Europe PMC license=cc by + PMC full text — OA reuse under CC BY (retain attribution; verify figure reuse)."
+    },
+    {
+      "pmid": "18625622",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "ok_oa",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Open access with publisher license cc by-nc; verify attribution and any NC/SA terms before redistribution of PDF/figures.",
+      "europePmcUrl": "https://europepmc.org/article/MED/18625622",
+      "doi": "10.1136/ard.2008.092932",
+      "pmcid": "PMC3811149",
+      "publisherLicense": "cc by-nc",
+      "reviewNotes": "ARD; Europe PMC license=cc by-nc — non-commercial OA; commercial redistribution still restricted."
+    },
+    {
+      "pmid": "19625695",
+      "packs": [
+        "gut_scfa"
+      ],
+      "licenseStatus": "unknown",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "europePmcUrl": "https://europepmc.org/article/MED/19625695",
+      "doi": "10.3945/jn.109.104638",
+      "pmcid": "PMC2728689",
+      "publisherLicense": null,
+      "reviewNotes": "J Nutr; free in PMC but Europe PMC license null; Crossref lists Elsevier OA userlicense (not CC) — do not invent CC-BY."
+    },
+    {
+      "pmid": "20699241",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/20699241",
+      "doi": "10.1136/ard.2010.138461",
+      "publisherLicense": null,
+      "reviewNotes": "ARD 2010 classification criteria; Europe PMC no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "21205640",
+      "packs": [
+        "gut_scfa"
+      ],
+      "licenseStatus": "unknown",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "europePmcUrl": "https://europepmc.org/article/MED/21205640",
+      "doi": "10.1126/science.1198469",
+      "pmcid": "PMC3969237",
+      "publisherLicense": null,
+      "reviewNotes": "Science; author manuscript in PMC (green); publisher HTML still subscription; no clear CC on VoR — cite + link PMC; no FT republication claim."
+    },
+    {
+      "pmid": "21314428",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/21314428",
+      "doi": "10.1146/annurev-immunol-031210-101400",
+      "publisherLicense": null,
+      "reviewNotes": "Annu Rev Immunol 2011; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "21921156",
+      "packs": [
+        "neuro_vagus"
+      ],
+      "licenseStatus": "unknown",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "europePmcUrl": "https://europepmc.org/article/MED/21921156",
+      "doi": "10.1126/science.1209985",
+      "pmcid": "PMC4548937",
+      "publisherLicense": null,
+      "reviewNotes": "Science; PMC author manuscript free; no clear CC on VoR — unknown beyond citation/link."
+    },
+    {
+      "pmid": "23828891",
+      "packs": [
+        "gut_scfa"
+      ],
+      "licenseStatus": "unknown",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "europePmcUrl": "https://europepmc.org/article/MED/23828891",
+      "doi": "10.1126/science.1241165",
+      "pmcid": "PMC3807819",
+      "publisherLicense": null,
+      "reviewNotes": "Science; PMC free author manuscript; no Europe PMC CC — unknown reuse beyond citation/link."
+    },
+    {
+      "pmid": "23842501",
+      "packs": [
+        "gut_scfa"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/23842501",
+      "doi": "10.1038/nature12331",
+      "publisherLicense": null,
+      "reviewNotes": "Nature 2013; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "24129067",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "ok_oa",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Open access with publisher license cc by-nc-sa; verify attribution and any NC/SA terms before redistribution of PDF/figures.",
+      "europePmcUrl": "https://europepmc.org/article/MED/24129067",
+      "doi": "10.1038/jid.2013.423",
+      "pmcid": "PMC3961515",
+      "publisherLicense": "cc by-nc-sa",
+      "reviewNotes": "J Invest Dermatol; Europe PMC license=cc by-nc-sa — NC-SA constraints on reuse."
+    },
+    {
+      "pmid": "24226770",
+      "packs": [
+        "gut_scfa"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/24226770",
+      "doi": "10.1038/nature12721",
+      "publisherLicense": null,
+      "reviewNotes": "Nature 2013; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "24586782",
+      "packs": [
+        "ra_tnf"
+      ],
+      "licenseStatus": "ok_oa",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Open access with publisher license cc by; verify attribution and any NC/SA terms before redistribution of PDF/figures.",
+      "europePmcUrl": "https://europepmc.org/article/MED/24586782",
+      "doi": "10.1371/journal.pone.0089442",
+      "pmcid": "PMC3937352",
+      "publisherLicense": "cc by",
+      "reviewNotes": "PLOS ONE; Europe PMC license=cc by — OA under CC BY."
+    },
+    {
+      "pmid": "24917457",
+      "packs": [
+        "gut_scfa"
+      ],
+      "licenseStatus": "unknown",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "europePmcUrl": "https://europepmc.org/article/MED/24917457",
+      "doi": "10.1038/mi.2014.44",
+      "pmcid": "PMC4263689",
+      "publisherLicense": null,
+      "reviewNotes": "Mucosal Immunol; EPMC isOpenAccess=Y + PMC but license null; Crossref Elsevier OA userlicense (not CC) — unknown for CC-style reuse."
+    },
+    {
+      "pmid": "27382171",
+      "packs": [
+        "neuro_vagus"
+      ],
+      "licenseStatus": "unknown",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "europePmcUrl": "https://europepmc.org/article/MED/27382171",
+      "doi": "10.1073/pnas.1605635113",
+      "pmcid": "PMC4961187",
+      "publisherLicense": null,
+      "reviewNotes": "PNAS 2016; free in PMC; Europe PMC license null / Crossref no CC URL — unknown (do not invent CC-BY)."
+    },
+    {
+      "pmid": "29514998",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/29514998",
+      "doi": "10.1126/scitranslmed.aaf5307",
+      "publisherLicense": null,
+      "reviewNotes": "Sci Transl Med 2018; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "29626172",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/29626172",
+      "doi": "10.1126/sciimmunol.aat6417",
+      "publisherLicense": null,
+      "reviewNotes": "Sci Immunol 2018; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "30760472",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/30760472",
+      "doi": "10.1136/annrheumdis-2018-214382",
+      "publisherLicense": null,
+      "reviewNotes": "Ann Rheum Dis 2019; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "30918945",
+      "packs": [
+        "gut_scfa"
+      ],
+      "licenseStatus": "unknown",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. License unclear after Europe PMC/Crossref check — no CC claimed; prefer link-out.",
+      "europePmcUrl": "https://europepmc.org/article/MED/30918945",
+      "doi": "10.1093/ibd/izz046",
+      "pmcid": "PMC6701512",
+      "publisherLicense": null,
+      "reviewNotes": "Inflamm Bowel Dis; free in PMC; Crossref CHORUS/standard OUP model (not CC) — unknown for redistribution."
+    },
+    {
+      "pmid": "33175976",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "restricted",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Paywall / all-rights signal — cite metadata only; no FT/figure reuse.",
+      "europePmcUrl": "https://europepmc.org/article/MED/33175976",
+      "doi": "10.1093/rheumatology/keaa669",
+      "publisherLicense": null,
+      "reviewNotes": "Rheumatology (OUP) 2021; no OA/PMC — cite metadata only."
+    },
+    {
+      "pmid": "37763102",
+      "packs": [
+        "ssc_tfh_b_il21"
+      ],
+      "licenseStatus": "ok_oa",
+      "attributionNote": "Bibliographic PMID citation / Discovery locator OK. Do not paste paywalled full text into this repo. Open access with publisher license cc by; verify attribution and any NC/SA terms before redistribution of PDF/figures.",
+      "europePmcUrl": "https://europepmc.org/article/MED/37763102",
+      "doi": "10.3390/jpm13091334",
+      "pmcid": "PMC10532941",
+      "publisherLicense": "cc by",
+      "reviewNotes": "J Pers Med (MDPI); Europe PMC license=cc by — OA under CC BY."
+    }
+  ],
+  "honesty": [
+    "Curator reviewDate=2026-11-01; method recorded on bundle.reviewMethod.",
+    "Statuses: ok_cite (citation-only cleared) · ok_oa (CC / clear reuse) · restricted (paywall ARR — metadata cite only) · unknown (unclear — no invented CC).",
+    "ok_oa ≠ partner commercial corpus clearance; partnerSigned stays false until named partner agrees attribution for the pilot lock.",
+    "PMID presence ≠ republication rights for PDFs or figures beyond what the row license allows.",
+    "Does not contain PHI; does not auto-approve Gate C."
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "schemaVersion": "hsi-isi-wiring-spec-1",
+  "specVersion": "0.1.0",
+  "phase": "P0.5-WIRING-PLAYBOOK",
+  "companionTo": {
+    "consumeContractSchema": "hsi-isi-consume-contract-1",
+    "consumeContractFile": "hsi-isi-consume-contract.json",
+    "playbook": "docs/ISI_IMMUNICITY_WIRING_PLAYBOOK.md"
+  },
+  "notCds": true,
+  "autoApproveIntoKg": false,
+  "containsPhi": false,
+  "partnerSigned": false,
+  "immunecityEditFromThisWorkspace": false,
+  "sharedEvidenceNeon": false,
+  "package": "hsi-core",
+  "repo": {
+    "owner": "gnaneshwer23",
+    "name": "hsi-core",
+    "defaultBranch": "main",
+    "https": "https://github.com/gnaneshwer23/hsi-core"
+  },
+  "freeze": {
+    "writeTarget": "~/Projects/hsi-core",
+    "doNotEdit": [
+      "~/Desktop/immune-city",
+      "https://github.com/gnaneshwer23/immunecity"
+    ],
+    "doNotMutateNeon": [
+      "autumn-snow-67879321"
+    ],
+    "hsiNeonOnly": "red-wave-06625195",
+    "applyingWiresRequires": "immunecity repo session or explicit user override of freeze"
+  },
+  "urlPatterns": {
+    "githubRawDiscovery": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/{ref}/site/public/discovery/{fileName}",
+    "githubRawDocs": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/{ref}/docs/{fileName}",
+    "githubRawFile": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/{ref}/{repoPath}",
+    "localDiscovery": "site/public/discovery/{fileName}",
+    "localPublishLatest": "dist/outputs/latest/{fileName}",
+    "localPublishBundle": "dist/outputs/{bundleId}/{fileName}",
+    "notes": [
+      "Prefer committed Discovery copies for GitHub raw — dist/outputs is gitignored.",
+      "Replace {ref} with main or a commit SHA.",
+      "Replace {fileName} with artifact basename from consume contract artifacts[].fileName.",
+      "Publish bundle requires bun run outputs locally or a hosted mirror."
+    ]
+  },
+  "fetch": {
+    "preferredSource": "site_public_discovery",
+    "discoveryBaseRawMain": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/main/site/public/discovery",
+    "wiringSpecRawMain": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/main/docs/hsi-isi-wiring-spec.json",
+    "playbookRawMain": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/main/docs/ISI_IMMUNICITY_WIRING_PLAYBOOK.md",
+    "consumeContractRawMain": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/main/site/public/discovery/hsi-isi-consume-contract.json",
+    "discoveryFiles": [
+      "index.json",
+      "hsi-isi-consume-contract.json",
+      "hsi-isi-wiring-spec.json",
+      "hsi-partner-lock.json",
+      "hsi-vertical-decision.json",
+      "hsi-pilot-evidence-pack.json",
+      "gate-c-checklist.json",
+      "hsi-r2-validation.json",
+      "hsi-translation-handoff.json",
+      "hsi-gap-report.json",
+      "hsi-ssc-pathway-pack.json",
+      "hsi-gut-immune-pack.json",
+      "hsi-neuroimmune-pack.json",
+      "hsi-partner-flip-readiness.json",
+      "hsi-source-licensing-stub.json",
+      "hsi-embedding-sidecars.json",
+      "hsi-model-eval-harness.json",
+      "hsi-external-genome-pointers.json",
+      "hsi-p3-adapter-license-matrix.json",
+      "hsi-rdkit-adapter-proposals.json",
+      "hsi-openmm-adapter-proposals.json",
+      "hsi-reinvent4-adapter-proposals.json",
+      "hsi-esm-adapter-proposals.json"
+    ],
+    "publishOnlyFiles": [
+      "MANIFEST.json",
+      "hsi-isi-export.json",
+      "hsi-isi-rel-map.json",
+      "hsi-pilot-review-rubric.json",
+      "hsi-pilot-acceptance.json",
+      "hsi-pilot-walkthrough.md",
+      "hsi-systems-vision.json",
+      "hsi-aksh-node-map.json",
+      "hsi-aksh-hitl-cards.json"
+    ]
+  },
+  "loadOrder": [
+    "1. MANIFEST.json or discovery index.json — verify notCds / autoApproveIntoKg=false / partnerSigned=false",
+    "2. required_core: hsi-isi-export.json + hsi-isi-rel-map.json + gate-c-checklist.*",
+    "3. required_pilot: partner lock + vertical + pilot pack/rubric/acceptance/walkthrough + flip-readiness + consume contract + wiring spec",
+    "4. recommended_secondary: gap / R2 / SSc / gut / neuro / translation / systems vision / licensing stub",
+    "5. optional_proposal: embedding / eval / genome / P3 matrix / adapter proposals",
+    "6. optional_aksh: node map + HITL cards"
+  ],
+  "gradeDisplayRules": {
+    "hsiGrades": ["established", "uncertain", "unexplored"],
+    "gradeInfo": {
+      "established": {
+        "label": "Established",
+        "desc": "Human-supported claim with durable provenance; safe to surface under HITL / discovery constraints.",
+        "cdsActionable": false
+      },
+      "uncertain": {
+        "label": "Uncertain",
+        "desc": "Partial support, conflict, or source-linked but not claim-assessed — label honesty required.",
+        "cdsActionable": false
+      },
+      "unexplored": {
+        "label": "Unexplored",
+        "desc": "Draft, unreviewed, or no mapped source — discovery only; never CDS-actionable.",
+        "cdsActionable": false
+      }
+    },
+    "orthogonalAxes": [
+      "hsiGrade — coarse band only; not Gate C; not confidence score",
+      "curationReview — human Gate C lifecycle",
+      "teachingStatus — separate KG label; never merge axes into one score"
+    ],
+    "hardBans": [
+      "Model proposals / embeddings / MD / generative drafts must never flip hsiGrade",
+      "Packs remain evidence authority over proposal shelves",
+      "Never surface grades as clinical actions"
+    ]
+  },
+  "gateC": {
+    "checklistArtifact": "gate-c-checklist.json",
+    "statusOnPublish": "pending",
+    "autoApprove": false,
+    "mayFlipHsiGradeFromChecklist": false,
+    "approveTargetNeon": "autumn-snow-67879321",
+    "hsiNeonPendingOnly": "red-wave-06625195",
+    "rules": [
+      "Publish leaves every evidence-backed Gate C row as pending",
+      "Approve+supports is human-only in ISI product Neon — never automated from hsi-core",
+      "HSI db:gate-c-local may upsert pending placeholders into red-wave only",
+      "Same PMID on multiple axes requires curator S-P-O re-check before approve"
+    ]
+  },
+  "discoveryRouteMap": [
+    {
+      "hsiPath": "/discovery",
+      "tab": null,
+      "files": ["index.json"],
+      "immunecitySurfaceHint": "product_discovery_home",
+      "notCds": true
+    },
+    {
+      "hsiPath": "/discovery",
+      "tab": "ask",
+      "files": ["hsi-partner-lock.json", "hsi-pilot-evidence-pack.json", "hsi-vertical-decision.json"],
+      "immunecitySurfaceHint": "ask_locked_question",
+      "notCds": true
+    },
+    {
+      "hsiPath": "/discovery",
+      "tab": "map",
+      "files": ["hsi-pilot-evidence-pack.json"],
+      "immunecitySurfaceHint": "evidence_map_entity_slice",
+      "notCds": true
+    },
+    {
+      "hsiPath": "/discovery",
+      "tab": "review",
+      "files": ["hsi-pilot-evidence-pack.json", "gate-c-checklist.json"],
+      "immunecitySurfaceHint": "expert_review_gate_c_queue",
+      "notCds": true
+    },
+    {
+      "hsiPath": "/discovery",
+      "tab": "validate",
+      "files": ["hsi-r2-validation.json"],
+      "immunecitySurfaceHint": "validate_hypotheses_gaps",
+      "notCds": true
+    },
+    {
+      "hsiPath": "/discovery",
+      "tab": "translate",
+      "files": ["hsi-translation-handoff.json"],
+      "immunecitySurfaceHint": "translate_hitl_not_cds",
+      "notCds": true
+    },
+    {
+      "hsiPath": "/akeno",
+      "tab": null,
+      "files": ["hsi-translation-handoff.json"],
+      "immunecitySurfaceHint": "akeno_hitl_separate_from_isi_core",
+      "notCds": true
+    }
+  ],
+  "envVars": {
+    "hsiCore": {
+      "DATABASE_URL": "HSI Neon ep-restless-dew / red-wave only",
+      "NEON_PROJECT_ID": "red-wave-06625195",
+      "NEON_BRANCH_ID": "br-quiet-silence-zab1zvji",
+      "NEON_DATABASE": "neondb",
+      "forbiddenHosts": [
+        "ep-blue-salad (autumn-snow ISI)",
+        "Akeno silent-violet",
+        "DeliverX spring-wind"
+      ]
+    },
+    "immunecitySuggested": {
+      "HSI_ARTIFACT_BASE_URL": "Raw discovery base or CDN mirror of publish bundle",
+      "HSI_GIT_SHA_OR_REF": "Pin main tip or commit SHA",
+      "HSI_CONSUME_CONTRACT_URL": "URL to hsi-isi-consume-contract.json",
+      "HSI_WIRING_SPEC_URL": "URL to hsi-isi-wiring-spec.json",
+      "ISI_DATABASE_URL": "autumn-snow product only — never red-wave for Gate C approve"
+    }
+  },
+  "neonIsolation": {
+    "hsi": {
+      "name": "human super intelligence",
+      "projectId": "red-wave-06625195",
+      "role": "HSI substrate + pending Gate C placeholders only"
+    },
+    "isi": {
+      "name": "immunecity",
+      "projectId": "autumn-snow-67879321",
+      "role": "ISI product DB + human Gate C approve+supports"
+    },
+    "sharedEvidenceDb": false
+  },
+  "consumerClientInterfaces": {
+    "typescriptSketches": {
+      "HsiWiringSpec": "{\n  schemaVersion: 'hsi-isi-wiring-spec-1';\n  companionTo: { consumeContractSchema: string; playbook: string };\n  notCds: true;\n  autoApproveIntoKg: false;\n  urlPatterns: Record<string, string>;\n  discoveryRouteMap: Array<{ hsiPath: string; tab: string | null; files: string[]; immunecitySurfaceHint: string; notCds: true }>;\n  gateC: { autoApprove: false; statusOnPublish: 'pending'; approveTargetNeon: string };\n  acceptanceTests: Array<{ id: string; assert: string }>;\n}",
+      "IsiConsumeContract": "{\n  schemaVersion: 'hsi-isi-consume-contract-1';\n  notCds: true;\n  autoApproveIntoKg: false;\n  partnerSigned: false;\n  artifacts: Array<{ manifestKey: string; fileName: string; loadPriority: string; autoApproveIntoKg: false }>;\n  loadOrderHint: string[];\n  grades: { hsiGrades: string[]; rules: string[] };\n  gateC: { autoApprove: false; statusOnPublish: 'pending' };\n}",
+      "HsiArtifactLoader": "{\n  loadJson<T>(fileName: string): Promise<T>;\n  loadConsumeContract(): Promise<IsiConsumeContract>;\n  loadWiringSpec(): Promise<HsiWiringSpec>;\n  assertHonestyFlags(doc: { notCds?: boolean; autoApproveIntoKg?: boolean; partnerSigned?: boolean }): void;\n}",
+      "DiscoveryRouteBinding": "{\n  surface: 'ask' | 'map' | 'review' | 'validate' | 'translate';\n  files: string[];\n  renderGrade(band: 'established' | 'uncertain' | 'unexplored'): void;\n  enqueueGateC(row: unknown): void; // never auto-approve\n}"
+    },
+    "referenceImplementation": "examples/isi-consumer/"
+  },
+  "acceptanceTests": [
+    {
+      "id": "AT-HONESTY-FLAGS",
+      "assert": "index or contract has notCds=true, autoApproveIntoKg=false, partnerSigned=false"
+    },
+    {
+      "id": "AT-ARTIFACT-NO-AUTO-APPROVE",
+      "assert": "every consume-contract artifact.autoApproveIntoKg === false"
+    },
+    {
+      "id": "AT-GATE-C-PENDING",
+      "assert": "gateC.statusOnPublish==='pending' && gateC.autoApprove===false && mayFlipHsiGradeFromChecklist===false"
+    },
+    {
+      "id": "AT-GRADE-BAND",
+      "assert": "hsiGrade display only uses established|uncertain|unexplored"
+    },
+    {
+      "id": "AT-ASK-STAYS-RA",
+      "assert": "vertical.activeScope==='ra-tnf'; secondary packs do not replace ASK"
+    },
+    {
+      "id": "AT-NEON-ISOLATION",
+      "assert": "ISI Gate C approve config must not target red-wave; HSI migrations must not target autumn-snow"
+    },
+    {
+      "id": "AT-DEMO-CLIENT",
+      "assert": "bun test test/isiConsumerWiring.test.ts && bun run examples/isi-consumer/demo.ts"
+    }
+  ],
+  "honesty": [
+    "This spec is an out-of-repo wiring handoff — does not edit immunecity.",
+    "partnerSigned remains false until a named partner confirms in writing.",
+    "No CDS / PHI / shared Neon.",
+    "Applying product wires requires an immunecity session or user freeze override."
+  ]
+}

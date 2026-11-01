@@ -1,0 +1,3514 @@
+{
+  "schemaVersion": "hsi-pilot-evidence-pack-2",
+  "notCds": true,
+  "noPatientLevelActions": true,
+  "autoApproveIntoKg": false,
+  "generatedAt": "2026-11-01T20:21:39.173Z",
+  "disease": "Rheumatoid arthritis",
+  "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+  "lockedPilot": false,
+  "scopeLocked": true,
+  "partnerSigned": true,
+  "provisionalLock": false,
+  "partnerLock": {
+    "schemaVersion": "hsi-partner-lock-1",
+    "scopeLocked": true,
+    "provisionalLock": false,
+    "disease": {
+      "id": "ra",
+      "label": "Rheumatoid arthritis",
+      "shortLabel": "RA"
+    },
+    "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+    "candidateQuestions": [
+      "Why do some patients respond differently to a particular therapy?",
+      "Which biomarkers or immune mechanisms are supported by evidence for a defined subgroup?",
+      "What evidence gaps should inform the next experiment or study?"
+    ],
+    "seedPathway": {
+      "id": "ra-tnf-response-heterogeneity",
+      "label": "RA · TNF / ACPA / ADA · anti-TNF response heterogeneity",
+      "rationale": "Phase 3 deepened partner-scoped slice: TNF→RA + anti-CCP/RF (LOINC) + IL-6 / anti-TNF-refractory + ADA/immunogenicity + serology competing frames + MTX+anti-TNF combo background. Matches pilot-brief questions on therapy response and subgroup biomarkers. Working Stage 1 scope (scopeLocked); fixture partnerSigned is path-testing only.",
+      "primaryClaimIds": [
+        "HSI-C-RA-001",
+        "HSI-C-RA-002",
+        "HSI-C-RA-003",
+        "HSI-C-RA-004",
+        "HSI-C-RA-005",
+        "HSI-C-RA-006",
+        "HSI-C-RA-007",
+        "HSI-C-RA-008",
+        "HSI-C-RA-009",
+        "HSI-C-RA-010",
+        "HSI-C-RA-011",
+        "HSI-C-RA-012",
+        "HSI-C-IM-002",
+        "HSI-C-IM-003"
+      ],
+      "primaryEdgeIds": [
+        "HSI-E-RA-001",
+        "HSI-E-RA-002",
+        "HSI-E-RA-003",
+        "HSI-E-RA-004",
+        "HSI-E-RA-005",
+        "HSI-E-RA-006",
+        "HSI-E-RA-007",
+        "HSI-E-RA-008",
+        "HSI-E-RA-009",
+        "HSI-E-RA-010",
+        "HSI-E-RA-011",
+        "HSI-E-RA-012",
+        "HSI-E-IM-002",
+        "HSI-E-IM-003"
+      ],
+      "primaryPmids": [
+        "11244034",
+        "10662881",
+        "11087881",
+        "18625622",
+        "2993897",
+        "16508927",
+        "17133559",
+        "18375541",
+        "24586782",
+        "20699241",
+        "10622295"
+      ]
+    },
+    "verticalStrategy": "dual_track",
+    "activeScope": "ra-tnf",
+    "prdMvpTarget": "ssc-tfh-b-il21",
+    "verticalDecision": {
+      "schemaVersion": "hsi-vertical-decision-1",
+      "option": "A",
+      "verticalStrategy": "dual_track",
+      "activeScope": "ra-tnf",
+      "prdMvpTarget": "ssc-tfh-b-il21",
+      "raComparisonFraming": "release2",
+      "decidedAt": "2026-11-01T17:00:00.000Z"
+    },
+    "updatedAt": "2026-11-01T20:00:00.000Z",
+    "partnerSigned": true,
+    "lockedPilot": false,
+    "status": "scope_locked",
+    "partner": {
+      "id": "test:hypothetical-isi-pilot-partner",
+      "label": "Hypothetical ISI Pilot Partner (replace with real org)",
+      "type": "hypothetical_test_fixture",
+      "region": "unspecified",
+      "contactChannel": "none",
+      "outreachStatus": "test_fixture",
+      "notes": "TEST FIXTURE — replace before real pilot. Not a legal MoU/MoA or named org. agreementKind=hypothetical_test_only; legalBinding=false; replaceWithRealPartner=true. Production ISI must ignore partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true. Swap via src/hypotheticalPartnerFixture.ts."
+    },
+    "agreementKind": "hypothetical_test_only",
+    "replaceWithRealPartner": true,
+    "legalBinding": false,
+    "isHypothetical": true,
+    "notALegalAgreement": true,
+    "testPilotMode": true,
+    "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
+    "flipRequirements": [
+      "REPLACE FIXTURE: set USE_HYPOTHETICAL_PARTNER_FIXTURE=false in src/hypotheticalPartnerFixture.ts and fill REAL_PARTNER_REPLACEMENT with a real named org (never invent).",
+      "Named partner confirms disease = rheumatoid arthritis (or explicitly chooses a different disease — then re-lock scope).",
+      "Named partner confirms or rewrites the research question in their words.",
+      "Record real outreach row in ISI_PILOT_PARTNER_SHORTLIST.md (org, type, region, status) — still no invented emails.",
+      "Agree source licensing / attribution for the partner source set.",
+      "Agree scientific review rubric thresholds (time saved, usefulness, rejections) with the partner.",
+      "Set legalBinding=true, agreementKind=written_confirm|legal_mou, partner.type=named_partner, outreachStatus=confirmed, replaceWithRealPartner=false, isHypothetical=false → lockedPilot becomes true.",
+      "Re-run bun run outputs and refresh the pilot evidence pack + review rubric against the signed question."
+    ],
+    "honesty": [
+      "TEST FIXTURE — replace before real pilot. Banner must stay visible in packs / MANIFEST / walkthrough.",
+      "partnerSigned=true under agreementKind=hypothetical_test_only is PATH-TESTING ONLY — not a MoU.",
+      "legalBinding=false → lockedPilot=false even when partnerSigned=true.",
+      "Production ISI must ignore fixture partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true.",
+      "Phase 2 done = scopeLocked=true (disease + researchQuestion are working Stage 1 scope).",
+      "Phase 3 done = partner-scoped evidence depth for this locked RA/anti-TNF question (ADA, serology tension, RF LOINC, MTX combo).",
+      "Phase 5 done = pilot acceptance pack (checklist + walkthrough; real named partner still pending).",
+      "scopeLocked does NOT mean a commercial partner signed or locked a MoU.",
+      "Hypothetical fixture partners are not MoUs; do not invent personal contacts.",
+      "Exports must surface isHypothetical=true + notALegalAgreement=true + testFixtureBanner."
+    ]
+  },
+  "substrateNote": "Phase 3 evidence depth on Phase 2 scope lock: rheumatoid arthritis + anti-TNF response heterogeneity. scopeLocked=true; lockedPilot=false until legalBinding; fixture may set partnerSigned under hypothetical_test_only. Partner-scoped slice adds ADA/immunogenicity, RF/ACPA serology tension, RF LOINC, and MTX+anti-TNF combo literature. Full evidenceMap still includes T2D / immuno-metabolic + SLE/PsO/IBD stubs.",
+  "discoveryCentre": {
+    "schemaVersion": "hsi-discovery-centre-meta-1",
+    "surfaceRole": "site_product_surface",
+    "notInteractiveUi": false,
+    "productSurfacePath": "/discovery",
+    "notLockedPilotIndications": true,
+    "notCds": true,
+    "discoveryLoop": {
+      "framing": "ASK → MAP → REVIEW → TEST → LEARN",
+      "steps": [
+        {
+          "id": "ask",
+          "label": "ASK",
+          "order": 1,
+          "desc": "Scoped research question for one immune-mediated disease (RA/TNF working scope; partnerSigned still open). SSc is secondary PRD target only — does not replace this ASK."
+        },
+        {
+          "id": "map",
+          "label": "MAP",
+          "order": 2,
+          "desc": "Traceable evidence map: claims, grades, provenance, entity slice."
+        },
+        {
+          "id": "review",
+          "label": "REVIEW",
+          "order": 3,
+          "desc": "Human Gate C / expert challenge — never auto-approve into product KG."
+        },
+        {
+          "id": "test",
+          "label": "TEST",
+          "order": 4,
+          "desc": "Expert shortlist of gaps / hypotheses worth testing next."
+        },
+        {
+          "id": "learn",
+          "label": "LEARN",
+          "order": 5,
+          "desc": "Versioned outputs + honest rejections feed the next ASK."
+        }
+      ]
+    },
+    "illustrativeDiseaseContexts": [
+      {
+        "id": "ra",
+        "label": "Rheumatoid arthritis",
+        "shortLabel": "RA",
+        "status": "scope_locked_working_pilot",
+        "lockedPilot": false,
+        "seedHint": "TNF / IL-6 / ADA / RF·ACPA / anti-TNF response-heterogeneity — Phase 3 depth on Phase 2 scope lock"
+      },
+      {
+        "id": "ssc",
+        "label": "Systemic sclerosis",
+        "shortLabel": "SSc",
+        "status": "prd_mvp_secondary_target",
+        "lockedPilot": false,
+        "seedHint": "Dual-track PRD MVP: CD4/Tfh–B–IL-21 thin literature slice (hsi-ssc-pathway-pack); EBV hypothesized only — does not replace RA ASK"
+      },
+      {
+        "id": "sle",
+        "label": "Systemic lupus erythematosus",
+        "shortLabel": "SLE",
+        "status": "illustrative_only",
+        "lockedPilot": false,
+        "seedHint": "Type I IFN / ANA / anti-dsDNA illustrative edges when present in seeds"
+      },
+      {
+        "id": "psoriasis",
+        "label": "Psoriasis / psoriatic disease",
+        "shortLabel": "PsO",
+        "status": "illustrative_only",
+        "lockedPilot": false,
+        "seedHint": "IL-17 / IL-23 / Th17 illustrative edges when present in seeds"
+      },
+      {
+        "id": "ibd",
+        "label": "Inflammatory bowel disease",
+        "shortLabel": "IBD",
+        "status": "illustrative_only",
+        "lockedPilot": false,
+        "seedHint": "IL-23 / mucosal barrier illustrative edges; systems secondary gut–immune pack (SCFA ↔ Treg/Th17) is separate — does not replace RA ASK"
+      }
+    ],
+    "systemsSecondaryAxes": [
+      {
+        "id": "gut-scfa-mucosal-treg-th17",
+        "label": "Gut–immune · SCFA ↔ mucosal Treg / Th17",
+        "status": "systems_secondary_axis",
+        "deepSeedsPresent": true,
+        "packFile": "hsi-gut-immune-pack.json",
+        "seedHint": "P1.3 thin literature slice — uncertain/hypothesized grades; Th17 promote vs inhibit competing; not CDS"
+      },
+      {
+        "id": "ssc-tfh-b-il21",
+        "label": "SSc · Tfh–B–IL-21 (PRD MVP)",
+        "status": "prd_mvp_secondary_target",
+        "deepSeedsPresent": true,
+        "packFile": "hsi-ssc-pathway-pack.json",
+        "seedHint": "Dual-track A PRD target — does not replace RA ASK; EBV hypothesized only"
+      },
+      {
+        "id": "neuro-vagus-cholinergic-reflex",
+        "label": "Neuroimmune · vagus / cholinergic anti-inflammatory reflex",
+        "status": "systems_secondary_axis",
+        "deepSeedsPresent": true,
+        "packFile": "hsi-neuroimmune-pack.json",
+        "seedHint": "P2.1 thin literature slice — uncertain/hypothesized grades; human VNS–RA hypothesized only; not clinical cure; not CDS"
+      }
+    ],
+    "partnerLock": {
+      "schemaVersion": "hsi-partner-lock-1",
+      "scopeLocked": true,
+      "partnerSigned": true,
+      "lockedPilot": false,
+      "provisionalLock": false,
+      "status": "scope_locked",
+      "disease": "Rheumatoid arthritis",
+      "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+      "partner": "test:hypothetical-isi-pilot-partner",
+      "partnerType": "hypothetical_test_fixture",
+      "partnerLabel": "Hypothetical ISI Pilot Partner (replace with real org)",
+      "seedPathwayId": "ra-tnf-response-heterogeneity",
+      "agreementKind": "hypothetical_test_only",
+      "replaceWithRealPartner": true,
+      "legalBinding": false,
+      "isHypothetical": true,
+      "notALegalAgreement": true,
+      "testPilotMode": true,
+      "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
+      "verticalStrategy": "dual_track",
+      "activeScope": "ra-tnf",
+      "prdMvpTarget": "ssc-tfh-b-il21"
+    },
+    "partnerLockDetail": {
+      "schemaVersion": "hsi-partner-lock-1",
+      "scopeLocked": true,
+      "provisionalLock": false,
+      "disease": {
+        "id": "ra",
+        "label": "Rheumatoid arthritis",
+        "shortLabel": "RA"
+      },
+      "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+      "candidateQuestions": [
+        "Why do some patients respond differently to a particular therapy?",
+        "Which biomarkers or immune mechanisms are supported by evidence for a defined subgroup?",
+        "What evidence gaps should inform the next experiment or study?"
+      ],
+      "seedPathway": {
+        "id": "ra-tnf-response-heterogeneity",
+        "label": "RA · TNF / ACPA / ADA · anti-TNF response heterogeneity",
+        "rationale": "Phase 3 deepened partner-scoped slice: TNF→RA + anti-CCP/RF (LOINC) + IL-6 / anti-TNF-refractory + ADA/immunogenicity + serology competing frames + MTX+anti-TNF combo background. Matches pilot-brief questions on therapy response and subgroup biomarkers. Working Stage 1 scope (scopeLocked); fixture partnerSigned is path-testing only.",
+        "primaryClaimIds": [
+          "HSI-C-RA-001",
+          "HSI-C-RA-002",
+          "HSI-C-RA-003",
+          "HSI-C-RA-004",
+          "HSI-C-RA-005",
+          "HSI-C-RA-006",
+          "HSI-C-RA-007",
+          "HSI-C-RA-008",
+          "HSI-C-RA-009",
+          "HSI-C-RA-010",
+          "HSI-C-RA-011",
+          "HSI-C-RA-012",
+          "HSI-C-IM-002",
+          "HSI-C-IM-003"
+        ],
+        "primaryEdgeIds": [
+          "HSI-E-RA-001",
+          "HSI-E-RA-002",
+          "HSI-E-RA-003",
+          "HSI-E-RA-004",
+          "HSI-E-RA-005",
+          "HSI-E-RA-006",
+          "HSI-E-RA-007",
+          "HSI-E-RA-008",
+          "HSI-E-RA-009",
+          "HSI-E-RA-010",
+          "HSI-E-RA-011",
+          "HSI-E-RA-012",
+          "HSI-E-IM-002",
+          "HSI-E-IM-003"
+        ],
+        "primaryPmids": [
+          "11244034",
+          "10662881",
+          "11087881",
+          "18625622",
+          "2993897",
+          "16508927",
+          "17133559",
+          "18375541",
+          "24586782",
+          "20699241",
+          "10622295"
+        ]
+      },
+      "verticalStrategy": "dual_track",
+      "activeScope": "ra-tnf",
+      "prdMvpTarget": "ssc-tfh-b-il21",
+      "verticalDecision": {
+        "schemaVersion": "hsi-vertical-decision-1",
+        "option": "A",
+        "verticalStrategy": "dual_track",
+        "activeScope": "ra-tnf",
+        "prdMvpTarget": "ssc-tfh-b-il21",
+        "raComparisonFraming": "release2",
+        "decidedAt": "2026-11-01T17:00:00.000Z"
+      },
+      "updatedAt": "2026-11-01T20:00:00.000Z",
+      "partnerSigned": true,
+      "lockedPilot": false,
+      "status": "scope_locked",
+      "partner": {
+        "id": "test:hypothetical-isi-pilot-partner",
+        "label": "Hypothetical ISI Pilot Partner (replace with real org)",
+        "type": "hypothetical_test_fixture",
+        "region": "unspecified",
+        "contactChannel": "none",
+        "outreachStatus": "test_fixture",
+        "notes": "TEST FIXTURE — replace before real pilot. Not a legal MoU/MoA or named org. agreementKind=hypothetical_test_only; legalBinding=false; replaceWithRealPartner=true. Production ISI must ignore partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true. Swap via src/hypotheticalPartnerFixture.ts."
+      },
+      "agreementKind": "hypothetical_test_only",
+      "replaceWithRealPartner": true,
+      "legalBinding": false,
+      "isHypothetical": true,
+      "notALegalAgreement": true,
+      "testPilotMode": true,
+      "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
+      "flipRequirements": [
+        "REPLACE FIXTURE: set USE_HYPOTHETICAL_PARTNER_FIXTURE=false in src/hypotheticalPartnerFixture.ts and fill REAL_PARTNER_REPLACEMENT with a real named org (never invent).",
+        "Named partner confirms disease = rheumatoid arthritis (or explicitly chooses a different disease — then re-lock scope).",
+        "Named partner confirms or rewrites the research question in their words.",
+        "Record real outreach row in ISI_PILOT_PARTNER_SHORTLIST.md (org, type, region, status) — still no invented emails.",
+        "Agree source licensing / attribution for the partner source set.",
+        "Agree scientific review rubric thresholds (time saved, usefulness, rejections) with the partner.",
+        "Set legalBinding=true, agreementKind=written_confirm|legal_mou, partner.type=named_partner, outreachStatus=confirmed, replaceWithRealPartner=false, isHypothetical=false → lockedPilot becomes true.",
+        "Re-run bun run outputs and refresh the pilot evidence pack + review rubric against the signed question."
+      ],
+      "honesty": [
+        "TEST FIXTURE — replace before real pilot. Banner must stay visible in packs / MANIFEST / walkthrough.",
+        "partnerSigned=true under agreementKind=hypothetical_test_only is PATH-TESTING ONLY — not a MoU.",
+        "legalBinding=false → lockedPilot=false even when partnerSigned=true.",
+        "Production ISI must ignore fixture partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true.",
+        "Phase 2 done = scopeLocked=true (disease + researchQuestion are working Stage 1 scope).",
+        "Phase 3 done = partner-scoped evidence depth for this locked RA/anti-TNF question (ADA, serology tension, RF LOINC, MTX combo).",
+        "Phase 5 done = pilot acceptance pack (checklist + walkthrough; real named partner still pending).",
+        "scopeLocked does NOT mean a commercial partner signed or locked a MoU.",
+        "Hypothetical fixture partners are not MoUs; do not invent personal contacts.",
+        "Exports must surface isHypothetical=true + notALegalAgreement=true + testFixtureBanner."
+      ]
+    },
+    "verticalDecision": {
+      "schemaVersion": "hsi-vertical-decision-1",
+      "option": "A",
+      "verticalStrategy": "dual_track",
+      "activeScope": "ra-tnf",
+      "prdMvpTarget": "ssc-tfh-b-il21",
+      "raComparisonFraming": "release2",
+      "decidedAt": "2026-11-01T17:00:00.000Z"
+    },
+    "gradeVocabulary": [
+      "established",
+      "uncertain",
+      "unexplored"
+    ],
+    "notes": [
+      "Phase 6 done: Target R1 Discovery Centre product surface at site `/discovery` (consumes bun run outputs).",
+      "Phase 7 done: R2 VALIDATE tab loads hsi-r2-validation.json (hypothesis cards / ranked gaps; research only).",
+      "Phase 8 done (HSI substrate): TRANSLATE tab + /akeno HITL consumer load hsi-translation-handoff.json — Stage 3 scaffolding; clinicalActive=false; not live CDS.",
+      "RA is the Phase 2 working Stage 1 scope (scopeLocked=true; lockedPilot=false until legalBinding; fixture may set partnerSigned under hypothetical_test_only).",
+      "Dual-track A: SSc surfaces as prd_mvp_secondary_target only — ASK research question stays RA / anti-TNF.",
+      "P1.3: gut–immune SCFA ↔ mucosal Treg/Th17 is a systems secondary axis (hsi-gut-immune-pack) — does not replace ASK.",
+      "P2.1: neuroimmune vagus / cholinergic anti-inflammatory reflex is a systems secondary axis (hsi-neuroimmune-pack) — human VNS–RA hypothesized only; not a clinical cure; does not replace ASK.",
+      "Do not treat SLE/PsO/IBD as selected pilot indications — illustrative conversation contexts only.",
+      "Not diagnostic / not for clinical use. teachingStatus ≠ hsiGrade ≠ CDS."
+    ]
+  },
+  "gradeDefinitions": {
+    "established": {
+      "label": "Established",
+      "desc": "Human-supported claim with durable provenance; safe to surface under HITL / discovery constraints."
+    },
+    "uncertain": {
+      "label": "Uncertain",
+      "desc": "Partial support, conflict, or source-linked but not claim-assessed — label honesty required."
+    },
+    "unexplored": {
+      "label": "Unexplored",
+      "desc": "Draft, unreviewed, or no mapped source — discovery only; never CDS-actionable."
+    }
+  },
+  "clinicalBoundary": [
+    "No individual risk prediction",
+    "No diagnosis or treatment recommendation",
+    "No automated eligibility or enrollment",
+    "No patient outreach or EHR write-back",
+    "No Akeno/Aksh patient-level CDS in this pack"
+  ],
+  "questionProject": {
+    "projectId": "pilot-q-scope-locked-ra-tnf",
+    "question": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+    "disease": "Rheumatoid arthritis",
+    "scope": {
+      "population": "adults with rheumatoid arthritis (population detail TBD with named partner)",
+      "tissue": "synovium / systemic inflammatory tone (TBD with partner)",
+      "cellType": "synovial macrophages / cytokine-producing myeloid cells (TBD with partner)",
+      "mechanismOrBiomarkerOrTreatmentFocus": "anti-TNF response heterogeneity; TNF vs IL-6 vs ADA/immunogenicity; RF/ACPA serology tension",
+      "timeWindow": "unknown"
+    },
+    "owner": "Hypothetical ISI Pilot Partner (replace with real org)",
+    "workspace": "pilot-scope-locked-ra",
+    "status": "scope_locked",
+    "lockedPilot": false,
+    "scopeLocked": true,
+    "partnerSigned": true,
+    "provisionalLock": false,
+    "evidenceSnapshotRef": "dist/outputs/hsi-core-0.1.0-20261101T202139173Z/hsi-isi-export.json",
+    "createdAt": "2026-11-01T20:21:39.173Z",
+    "updatedAt": "2026-11-01T20:21:39.173Z"
+  },
+  "evidenceMap": [
+    {
+      "claimId": "HSI-C-T2D-001",
+      "edgeId": "HSI-E-T2D-001",
+      "claimText": "Elevated HbA1c is used to diagnose and monitor type 2 diabetes.",
+      "subject": "HbA1c",
+      "relationship": "biomarker_of",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "ADA Standards of Care (placeholder citation label)",
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": "HSI-N-hba1c",
+        "markerName": "Hemoglobin A1c",
+        "loinc": "4548-4",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "Clinical practice standard — map to durable locator in evidence sprint.",
+      "limitations": "Missing metadata: pmid, doi, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-002",
+      "edgeId": "HSI-E-T2D-002",
+      "claimText": "Fasting plasma glucose above diagnostic thresholds indicates T2D.",
+      "subject": "Fasting plasma glucose",
+      "relationship": "biomarker_of",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "WHO / ADA diagnostic criteria (placeholder)",
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": "HSI-N-fpg",
+        "markerName": "Fasting plasma glucose",
+        "loinc": "1558-6",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-003",
+      "edgeId": "HSI-E-T2D-003",
+      "claimText": "Insulin resistance is a core pathophysiologic feature of T2D.",
+      "subject": "Insulin resistance",
+      "relationship": "associated_with",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-004",
+      "edgeId": "HSI-E-T2D-004",
+      "claimText": "Progressive β-cell dysfunction contributes to hyperglycemia in T2D.",
+      "subject": "Pancreatic β-cell dysfunction",
+      "relationship": "contributes_to",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-005",
+      "edgeId": "HSI-E-T2D-005",
+      "claimText": "Metformin is first-line pharmacotherapy for many adults with T2D.",
+      "subject": "Metformin",
+      "relationship": "treats",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "ADA pharmacologic therapy guidance (placeholder)",
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-006",
+      "edgeId": "HSI-E-T2D-006",
+      "claimText": "SGLT2 inhibitors lower glucose and reduce cardiorenal risk in selected T2D patients.",
+      "subject": "SGLT2 inhibitors",
+      "relationship": "treats",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "claim-assessed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "Cardiorenal outcome trials class (placeholder)",
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-007",
+      "edgeId": "HSI-E-T2D-007",
+      "claimText": "GLP-1 receptor agonists improve glycemic control and weight in T2D.",
+      "subject": "GLP-1 receptor agonists",
+      "relationship": "treats",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "claim-assessed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-008",
+      "edgeId": "HSI-E-T2D-008",
+      "claimText": "Obesity is a major modifiable risk factor for incident T2D.",
+      "subject": "Obesity",
+      "relationship": "risk_factor_for",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "Epidemiologic risk literature (placeholder)",
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-009",
+      "edgeId": "HSI-E-T2D-009",
+      "claimText": "CGM time-in-range complements HbA1c for glycemic assessment in T2D.",
+      "subject": "CGM time-in-range",
+      "relationship": "associated_with",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "t2d",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": "HSI-N-cgm-tir",
+        "markerName": "CGM time in range",
+        "loinc": null,
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-T2D-010",
+      "edgeId": "HSI-E-T2D-010",
+      "claimText": "Systemic glucocorticoids can worsen hyperglycemia and unmask diabetes.",
+      "subject": "Systemic glucocorticoids",
+      "relationship": "worsens",
+      "object": "Hyperglycemia",
+      "conditionContext": "t2d",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "7569976",
+        "doi": "10.1126/science.270.5234.286",
+        "citationLabel": "Auphan N et al. Science 1995 — Immunosuppression by glucocorticoids: inhibition of NF-κB via IκB induction.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/7569976/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "PMID 7569976 verified via Europe PMC. Supports ISI related_axis REL-I010-suppresses-P001 (corticosteroid → NF-κB). HSI hyperglycemia object is not this paper's claim — curator must not approve as hyperglycemia evidence. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-001",
+      "edgeId": "HSI-E-IM-001",
+      "claimText": "Low-grade chronic inflammation is linked to insulin resistance (immuno-metabolic bridge).",
+      "subject": "Low-grade chronic inflammation",
+      "relationship": "bridges_domain",
+      "object": "Insulin resistance",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-002",
+      "edgeId": "HSI-E-IM-002",
+      "claimText": "TNF-α signalling can impair insulin action in metabolic tissues.",
+      "subject": "TNF-α",
+      "relationship": "upregulates",
+      "object": "Insulin resistance",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "11244034",
+        "doi": "10.1146/annurev.immunol.19.1.163",
+        "citationLabel": "Feldmann M, Maini RN. Annu Rev Immunol 2001 — Anti-TNF-α therapy of rheumatoid arthritis: what have we learned?",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/11244034/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "PMID 11244034 verified via Europe PMC. Supports ISI related_axis REL-M001-contributes_to-D001 (TNF → RA). Insulin-resistance object is absent from ISI — not T2D proof. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-003",
+      "edgeId": "HSI-E-IM-003",
+      "claimText": "Circulating IL-6 is associated with T2D risk and inflammatory tone.",
+      "subject": "IL-6",
+      "relationship": "associated_with",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "18625622",
+        "doi": "10.1136/ard.2008.092932",
+        "citationLabel": "Emery P et al. Ann Rheum Dis 2008 — Tocilizumab (IL-6R inhibition) improves outcomes in RA refractory to anti-TNF.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18625622/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": "HSI-N-il6",
+        "markerName": "Interleukin-6",
+        "loinc": "26881-3",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "PMID 18625622 verified via Europe PMC. Supports ISI related_axis REL-M003-contributes_to-D001 (IL-6 axis in RA). No Type 2 diabetes node in ISI — not T2D proof. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-004",
+      "edgeId": "HSI-E-IM-004",
+      "claimText": "hs-CRP is a clinical marker of systemic inflammatory burden.",
+      "subject": "hs-CRP",
+      "relationship": "biomarker_of",
+      "object": "Low-grade chronic inflammation",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "12813013",
+        "doi": "10.1172/JCI18921",
+        "citationLabel": "Pepys MB, Hirschfield GM. J Clin Invest 2003 — C-reactive protein: a critical update.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12813013/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": "HSI-N-crp",
+        "markerName": "C-reactive protein (high sensitivity)",
+        "loinc": "30522-7",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "PMID 12813013 verified via Europe PMC. Supports ISI related_axis REL-P021-produces-B001 (acute-phase → CRP marker). Not a T2D edge. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-005",
+      "edgeId": "HSI-E-IM-005",
+      "claimText": "Adipose tissue macrophage infiltration associates with insulin resistance.",
+      "subject": "Adipose tissue macrophages",
+      "relationship": "associated_with",
+      "object": "Insulin resistance",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "2993897",
+        "doi": "10.1038/316552a0",
+        "citationLabel": "Beutler B et al. Nature 1985 — Identity of tumour necrosis factor and the macrophage-secreted factor cachectin.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/2993897/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "PMID 2993897 verified via Europe PMC. Supports ISI related_axis REL-C003-produces-M001 (macrophage → TNF). Adipose-tissue macrophage / insulin-resistance pair is not this paper — Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-006",
+      "edgeId": "HSI-E-IM-006",
+      "claimText": "NLRP3 inflammasome activation contributes to metabolic inflammation.",
+      "subject": "NLRP3 inflammasome",
+      "relationship": "contributes_to",
+      "object": "Metabolic inflammation",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "15030775",
+        "doi": "10.1016/s1074-7613(04)00046-9",
+        "citationLabel": "Agostini L et al. Immunity 2004 — NALP3 forms an IL-1β-processing inflammasome (Muckle-Wells).",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/15030775/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "PMID 15030775 verified via Europe PMC. Supports ISI related_axis REL-R004-activates-P003 (NLRP3/NALP3 → inflammasome). Metabolic-inflammation object is not a KG node — not T2D proof. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-007",
+      "edgeId": "HSI-E-IM-007",
+      "claimText": "T2D is associated with increased susceptibility to certain infections.",
+      "subject": "Type 2 diabetes mellitus",
+      "relationship": "associated_with",
+      "object": "Infection susceptibility",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "claim-assessed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-008",
+      "edgeId": "HSI-E-IM-008",
+      "claimText": "Sustained hyperglycemia can impair aspects of innate immune function.",
+      "subject": "Hyperglycemia",
+      "relationship": "worsens",
+      "object": "Innate immune dysfunction",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-009",
+      "edgeId": "HSI-E-IM-009",
+      "claimText": "Some autoimmune conditions co-occur with higher T2D risk (bridge shortlist).",
+      "subject": "Autoimmune–metabolic comorbidity",
+      "relationship": "associated_with",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "draft",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IM-010",
+      "edgeId": "HSI-E-IM-010",
+      "claimText": "IL-1 pathway blockade has been studied for metabolic inflammation (research only).",
+      "subject": "IL-1 pathway blockade",
+      "relationship": "inhibits",
+      "object": "Metabolic inflammation",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "28845751",
+        "doi": "10.1056/NEJMoa1707914",
+        "citationLabel": "Ridker PM et al. N Engl J Med 2017 — CANTOS: antiinflammatory therapy with canakinumab (IL-1β).",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/28845751/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "PMID 28845751 verified via Europe PMC / PubMed. Supports ISI related_axis REL-I023-targets-M002 (canakinumab → IL-1β). Discovery / research only — not Aksh CDS-actionable; not metabolic-inflammation KG proof. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IO-001",
+      "edgeId": "HSI-E-IO-001",
+      "claimText": "PD-1 signalling contributes to T-cell exhaustion phenotypes (educational graph).",
+      "subject": "PD-1",
+      "relationship": "drives",
+      "object": "T-cell exhaustion",
+      "conditionContext": "io",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "16382236",
+        "doi": "10.1038/nature04444",
+        "citationLabel": "Barber DL et al. Nature 2006 — Restoring function in exhausted CD8 T cells during chronic viral infection.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16382236/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "PMID 16382236 verified via PubMed/E-utilities. Maps to ISI REL-R011-drives-P015 for Gate C handoff. Same paper is also cited on REL-C015-expresses-R011 (expression axis) — curator must re-assess claim_support=supports for drives→P015 S-P-O before approve. Do not treat HSI source-verified as Neon Gate C pass.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IO-002",
+      "edgeId": "HSI-E-IO-002",
+      "claimText": "Immune checkpoint therapy is associated with immune-related adverse events.",
+      "subject": "Immune checkpoint therapy",
+      "relationship": "associated_with",
+      "object": "Immune-related adverse events",
+      "conditionContext": "io",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "irAE clinical reviews (placeholder)",
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IO-003",
+      "edgeId": "HSI-E-IO-003",
+      "claimText": "Some irAEs and steroid treatment can present with hyperglycemia (bridge-relevant).",
+      "subject": "Immune-related adverse events",
+      "relationship": "associated_with",
+      "object": "Hyperglycemia",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-AU-001",
+      "edgeId": "HSI-E-AU-001",
+      "claimText": "Islet autoantibodies mark autoimmune β-cell targeting in T1D (contrast with T2D).",
+      "subject": "Type 1 diabetes autoimmunity",
+      "relationship": "associated_with",
+      "object": "Islet autoantibodies",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "31180194",
+        "doi": "10.1056/NEJMoa1902226",
+        "citationLabel": "Herold KC et al. N Engl J Med 2019 — Teplizumab in relatives at risk for type 1 diabetes (autoantibody-defined eligibility).",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31180194/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "PMID 31180194 verified via Europe PMC. Supports ISI related_axis REL-B015-predicts_eligibility_for-I013 (islet autoantibodies → teplizumab eligibility). T1D contrast with T2D clinics — not a T2D edge. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-AU-002",
+      "edgeId": "HSI-E-AU-002",
+      "claimText": "LADA can present with adult-onset diabetes phenotypes overlapping T2D clinics.",
+      "subject": "LADA / latent autoimmune diabetes",
+      "relationship": "bridges_domain",
+      "object": "Type 2 diabetes mellitus",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 0 placeholder — awaiting citation + Gate C review.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-001",
+      "edgeId": "HSI-E-RA-001",
+      "claimText": "TNF-α contributes to synovial inflammation in rheumatoid arthritis (scope-locked pathway seed — not a partner-signed lock).",
+      "subject": "TNF-α",
+      "relationship": "contributes_to",
+      "object": "Rheumatoid arthritis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "11244034",
+        "doi": "10.1146/annurev.immunol.19.1.163",
+        "citationLabel": "Feldmann M, Maini RN. Annu Rev Immunol 2001 — Anti-TNF-α therapy of rheumatoid arthritis: what have we learned?",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/11244034/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Scope-locked RA pathway seed (scopeLocked=true; partnerSigned=false; lockedPilot=false). PMID 11244034 verified. Maps toward ISI REL-M001-contributes_to-D001. Gate C handoff pattern mirrors PMID 16382236 (evidence-linked · pending human Neon approve). Not partner-signed.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-002",
+      "edgeId": "HSI-E-RA-002",
+      "claimText": "Anti-CCP (ACPA) antibodies are a serologic biomarker used in rheumatoid arthritis workup (scope-locked — not partner-signed / not CDS).",
+      "subject": "Anti-CCP antibodies",
+      "relationship": "biomarker_of",
+      "object": "Rheumatoid arthritis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "10662881",
+        "doi": "10.1002/1529-0131(200001)43:1<155::AID-ANR20>3.0.CO;2-3",
+        "citationLabel": "Schellekens GA et al. Arthritis Rheum 2000 — The diagnostic properties of rheumatoid arthritis antibodies recognizing a cyclic citrullinated peptide.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/10662881/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": "HSI-N-anti-ccp",
+        "markerName": "Cyclic citrullinated peptide Ab (anti-CCP)",
+        "loinc": "53031-9",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "Scope-locked RA biomarker seed with LOINC 53031-9. PMID 10662881 verified via PubMed. No durable ISI REL-* for anti-CCP→RA yet — marker_only map. Gate C = human Neon approve only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-003",
+      "edgeId": "HSI-E-RA-003",
+      "claimText": "Anti-TNF therapy (e.g. infliximab class) improves clinical outcomes in rheumatoid arthritis when combined with methotrexate in established trials (scope-locked — response heterogeneity remains open).",
+      "subject": "Anti-TNF therapy",
+      "relationship": "treats",
+      "object": "Rheumatoid arthritis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "11087881",
+        "doi": "10.1056/NEJM200011303432202",
+        "citationLabel": "Lipsky PE et al. N Engl J Med 2000 — Infliximab and methotrexate in the treatment of rheumatoid arthritis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/11087881/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Scope-locked RA treatment seed for anti-TNF response question. PMID 11087881 verified. Does not prove uniform response — pairs with RA-004/005 and Phase 3 ADA/serology edges. No invented ISI REL; Gate C = human Neon approve only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-004",
+      "edgeId": "HSI-E-RA-004",
+      "claimText": "IL-6 pathway signalling contributes to rheumatoid arthritis inflammatory tone (competing axis vs TNF-centric framing).",
+      "subject": "IL-6",
+      "relationship": "contributes_to",
+      "object": "Rheumatoid arthritis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "18625622",
+        "doi": "10.1136/ard.2008.092932",
+        "citationLabel": "Emery P et al. Ann Rheum Dis 2008 — Tocilizumab (IL-6R inhibition) improves outcomes in RA refractory to anti-TNF.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18625622/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": "HSI-N-il6",
+        "markerName": "Interleukin-6",
+        "loinc": "26881-3",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "Scope-locked RA multi-cytokine seed. PMID 18625622 verified. Supports ISI related_axis REL-M003-contributes_to-D001. Same paper underpins anti-TNF-refractory framing (RA-005). Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-005",
+      "edgeId": "HSI-E-RA-005",
+      "claimText": "Some patients with inadequate anti-TNF response still show benefit from IL-6 pathway inhibition — supporting competing mechanisms for response heterogeneity (uncertain grade).",
+      "subject": "Anti-TNF refractory RA phenotype",
+      "relationship": "associated_with",
+      "object": "IL-6 pathway axis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "18625622",
+        "doi": "10.1136/ard.2008.092932",
+        "citationLabel": "Emery P et al. Ann Rheum Dis 2008 — Tocilizumab improves outcomes in RA refractory to anti-TNF.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18625622/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Scope-locked response-heterogeneity seed for the pilot question. PMID 18625622 verified. S-P-O is related_axis (trial population = anti-TNF inadequate responders → IL-6R blockade), not a universal causal map. Curator must re-assess claim_support before Neon Gate C approve — same honesty pattern as PMID 16382236 handoff. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-006",
+      "edgeId": "HSI-E-RA-006",
+      "claimText": "Macrophages are a cellular source of TNF-α — relevant to synovial TNF biology in rheumatoid arthritis (entity-slice seed).",
+      "subject": "Synovial macrophages",
+      "relationship": "upregulates",
+      "object": "TNF-α",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "2993897",
+        "doi": "10.1038/316552a0",
+        "citationLabel": "Beutler B et al. Nature 1985 — Identity of tumour necrosis factor and the macrophage-secreted factor cachectin.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/2993897/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Scope-locked cell→cytokine seed. PMID 2993897 verified. Supports ISI related_axis REL-C003-produces-M001 (macrophage → TNF); HSI edgeType=upregulates (no produces predicate in Phase 0). Paper is foundational identity, not RA synovial histology — curator must not overclaim tissue specificity at Gate C. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-007",
+      "edgeId": "HSI-E-RA-007",
+      "claimText": "Development of anti-infliximab antibodies is associated with reduced clinical response to infliximab in rheumatoid arthritis (immunogenicity competing frame for anti-TNF response heterogeneity).",
+      "subject": "Anti-drug antibodies to anti-TNF (ADA)",
+      "relationship": "associated_with",
+      "object": "Anti-TNF refractory RA phenotype",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "16508927",
+        "doi": "10.1002/art.21671",
+        "citationLabel": "Wolbink GJ et al. Arthritis Rheum 2006 — Development of antiinfliximab antibodies and relationship to clinical response in RA.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16508927/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 3 partner-scoped depth. PMID 16508927 verified via PubMed/E-utilities. Competing explanation vs cytokine-axis-only narratives — ADA/immunogenicity as a response-heterogeneity mechanism. Infliximab-specific cohort; do not over-generalise to all anti-TNF agents at Gate C. Not CDS; partnerSigned=false.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-008",
+      "edgeId": "HSI-E-RA-008",
+      "claimText": "Low early trough infliximab levels and subsequent anti-infliximab antibodies associate with infusion reactions and treatment failure — supporting immunogenicity monitoring as a response-heterogeneity axis (not CDS).",
+      "subject": "Anti-drug antibodies to anti-TNF (ADA)",
+      "relationship": "associated_with",
+      "object": "Anti-TNF immunogenicity / bioavailability monitoring",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "17133559",
+        "doi": "10.1002/art.22214",
+        "citationLabel": "Bendtzen K et al. Arthritis Rheum 2006 — Individualized monitoring of drug bioavailability and immunogenicity in infliximab-treated RA.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17133559/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 3 partner-scoped depth. PMID 17133559 verified via PubMed/E-utilities. Deepens ADA frame (pairs with RA-007); teaching=hypothesized because assay/threshold generalisation to all anti-TNF remains open. No invented ISI REL-*. Gate C = human Neon approve only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-009",
+      "edgeId": "HSI-E-RA-009",
+      "claimText": "RF and/or anti-CCP positivity has been associated with differential mean DAS28 improvement on anti-TNF therapy in observational cohorts (serology competing frame — direction and magnitude remain contested).",
+      "subject": "RF/ACPA seropositive RA phenotype",
+      "relationship": "associated_with",
+      "object": "Anti-TNF response heterogeneity",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "18375541",
+        "doi": "10.1136/ard.2007.084715",
+        "citationLabel": "Potter C et al. Ann Rheum Dis 2009 — Association of RF and anti-CCP positivity with anti-TNF response in RA.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18375541/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 3 partner-scoped depth. PMID 18375541 verified via PubMed/E-utilities. Seropositive patients showed smaller mean DAS28 improvement in this cohort — do not invent predictive CDS rules. Competes with RA-010 meta-analysis finding no association. Gate C = human Neon approve only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-010",
+      "edgeId": "HSI-E-RA-010",
+      "claimText": "Pooled evidence does not support RF or anti-CCP status as a reliable predictor of clinical response to anti-TNFα agents (competing with single-cohort serology associations).",
+      "subject": "RF/ACPA seropositive RA phenotype",
+      "relationship": "associated_with",
+      "object": "Anti-TNF therapy",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "24586782",
+        "doi": "10.1371/journal.pone.0089442",
+        "citationLabel": "Lv Q et al. PLoS One 2014 — RF and anti-CCP status are not associated with anti-TNFα treatment effect (meta-analysis).",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24586782/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 3 partner-scoped depth. PMID 24586782 verified via PubMed/E-utilities. Explicit competing frame vs RA-009 — keep both visible; do not collapse serology into a confident response predictor. Meta-analysis heterogeneity noted in paper. Gate C = human Neon approve only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-011",
+      "edgeId": "HSI-E-RA-011",
+      "claimText": "Rheumatoid factor is a serologic biomarker used in rheumatoid arthritis classification and workup alongside ACPA (scope-locked LOINC marker — not an anti-TNF response predictor by itself).",
+      "subject": "Rheumatoid factor (RF)",
+      "relationship": "biomarker_of",
+      "object": "Rheumatoid arthritis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "20699241",
+        "doi": "10.1136/ard.2010.138461",
+        "citationLabel": "Aletaha D et al. Ann Rheum Dis 2010 — 2010 ACR/EULAR rheumatoid arthritis classification criteria.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/20699241/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": "HSI-N-rf",
+        "markerName": "Rheumatoid factor (RF)",
+        "loinc": "11572-5",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "Phase 3 partner-scoped depth. PMID 20699241 verified via PubMed/E-utilities. LOINC 11572-5 on RF marker. Classification/workup context only — do not equate RF positivity with anti-TNF response prediction (see RA-009/010 tension). No invented ISI REL-*. Gate C = human Neon approve only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-RA-012",
+      "edgeId": "HSI-E-RA-012",
+      "claimText": "Infliximab plus methotrexate improves clinical and radiographic outcomes versus methotrexate alone in RA — relevant background for interpreting anti-TNF response and immunogenicity in combination regimens.",
+      "subject": "Methotrexate + anti-TNF combination therapy",
+      "relationship": "treats",
+      "object": "Rheumatoid arthritis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "10622295",
+        "doi": "10.1016/s0140-6736(99)05246-0",
+        "citationLabel": "Maini R et al. Lancet 1999 — ATTRACT: infliximab vs placebo in RA patients receiving concomitant methotrexate.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/10622295/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Phase 3 partner-scoped depth. PMID 10622295 verified via PubMed/E-utilities. Complements Lipsky 2000 (RA-003) with the earlier ATTRACT combination-therapy frame; not a duplicate of ADA edges. No invented ISI REL-*. Gate C = human Neon approve only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SLE-001",
+      "edgeId": "HSI-E-SLE-001",
+      "claimText": "Type I interferon pathway activation associates with SLE pathophysiology (illustrative — not locked pilot).",
+      "subject": "Type I interferon pathway",
+      "relationship": "associated_with",
+      "object": "Systemic lupus erythematosus",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Illustrative SLE pathway stub for Discovery Centre vocabulary. No invented PMID. Partner lock TBD.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SLE-002",
+      "edgeId": "HSI-E-SLE-002",
+      "claimText": "ANA testing is used in the serologic workup of SLE (illustrative biomarker — not locked pilot / not CDS).",
+      "subject": "Antinuclear antibodies (ANA)",
+      "relationship": "biomarker_of",
+      "object": "Systemic lupus erythematosus",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": "ANA clinical laboratory guidance (placeholder locator)",
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": "HSI-N-ana",
+        "markerName": "Antinuclear antibodies (ANA)",
+        "loinc": "42254-3",
+        "linkKind": "subject_node"
+      },
+      "studyOrModelContext": "Illustrative SLE biomarker seed with LOINC-capable marker. Not a diagnosis claim. Gate C deferred.",
+      "limitations": "Missing metadata: pmid, doi, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-PSO-001",
+      "edgeId": "HSI-E-PSO-001",
+      "claimText": "IL-17 pathway signalling drives psoriatic skin inflammation (illustrative — not locked pilot).",
+      "subject": "IL-17 pathway",
+      "relationship": "drives",
+      "object": "Psoriasis / psoriatic disease",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Illustrative psoriasis pathway stub aligned to Discovery Centre disease picker. No invented PMID.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-IBD-001",
+      "edgeId": "HSI-E-IBD-001",
+      "claimText": "IL-23 pathway biology associates with IBD inflammatory tone (illustrative — not locked pilot).",
+      "subject": "IL-23 pathway",
+      "relationship": "associated_with",
+      "object": "Inflammatory bowel disease",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "unexplored",
+      "reviewStatus": "unreviewed",
+      "source": {
+        "pmid": null,
+        "doi": null,
+        "citationLabel": null,
+        "sourceUrl": null,
+        "missing": [
+          "pmid",
+          "doi",
+          "citationLabel",
+          "sourceUrl"
+        ]
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Illustrative IBD pathway stub aligned to Discovery Centre disease picker. No invented PMID.",
+      "limitations": "Missing metadata: pmid, doi, citationLabel, sourceUrl. Do not treat as strong evidence.",
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-001",
+      "edgeId": "HSI-E-SSC-001",
+      "claimText": "Circulating follicular helper T cells are increased in systemic sclerosis (dual-track PRD MVP seed — not Stage 1 partner lock; not CDS).",
+      "subject": "T follicular helper (Tfh) cells",
+      "relationship": "associated_with",
+      "object": "Systemic sclerosis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "30760472",
+        "doi": "10.1136/annrheumdis-2018-214382",
+        "citationLabel": "Ricard L et al. Ann Rheum Dis 2019 — Circulating follicular helper T cells are increased in systemic sclerosis and promote plasmablast differentiation through the IL-21 pathway.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30760472/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Dual-track SSc pathway seed (prd_mvp_target). PMID 30760472 verified via PubMed. Does not replace RA scopeLocked question. Gate C = human Neon approve only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-002",
+      "edgeId": "HSI-E-SSC-002",
+      "claimText": "Tfh cells produce / drive IL-21 as a defining helper cytokine for B-cell help (foundational Tfh biology; used as SSc pathway axis context).",
+      "subject": "T follicular helper (Tfh) cells",
+      "relationship": "upregulates",
+      "object": "IL-21",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "21314428",
+        "doi": "10.1146/annurev-immunol-031210-101400",
+        "citationLabel": "Crotty S. Annu Rev Immunol 2011 — Follicular helper CD4 T cells (TFH).",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21314428/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Foundational Tfh→IL-21 axis (not SSc-specific). PMID 21314428 verified. Maps via ISI produces→HSI upregulates until HSI_EDGE_TYPES expands. Pairs with Ricard 2019 SSc IL-21 pathway. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-003",
+      "edgeId": "HSI-E-SSC-003",
+      "claimText": "IL-21 induces differentiation of human naive and memory B cells into antibody-secreting plasma cells (B-help axis underpinning SSc Tfh–IL-21 framing).",
+      "subject": "IL-21",
+      "relationship": "upregulates",
+      "object": "B cell",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "16339522",
+        "doi": "10.4049/jimmunol.175.12.7867",
+        "citationLabel": "Ettinger R et al. J Immunol 2005 — IL-21 induces differentiation of human naive and memory B cells into antibody-secreting plasma cells.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16339522/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Foundational IL-21→B/plasma differentiation. PMID 16339522 verified. Not SSc-specific; underpins Ricard 2019 SSc plasmablast frame. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-004",
+      "edgeId": "HSI-E-SSC-004",
+      "claimText": "In systemic sclerosis, circulating Tfh promote plasmablast differentiation through the IL-21 pathway (SSc-specific pathway seed).",
+      "subject": "IL-21",
+      "relationship": "associated_with",
+      "object": "Plasmablast",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "30760472",
+        "doi": "10.1136/annrheumdis-2018-214382",
+        "citationLabel": "Ricard L et al. Ann Rheum Dis 2019 — Circulating Tfh promote plasmablast differentiation through the IL-21 pathway in SSc.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30760472/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Core dual-track SSc edge (Tfh–IL-21–plasmablast). PMID 30760472 verified. Paper also reports ruxolitinib inhibition — do not invent treatment CDS claims. Gate C = human only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-005",
+      "edgeId": "HSI-E-SSC-005",
+      "claimText": "T follicular helper-like cells contribute to skin fibrosis (fibrosis-facing competing / complementary frame for SSc pathway exploration).",
+      "subject": "T follicular helper (Tfh) cells",
+      "relationship": "contributes_to",
+      "object": "Skin fibrosis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "29514998",
+        "doi": "10.1126/scitranslmed.aaf5307",
+        "citationLabel": "Taylor DK et al. Sci Transl Med 2018 — T follicular helper-like cells contribute to skin fibrosis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29514998/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Fibrosis-facing SSc-relevant frame (PMID 29514998 verified). Competing/complementary vs pure autoantibody–plasmablast narrative — keep both explanations. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-006",
+      "edgeId": "HSI-E-SSC-006",
+      "claimText": "Imbalance toward Tfh1 cells is associated with aberrant B-cell differentiation in systemic sclerosis (competing Tfh-subset explanation).",
+      "subject": "Tfh1-skewed follicular helper cells",
+      "relationship": "associated_with",
+      "object": "Systemic sclerosis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "33175976",
+        "doi": "10.1093/rheumatology/keaa669",
+        "citationLabel": "Ly NTM et al. Rheumatology (Oxford) 2021 — Imbalance toward TFH1 cells playing a role in aberrant B cell differentiation in systemic sclerosis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33175976/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "Competing Tfh-subset frame vs bulk circulating-Tfh↑ narrative. PMID 33175976 verified. teaching=hypothesized for subset generalisation. Keep disagreement visible. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-007",
+      "edgeId": "HSI-E-SSC-007",
+      "claimText": "EBV infection has been hypothesized to contribute to scleroderma fibroblast / TLR pathway dysregulation — separate uncertainty branch; not a proven Tfh→B→IL-21 causal merge.",
+      "subject": "Epstein-Barr virus (EBV)",
+      "relationship": "associated_with",
+      "object": "Systemic sclerosis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "24129067",
+        "doi": "10.1038/jid.2013.423",
+        "citationLabel": "Farina A et al. J Invest Dermatol 2014 — Epstein-Barr virus infection induces aberrant TLR activation pathway and fibroblast-myofibroblast conversion in scleroderma.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24129067/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "EBV = hypothesized/uncertain branch only (PRD rule). PMID 24129067 verified. Do NOT hard-merge with Tfh–B–IL-21 as established causation. teaching=hypothesized. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-008",
+      "edgeId": "HSI-E-SSC-008",
+      "claimText": "Commentary frame: T follicular helper cells are discussed as drivers of skin fibrosis (neighbourhood support for the Taylor 2018 fibrosis-facing explanation).",
+      "subject": "T follicular helper (Tfh) cells",
+      "relationship": "contributes_to",
+      "object": "Skin fibrosis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "29626172",
+        "doi": "10.1126/sciimmunol.aat6417",
+        "citationLabel": "Clark RA. Sci Immunol 2018 — \"That's not helping—T follicular helper cells drive skin fibrosis\" (commentary on Taylor et al.).",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29626172/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.1 deepen: commentary PMID 29626172 verified. Complements HSI-E-SSC-005; not a treatment claim. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-SSC-009",
+      "edgeId": "HSI-E-SSC-009",
+      "claimText": "In systemic sclerosis, peripheral CD21low B cells and serum IL-4 / IL-21 are reported to influence joint involvement (B-cell–IL-21 neighbourhood deepen; not Stage 1 RA lock).",
+      "subject": "IL-21",
+      "relationship": "associated_with",
+      "object": "Systemic sclerosis",
+      "conditionContext": "autoimmunity",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "37763102",
+        "doi": "10.3390/jpm13091334",
+        "citationLabel": "Pellicano C et al. J Pers Med 2023 — In Systemic Sclerosis Patients, Peripheral Blood CD21(low) B Cells and Serum IL-4 and IL-21 Influence Joint Involvement.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37763102/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.1 deepen: PMID 37763102 verified. teaching=hypothesized for joint-involvement generalisation. Keep EBV branch separate. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-GUT-001",
+      "edgeId": "HSI-E-GUT-001",
+      "claimText": "Indigenous Clostridium clusters IV and XIVa promote accumulation of colonic Foxp3+ regulatory T cells (mouse gut–immune neighbourhood seed — not CDS; not Stage 1 RA lock).",
+      "subject": "Clostridium clusters IV / XIVa (gut)",
+      "relationship": "associated_with",
+      "object": "Colonic / mucosal Foxp3+ Treg",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "21205640",
+        "doi": "10.1126/science.1198469",
+        "citationLabel": "Atarashi K et al. Science 2011 — Induction of colonic regulatory T cells by indigenous Clostridium species.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21205640/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.3 gut–immune context edge. PMID 21205640 verified. Mouse colonization evidence; teaching=associative. Do not overclaim human therapeutic causation. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-GUT-002",
+      "edgeId": "HSI-E-GUT-002",
+      "claimText": "A rationally selected mixture of human microbiota Clostridia strains induces Treg abundance and anti-inflammatory programs in germ-free mouse models (gut–immune neighbourhood; not human CDS).",
+      "subject": "Human microbiota Clostridia mix (17-strain class)",
+      "relationship": "associated_with",
+      "object": "Colonic / mucosal Foxp3+ Treg",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "23842501",
+        "doi": "10.1038/nature12331",
+        "citationLabel": "Atarashi K et al. Nature 2013 — Treg induction by a rationally selected mixture of Clostridia strains from the human microbiota.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23842501/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.3. PMID 23842501 verified. Human-derived strains tested in mice — keep uncertain grades; no partnerSigned / no CDS. Gate C = human only.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-GUT-003",
+      "edgeId": "HSI-E-GUT-003",
+      "claimText": "Commensal microbe-derived butyrate induces differentiation of colonic regulatory T cells (core SCFA ↔ mucosal Treg axis; mouse Nature 2013 evidence).",
+      "subject": "Butyrate (SCFA)",
+      "relationship": "upregulates",
+      "object": "Colonic / mucosal Foxp3+ Treg",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "24226770",
+        "doi": "10.1038/nature12721",
+        "citationLabel": "Furusawa Y et al. Nature 2013 — Commensal microbe-derived butyrate induces the differentiation of colonic regulatory T cells.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24226770/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.3 primary SCFA→Treg edge. PMID 24226770 verified. Maps systemsPredicate produces_metabolite_sensed_by → HSI upregulates. Mouse / HDAC–Foxp3 mechanism — not human disease claim. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-GUT-004",
+      "edgeId": "HSI-E-GUT-004",
+      "claimText": "Microbiota-derived short-chain fatty acids regulate size and function of the colonic Treg pool in an Ffar2 (GPR43)-dependent manner in mice (SCFA class ↔ mucosal Treg).",
+      "subject": "Short-chain fatty acids (class)",
+      "relationship": "associated_with",
+      "object": "Colonic / mucosal Foxp3+ Treg",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "23828891",
+        "doi": "10.1126/science.1241165",
+        "citationLabel": "Smith PM et al. Science 2013 — The microbial metabolites, short-chain fatty acids, regulate colonic Treg cell homeostasis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23828891/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.3 SCFA-class companion to butyrate edge. PMID 23828891 verified. Mouse Ffar2 dependency — teaching=associative; hsiGrade uncertain. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-GUT-005",
+      "edgeId": "HSI-E-GUT-005",
+      "claimText": "SCFAs can promote T-cell differentiation into IL-17-producing (Th17) cells depending on cytokine milieu via HDAC inhibition / mTOR–S6K (competing frame vs Th17 inhibition — hypothesized only).",
+      "subject": "Short-chain fatty acids (class)",
+      "relationship": "upregulates",
+      "object": "Mucosal Th17 cells",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "24917457",
+        "doi": "10.1038/mi.2014.44",
+        "citationLabel": "Park J et al. Mucosal Immunol 2015 — Short-chain fatty acids induce both effector and regulatory T cells by suppression of histone deacetylases and regulation of the mTOR-S6K pathway.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24917457/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.3 competing Th17-promote frame. PMID 24917457 verified. teaching=hypothesized — milieu-dependent; NEVER hard-merge with butyrate→Th17 inhibition or Treg edges as settled causation (EBV-style overclaim ban). Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-GUT-006",
+      "edgeId": "HSI-E-GUT-006",
+      "claimText": "Butyrate can inhibit Th17 differentiation (IL-17 / RORγt axis) while upregulating IL-10 in T-cell models of colitis induction (competing frame vs SCFA→Th17 promotion — hypothesized only).",
+      "subject": "Butyrate (SCFA)",
+      "relationship": "inhibits",
+      "object": "Mucosal Th17 cells",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "30918945",
+        "doi": "10.1093/ibd/izz046",
+        "citationLabel": "Chen L et al. Inflamm Bowel Dis 2019 — Microbiota metabolite butyrate differentially regulates Th1 and Th17 cells’ differentiation and function in induction of colitis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30918945/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.3 competing Th17-inhibit frame. PMID 30918945 verified. Keep separate from HSI-E-GUT-005 — do not collapse promote vs inhibit. teaching=hypothesized. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-GUT-007",
+      "edgeId": "HSI-E-GUT-007",
+      "claimText": "Butyrate enhances intestinal barrier function by facilitating tight-junction assembly via AMPK activation in Caco-2 monolayers (barrier context for mucosal immune neighbourhood).",
+      "subject": "Butyrate (SCFA)",
+      "relationship": "upregulates",
+      "object": "Intestinal epithelial barrier / tight junctions",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "19625695",
+        "doi": "10.3945/jn.109.104638",
+        "citationLabel": "Peng L et al. J Nutr 2009 — Butyrate enhances the intestinal barrier by facilitating tight junction assembly via activation of AMP-activated protein kinase in Caco-2 cell monolayers.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19625695/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P1.3 barrier context. PMID 19625695 verified. In vitro Caco-2 — not in-vivo human barrier claim; teaching=associative. Dose-paradox papers exist elsewhere — do not overclaim. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-NI-001",
+      "edgeId": "HSI-E-NI-001",
+      "claimText": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
+      "subject": "Efferent vagus nerve stimulation",
+      "relationship": "inhibits",
+      "object": "Peripheral / systemic TNF inflammatory tone",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "10839541",
+        "doi": "10.1038/35013070",
+        "citationLabel": "Borovikova LV et al. Nature 2000 — Vagus nerve stimulation attenuates the systemic inflammatory response to endotoxin.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/10839541/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P2.1 primary vagus→TNF suppression edge. PMID 10839541 verified. Rodent endotoxaemia + macrophage culture — teaching=associative; hsiGrade uncertain. Do not overclaim human therapeutic cure. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-NI-002",
+      "edgeId": "HSI-E-NI-002",
+      "claimText": "The inflammatory reflex frames a hard-wired autonomic (vagal cholinergic) pathway that reflexively monitors and adjusts acute inflammatory cytokine responses in real time (conceptual neighbourhood frame — not a disease cure claim).",
+      "subject": "Inflammatory reflex (cholinergic axis)",
+      "relationship": "bridges_domain",
+      "object": "Peripheral / systemic TNF inflammatory tone",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "12490958",
+        "doi": "10.1038/nature01321",
+        "citationLabel": "Tracey KJ. Nature 2002 — The inflammatory reflex.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12490958/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P2.1 conceptual axis frame. PMID 12490958 verified (review). Maps signals_via_axis → bridges_domain. Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-NI-003",
+      "edgeId": "HSI-E-NI-003",
+      "claimText": "The nicotinic acetylcholine receptor α7 subunit is required for acetylcholine- and vagus-mediated inhibition of macrophage TNF synthesis (essential receptor node of the cholinergic anti-inflammatory pathway).",
+      "subject": "Nicotinic ACh receptor α7 subunit (macrophage)",
+      "relationship": "inhibits",
+      "object": "Macrophage TNF synthesis / release",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "12508119",
+        "doi": "10.1038/nature01339",
+        "citationLabel": "Wang H et al. Nature 2003 — Nicotinic acetylcholine receptor alpha7 subunit is an essential regulator of inflammation.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12508119/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P2.1 α7 receptor node. PMID 12508119 verified. Mouse genetics + macrophage assays — keep uncertain grades; not human dosing. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-NI-004",
+      "edgeId": "HSI-E-NI-004",
+      "claimText": "Vagus / nicotinic α7 signalling attenuates macrophage activation via Jak2–STAT3 phosphorylation in experimental inflammation (mechanism companion to α7 TNF inhibition).",
+      "subject": "Efferent vagus nerve stimulation",
+      "relationship": "associated_with",
+      "object": "α7 nAChR–Jak2–STAT3 macrophage programme",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "16025117",
+        "doi": "10.1038/ni1229",
+        "citationLabel": "de Jonge WJ et al. Nat Immunol 2005 — Stimulation of the vagus nerve attenuates macrophage activation by activating the Jak2-STAT3 signaling pathway.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16025117/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P2.1 mechanism companion. PMID 16025117 verified. Mouse postoperative ileus / macrophage STAT3 — teaching=associative. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-NI-005",
+      "edgeId": "HSI-E-NI-005",
+      "claimText": "Acetylcholine-producing memory-phenotype T cells relay vagus nerve signals required for inflammatory-reflex inhibition of macrophage TNF (neural → lymphoid → innate immune hop).",
+      "subject": "Acetylcholine-synthesizing memory T cells",
+      "relationship": "bridges_domain",
+      "object": "Macrophage TNF synthesis / release",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "21921156",
+        "doi": "10.1126/science.1209985",
+        "citationLabel": "Rosas-Ballina M et al. Science 2011 — Acetylcholine-synthesizing T cells relay neural signals in a vagus nerve circuit.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21921156/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P2.1 T-cell relay hop. PMID 21921156 verified. Mouse circuit — teaching=associative; do not invent human CDS. Gate C = human only. Not CDS.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    },
+    {
+      "claimId": "HSI-C-NI-006",
+      "edgeId": "HSI-E-NI-006",
+      "claimText": "Implantable vagus nerve stimulation can modulate peripheral blood TNF production and RA clinical composite scores in small human pilot cohorts (hypothesized translational frame — not a settled clinical cure; not CDS).",
+      "subject": "Implantable vagus nerve stimulator (experimental)",
+      "relationship": "associated_with",
+      "object": "Peripheral / systemic TNF inflammatory tone",
+      "conditionContext": "immuno_metabolic",
+      "evidenceGrade": "uncertain",
+      "reviewStatus": "source-verified",
+      "source": {
+        "pmid": "27382171",
+        "doi": "10.1073/pnas.1605635113",
+        "citationLabel": "Koopman FA et al. PNAS 2016 — Vagus nerve stimulation inhibits cytokine production and attenuates disease severity in rheumatoid arthritis.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27382171/",
+        "missing": []
+      },
+      "marker": {
+        "markerId": null,
+        "markerName": null,
+        "loinc": null,
+        "linkKind": null
+      },
+      "studyOrModelContext": "P2.1 human translational pilot ONLY. PMID 27382171 verified. teaching=hypothesized — small open-label / pilot; NEVER overclaim clinical brain–immune cure, dosing, or EHR CDS. Does not flip partnerSigned or replace RA ASK evidence map. Gate C = human only. Not CDS. No PHI.",
+      "limitations": null,
+      "graphEdgeMeans": "navigational_link_not_causality"
+    }
+  ],
+  "entitySlice": {
+    "diseases": [
+      "Inflammatory bowel disease",
+      "LADA / latent autoimmune diabetes",
+      "Psoriasis / psoriatic disease",
+      "Rheumatoid arthritis",
+      "Systemic lupus erythematosus",
+      "Type 1 diabetes autoimmunity",
+      "Type 2 diabetes mellitus"
+    ],
+    "cells": [
+      "Acetylcholine-synthesizing memory T cells",
+      "Adipose tissue macrophages",
+      "B cell",
+      "Colonic / mucosal Foxp3+ Treg",
+      "Macrophage TNF synthesis / release",
+      "Mucosal Th17 cells",
+      "Nicotinic ACh receptor α7 subunit (macrophage)",
+      "Pancreatic β-cell dysfunction",
+      "Synovial macrophages",
+      "T follicular helper (Tfh) cells",
+      "T-cell exhaustion",
+      "Tfh1-skewed follicular helper cells",
+      "α7 nAChR–Jak2–STAT3 macrophage programme"
+    ],
+    "pathwaysOrMechanisms": [
+      "Autoimmune–metabolic comorbidity",
+      "Butyrate (SCFA)",
+      "CGM time-in-range",
+      "Clostridium clusters IV / XIVa (gut)",
+      "Efferent vagus nerve stimulation",
+      "Epstein-Barr virus (EBV)",
+      "Human microbiota Clostridia mix (17-strain class)",
+      "Hyperglycemia",
+      "IL-17 pathway",
+      "IL-21",
+      "IL-23 pathway",
+      "IL-6",
+      "IL-6 pathway axis",
+      "Immune-related adverse events",
+      "Implantable vagus nerve stimulator (experimental)",
+      "Infection susceptibility",
+      "Inflammatory reflex (cholinergic axis)",
+      "Innate immune dysfunction",
+      "Insulin resistance",
+      "Intestinal epithelial barrier / tight junctions",
+      "Islet autoantibodies",
+      "Low-grade chronic inflammation",
+      "Metabolic inflammation",
+      "NLRP3 inflammasome",
+      "Obesity",
+      "PD-1",
+      "Peripheral / systemic TNF inflammatory tone",
+      "Plasmablast",
+      "RF/ACPA seropositive RA phenotype",
+      "Short-chain fatty acids (class)",
+      "Skin fibrosis",
+      "Systemic glucocorticoids",
+      "Systemic sclerosis",
+      "TNF-α",
+      "Type I interferon pathway"
+    ],
+    "biomarkers": [
+      "Anti-CCP antibodies",
+      "Anti-drug antibodies to anti-TNF (ADA)",
+      "Antinuclear antibodies (ANA)",
+      "Fasting plasma glucose",
+      "HbA1c",
+      "Low-grade chronic inflammation",
+      "Rheumatoid arthritis",
+      "Rheumatoid factor (RF)",
+      "Systemic lupus erythematosus",
+      "Type 2 diabetes mellitus",
+      "hs-CRP"
+    ],
+    "treatments": [
+      "Anti-TNF immunogenicity / bioavailability monitoring",
+      "Anti-TNF refractory RA phenotype",
+      "Anti-TNF response heterogeneity",
+      "Anti-TNF therapy",
+      "GLP-1 receptor agonists",
+      "IL-1 pathway blockade",
+      "Immune checkpoint therapy",
+      "Metformin",
+      "Methotrexate + anti-TNF combination therapy",
+      "Rheumatoid arthritis",
+      "SGLT2 inhibitors",
+      "Type 2 diabetes mellitus"
+    ],
+    "studies": [
+      "ADA Standards of Care (placeholder citation label)",
+      "ADA pharmacologic therapy guidance (placeholder)",
+      "ANA clinical laboratory guidance (placeholder locator)",
+      "Cardiorenal outcome trials class (placeholder)",
+      "Epidemiologic risk literature (placeholder)",
+      "PMID:10622295",
+      "PMID:10662881",
+      "PMID:10839541",
+      "PMID:11087881",
+      "PMID:11244034",
+      "PMID:12490958",
+      "PMID:12508119",
+      "PMID:12813013",
+      "PMID:15030775",
+      "PMID:16025117",
+      "PMID:16339522",
+      "PMID:16382236",
+      "PMID:16508927",
+      "PMID:17133559",
+      "PMID:18375541",
+      "PMID:18625622",
+      "PMID:19625695",
+      "PMID:20699241",
+      "PMID:21205640",
+      "PMID:21314428",
+      "PMID:21921156",
+      "PMID:23828891",
+      "PMID:23842501",
+      "PMID:24129067",
+      "PMID:24226770",
+      "PMID:24586782",
+      "PMID:24917457",
+      "PMID:27382171",
+      "PMID:28845751",
+      "PMID:29514998",
+      "PMID:29626172",
+      "PMID:2993897",
+      "PMID:30760472",
+      "PMID:30918945",
+      "PMID:31180194",
+      "PMID:33175976",
+      "PMID:37763102",
+      "PMID:7569976",
+      "WHO / ADA diagnostic criteria (placeholder)",
+      "irAE clinical reviews (placeholder)"
+    ],
+    "typed": [
+      {
+        "id": "HSI-N-anti-ccp",
+        "label": "Anti-CCP antibodies",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-anti-tnf-ada",
+        "label": "Anti-drug antibodies to anti-TNF (ADA)",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-ana",
+        "label": "Antinuclear antibodies (ANA)",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-fpg",
+        "label": "Fasting plasma glucose",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-hba1c",
+        "label": "HbA1c",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-crp",
+        "label": "hs-CRP",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-chronic-inflammation",
+        "label": "Low-grade chronic inflammation",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-ra",
+        "label": "Rheumatoid arthritis",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-rf",
+        "label": "Rheumatoid factor (RF)",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-sle",
+        "label": "Systemic lupus erythematosus",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-t2d",
+        "label": "Type 2 diabetes mellitus",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-chat-memory-tcell",
+        "label": "Acetylcholine-synthesizing memory T cells",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-adipose-macrophages",
+        "label": "Adipose tissue macrophages",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-b-cell",
+        "label": "B cell",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-mucosal-treg",
+        "label": "Colonic / mucosal Foxp3+ Treg",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-macrophage-tnf-release",
+        "label": "Macrophage TNF synthesis / release",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-mucosal-th17",
+        "label": "Mucosal Th17 cells",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-alpha7-nachr",
+        "label": "Nicotinic ACh receptor α7 subunit (macrophage)",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-beta-cell-dysfunction",
+        "label": "Pancreatic β-cell dysfunction",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-synovial-macrophages",
+        "label": "Synovial macrophages",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-tfh",
+        "label": "T follicular helper (Tfh) cells",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-tcell-exhaustion",
+        "label": "T-cell exhaustion",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-tfh1",
+        "label": "Tfh1-skewed follicular helper cells",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-alpha7-jak2-stat3",
+        "label": "α7 nAChR–Jak2–STAT3 macrophage programme",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-ibd",
+        "label": "Inflammatory bowel disease",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-lada",
+        "label": "LADA / latent autoimmune diabetes",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-psoriasis",
+        "label": "Psoriasis / psoriatic disease",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-ra",
+        "label": "Rheumatoid arthritis",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-sle",
+        "label": "Systemic lupus erythematosus",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-t1d-autoimmunity",
+        "label": "Type 1 diabetes autoimmunity",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-t2d",
+        "label": "Type 2 diabetes mellitus",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-pcos-autoimmune-overlap",
+        "label": "Autoimmune–metabolic comorbidity",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-butyrate",
+        "label": "Butyrate (SCFA)",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-cgm-tir",
+        "label": "CGM time-in-range",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-clostridia-iv-xiva",
+        "label": "Clostridium clusters IV / XIVa (gut)",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-vagus-efferent",
+        "label": "Efferent vagus nerve stimulation",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-ebv",
+        "label": "Epstein-Barr virus (EBV)",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-clostridia-human-mix",
+        "label": "Human microbiota Clostridia mix (17-strain class)",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-hyperglycemia",
+        "label": "Hyperglycemia",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-il17",
+        "label": "IL-17 pathway",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-il21",
+        "label": "IL-21",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-il23",
+        "label": "IL-23 pathway",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-il6",
+        "label": "IL-6",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-il6-axis",
+        "label": "IL-6 pathway axis",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-irae",
+        "label": "Immune-related adverse events",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-implantable-vns",
+        "label": "Implantable vagus nerve stimulator (experimental)",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-infection-risk",
+        "label": "Infection susceptibility",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-inflammatory-reflex",
+        "label": "Inflammatory reflex (cholinergic axis)",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-innate-dysfunction",
+        "label": "Innate immune dysfunction",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-insulin-resistance",
+        "label": "Insulin resistance",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-gut-barrier",
+        "label": "Intestinal epithelial barrier / tight junctions",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-islet-autoantibodies",
+        "label": "Islet autoantibodies",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-chronic-inflammation",
+        "label": "Low-grade chronic inflammation",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-metabolic-inflammation",
+        "label": "Metabolic inflammation",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-nlrp3",
+        "label": "NLRP3 inflammasome",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-obesity",
+        "label": "Obesity",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-pd1",
+        "label": "PD-1",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-peripheral-tnf-tone",
+        "label": "Peripheral / systemic TNF inflammatory tone",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-plasmablast",
+        "label": "Plasmablast",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-ra-seropositive",
+        "label": "RF/ACPA seropositive RA phenotype",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-scfa",
+        "label": "Short-chain fatty acids (class)",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-skin-fibrosis",
+        "label": "Skin fibrosis",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-glucocorticoids",
+        "label": "Systemic glucocorticoids",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-ssc",
+        "label": "Systemic sclerosis",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-tnf-alpha",
+        "label": "TNF-α",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-type1-ifn",
+        "label": "Type I interferon pathway",
+        "kind": "pathway"
+      },
+      {
+        "id": "cite:HSI-E-T2D-005",
+        "label": "ADA pharmacologic therapy guidance (placeholder)",
+        "kind": "study"
+      },
+      {
+        "id": "cite:HSI-E-T2D-001",
+        "label": "ADA Standards of Care (placeholder citation label)",
+        "kind": "study"
+      },
+      {
+        "id": "cite:HSI-E-SLE-002",
+        "label": "ANA clinical laboratory guidance (placeholder locator)",
+        "kind": "study"
+      },
+      {
+        "id": "cite:HSI-E-T2D-006",
+        "label": "Cardiorenal outcome trials class (placeholder)",
+        "kind": "study"
+      },
+      {
+        "id": "cite:HSI-E-T2D-008",
+        "label": "Epidemiologic risk literature (placeholder)",
+        "kind": "study"
+      },
+      {
+        "id": "cite:HSI-E-IO-002",
+        "label": "irAE clinical reviews (placeholder)",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:10622295",
+        "label": "PMID:10622295",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:10662881",
+        "label": "PMID:10662881",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:10839541",
+        "label": "PMID:10839541",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:11087881",
+        "label": "PMID:11087881",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:11244034",
+        "label": "PMID:11244034",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:12490958",
+        "label": "PMID:12490958",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:12508119",
+        "label": "PMID:12508119",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:12813013",
+        "label": "PMID:12813013",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:15030775",
+        "label": "PMID:15030775",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:16025117",
+        "label": "PMID:16025117",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:16339522",
+        "label": "PMID:16339522",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:16382236",
+        "label": "PMID:16382236",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:16508927",
+        "label": "PMID:16508927",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:17133559",
+        "label": "PMID:17133559",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:18375541",
+        "label": "PMID:18375541",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:18625622",
+        "label": "PMID:18625622",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:19625695",
+        "label": "PMID:19625695",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:20699241",
+        "label": "PMID:20699241",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:21205640",
+        "label": "PMID:21205640",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:21314428",
+        "label": "PMID:21314428",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:21921156",
+        "label": "PMID:21921156",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:23828891",
+        "label": "PMID:23828891",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:23842501",
+        "label": "PMID:23842501",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:24129067",
+        "label": "PMID:24129067",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:24226770",
+        "label": "PMID:24226770",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:24586782",
+        "label": "PMID:24586782",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:24917457",
+        "label": "PMID:24917457",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:27382171",
+        "label": "PMID:27382171",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:28845751",
+        "label": "PMID:28845751",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:29514998",
+        "label": "PMID:29514998",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:29626172",
+        "label": "PMID:29626172",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:2993897",
+        "label": "PMID:2993897",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:30760472",
+        "label": "PMID:30760472",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:30918945",
+        "label": "PMID:30918945",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:31180194",
+        "label": "PMID:31180194",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:33175976",
+        "label": "PMID:33175976",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:37763102",
+        "label": "PMID:37763102",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:7569976",
+        "label": "PMID:7569976",
+        "kind": "study"
+      },
+      {
+        "id": "cite:HSI-E-T2D-002",
+        "label": "WHO / ADA diagnostic criteria (placeholder)",
+        "kind": "study"
+      },
+      {
+        "id": "HSI-N-anti-tnf-immunogenicity",
+        "label": "Anti-TNF immunogenicity / bioavailability monitoring",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-anti-tnf-refractory",
+        "label": "Anti-TNF refractory RA phenotype",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-anti-tnf-response-het",
+        "label": "Anti-TNF response heterogeneity",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-anti-tnf",
+        "label": "Anti-TNF therapy",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-glp1ra",
+        "label": "GLP-1 receptor agonists",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-anti-il1",
+        "label": "IL-1 pathway blockade",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-checkpoint-therapy",
+        "label": "Immune checkpoint therapy",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-metformin",
+        "label": "Metformin",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-mtx-anti-tnf-combo",
+        "label": "Methotrexate + anti-TNF combination therapy",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-ra",
+        "label": "Rheumatoid arthritis",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-sglt2i",
+        "label": "SGLT2 inhibitors",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-t2d",
+        "label": "Type 2 diabetes mellitus",
+        "kind": "treatment"
+      }
+    ],
+    "note": "Buckets are heuristic from seed labels (T2D + scope-locked RA pathway + illustrative SLE/PsO/IBD stubs). Empty buckets mean unknown, not 'no biology'. scopeLocked ≠ partnerSigned / lockedPilot."
+  },
+  "partnerScopedEntitySlice": {
+    "diseases": [
+      "Rheumatoid arthritis",
+      "Type 2 diabetes mellitus"
+    ],
+    "cells": [
+      "Synovial macrophages"
+    ],
+    "pathwaysOrMechanisms": [
+      "IL-6",
+      "IL-6 pathway axis",
+      "Insulin resistance",
+      "RF/ACPA seropositive RA phenotype",
+      "TNF-α"
+    ],
+    "biomarkers": [
+      "Anti-CCP antibodies",
+      "Anti-drug antibodies to anti-TNF (ADA)",
+      "Rheumatoid arthritis",
+      "Rheumatoid factor (RF)"
+    ],
+    "treatments": [
+      "Anti-TNF immunogenicity / bioavailability monitoring",
+      "Anti-TNF refractory RA phenotype",
+      "Anti-TNF response heterogeneity",
+      "Anti-TNF therapy",
+      "Methotrexate + anti-TNF combination therapy",
+      "Rheumatoid arthritis"
+    ],
+    "studies": [
+      "PMID:10622295",
+      "PMID:10662881",
+      "PMID:11087881",
+      "PMID:11244034",
+      "PMID:16508927",
+      "PMID:17133559",
+      "PMID:18375541",
+      "PMID:18625622",
+      "PMID:20699241",
+      "PMID:24586782",
+      "PMID:2993897"
+    ],
+    "typed": [
+      {
+        "id": "HSI-N-anti-ccp",
+        "label": "Anti-CCP antibodies",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-anti-tnf-ada",
+        "label": "Anti-drug antibodies to anti-TNF (ADA)",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-ra",
+        "label": "Rheumatoid arthritis",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-rf",
+        "label": "Rheumatoid factor (RF)",
+        "kind": "biomarker"
+      },
+      {
+        "id": "HSI-N-synovial-macrophages",
+        "label": "Synovial macrophages",
+        "kind": "cell"
+      },
+      {
+        "id": "HSI-N-ra",
+        "label": "Rheumatoid arthritis",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-t2d",
+        "label": "Type 2 diabetes mellitus",
+        "kind": "disease"
+      },
+      {
+        "id": "HSI-N-il6",
+        "label": "IL-6",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-il6-axis",
+        "label": "IL-6 pathway axis",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-insulin-resistance",
+        "label": "Insulin resistance",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-ra-seropositive",
+        "label": "RF/ACPA seropositive RA phenotype",
+        "kind": "pathway"
+      },
+      {
+        "id": "HSI-N-tnf-alpha",
+        "label": "TNF-α",
+        "kind": "pathway"
+      },
+      {
+        "id": "pmid:10622295",
+        "label": "PMID:10622295",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:10662881",
+        "label": "PMID:10662881",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:11087881",
+        "label": "PMID:11087881",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:11244034",
+        "label": "PMID:11244034",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:16508927",
+        "label": "PMID:16508927",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:17133559",
+        "label": "PMID:17133559",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:18375541",
+        "label": "PMID:18375541",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:18625622",
+        "label": "PMID:18625622",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:20699241",
+        "label": "PMID:20699241",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:24586782",
+        "label": "PMID:24586782",
+        "kind": "study"
+      },
+      {
+        "id": "pmid:2993897",
+        "label": "PMID:2993897",
+        "kind": "study"
+      },
+      {
+        "id": "HSI-N-anti-tnf-immunogenicity",
+        "label": "Anti-TNF immunogenicity / bioavailability monitoring",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-anti-tnf-refractory",
+        "label": "Anti-TNF refractory RA phenotype",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-anti-tnf-response-het",
+        "label": "Anti-TNF response heterogeneity",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-anti-tnf",
+        "label": "Anti-TNF therapy",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-mtx-anti-tnf-combo",
+        "label": "Methotrexate + anti-TNF combination therapy",
+        "kind": "treatment"
+      },
+      {
+        "id": "HSI-N-ra",
+        "label": "Rheumatoid arthritis",
+        "kind": "treatment"
+      }
+    ],
+    "note": "Phase 3 partner-scoped slice for the scope-locked RA / anti-TNF response pathway (scopeLocked=true; lockedPilot=false until legalBinding). Includes ADA, serology tension, RF LOINC, MTX combo — fixture partnerSigned is path-testing only, not a signed partner corpus."
+  },
+  "competingExplanations": [
+    {
+      "id": "expl-ra-tnf-centric",
+      "label": "TNF-centric framing of RA synovial inflammation and anti-TNF benefit",
+      "status": "from_illustrative_pathway",
+      "relatedClaimIds": [
+        "HSI-C-RA-001",
+        "HSI-C-RA-003",
+        "HSI-C-RA-006",
+        "HSI-C-RA-012",
+        "HSI-C-IM-002"
+      ],
+      "note": "Working competing frame for the anti-TNF response question (scopeLocked; Phase 3 depth) — not partnerSigned. Keep as hypothesis until claim IDs survive expert review."
+    },
+    {
+      "id": "expl-ra-multi-cytokine",
+      "label": "Multi-cytokine / IL-6 axis framing (including anti-TNF inadequate responders)",
+      "status": "from_illustrative_pathway",
+      "relatedClaimIds": [
+        "HSI-C-RA-004",
+        "HSI-C-RA-005",
+        "HSI-C-IM-003"
+      ],
+      "note": "Preserves disagreement with TNF-only narratives. PMID 18625622 is related_axis evidence — curator must re-check S-P-O before Gate C."
+    },
+    {
+      "id": "expl-ra-ada-immunogenicity",
+      "label": "ADA / immunogenicity framing (anti-drug antibodies and bioavailability)",
+      "status": "from_illustrative_pathway",
+      "relatedClaimIds": [
+        "HSI-C-RA-007",
+        "HSI-C-RA-008"
+      ],
+      "note": "Phase 3 competing frame: secondary non-response via immunogenicity (PMID 16508927 / 17133559). Infliximab-weighted evidence — do not over-generalise to all anti-TNF agents."
+    },
+    {
+      "id": "expl-ra-acpa-subgroup",
+      "label": "Serologic subgroup framing (RF / ACPA) — association claimed vs not supported",
+      "status": "from_illustrative_pathway",
+      "relatedClaimIds": [
+        "HSI-C-RA-002",
+        "HSI-C-RA-009",
+        "HSI-C-RA-010",
+        "HSI-C-RA-011"
+      ],
+      "note": "Phase 3 tension: Potter cohort association (PMID 18375541) vs Lv meta-analysis no association (PMID 24586782). ACPA/RF remain workup biomarkers (LOINC 53031-9 / 11572-5) — not CDS response predictors."
+    },
+    {
+      "id": "expl-sle-ifn-axis",
+      "label": "Type I IFN–high vs alternate SLE endotypes (illustrative only)",
+      "status": "from_illustrative_pathway",
+      "relatedClaimIds": [
+        "HSI-C-SLE-001",
+        "HSI-C-SLE-002"
+      ],
+      "note": "Not the working Stage 1 pilot pathway — retained as Discovery Centre conversation stub only."
+    }
+  ],
+  "uncertainties": [
+    {
+      "id": "unc-1",
+      "label": "Uncertainty around TNF-α → Insulin resistance",
+      "status": "from_uncertain_grade",
+      "relatedClaimIds": [
+        "HSI-C-IM-002"
+      ],
+      "note": "Grade is uncertain — inspect source and study context before synthesis."
+    },
+    {
+      "id": "unc-2",
+      "label": "Uncertainty around IL-6 → Type 2 diabetes mellitus",
+      "status": "from_uncertain_grade",
+      "relatedClaimIds": [
+        "HSI-C-IM-003"
+      ],
+      "note": "Grade is uncertain — inspect source and study context before synthesis."
+    },
+    {
+      "id": "unc-3",
+      "label": "Uncertainty around TNF-α → Rheumatoid arthritis",
+      "status": "from_uncertain_grade",
+      "relatedClaimIds": [
+        "HSI-C-RA-001"
+      ],
+      "note": "Grade is uncertain — inspect source and study context before synthesis."
+    },
+    {
+      "id": "unc-4",
+      "label": "Uncertainty around Anti-CCP antibodies → Rheumatoid arthritis",
+      "status": "from_uncertain_grade",
+      "relatedClaimIds": [
+        "HSI-C-RA-002"
+      ],
+      "note": "Grade is uncertain — inspect source and study context before synthesis."
+    },
+    {
+      "id": "unc-5",
+      "label": "Uncertainty around Anti-TNF therapy → Rheumatoid arthritis",
+      "status": "from_uncertain_grade",
+      "relatedClaimIds": [
+        "HSI-C-RA-003"
+      ],
+      "note": "Grade is uncertain — inspect source and study context before synthesis."
+    },
+    {
+      "id": "unc-6",
+      "label": "Uncertainty around IL-6 → Rheumatoid arthritis",
+      "status": "from_uncertain_grade",
+      "relatedClaimIds": [
+        "HSI-C-RA-004"
+      ],
+      "note": "Grade is uncertain — inspect source and study context before synthesis."
+    }
+  ],
+  "expertShortlist": [
+    {
+      "id": "gatec-1",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-M001-contributes_to-D001: TNF-α — upregulates — Insulin resistance",
+      "relatedClaimIds": [
+        "HSI-C-IM-002"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-2",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-M003-contributes_to-D001: IL-6 — associated_with — Type 2 diabetes mellitus",
+      "relatedClaimIds": [
+        "HSI-C-IM-003"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-3",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-M001-contributes_to-D001: TNF-α — contributes_to — Rheumatoid arthritis",
+      "relatedClaimIds": [
+        "HSI-C-RA-001"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-4",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-M003-contributes_to-D001: IL-6 — contributes_to — Rheumatoid arthritis",
+      "relatedClaimIds": [
+        "HSI-C-RA-004"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-5",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-M003-contributes_to-D001: Anti-TNF refractory RA phenotype — associated_with — IL-6 pathway axis",
+      "relatedClaimIds": [
+        "HSI-C-RA-005"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-6",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-C003-produces-M001: Synovial macrophages — upregulates — TNF-α",
+      "relatedClaimIds": [
+        "HSI-C-RA-006"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-7",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-R011-drives-P015: PD-1 — drives — T-cell exhaustion",
+      "relatedClaimIds": [
+        "HSI-C-IO-001"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-8",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-R004-activates-P003: NLRP3 inflammasome — contributes_to — Metabolic inflammation",
+      "relatedClaimIds": [
+        "HSI-C-IM-006"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-9",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-P021-produces-B001: hs-CRP — biomarker_of — Low-grade chronic inflammation",
+      "relatedClaimIds": [
+        "HSI-C-IM-004"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gatec-10",
+      "kind": "pending_gate_c",
+      "text": "Review Gate C for REL-I023-targets-M002: IL-1 pathway blockade — inhibits — Metabolic inflammation",
+      "relatedClaimIds": [
+        "HSI-C-IM-010"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "gap-1",
+      "kind": "gap",
+      "text": "Keep ISI REL-* curator checklists as markdown in hsi-core (`docs/`); never auto-approve into a product KG.",
+      "relatedClaimIds": [],
+      "autoApproved": false
+    },
+    {
+      "id": "gap-2",
+      "kind": "gap",
+      "text": "Phase 4 HSI Neon red-wave readiness shipped; Phase 5 acceptance pack regenerable via bun run outputs (hsi-pilot-acceptance.* / walkthrough) — never write ISI autumn-snow / Akeno / DeliverX from this workspace.",
+      "relatedClaimIds": [],
+      "autoApproved": false
+    },
+    {
+      "id": "gap-3",
+      "kind": "gap",
+      "text": "Fill remaining unmapped immuno-metabolic bridges (inflammation↔IR, T2D infection, LADA, irAE hyperglycemia) in hsi-core seeds/maps.",
+      "relatedClaimIds": [],
+      "autoApproved": false
+    },
+    {
+      "id": "hyp-ra-response-het",
+      "kind": "hypothesis",
+      "text": "Working hypothesis (scopeLocked; Phase 3): anti-TNF inadequate responders enrich for IL-6-axis biology that warrants separate evidence mapping before next-line study design — expert must reject or refine; autoApproved=false.",
+      "relatedClaimIds": [
+        "HSI-C-RA-003",
+        "HSI-C-RA-005",
+        "HSI-C-RA-004"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "hyp-ra-acpa-scope",
+      "kind": "hypothesis",
+      "text": "Gap: clarify whether ACPA/RF status should be an inclusion axis for the partner question or only a background serology context — keep RA-009 vs RA-010 disagreement visible; do not invent predictive claims.",
+      "relatedClaimIds": [
+        "HSI-C-RA-002",
+        "HSI-C-RA-009",
+        "HSI-C-RA-010",
+        "HSI-C-RA-011"
+      ],
+      "autoApproved": false
+    },
+    {
+      "id": "hyp-ra-ada-scope",
+      "kind": "hypothesis",
+      "text": "Gap: decide with partner whether ADA / trough-level monitoring is in-scope for the Stage 1 question or deferred — Phase 3 seeds RA-007/008 are literature anchors only; autoApproved=false.",
+      "relatedClaimIds": [
+        "HSI-C-RA-007",
+        "HSI-C-RA-008"
+      ],
+      "autoApproved": false
+    }
+  ],
+  "researchBriefShell": {
+    "sections": [
+      "question_and_scope",
+      "partner_lock_honesty",
+      "discovery_loop_framing",
+      "findings",
+      "supporting_evidence",
+      "conflicting_evidence",
+      "uncertainties",
+      "gaps",
+      "candidate_hypotheses",
+      "citations",
+      "reviewer_status"
+    ],
+    "citationRule": "Every factual statement must map to claim/source IDs; omit or flag if citations cannot be attached.",
+    "unsupportedSynthesis": "omit_or_flag"
+  },
+  "linkedArtifacts": {
+    "isiExport": "hsi-isi-export.json",
+    "isiRelMap": "hsi-isi-rel-map.json",
+    "gapReportJson": "hsi-gap-report.json",
+    "gapReportMd": "hsi-gap-report.md",
+    "gateCChecklistJson": "gate-c-checklist.json",
+    "gateCChecklistMd": "gate-c-checklist.md",
+    "reviewRubricJson": "hsi-pilot-review-rubric.json",
+    "reviewRubricMd": "hsi-pilot-review-rubric.md",
+    "acceptanceJson": "hsi-pilot-acceptance.json",
+    "acceptanceMd": "hsi-pilot-acceptance.md",
+    "walkthroughMd": "hsi-pilot-walkthrough.md"
+  },
+  "summary": {
+    "evidenceMapRows": 63,
+    "partnerScopedEvidenceRows": 14,
+    "gradeCounts": {
+      "established": 0,
+      "uncertain": 52,
+      "unexplored": 11
+    },
+    "missingSourceLabels": 20,
+    "claimsWithLoinc": 8,
+    "expertShortlistItems": 16,
+    "gateCPending": 13,
+    "illustrativeDiseaseContexts": 5
+  },
+  "nextActions": [
+    "Phase 3 evidence depth complete for scope-locked RA/anti-TNF. Keep lockedPilot=false until legalBinding; replace hypothetical fixture via src/hypotheticalPartnerFixture.ts (see partnerLock.flipRequirements).",
+    "Phase 4 done: HSI Neon red-wave schema stub + db:migrate / db:gate-c-local (pending only) — no ISI autumn-snow writes from this workspace.",
+    "Phase 5 done: use hsi-pilot-acceptance.* + hsi-pilot-walkthrough.md for partner-ready Stage 1 acceptance (partnerSigned still pending).",
+    "Human-review the deepened RA pathway against hsi-pilot-review-rubric.* and the four pack outputs.",
+    "Agree source licensing + success thresholds with the named partner before user testing.",
+    "Phase 6–7 done: Discovery Centre ASK→MAP→REVIEW→VALIDATE (hsi-r2-validation.*).",
+    "Phase 8 (clinical R3–R5 / Akeno) requires an explicit user ask + Stage 3 gates — do not start unless asked.",
+    "Keep Akeno/Aksh patient-level pathways behind M4 / governance gates.",
+    "Do not treat SLE/PsO/IBD illustrative stubs as the selected pilot indication."
+  ]
+}

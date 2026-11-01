@@ -1,0 +1,475 @@
+{
+  "schemaVersion": "hsi-r2-validation-1",
+  "phase": "7",
+  "targetRelease": "R2",
+  "notCds": true,
+  "noPatientLevelActions": true,
+  "autoApproveIntoKg": false,
+  "generatedAt": "2026-11-01T20:21:39.173Z",
+  "disease": "Rheumatoid arthritis",
+  "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
+  "scopeLocked": true,
+  "partnerSigned": true,
+  "lockedPilot": false,
+  "framing": "ASK → MAP → REVIEW → VALIDATE",
+  "hypothesisCards": [
+    {
+      "id": "hyp-card-tnf-centric",
+      "label": "TNF-centric framing of RA synovial inflammation and anti-TNF benefit",
+      "sourceExplanationId": "expl-ra-tnf-centric",
+      "validationStatus": "supported",
+      "statusRationale": "Seed pathway supports TNF as a contributory RA inflammatory axis and anti-TNF + MTX clinical benefit (RA-001/003/006/012). Response heterogeneity itself remains open — supported pathway ≠ uniform response prediction.",
+      "relatedClaimIds": [
+        "HSI-C-RA-001",
+        "HSI-C-RA-003",
+        "HSI-C-RA-006",
+        "HSI-C-RA-012",
+        "HSI-C-IM-002"
+      ],
+      "relatedEdgeIds": [
+        "HSI-E-IM-002",
+        "HSI-E-RA-001",
+        "HSI-E-RA-003",
+        "HSI-E-RA-006",
+        "HSI-E-RA-012"
+      ],
+      "groundingPmids": [
+        "11244034",
+        "11087881",
+        "2993897",
+        "10622295"
+      ],
+      "evidenceGrades": {
+        "uncertain": 5
+      },
+      "literatureTests": [
+        {
+          "id": "lt-tnf-1",
+          "kind": "evidence_mapping",
+          "prompt": "Map which retained claims under the TNF-centric frame survive expert Gate C without overclaiming tissue specificity (esp. macrophage→TNF PMID 2993897 vs RA synovial histology).",
+          "relatedClaimIds": [
+            "HSI-C-RA-001",
+            "HSI-C-RA-006"
+          ],
+          "relatedPmids": [
+            "11244034",
+            "2993897"
+          ],
+          "notClinicalProtocol": true
+        },
+        {
+          "id": "lt-tnf-2",
+          "kind": "grade_hardening",
+          "prompt": "Reconcile ATTRACT / Lipsky combo-therapy background (PMID 10622295 / 11087881) with the response-heterogeneity question — keep benefit evidence separate from subgroup predictors.",
+          "relatedClaimIds": [
+            "HSI-C-RA-003",
+            "HSI-C-RA-012"
+          ],
+          "relatedPmids": [
+            "11087881",
+            "10622295"
+          ],
+          "notClinicalProtocol": true
+        }
+      ],
+      "autoApproved": false,
+      "notCds": true
+    },
+    {
+      "id": "hyp-card-il6-axis",
+      "label": "Multi-cytokine / IL-6 axis framing (including anti-TNF inadequate responders)",
+      "sourceExplanationId": "expl-ra-multi-cytokine",
+      "validationStatus": "supported",
+      "statusRationale": "IL-6 contributes to RA inflammatory tone (RA-004) and anti-TNF inadequate responders can still benefit from IL-6R blockade in trial populations (RA-005, PMID 18625622). Framing is supported as a competing axis; causal universality stays uncertain (teaching=hypothesized on RA-005).",
+      "relatedClaimIds": [
+        "HSI-C-RA-004",
+        "HSI-C-RA-005",
+        "HSI-C-IM-003"
+      ],
+      "relatedEdgeIds": [
+        "HSI-E-IM-003",
+        "HSI-E-RA-004",
+        "HSI-E-RA-005"
+      ],
+      "groundingPmids": [
+        "18625622"
+      ],
+      "evidenceGrades": {
+        "uncertain": 3
+      },
+      "literatureTests": [
+        {
+          "id": "lt-il6-1",
+          "kind": "literature_reconciliation",
+          "prompt": "Re-check S-P-O for RA-005: related_axis (anti-TNF inadequate responders → IL-6R blockade) vs any stronger causal map — curator must reject silent promotion before Gate C.",
+          "relatedClaimIds": [
+            "HSI-C-RA-004",
+            "HSI-C-RA-005"
+          ],
+          "relatedPmids": [
+            "18625622"
+          ],
+          "notClinicalProtocol": true
+        },
+        {
+          "id": "lt-il6-2",
+          "kind": "evidence_mapping",
+          "prompt": "List what additional public literature would be required to harden (or refute) IL-6-axis enrichment among inadequate anti-TNF responders — research mapping only, not a protocol to enrol patients.",
+          "relatedClaimIds": [
+            "HSI-C-RA-005"
+          ],
+          "relatedPmids": [
+            "18625622"
+          ],
+          "notClinicalProtocol": true
+        }
+      ],
+      "autoApproved": false,
+      "notCds": true
+    },
+    {
+      "id": "hyp-card-ada",
+      "label": "ADA / immunogenicity framing (anti-drug antibodies and bioavailability)",
+      "sourceExplanationId": "expl-ra-ada-immunogenicity",
+      "validationStatus": "supported",
+      "statusRationale": "Infliximab ADA / trough literature anchors secondary non-response via immunogenicity (RA-007/008; PMID 16508927 / 17133559). Supported as a competing frame — agent generalisation and partner monitoring scope remain open (gap adjacent).",
+      "relatedClaimIds": [
+        "HSI-C-RA-007",
+        "HSI-C-RA-008"
+      ],
+      "relatedEdgeIds": [
+        "HSI-E-RA-007",
+        "HSI-E-RA-008"
+      ],
+      "groundingPmids": [
+        "16508927",
+        "17133559"
+      ],
+      "evidenceGrades": {
+        "uncertain": 2
+      },
+      "literatureTests": [
+        {
+          "id": "lt-ada-1",
+          "kind": "assay_axis_review",
+          "prompt": "Annotate which ADA / trough claims are infliximab-weighted and must not be over-generalised to all anti-TNF agents at Gate C (seeds already flag this).",
+          "relatedClaimIds": [
+            "HSI-C-RA-007",
+            "HSI-C-RA-008"
+          ],
+          "relatedPmids": [
+            "16508927",
+            "17133559"
+          ],
+          "notClinicalProtocol": true
+        },
+        {
+          "id": "lt-ada-2",
+          "kind": "scope_decision",
+          "prompt": "With the future named partner: decide whether ADA / trough monitoring is in-scope for the Stage 1 question or deferred — literature anchors only until then.",
+          "relatedClaimIds": [
+            "HSI-C-RA-007",
+            "HSI-C-RA-008"
+          ],
+          "relatedPmids": [
+            "16508927",
+            "17133559"
+          ],
+          "notClinicalProtocol": true
+        }
+      ],
+      "autoApproved": false,
+      "notCds": true
+    },
+    {
+      "id": "hyp-card-serology",
+      "label": "Serologic subgroup framing (RF / ACPA) — association claimed vs not supported",
+      "sourceExplanationId": "expl-ra-acpa-subgroup",
+      "validationStatus": "gap",
+      "statusRationale": "Contested serology frame: Potter cohort association (RA-009, PMID 18375541) vs Lv meta-analysis no reliable RF/ACPA response prediction (RA-010, PMID 24586782). Workup biomarker role (RA-002/011) is separate. Status=gap until expert decides inclusion-axis vs background context — not a silent predictor.",
+      "relatedClaimIds": [
+        "HSI-C-RA-002",
+        "HSI-C-RA-009",
+        "HSI-C-RA-010",
+        "HSI-C-RA-011"
+      ],
+      "relatedEdgeIds": [
+        "HSI-E-RA-002",
+        "HSI-E-RA-009",
+        "HSI-E-RA-010",
+        "HSI-E-RA-011"
+      ],
+      "groundingPmids": [
+        "10662881",
+        "18375541",
+        "24586782",
+        "20699241"
+      ],
+      "evidenceGrades": {
+        "uncertain": 4
+      },
+      "literatureTests": [
+        {
+          "id": "lt-sero-1",
+          "kind": "literature_reconciliation",
+          "prompt": "Keep RA-009 vs RA-010 disagreement visible in any brief: document what each PMID does and does not support for anti-TNF response prediction.",
+          "relatedClaimIds": [
+            "HSI-C-RA-009",
+            "HSI-C-RA-010"
+          ],
+          "relatedPmids": [
+            "18375541",
+            "24586782"
+          ],
+          "notClinicalProtocol": true
+        },
+        {
+          "id": "lt-sero-2",
+          "kind": "scope_decision",
+          "prompt": "Clarify with partner whether RF/ACPA status is an inclusion axis for the research question or only background serology (LOINC 53031-9 / 11572-5) — do not invent predictive CDS rules.",
+          "relatedClaimIds": [
+            "HSI-C-RA-002",
+            "HSI-C-RA-009",
+            "HSI-C-RA-010",
+            "HSI-C-RA-011"
+          ],
+          "relatedPmids": [
+            "10662881",
+            "18375541",
+            "24586782",
+            "20699241"
+          ],
+          "notClinicalProtocol": true
+        }
+      ],
+      "autoApproved": false,
+      "notCds": true
+    },
+    {
+      "id": "hyp-card-serology-predictor",
+      "label": "RF/ACPA status as a reliable predictor of clinical response to anti-TNF (strong predictive claim)",
+      "sourceExplanationId": "expl-ra-acpa-subgroup",
+      "validationStatus": "refuted",
+      "statusRationale": "Lv et al. meta-analysis (PMID 24586782 / RA-010) does not support RF or anti-CCP as a reliable anti-TNF response predictor. Potter cohort association (RA-009) remains visible as contested observational signal — not sufficient to keep the strong predictive claim as supported.",
+      "relatedClaimIds": [
+        "HSI-C-RA-009",
+        "HSI-C-RA-010"
+      ],
+      "relatedEdgeIds": [
+        "HSI-E-RA-009",
+        "HSI-E-RA-010"
+      ],
+      "groundingPmids": [
+        "18375541",
+        "24586782"
+      ],
+      "evidenceGrades": {
+        "uncertain": 2
+      },
+      "literatureTests": [
+        {
+          "id": "lt-pred-1",
+          "kind": "literature_reconciliation",
+          "prompt": "Treat 'reliable predictor' language as refuted for Stage 1 synthesis unless new partner-licensed evidence overturns PMID 24586782 — retain RA-009 as contested association only.",
+          "relatedClaimIds": [
+            "HSI-C-RA-009",
+            "HSI-C-RA-010"
+          ],
+          "relatedPmids": [
+            "18375541",
+            "24586782"
+          ],
+          "notClinicalProtocol": true
+        }
+      ],
+      "autoApproved": false,
+      "notCds": true
+    }
+  ],
+  "rankedGaps": [
+    {
+      "id": "rgap-serology-tension",
+      "priority": "high",
+      "title": "RF/ACPA response-prediction disagreement remains unresolved",
+      "why": "RA-009 (association) vs RA-010 (meta-analysis no reliable prediction) must stay visible; predictive claim is treated as refuted for synthesis.",
+      "nextExperimentPrompt": "Produce a one-page literature reconciliation note citing PMID 18375541 and 24586782 only — flag what would overturn the 'not a reliable predictor' stance without inventing new PMIDs.",
+      "relatedClaimIds": [
+        "HSI-C-RA-009",
+        "HSI-C-RA-010"
+      ],
+      "relatedPmids": [
+        "18375541",
+        "24586782"
+      ],
+      "source": "serology_tension",
+      "notClinicalProtocol": true,
+      "rank": 1
+    },
+    {
+      "id": "rgap-il6-enrichment",
+      "priority": "high",
+      "title": "IL-6-axis enrichment among anti-TNF inadequate responders needs sharper mapping",
+      "why": "Working hypothesis hyp-ra-response-het + RA-005 remain hypothesized/uncertain; competing TNF-only narratives must not be collapsed.",
+      "nextExperimentPrompt": "Evidence-map public literature that strengthens or weakens IL-6 enrichment among inadequate anti-TNF responders, anchored to PMID 18625622 claim IDs — research brief, not a patient enrolment protocol.",
+      "relatedClaimIds": [
+        "HSI-C-RA-003",
+        "HSI-C-RA-004",
+        "HSI-C-RA-005"
+      ],
+      "relatedPmids": [
+        "18625622",
+        "11087881"
+      ],
+      "source": "competing_explanations",
+      "notClinicalProtocol": true,
+      "rank": 2
+    },
+    {
+      "id": "rgap-ada-scope",
+      "priority": "medium",
+      "title": "ADA / trough monitoring scope vs Stage 1 question still undecided",
+      "why": "RA-007/008 are literature anchors; partner must decide in-scope vs deferred before synthesis treats ADA as required for the locked question.",
+      "nextExperimentPrompt": "Draft a scope-decision checklist for ADA/trough (infliximab-weighted PMIDs 16508927 / 17133559) — include / defer / out-of-scope — for named-partner confirmation.",
+      "relatedClaimIds": [
+        "HSI-C-RA-007",
+        "HSI-C-RA-008"
+      ],
+      "relatedPmids": [
+        "16508927",
+        "17133559"
+      ],
+      "source": "expert_shortlist",
+      "notClinicalProtocol": true,
+      "rank": 3
+    },
+    {
+      "id": "rgap-shortlist-gap-1",
+      "priority": "medium",
+      "title": "Keep ISI REL-* curator checklists as markdown in hsi-core (`docs/`); never auto-approve into a product KG.",
+      "why": "From pack expert shortlist `gap-1` (autoApproved=false).",
+      "nextExperimentPrompt": "Expert challenge for gap-1: reject, refine, or attach additional claim IDs — never auto-approve into KG.",
+      "relatedClaimIds": [],
+      "relatedPmids": [],
+      "source": "expert_shortlist",
+      "notClinicalProtocol": true,
+      "rank": 4
+    },
+    {
+      "id": "rgap-shortlist-gap-2",
+      "priority": "medium",
+      "title": "Phase 4 HSI Neon red-wave readiness shipped; Phase 5 acceptance pack regenerable via bun run outputs (hsi-pilot-acceptan…",
+      "why": "From pack expert shortlist `gap-2` (autoApproved=false).",
+      "nextExperimentPrompt": "Expert challenge for gap-2: reject, refine, or attach additional claim IDs — never auto-approve into KG.",
+      "relatedClaimIds": [],
+      "relatedPmids": [],
+      "source": "expert_shortlist",
+      "notClinicalProtocol": true,
+      "rank": 5
+    },
+    {
+      "id": "rgap-shortlist-gap-3",
+      "priority": "medium",
+      "title": "Fill remaining unmapped immuno-metabolic bridges (inflammation↔IR, T2D infection, LADA, irAE hyperglycemia) in hsi-core …",
+      "why": "From pack expert shortlist `gap-3` (autoApproved=false).",
+      "nextExperimentPrompt": "Expert challenge for gap-3: reject, refine, or attach additional claim IDs — never auto-approve into KG.",
+      "relatedClaimIds": [],
+      "relatedPmids": [],
+      "source": "expert_shortlist",
+      "notClinicalProtocol": true,
+      "rank": 6
+    },
+    {
+      "id": "rgap-schema-HSI-C-IM-002",
+      "priority": "low",
+      "title": "Schema / mapping gap on HSI-C-IM-002",
+      "why": "Missing: loinc_marker, gate_c_approved · grade=uncertain",
+      "nextExperimentPrompt": "Fill mapping gap for HSI-C-IM-002 (TNF-α signalling can impair insulin action in metabolic tissues.) without inventing REL ids or PMIDs.",
+      "relatedClaimIds": [
+        "HSI-C-IM-002"
+      ],
+      "relatedPmids": [
+        "11244034"
+      ],
+      "source": "schema_gap",
+      "notClinicalProtocol": true,
+      "rank": 7
+    },
+    {
+      "id": "rgap-schema-HSI-C-IM-003",
+      "priority": "low",
+      "title": "Schema / mapping gap on HSI-C-IM-003",
+      "why": "Missing: gate_c_approved · grade=uncertain",
+      "nextExperimentPrompt": "Fill mapping gap for HSI-C-IM-003 (Circulating IL-6 is associated with T2D risk and inflammatory tone.) without inventing REL ids or PMIDs.",
+      "relatedClaimIds": [
+        "HSI-C-IM-003"
+      ],
+      "relatedPmids": [
+        "18625622"
+      ],
+      "source": "schema_gap",
+      "notClinicalProtocol": true,
+      "rank": 8
+    },
+    {
+      "id": "rgap-schema-HSI-C-AU-002",
+      "priority": "low",
+      "title": "Schema / mapping gap on HSI-C-AU-002",
+      "why": "Missing: isi_relationship_id, durable_locator, loinc_marker, gate_c_approved · grade=unexplored",
+      "nextExperimentPrompt": "Fill mapping gap for HSI-C-AU-002 (LADA can present with adult-onset diabetes phenotypes overlapping T2D clinics.) without inventing REL ids or PMIDs.",
+      "relatedClaimIds": [
+        "HSI-C-AU-002"
+      ],
+      "relatedPmids": [],
+      "source": "schema_gap",
+      "notClinicalProtocol": true,
+      "rank": 9
+    },
+    {
+      "id": "rgap-schema-HSI-C-RA-001",
+      "priority": "low",
+      "title": "Schema / mapping gap on HSI-C-RA-001",
+      "why": "Missing: aksh_node_id, loinc_marker, gate_c_approved · grade=uncertain",
+      "nextExperimentPrompt": "Fill mapping gap for HSI-C-RA-001 (TNF-α contributes to synovial inflammation in rheumatoid arthritis (scope-locked pathway seed — not ) without inventing REL ids or PMIDs.",
+      "relatedClaimIds": [
+        "HSI-C-RA-001"
+      ],
+      "relatedPmids": [
+        "11244034"
+      ],
+      "source": "schema_gap",
+      "notClinicalProtocol": true,
+      "rank": 10
+    }
+  ],
+  "summary": {
+    "hypothesisCards": 5,
+    "byStatus": {
+      "untested": 0,
+      "supported": 3,
+      "refuted": 1,
+      "gap": 1
+    },
+    "rankedGaps": 10,
+    "literatureTests": 9,
+    "groundingPmidCount": 11
+  },
+  "linkedArtifacts": {
+    "pilotEvidencePackJson": "hsi-pilot-evidence-pack.json",
+    "gapReportJson": "hsi-gap-report.json",
+    "partnerLockJson": "hsi-partner-lock.json",
+    "gateCChecklistJson": "gate-c-checklist.json"
+  },
+  "boundary": [
+    "Research intelligence only — not diagnostic / not for clinical use",
+    "Literature tests and next-experiment prompts are evidence-mapping / reconciliation tasks — not fabricated clinical protocols",
+    "No patient CDS, eligibility automation, trial matching, or Akeno workflows",
+    "autoApproveIntoKg=false — hypothesis cards never enter product KG without human Gate C",
+    "Phase 8 HSI translation substrate ships separately (hsi-translation-handoff.*) — clinicalActive=false; Akeno HITL consumer at /akeno (not CDS)"
+  ],
+  "nextActions": [
+    "Review hypothesis cards on site `/discovery` VALIDATE tab against competing explanations.",
+    "Run high-priority ranked-gap literature reconciliations before collapsing frames.",
+    "Keep lockedPilot=false until legalBinding; fixture partnerSigned is path-testing only — replace via src/hypotheticalPartnerFixture.ts.",
+    "Review Phase 8 TRANSLATE tab candidates as HITL-only scaffolding — not live CDS."
+  ]
+}

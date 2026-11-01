@@ -98,3 +98,16 @@ export {
   type HsiBridgeQueueItem,
   type HsiBridgeSpo,
 } from "./bridgeCurationQueue";
+
+export {
+  DEFAULT_HSI_ARTIFACT_BASE_URL,
+  LOCAL_HSI_DISCOVERY_BASE,
+  allowHypotheticalPartner,
+  assertHonestyFlags,
+  hsiArtifactBaseUrl,
+  loadHsiDiscoveryConsume,
+  summarizeConsume,
+  type ConsumeLoadResult,
+  type HonestyFlags,
+  type IsiConsumeContract,
+} from "./discoveryConsume";
