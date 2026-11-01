@@ -108,6 +108,8 @@ export const DEFAULT_HSI_ARTIFACT_BASE_URL =
 export const LOCAL_HSI_DISCOVERY_BASE = "/hsi-discovery";
 
 const CORE_FILES = [
+  // hsi-core renamed index.json → catalogue.json so /discovery SPA is not shadowed.
+  "catalogue.json",
   "index.json",
   "hsi-isi-consume-contract.json",
   "hsi-partner-lock.json",
@@ -234,7 +236,13 @@ async function tryLoadFromBase(
     return `${root}${base}/${file}`;
   };
 
-  const index = await fetchJson<DiscoveryIndex>(abs("index.json"));
+  // Prefer catalogue.json (hsi-core SPA-safe); fall back to legacy index.json pins.
+  let index: DiscoveryIndex;
+  try {
+    index = await fetchJson<DiscoveryIndex>(abs("catalogue.json"));
+  } catch {
+    index = await fetchJson<DiscoveryIndex>(abs("index.json"));
+  }
   assertHonestyFlags(index, "discovery-index");
 
   const contract = await fetchJson<IsiConsumeContract>(
