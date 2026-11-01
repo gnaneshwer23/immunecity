@@ -1,9 +1,9 @@
 /**
- * ISI consumer surface for **hsi-core** (private package).
+ * ISI consumer surface for **hsi-core** (published pin).
  * Re-exports the shared substrate — do not fork grades/schema here.
  *
- * Install: `"hsi-core": "file:/Users/…/Projects/hsi-core"` (or sibling path).
- * Fallback resolve: tsconfig `paths["hsi-core"]` → same checkout.
+ * Deploy / CI: `./hsiCorePin` (from `src/data/hsi-substrate-pin.json`).
+ * Local refresh: `bun run hsi:sync-export` against ~/Projects/hsi-core.
  */
 export {
   HSI_ALLOWED_AGENT_SURFACES_V0,
@@ -78,7 +78,7 @@ export {
   type IsiRelMappingSummary,
   type IsiRelSuggestion,
   type IsiRelSuggestionStatus,
-} from "hsi-core";
+} from "./hsiCorePin";
 
 export {
   HSI_AXES_NOTE,

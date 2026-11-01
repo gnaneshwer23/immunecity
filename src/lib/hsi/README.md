@@ -1,6 +1,6 @@
 # HSI → ISI bridge
 
-Consumes private **`hsi-core`** (`~/Projects/hsi-core`, GitHub `gnaneshwer23/hsi-core`).
+Consumes published **hsi-core** pins (not a live private `file:` package — that breaks Vercel).
 
 ```ts
 import { HSI_T2D_IMMUNO_SEED_EDGES, discoverySeedSummary, hsiAxesForEdge } from "@/lib/hsi";
@@ -15,10 +15,9 @@ import { HSI_T2D_IMMUNO_SEED_EDGES, discoverySeedSummary, hsiAxesForEdge } from 
 Discovery only on ISI. Never invent PMIDs. Never treat ISI as CDS.
 
 ```bash
-bun install   # resolves file: hsi-core (or restore symlink to ~/Projects/hsi-core)
-ln -sfn ~/Projects/hsi-core node_modules/hsi-core   # if install flattened the file: link
+bun install
 bun run hsi:check
-bun run hsi:sync-export   # refresh src/data/hsi-isi-export.json from hsi-core
+bun run hsi:sync-export   # requires local ~/Projects/hsi-core; refreshes export + substrate pin + Discovery vendor
 ```
 
 Bridge map: `buildHsiBridgeCurationQueue()` + `/curation#hsi-bridge`. Suggestions set

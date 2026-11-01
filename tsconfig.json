@@ -31,9 +31,7 @@
     "exactOptionalPropertyTypes": false,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "hsi-core": ["/Users/gnaneshwerjadav/Projects/hsi-core/src/index.ts"],
-      "hsi-core/*": ["/Users/gnaneshwerjadav/Projects/hsi-core/src/*"]
+      "@/*": ["./src/*"]
     }
   }
 }

@@ -21,7 +21,7 @@ import {
   type HsiGrade,
   type HsiTeachingStatus,
   type IsiHsiExportBundle,
-} from "hsi-core";
+} from "./hsiCorePin";
 import exportSnapshot from "@/data/hsi-isi-export.json";
 
 export const HSI_AXES_NOTE =
@@ -60,7 +60,7 @@ export type IsiDiscoverySeedSummary = {
   axesNote: string;
 };
 
-/** Live summary from hsi-core seeds (preferred when the package resolves). */
+/** Live summary from HSI seed pin (preferred when the package resolves). */
 export function discoverySeedSummary(
   edges: readonly HsiEdge[] = HSI_T2D_IMMUNO_SEED_EDGES,
 ): IsiDiscoverySeedSummary {
@@ -83,7 +83,7 @@ export function discoverySeedSummary(
 export function loadIsiHsiExportSnapshot(): IsiHsiExportBundle {
   const snap = exportSnapshot as IsiHsiExportBundle;
   if (snap.schemaVersion !== "hsi-isi-export-1" || snap.notCds !== true) {
-    // Fall back to live package export if the snapshot is corrupt.
+    // Fall back to pin export if the snapshot is corrupt.
     return buildIsiExportBundle();
   }
   return snap;
