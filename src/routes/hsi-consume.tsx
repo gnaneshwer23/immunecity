@@ -117,8 +117,11 @@ function HsiConsumePage() {
             <strong>Gate C</strong> = pending (never auto-approve into product KG)
           </li>
           <li>
-            <strong>partnerSigned (production)</strong> = false · fixture kind ={" "}
+            <strong>partnerSigned (production)</strong> ={" "}
+            {String(result.honesty.partnerSignedProduction)} · agreement ={" "}
             <code>{summary.partnerAgreementKind}</code>
+            {" · "}
+            Gate C never auto-approves even when named partner is locked.
           </li>
           <li>
             Source: <code>{summary.source}</code>

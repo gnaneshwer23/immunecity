@@ -1,0 +1,1247 @@
+{
+  "schemaVersion": "hsi-gap-report-1",
+  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "summary": {
+    "seedEdges": 79,
+    "bridgeCandidates": 18,
+    "gradeCounts": {
+      "established": 0,
+      "uncertain": 68,
+      "unexplored": 11
+    },
+    "claimsMappedToIsi": 13,
+    "claimsMappedToAksh": 22,
+    "claimsWithDurableLocator": 66,
+    "loinc": {
+      "edgeCount": 79,
+      "claimsWithLoincMarker": 8,
+      "markersWithLoinc": 7,
+      "markersMissingLoinc": 1
+    },
+    "edgeTypesInUse": [
+      "associated_with",
+      "biomarker_of",
+      "bridges_domain",
+      "contributes_to",
+      "drives",
+      "inhibits",
+      "risk_factor_for",
+      "treats",
+      "upregulates",
+      "worsens"
+    ],
+    "domainsInUse": [
+      "autoimmunity",
+      "immuno_metabolic",
+      "io",
+      "t2d"
+    ],
+    "unusedEdgeTypes": [
+      "downregulates"
+    ],
+    "unusedDomains": [
+      "general"
+    ]
+  },
+  "gaps": [
+    {
+      "claimId": "HSI-C-T2D-001",
+      "edgeId": "HSI-E-T2D-001",
+      "assertion": "Elevated HbA1c is used to diagnose and monitor type 2 diabetes.",
+      "domain": "t2d",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-002",
+      "edgeId": "HSI-E-T2D-002",
+      "assertion": "Fasting plasma glucose above diagnostic thresholds indicates T2D.",
+      "domain": "t2d",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-003",
+      "edgeId": "HSI-E-T2D-003",
+      "assertion": "Insulin resistance is a core pathophysiologic feature of T2D.",
+      "domain": "t2d",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-004",
+      "edgeId": "HSI-E-T2D-004",
+      "assertion": "Progressive β-cell dysfunction contributes to hyperglycemia in T2D.",
+      "domain": "t2d",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-005",
+      "edgeId": "HSI-E-T2D-005",
+      "assertion": "Metformin is first-line pharmacotherapy for many adults with T2D.",
+      "domain": "t2d",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-006",
+      "edgeId": "HSI-E-T2D-006",
+      "assertion": "SGLT2 inhibitors lower glucose and reduce cardiorenal risk in selected T2D patients.",
+      "domain": "t2d",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-007",
+      "edgeId": "HSI-E-T2D-007",
+      "assertion": "GLP-1 receptor agonists improve glycemic control and weight in T2D.",
+      "domain": "t2d",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-008",
+      "edgeId": "HSI-E-T2D-008",
+      "assertion": "Obesity is a major modifiable risk factor for incident T2D.",
+      "domain": "t2d",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-009",
+      "edgeId": "HSI-E-T2D-009",
+      "assertion": "CGM time-in-range complements HbA1c for glycemic assessment in T2D.",
+      "domain": "t2d",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-T2D-010",
+      "edgeId": "HSI-E-T2D-010",
+      "assertion": "Systemic glucocorticoids can worsen hyperglycemia and unmask diabetes.",
+      "domain": "t2d",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-001",
+      "edgeId": "HSI-E-IM-001",
+      "assertion": "Low-grade chronic inflammation is linked to insulin resistance (immuno-metabolic bridge).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-002",
+      "edgeId": "HSI-E-IM-002",
+      "assertion": "TNF-α signalling can impair insulin action in metabolic tissues.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-003",
+      "edgeId": "HSI-E-IM-003",
+      "assertion": "Circulating IL-6 is associated with T2D risk and inflammatory tone.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-004",
+      "edgeId": "HSI-E-IM-004",
+      "assertion": "hs-CRP is a clinical marker of systemic inflammatory burden.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-005",
+      "edgeId": "HSI-E-IM-005",
+      "assertion": "Adipose tissue macrophage infiltration associates with insulin resistance.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-006",
+      "edgeId": "HSI-E-IM-006",
+      "assertion": "NLRP3 inflammasome activation contributes to metabolic inflammation.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-007",
+      "edgeId": "HSI-E-IM-007",
+      "assertion": "T2D is associated with increased susceptibility to certain infections.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-008",
+      "edgeId": "HSI-E-IM-008",
+      "assertion": "Sustained hyperglycemia can impair aspects of innate immune function.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-009",
+      "edgeId": "HSI-E-IM-009",
+      "assertion": "Some autoimmune conditions co-occur with higher T2D risk (bridge shortlist).",
+      "domain": "autoimmunity",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IM-010",
+      "edgeId": "HSI-E-IM-010",
+      "assertion": "IL-1 pathway blockade has been studied for metabolic inflammation (research only).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IO-001",
+      "edgeId": "HSI-E-IO-001",
+      "assertion": "PD-1 signalling contributes to T-cell exhaustion phenotypes (educational graph).",
+      "domain": "io",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IO-002",
+      "edgeId": "HSI-E-IO-002",
+      "assertion": "Immune checkpoint therapy is associated with immune-related adverse events.",
+      "domain": "io",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IO-003",
+      "edgeId": "HSI-E-IO-003",
+      "assertion": "Some irAEs and steroid treatment can present with hyperglycemia (bridge-relevant).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-AU-001",
+      "edgeId": "HSI-E-AU-001",
+      "assertion": "Islet autoantibodies mark autoimmune β-cell targeting in T1D (contrast with T2D).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-AU-002",
+      "edgeId": "HSI-E-AU-002",
+      "assertion": "LADA can present with adult-onset diabetes phenotypes overlapping T2D clinics.",
+      "domain": "autoimmunity",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-001",
+      "edgeId": "HSI-E-RA-001",
+      "assertion": "TNF-α contributes to synovial inflammation in rheumatoid arthritis (scope-locked pathway seed — not a partner-signed lock).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-002",
+      "edgeId": "HSI-E-RA-002",
+      "assertion": "Anti-CCP (ACPA) antibodies are a serologic biomarker used in rheumatoid arthritis workup (scope-locked — not partner-signed / not CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-003",
+      "edgeId": "HSI-E-RA-003",
+      "assertion": "Anti-TNF therapy (e.g. infliximab class) improves clinical outcomes in rheumatoid arthritis when combined with methotrexate in established trials (scope-locked — response heterogeneity remains open).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-004",
+      "edgeId": "HSI-E-RA-004",
+      "assertion": "IL-6 pathway signalling contributes to rheumatoid arthritis inflammatory tone (competing axis vs TNF-centric framing).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "aksh_node_id",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-005",
+      "edgeId": "HSI-E-RA-005",
+      "assertion": "Some patients with inadequate anti-TNF response still show benefit from IL-6 pathway inhibition — supporting competing mechanisms for response heterogeneity (uncertain grade).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-006",
+      "edgeId": "HSI-E-RA-006",
+      "assertion": "Macrophages are a cellular source of TNF-α — relevant to synovial TNF biology in rheumatoid arthritis (entity-slice seed).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-007",
+      "edgeId": "HSI-E-RA-007",
+      "assertion": "Development of anti-infliximab antibodies is associated with reduced clinical response to infliximab in rheumatoid arthritis (immunogenicity competing frame for anti-TNF response heterogeneity).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-008",
+      "edgeId": "HSI-E-RA-008",
+      "assertion": "Low early trough infliximab levels and subsequent anti-infliximab antibodies associate with infusion reactions and treatment failure — supporting immunogenicity monitoring as a response-heterogeneity axis (not CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-009",
+      "edgeId": "HSI-E-RA-009",
+      "assertion": "RF and/or anti-CCP positivity has been associated with differential mean DAS28 improvement on anti-TNF therapy in observational cohorts (serology competing frame — direction and magnitude remain contested).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-010",
+      "edgeId": "HSI-E-RA-010",
+      "assertion": "Pooled evidence does not support RF or anti-CCP status as a reliable predictor of clinical response to anti-TNFα agents (competing with single-cohort serology associations).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-011",
+      "edgeId": "HSI-E-RA-011",
+      "assertion": "Rheumatoid factor is a serologic biomarker used in rheumatoid arthritis classification and workup alongside ACPA (scope-locked LOINC marker — not an anti-TNF response predictor by itself).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-RA-012",
+      "edgeId": "HSI-E-RA-012",
+      "assertion": "Infliximab plus methotrexate improves clinical and radiographic outcomes versus methotrexate alone in RA — relevant background for interpreting anti-TNF response and immunogenicity in combination regimens.",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SLE-001",
+      "edgeId": "HSI-E-SLE-001",
+      "assertion": "Type I interferon pathway activation associates with SLE pathophysiology (illustrative — not locked pilot).",
+      "domain": "autoimmunity",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SLE-002",
+      "edgeId": "HSI-E-SLE-002",
+      "assertion": "ANA testing is used in the serologic workup of SLE (illustrative biomarker — not locked pilot / not CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-PSO-001",
+      "edgeId": "HSI-E-PSO-001",
+      "assertion": "IL-17 pathway signalling drives psoriatic skin inflammation (illustrative — not locked pilot).",
+      "domain": "autoimmunity",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-IBD-001",
+      "edgeId": "HSI-E-IBD-001",
+      "assertion": "IL-23 pathway biology associates with IBD inflammatory tone (illustrative — not locked pilot).",
+      "domain": "autoimmunity",
+      "hsiGrade": "unexplored",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "durable_locator",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-001",
+      "edgeId": "HSI-E-SSC-001",
+      "assertion": "Circulating follicular helper T cells are increased in systemic sclerosis (dual-track PRD MVP seed — not Stage 1 partner lock; not CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-002",
+      "edgeId": "HSI-E-SSC-002",
+      "assertion": "Tfh cells produce / drive IL-21 as a defining helper cytokine for B-cell help (foundational Tfh biology; used as SSc pathway axis context).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-003",
+      "edgeId": "HSI-E-SSC-003",
+      "assertion": "IL-21 induces differentiation of human naive and memory B cells into antibody-secreting plasma cells (B-help axis underpinning SSc Tfh–IL-21 framing).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-004",
+      "edgeId": "HSI-E-SSC-004",
+      "assertion": "In systemic sclerosis, circulating Tfh promote plasmablast differentiation through the IL-21 pathway (SSc-specific pathway seed).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-005",
+      "edgeId": "HSI-E-SSC-005",
+      "assertion": "T follicular helper-like cells contribute to skin fibrosis (fibrosis-facing competing / complementary frame for SSc pathway exploration).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-006",
+      "edgeId": "HSI-E-SSC-006",
+      "assertion": "Imbalance toward Tfh1 cells is associated with aberrant B-cell differentiation in systemic sclerosis (competing Tfh-subset explanation).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-007",
+      "edgeId": "HSI-E-SSC-007",
+      "assertion": "EBV infection has been hypothesized to contribute to scleroderma fibroblast / TLR pathway dysregulation — separate uncertainty branch; not a proven Tfh→B→IL-21 causal merge.",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-008",
+      "edgeId": "HSI-E-SSC-008",
+      "assertion": "Commentary frame: T follicular helper cells are discussed as drivers of skin fibrosis (neighbourhood support for the Taylor 2018 fibrosis-facing explanation).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-009",
+      "edgeId": "HSI-E-SSC-009",
+      "assertion": "In systemic sclerosis, peripheral CD21low B cells and serum IL-4 / IL-21 are reported to influence joint involvement (B-cell–IL-21 neighbourhood deepen; not Stage 1 RA lock).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-010",
+      "edgeId": "HSI-E-SSC-010",
+      "assertion": "Single-cell analysis of SSc skin identifies a CXCL13+ Tfh-like T-cell cluster adjacent to B cells and poised to promote local B-cell responses (neighbourhood deepen; not Stage 1 RA lock).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-011",
+      "edgeId": "HSI-E-SSC-011",
+      "assertion": "Serum BAFF is elevated in systemic sclerosis with enhanced BAFF signalling reported in SSc B lymphocytes (B-survival neighbourhood deepen; not a therapeutic claim).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-012",
+      "edgeId": "HSI-E-SSC-012",
+      "assertion": "BAFF antagonism attenuates skin fibrosis in the tight-skin mouse model (hypothesized translational frame — not human dosing, not CDS, not partnerSigned).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-013",
+      "edgeId": "HSI-E-SSC-013",
+      "assertion": "CXCL4 is a predominant protein secreted by plasmacytoid dendritic cells in systemic sclerosis and circulating levels associate with fibrosis phenotypes (biomarker neighbourhood — not a therapeutic claim).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-014",
+      "edgeId": "HSI-E-SSC-014",
+      "assertion": "Therapeutic IL-6 blockade can reverse TGF-β pathway activation signatures in dermal fibroblasts in SSc clinical-trial biospecimens (faSScinate insight — hypothesized translational frame; not dosing CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-015",
+      "edgeId": "HSI-E-SSC-015",
+      "assertion": "B-cell depletion with rituximab has been studied in diffuse cutaneous systemic sclerosis with exploratory clinical and skin signals (small open-label / pilot neighbourhood — hypothesized only; not approved SSc CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-001",
+      "edgeId": "HSI-E-GUT-001",
+      "assertion": "Indigenous Clostridium clusters IV and XIVa promote accumulation of colonic Foxp3+ regulatory T cells (mouse gut–immune neighbourhood seed — not CDS; not Stage 1 RA lock).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-002",
+      "edgeId": "HSI-E-GUT-002",
+      "assertion": "A rationally selected mixture of human microbiota Clostridia strains induces Treg abundance and anti-inflammatory programs in germ-free mouse models (gut–immune neighbourhood; not human CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-003",
+      "edgeId": "HSI-E-GUT-003",
+      "assertion": "Commensal microbe-derived butyrate induces differentiation of colonic regulatory T cells (core SCFA ↔ mucosal Treg axis; mouse Nature 2013 evidence).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-004",
+      "edgeId": "HSI-E-GUT-004",
+      "assertion": "Microbiota-derived short-chain fatty acids regulate size and function of the colonic Treg pool in an Ffar2 (GPR43)-dependent manner in mice (SCFA class ↔ mucosal Treg).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-005",
+      "edgeId": "HSI-E-GUT-005",
+      "assertion": "SCFAs can promote T-cell differentiation into IL-17-producing (Th17) cells depending on cytokine milieu via HDAC inhibition / mTOR–S6K (competing frame vs Th17 inhibition — hypothesized only).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-006",
+      "edgeId": "HSI-E-GUT-006",
+      "assertion": "Butyrate can inhibit Th17 differentiation (IL-17 / RORγt axis) while upregulating IL-10 in T-cell models of colitis induction (competing frame vs SCFA→Th17 promotion — hypothesized only).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-007",
+      "edgeId": "HSI-E-GUT-007",
+      "assertion": "Butyrate enhances intestinal barrier function by facilitating tight-junction assembly via AMPK activation in Caco-2 monolayers (barrier context for mucosal immune neighbourhood).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-008",
+      "edgeId": "HSI-E-GUT-008",
+      "assertion": "Activation of Gpr109a, receptor for niacin and the commensal metabolite butyrate, suppresses colonic inflammation (and carcinogenesis) in mouse models — receptor hop for SCFA mucosal neighbourhood.",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-009",
+      "edgeId": "HSI-E-GUT-009",
+      "assertion": "Butyrate conditions human dendritic cells to prime IL-10-producing type-1 regulatory T cells via both HDAC inhibition and GPR109A signalling (human DC frame — hypothesized for therapeutic generalisation).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-010",
+      "edgeId": "HSI-E-GUT-010",
+      "assertion": "Metabolites produced by commensal bacteria promote peripheral regulatory T-cell generation (independent peripheral-Treg hop alongside colonic Treg seeds — mouse; not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-011",
+      "edgeId": "HSI-E-GUT-011",
+      "assertion": "The microbial metabolite butyrate regulates intestinal macrophage function via histone deacetylase inhibition (innate hop for SCFA mucosal neighbourhood — mouse).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-012",
+      "edgeId": "HSI-E-GUT-012",
+      "assertion": "Microbiota-derived short-chain fatty acids crosstalk with intestinal epithelial HIF programmes that augment tissue barrier function (barrier deepen — mouse/mechanistic).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-001",
+      "edgeId": "HSI-E-NI-001",
+      "assertion": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-002",
+      "edgeId": "HSI-E-NI-002",
+      "assertion": "The inflammatory reflex frames a hard-wired autonomic (vagal cholinergic) pathway that reflexively monitors and adjusts acute inflammatory cytokine responses in real time (conceptual neighbourhood frame — not a disease cure claim).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-003",
+      "edgeId": "HSI-E-NI-003",
+      "assertion": "The nicotinic acetylcholine receptor α7 subunit is required for acetylcholine- and vagus-mediated inhibition of macrophage TNF synthesis (essential receptor node of the cholinergic anti-inflammatory pathway).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-004",
+      "edgeId": "HSI-E-NI-004",
+      "assertion": "Vagus / nicotinic α7 signalling attenuates macrophage activation via Jak2–STAT3 phosphorylation in experimental inflammation (mechanism companion to α7 TNF inhibition).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-005",
+      "edgeId": "HSI-E-NI-005",
+      "assertion": "Acetylcholine-producing memory-phenotype T cells relay vagus nerve signals required for inflammatory-reflex inhibition of macrophage TNF (neural → lymphoid → innate immune hop).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-006",
+      "edgeId": "HSI-E-NI-006",
+      "assertion": "Implantable vagus nerve stimulation can modulate peripheral blood TNF production and RA clinical composite scores in small human pilot cohorts (hypothesized translational frame — not a settled clinical cure; not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-007",
+      "edgeId": "HSI-E-NI-007",
+      "assertion": "Splenectomy inactivates the cholinergic anti-inflammatory pathway during lethal endotoxemia and polymicrobial sepsis — spleen as required effector organ for vagus-mediated TNF brake (rodent).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-008",
+      "edgeId": "HSI-E-NI-008",
+      "assertion": "The splenic nerve is required for cholinergic anti-inflammatory pathway control of TNF in endotoxemia (vagus → celiac/superior mesenteric → splenic nerve → spleen macrophage TNF brake).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-009",
+      "edgeId": "HSI-E-NI-009",
+      "assertion": "Pharmacological stimulation of the cholinergic anti-inflammatory pathway attenuates systemic TNF responses (drug-pathway hop parallel to electrical VNS — rodent; not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-010",
+      "edgeId": "HSI-E-NI-010",
+      "assertion": "Cholinergic neural signals to the spleen down-regulate leukocyte trafficking via CD11b (trafficking hop beyond TNF-only frames — rodent).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-011",
+      "edgeId": "HSI-E-NI-011",
+      "assertion": "The cholinergic anti-inflammatory pathway can inhibit tumor necrosis factor during ischemia–reperfusion injury (context expand beyond endotoxin — rodent; not clinical cure).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    }
+  ],
+  "bridgeShortlist": [
+    {
+      "edgeId": "HSI-E-IM-001",
+      "claimId": "HSI-C-IM-001",
+      "assertion": "Low-grade chronic inflammation is linked to insulin resistance (immuno-metabolic bridge).",
+      "subjectLabel": "Low-grade chronic inflammation",
+      "objectLabel": "Insulin resistance",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "none"
+    },
+    {
+      "edgeId": "HSI-E-IM-002",
+      "claimId": "HSI-C-IM-002",
+      "assertion": "TNF-α signalling can impair insulin action in metabolic tissues.",
+      "subjectLabel": "TNF-α",
+      "objectLabel": "Insulin resistance",
+      "suggestedIsiRelationshipId": "REL-M001-contributes_to-D001",
+      "matchKind": "related_axis"
+    },
+    {
+      "edgeId": "HSI-E-IM-003",
+      "claimId": "HSI-C-IM-003",
+      "assertion": "Circulating IL-6 is associated with T2D risk and inflammatory tone.",
+      "subjectLabel": "IL-6",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "suggestedIsiRelationshipId": "REL-M003-contributes_to-D001",
+      "matchKind": "related_axis"
+    },
+    {
+      "edgeId": "HSI-E-IM-004",
+      "claimId": "HSI-C-IM-004",
+      "assertion": "hs-CRP is a clinical marker of systemic inflammatory burden.",
+      "subjectLabel": "hs-CRP",
+      "objectLabel": "Low-grade chronic inflammation",
+      "suggestedIsiRelationshipId": "REL-P021-produces-B001",
+      "matchKind": "related_axis"
+    },
+    {
+      "edgeId": "HSI-E-IM-005",
+      "claimId": "HSI-C-IM-005",
+      "assertion": "Adipose tissue macrophage infiltration associates with insulin resistance.",
+      "subjectLabel": "Adipose tissue macrophages",
+      "objectLabel": "Insulin resistance",
+      "suggestedIsiRelationshipId": "REL-C003-produces-M001",
+      "matchKind": "related_axis"
+    },
+    {
+      "edgeId": "HSI-E-IM-006",
+      "claimId": "HSI-C-IM-006",
+      "assertion": "NLRP3 inflammasome activation contributes to metabolic inflammation.",
+      "subjectLabel": "NLRP3 inflammasome",
+      "objectLabel": "Metabolic inflammation",
+      "suggestedIsiRelationshipId": "REL-R004-activates-P003",
+      "matchKind": "related_axis"
+    },
+    {
+      "edgeId": "HSI-E-IM-007",
+      "claimId": "HSI-C-IM-007",
+      "assertion": "T2D is associated with increased susceptibility to certain infections.",
+      "subjectLabel": "Type 2 diabetes mellitus",
+      "objectLabel": "Infection susceptibility",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "none"
+    },
+    {
+      "edgeId": "HSI-E-IM-008",
+      "claimId": "HSI-C-IM-008",
+      "assertion": "Sustained hyperglycemia can impair aspects of innate immune function.",
+      "subjectLabel": "Hyperglycemia",
+      "objectLabel": "Innate immune dysfunction",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "none"
+    },
+    {
+      "edgeId": "HSI-E-IM-009",
+      "claimId": "HSI-C-IM-009",
+      "assertion": "Some autoimmune conditions co-occur with higher T2D risk (bridge shortlist).",
+      "subjectLabel": "Autoimmune–metabolic comorbidity",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "none"
+    },
+    {
+      "edgeId": "HSI-E-IM-010",
+      "claimId": "HSI-C-IM-010",
+      "assertion": "IL-1 pathway blockade has been studied for metabolic inflammation (research only).",
+      "subjectLabel": "IL-1 pathway blockade",
+      "objectLabel": "Metabolic inflammation",
+      "suggestedIsiRelationshipId": "REL-I023-targets-M002",
+      "matchKind": "related_axis"
+    },
+    {
+      "edgeId": "HSI-E-IO-003",
+      "claimId": "HSI-C-IO-003",
+      "assertion": "Some irAEs and steroid treatment can present with hyperglycemia (bridge-relevant).",
+      "subjectLabel": "Immune-related adverse events",
+      "objectLabel": "Hyperglycemia",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "none"
+    },
+    {
+      "edgeId": "HSI-E-AU-002",
+      "claimId": "HSI-C-AU-002",
+      "assertion": "LADA can present with adult-onset diabetes phenotypes overlapping T2D clinics.",
+      "subjectLabel": "LADA / latent autoimmune diabetes",
+      "objectLabel": "Type 2 diabetes mellitus",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "none"
+    },
+    {
+      "edgeId": "HSI-E-GUT-003",
+      "claimId": "HSI-C-GUT-003",
+      "assertion": "Commensal microbe-derived butyrate induces differentiation of colonic regulatory T cells (core SCFA ↔ mucosal Treg axis; mouse Nature 2013 evidence).",
+      "subjectLabel": "Butyrate (SCFA)",
+      "objectLabel": "Colonic / mucosal Foxp3+ Treg",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-GUT-004",
+      "claimId": "HSI-C-GUT-004",
+      "assertion": "Microbiota-derived short-chain fatty acids regulate size and function of the colonic Treg pool in an Ffar2 (GPR43)-dependent manner in mice (SCFA class ↔ mucosal Treg).",
+      "subjectLabel": "Short-chain fatty acids (class)",
+      "objectLabel": "Colonic / mucosal Foxp3+ Treg",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-NI-001",
+      "claimId": "HSI-C-NI-001",
+      "assertion": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
+      "subjectLabel": "Efferent vagus nerve stimulation",
+      "objectLabel": "Peripheral / systemic TNF inflammatory tone",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-NI-002",
+      "claimId": "HSI-C-NI-002",
+      "assertion": "The inflammatory reflex frames a hard-wired autonomic (vagal cholinergic) pathway that reflexively monitors and adjusts acute inflammatory cytokine responses in real time (conceptual neighbourhood frame — not a disease cure claim).",
+      "subjectLabel": "Inflammatory reflex (cholinergic axis)",
+      "objectLabel": "Peripheral / systemic TNF inflammatory tone",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-NI-003",
+      "claimId": "HSI-C-NI-003",
+      "assertion": "The nicotinic acetylcholine receptor α7 subunit is required for acetylcholine- and vagus-mediated inhibition of macrophage TNF synthesis (essential receptor node of the cholinergic anti-inflammatory pathway).",
+      "subjectLabel": "Nicotinic ACh receptor α7 subunit (macrophage)",
+      "objectLabel": "Macrophage TNF synthesis / release",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-NI-005",
+      "claimId": "HSI-C-NI-005",
+      "assertion": "Acetylcholine-producing memory-phenotype T cells relay vagus nerve signals required for inflammatory-reflex inhibition of macrophage TNF (neural → lymphoid → innate immune hop).",
+      "subjectLabel": "Acetylcholine-synthesizing memory T cells",
+      "objectLabel": "Macrophage TNF synthesis / release",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    }
+  ],
+  "isiRelMapping": {
+    "suggestions": 32,
+    "withRelId": 13,
+    "unmapped": 19,
+    "exactConceptPair": 2,
+    "relatedAxis": 11,
+    "curated": 13,
+    "acceptedForCuration": 0,
+    "bridgeCandidatesCovered": 6,
+    "bridgeCandidatesTotal": 18,
+    "autoApproveIntoKg": false
+  },
+  "akshNodeMapping": {
+    "suggestions": 25,
+    "withAkshNodeId": 22,
+    "unmappedOrDeferred": 3,
+    "exactClinicConcept": 7,
+    "pathwayTemplate": 6,
+    "bridgeWatch": 9,
+    "t2dSeedsTotal": 10,
+    "t2dSeedsMapped": 10,
+    "durableAkshIds": 22,
+    "provisionalAkshIdsRemaining": 0,
+    "provisionalMigrationEntries": 22,
+    "autoSurfaceCds": false,
+    "autoApplyToEhr": false,
+    "cdsRequiresApprovedEstablished": true,
+    "anyCdsSurfacableOnSeedEdges": false
+  },
+  "nextActions": [
+    "Keep ISI REL-* curator checklists as markdown in hsi-core (`docs/`); never auto-approve into a product KG.",
+    "Phase 4 HSI Neon red-wave readiness shipped; Phase 5 acceptance pack regenerable via bun run outputs (hsi-pilot-acceptance.* / walkthrough) — never write ISI autumn-snow / Akeno / DeliverX from this workspace.",
+    "Fill remaining unmapped immuno-metabolic bridges (inflammation↔IR, T2D infection, LADA, irAE hyperglycemia) in hsi-core seeds/maps.",
+    "Aksh durable `aksh:` ids + HITL read-only stub shipped (hsi-aksh-node-map-2 / hsi-aksh-hitl-stub-1); bind live clinic KG when Aksh publishes canonical nodes.",
+    "Document human Gate C approve+supports checklist in hsi-core docs; product apps consume published export only — never edit immunecity for HSI; ignore DeliverX/swift-deliveries.",
+    "Map durable ISI REL-* for Phase 3 unmapped RA edges (ADA, serology, RF, MTX combo) only when curator-confirmed — do not invent.",
+    "Do not mark CDS-surfacable until curationReview=approved and hsiGrade=established (akshNodeId alone never unlocks CDS)."
+  ]
+}

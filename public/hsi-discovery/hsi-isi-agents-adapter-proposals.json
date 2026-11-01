@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "hsi-isi-agents-adapter-proposals-1",
+  "runtimeSchema": "hsi-isi-agents-adapter-runtime-1",
+  "adapterId": "adapter-isi-agents",
+  "runtime": "stub",
+  "notCds": true,
+  "autoApprove": false,
+  "autoApproveIntoKg": false,
+  "mayFlipEvidenceGrade": false,
+  "vendorsModelWeights": false,
+  "emitsModelProposalOnly": true,
+  "containsPhi": false,
+  "partnerSigned": false,
+  "notCommercial": true,
+  "replaceWithLegalSignOff": true,
+  "runtimeOutOfRepo": true,
+  "banner": "RESEARCH SIGN-OFF FIXTURE — ISI agents catalog/stub proposals only; runtime remains ISI product; replaceWithLegalSignOff=true",
+  "licenseGate": {
+    "adapterId": "adapter-isi-agents",
+    "signOffStatus": "signed_research_test_only",
+    "blockedUntilSignOff": false,
+    "docsUrl": "https://github.com/gnaneshwer23/hsi-core/blob/main/docs/HSI_AI_NEURAL_FUTURE_HEALTHCARE.md"
+  },
+  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "fixtures": [
+    {
+      "fixtureId": "literature",
+      "label": "ISI literature specialist stub",
+      "agentRole": "literature_specialist",
+      "packHint": "pack:hsi-pilot-evidence-pack",
+      "edgeHint": "edge:HSI-E-RA-001",
+      "proposedObject": "research agent stub draft citing RA TNF edge (supervised; not auto Gate C)",
+      "contextFrame": "ISI agents research-test stub — runtime out of hsi-core. Catalog pattern only. Gate C pending."
+    },
+    {
+      "fixtureId": "pathway",
+      "label": "ISI pathway specialist stub",
+      "agentRole": "pathway_specialist",
+      "packHint": "pack:hsi-ssc-pathway-pack",
+      "edgeHint": "edge:HSI-E-SSC-001",
+      "proposedObject": "research agent stub draft citing SSc Tfh edge (dual-track secondary; not ASK replace)",
+      "contextFrame": "ISI agents research-test stub — notCommercial fixture; replaceWithLegalSignOff=true."
+    }
+  ],
+  "proposals": [
+    {
+      "proposalId": "HSI-MP-ISI-AGENTS-LITERATURE-001",
+      "sourceAdapterOrAgent": "adapter-isi-agents",
+      "proposedSubject": "ISI literature specialist stub",
+      "proposedPredicate": "associated_with",
+      "proposedObject": "research agent stub draft citing RA TNF edge (supervised; not auto Gate C)",
+      "contextNote": "ISI agents research-test stub — runtime out of hsi-core. Catalog pattern only. Gate C pending. agentRole=literature_specialist runtime=stub Executable agent runtime = ISI product (out of repo). ModelProposalArtifact only → Gate C pending; autoApprove=false; does not set hsiGrade.",
+      "evidenceHints": [
+        "pack:hsi-pilot-evidence-pack",
+        "edge:HSI-E-RA-001",
+        "agentRole:literature_specialist",
+        "runtime:stub",
+        "adapter:adapter-isi-agents",
+        "notCommercial:true",
+        "replaceWithLegalSignOff:true",
+        "runtimeOutOfRepo:true"
+      ],
+      "suggestedTeachingStatus": "hypothesized",
+      "createdAt": "2026-11-01T20:58:00.457Z"
+    },
+    {
+      "proposalId": "HSI-MP-ISI-AGENTS-PATHWAY-001",
+      "sourceAdapterOrAgent": "adapter-isi-agents",
+      "proposedSubject": "ISI pathway specialist stub",
+      "proposedPredicate": "associated_with",
+      "proposedObject": "research agent stub draft citing SSc Tfh edge (dual-track secondary; not ASK replace)",
+      "contextNote": "ISI agents research-test stub — notCommercial fixture; replaceWithLegalSignOff=true. agentRole=pathway_specialist runtime=stub Executable agent runtime = ISI product (out of repo). ModelProposalArtifact only → Gate C pending; autoApprove=false; does not set hsiGrade.",
+      "evidenceHints": [
+        "pack:hsi-ssc-pathway-pack",
+        "edge:HSI-E-SSC-001",
+        "agentRole:pathway_specialist",
+        "runtime:stub",
+        "adapter:adapter-isi-agents",
+        "notCommercial:true",
+        "replaceWithLegalSignOff:true",
+        "runtimeOutOfRepo:true"
+      ],
+      "suggestedTeachingStatus": "hypothesized",
+      "createdAt": "2026-11-01T20:58:00.457Z"
+    }
+  ],
+  "instructions": [
+    "ISI agents thin adapter spike — stub ModelProposalArtifacts only → Gate C pending.",
+    "RESEARCH SIGN-OFF FIXTURE — ISI agents catalog/stub proposals only; runtime remains ISI product; replaceWithLegalSignOff=true",
+    "Executable runtime remains ISI product (out of hsi-core).",
+    "Never set hsiGrade / autoApprove / partnerSigned=true."
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "hsi-rdkit-adapter-proposals-1",
+  "runtimeSchema": "hsi-rdkit-adapter-runtime-1",
+  "adapterId": "adapter-rdkit",
+  "runtime": "stub",
+  "notCds": true,
+  "autoApprove": false,
+  "autoApproveIntoKg": false,
+  "mayFlipEvidenceGrade": false,
+  "vendorsModelWeights": false,
+  "emitsModelProposalOnly": true,
+  "containsPhi": false,
+  "partnerSigned": false,
+  "licenseGate": {
+    "adapterId": "adapter-rdkit",
+    "signOffStatus": "research_ok_documented",
+    "blockedUntilSignOff": false,
+    "docsUrl": "https://github.com/rdkit/rdkit/blob/master/license.txt"
+  },
+  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "descriptors": [
+    {
+      "fixtureId": "mtx",
+      "label": "Methotrexate",
+      "smiles": "CN(Cc1cnc2nc(N)nc(N)c2n1)c1ccc(C(=O)N[C@@H](CCC(=O)O)C(=O)O)cc1",
+      "mw": 454.44,
+      "logp": -1.85,
+      "tpsa": 210.54,
+      "hbd": 5,
+      "hba": 12,
+      "runtime": "stub"
+    },
+    {
+      "fixtureId": "butyrate",
+      "label": "Butyrate (butyric acid)",
+      "smiles": "CCCC(=O)O",
+      "mw": 88.11,
+      "logp": 0.79,
+      "tpsa": 37.3,
+      "hbd": 1,
+      "hba": 2,
+      "runtime": "stub"
+    }
+  ],
+  "proposals": [
+    {
+      "proposalId": "HSI-MP-RDKIT-MTX-001",
+      "sourceAdapterOrAgent": "adapter-rdkit",
+      "proposedSubject": "Methotrexate (public SMILES)",
+      "proposedPredicate": "associated_with",
+      "proposedObject": "research cheminformatics property profile (MW/LogP/TPSA) in anti-TNF + MTX neighbourhood",
+      "contextNote": "P3.0 RDKit spike — descriptor draft for public MTX SMILES tied to seeded ATTRACT/MTX combo edge. Not dosing, not CDS, not partnerSigned. runtime=stub descriptors: MW=454.44; LogP=-1.85; TPSA=210.54; HBD=5; HBA=12 ModelProposalArtifact only → Gate C pending; autoApprove=false; does not set hsiGrade.",
+      "evidenceHints": [
+        "pack:hsi-pilot-evidence-pack",
+        "edge:HSI-E-RA-012",
+        "smiles:CN(Cc1cnc2nc(N)nc(N)c2n1)c1ccc(C(=O)N[C@@H](CCC(=O)O)C(=O)O)cc1",
+        "runtime:stub",
+        "adapter:adapter-rdkit",
+        "axis:cheminformatics"
+      ],
+      "suggestedTeachingStatus": "hypothesized",
+      "createdAt": "2026-11-01T20:58:00.457Z"
+    },
+    {
+      "proposalId": "HSI-MP-RDKIT-BUTYRATE-001",
+      "sourceAdapterOrAgent": "adapter-rdkit",
+      "proposedSubject": "Butyrate (butyric acid) (public SMILES)",
+      "proposedPredicate": "associated_with",
+      "proposedObject": "SCFA chemotype descriptor profile for mucosal SCFA↔Treg research framing",
+      "contextNote": "P3.0 RDKit spike — descriptor draft for public butyrate SMILES tied to gut–immune pack. Not a therapeutic claim; hypothesized only. runtime=stub descriptors: MW=88.11; LogP=0.79; TPSA=37.3; HBD=1; HBA=2 ModelProposalArtifact only → Gate C pending; autoApprove=false; does not set hsiGrade.",
+      "evidenceHints": [
+        "pack:hsi-gut-immune-pack",
+        "edge:HSI-E-GUT-003",
+        "smiles:CCCC(=O)O",
+        "runtime:stub",
+        "adapter:adapter-rdkit",
+        "axis:cheminformatics"
+      ],
+      "suggestedTeachingStatus": "hypothesized",
+      "createdAt": "2026-11-01T20:58:00.457Z"
+    }
+  ],
+  "instructions": [
+    "P3.0 RDKit thin adapter spike — ModelProposalArtifacts only → Gate C pending.",
+    "License gate: refuse adapters with blockedUntilSignOff=true (this row is research_ok_documented).",
+    "runtime=stub when RDKit Python is absent; runtime=rdkit when python3+rdkit compute succeeds.",
+    "Never set hsiGrade / curationReview / autoApprove / partnerSigned=true.",
+    "No PHI · no CDS · no multi-GB weights · packs remain evidence authority.",
+    "See docs/P3_ADAPTER_RFC.md · src/adapters/rdkitAdapter.ts."
+  ]
+}

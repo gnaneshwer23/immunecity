@@ -147,14 +147,22 @@ export function assertHonestyFlags(
         doc.agreementKind === "hypothetical_test_only") &&
       doc.productionPartnerSigned !== true &&
       doc.lockedPilot !== true;
-    if (!fixtureOk && !allow) {
+    const namedOk =
+      doc.isHypothetical === false &&
+      doc.legalBinding === true &&
+      (doc.agreementKind === "written_confirm" ||
+        doc.agreementKind === "legal_mou") &&
+      // Named partner may set lockedPilot; still never CDS / never auto Gate C.
+      (doc.lockedPilot === true || doc.lockedPilot === false);
+    if (!fixtureOk && !namedOk && !allow) {
       throw new Error(
-        `${label}: partnerSigned=true requires hypothetical_test_only fixture (legalBinding=false) or ALLOW_HYPOTHETICAL_PARTNER=1 — never treat as production`,
+        `${label}: partnerSigned=true requires hypothetical_test_only fixture (legalBinding=false), a named_partner legalBinding path (written_confirm|legal_mou), or ALLOW_HYPOTHETICAL_PARTNER=1`,
       );
     }
-    if (doc.legalBinding === true) {
+    // Reject fake MoU: legalBinding with hypothetical fixture still on.
+    if (doc.legalBinding === true && doc.isHypothetical === true) {
       throw new Error(
-        `${label}: legalBinding=true is not accepted from Discovery JSON (no fake MoU)`,
+        `${label}: legalBinding=true with isHypothetical=true is not accepted (no fake MoU)`,
       );
     }
   }
@@ -188,7 +196,8 @@ export type ConsumeLoadResult = {
     notCds: true;
     autoApproveIntoKg: false;
     gateCPending: true;
-    partnerSignedProduction: false;
+    /** True only for named legalBinding partners — never for hypothetical fixture. Still not CDS. */
+    partnerSignedProduction: boolean;
   };
 };
 
@@ -297,7 +306,12 @@ async function tryLoadFromBase(
       notCds: true,
       autoApproveIntoKg: false,
       gateCPending: true,
-      partnerSignedProduction: false,
+      partnerSignedProduction:
+        partnerLock.partnerSigned === true &&
+        partnerLock.legalBinding === true &&
+        partnerLock.isHypothetical === false &&
+        (partnerLock.agreementKind === "written_confirm" ||
+          partnerLock.agreementKind === "legal_mou"),
     },
   };
 }
