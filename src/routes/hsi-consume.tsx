@@ -1,5 +1,6 @@
 /**
- * Public HSI → ISI Discovery consume surface.
+ * HSI Discovery consume diagnostics (load order, honesty, licensing).
+ * Product ASK→MAP→REVIEW UI lives at /hsi/discovery.
  * Research / HITL only — not CDS. Gate C stays pending; no auto-approve.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -50,9 +51,9 @@ export const Route = createFileRoute("/hsi-consume")({
   },
   head: () =>
     seoHead({
-      title: `HSI Discovery consume | ${PRODUCT_NAME}`,
+      title: `HSI Discovery diagnostics | ${PRODUCT_NAME}`,
       description:
-        "ISI consumer view of HSI Discovery JSON — research / HITL only. Not clinical decision support. Gate C never auto-approves.",
+        "Diagnostics for HSI Discovery JSON consume — research / HITL only. Product loop is /hsi/discovery. Not clinical decision support.",
       path: "/hsi-consume",
     }),
   component: HsiConsumePage,
@@ -65,8 +66,8 @@ function HsiConsumePage() {
     return (
       <main className="page">
         <PageHead
-          kicker="HSI → ISI"
-          title="HSI Discovery consume"
+          kicker="HSI → ISI · diagnostics"
+          title="HSI Discovery diagnostics"
           lede="Could not load HSI Discovery artifacts. Research surface only — not CDS."
         />
         <Section id="honesty" n={1} title="Load error" lede="Honesty asserts failed or artifacts unreachable.">
@@ -94,9 +95,9 @@ function HsiConsumePage() {
   return (
     <main className="page">
       <PageHead
-        kicker="HSI → ISI"
-        title="HSI Discovery consume"
-        lede={`Published HSI packs for ${PRODUCT_NAME} Discovery / evidence — notCds, no auto Gate C approve, no production MoU.`}
+        kicker="HSI → ISI · diagnostics"
+        title="HSI Discovery diagnostics"
+        lede={`Load-order / honesty pin for ${PRODUCT_NAME}. Product ASK → MAP → REVIEW is at /hsi/discovery — notCds, no auto Gate C approve.`}
       />
       <PageToc items={TOC} />
 
@@ -106,6 +107,9 @@ function HsiConsumePage() {
         title="Honesty banners"
         lede="Binding flags from the consume contract. Nothing here is clinical decision support."
       >
+        <p className="small" style={{ marginBottom: 12 }}>
+          Open the product Discovery loop: <Link to="/hsi/discovery">/hsi/discovery</Link>
+        </p>
         <ul className="small" style={{ paddingLeft: 18 }}>
           <li>
             <strong>notCds</strong> = {String(result.honesty.notCds)}
@@ -159,9 +163,9 @@ function HsiConsumePage() {
           {String(result.partnerLock.lockedPilot ?? false)}.
         </p>
         <p className="small muted">
-          Open the full pilot pack JSON under <code>/hsi-discovery/hsi-pilot-evidence-pack.json</code> for MAP /
-          REVIEW payloads. Product Discovery radar remains at{" "}
-          <Link to="/discovery">/discovery</Link>; evidence coverage at <Link to="/evidence">/evidence</Link>.
+          Product ASK → MAP → REVIEW UI: <Link to="/hsi/discovery">/hsi/discovery</Link>. Full pilot pack JSON:{" "}
+          <code>/hsi-discovery/hsi-pilot-evidence-pack.json</code>. Research Radar (ISI unknowns):{" "}
+          <Link to="/discovery">/discovery</Link>; evidence at <Link to="/evidence">/evidence</Link>.
         </p>
       </Section>
 
@@ -240,7 +244,10 @@ function HsiConsumePage() {
             <Link to="/evidence">Evidence</Link> — live claim coverage
           </li>
           <li>
-            <Link to="/discovery">Discovery radar</Link> — product unknowns feed
+            <Link to="/hsi/discovery">HSI Discovery</Link> — ASK → MAP → REVIEW product loop
+          </li>
+          <li>
+            <Link to="/discovery">Research Radar</Link> — ISI coverage unknowns feed
           </li>
           <li>
             <a href="/hsi-discovery/hsi-isi-consume-contract.json">Consume contract JSON</a>

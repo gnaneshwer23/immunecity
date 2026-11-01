@@ -23,14 +23,18 @@ bun run hsi:sync-export   # requires local ~/Projects/hsi-core; refreshes export
 Bridge map: `buildHsiBridgeCurationQueue()` + `/curation#hsi-bridge`. Suggestions set
 `isiRelationshipId` pointers only — never Gate C approval, never invent PMIDs.
 
-## Discovery JSON consume (P0.5 wire)
+## Discovery JSON consume (product + diagnostics)
 
 - Client: `src/lib/hsi/discoveryConsume.ts` (honesty asserts + load order)
-- Route: **`/hsi-consume`** — research banner, Gate C pending, licensing counts
+- View helpers: `src/lib/hsi/discoveryLoopView.ts`
+- Product UI: **`/hsi/discovery`** — ASK → MAP → REVIEW (+ optional VALIDATE / TRANSLATE)
+- Diagnostics: **`/hsi-consume`** — load order, honesty banners, licensing counts
 - Vendor pin: `public/hsi-discovery/*.json` (copied from hsi-core Discovery; refresh after `bun run outputs` there)
 - Remote default: `HSI_ARTIFACT_BASE_URL` → GitHub raw `hsi-core` `site/public/discovery`
+- Do **not** add an absolute `file:` hsi-core dependency (breaks Vercel) — pin JSON only
 - `ALLOW_HYPOTHETICAL_PARTNER=1` only when accepting fixture `partnerSigned` outside the strict hypothetical flags
 
 ```bash
 bun test src/test/hsi-discovery-consume.test.ts
+bun test src/test/hsi-discovery-loop.test.ts
 ```

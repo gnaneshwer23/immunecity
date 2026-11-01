@@ -111,3 +111,13 @@ export {
   type HonestyFlags,
   type IsiConsumeContract,
 } from "./discoveryConsume";
+
+export {
+  DISCOVERY_LOOP_TABS,
+  evidenceToGraphEdges,
+  gradeCounts,
+  partnerScopedEvidenceRows,
+  raCompetingExplanations,
+  type DiscoveryLoopTab,
+  type EvidenceRowView,
+} from "./discoveryLoopView";

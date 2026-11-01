@@ -1016,3 +1016,57 @@ textarea.community-input { min-height: 120px; padding: 10px; }
 @media (max-width: 900px) {
   .isi-auth-member-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* —— HSI Discovery loop (ASK → MAP → REVIEW) —— */
+.isi-hsi-loop { display: grid; gap: var(--isi-space-4); margin-top: var(--isi-space-3); }
+.isi-hsi-banners { display: grid; gap: var(--isi-space-2); }
+.isi-hsi-scope { display: grid; gap: var(--isi-space-2); padding: var(--isi-space-3); border: 1px solid var(--border); border-radius: var(--isi-radius); background: var(--surface-2, var(--surface)); }
+.isi-hsi-disease { margin: 0; font-weight: 650; font-size: 1.05rem; }
+.isi-hsi-question { margin: 0; max-width: var(--isi-measure); line-height: 1.5; }
+.isi-hsi-pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.isi-hsi-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.isi-hsi-tabs button {
+  display: grid; gap: 4px; text-align: left;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--isi-radius-sm);
+  background: var(--surface); color: var(--text); cursor: pointer; font: inherit;
+}
+.isi-hsi-tabs button:hover { border-color: color-mix(in oklab, var(--primary) 45%, var(--border)); }
+.isi-hsi-tabs button.active {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 8%, var(--surface));
+}
+.isi-hsi-tab-n { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.isi-hsi-panel { display: grid; gap: var(--isi-space-2); padding-top: var(--isi-space-2); }
+.isi-hsi-grade {
+  display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+  border: 1px solid var(--border); text-transform: lowercase;
+}
+.isi-hsi-grade-established { border-color: color-mix(in oklab, #1b7f5a 50%, var(--border)); color: #1b7f5a; }
+.isi-hsi-grade-uncertain { border-color: color-mix(in oklab, #a15c00 50%, var(--border)); color: #a15c00; }
+.isi-hsi-grade-unexplored { border-color: color-mix(in oklab, #5b6472 50%, var(--border)); color: #5b6472; }
+.isi-hsi-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--isi-radius-sm); }
+.isi-hsi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.isi-hsi-table th, .isi-hsi-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; text-align: left; }
+.isi-hsi-table th { background: var(--surface-2, var(--surface)); font-weight: 600; white-space: nowrap; }
+.isi-hsi-spo { display: grid; gap: 2px; min-width: 140px; }
+.isi-hsi-spo em { font-style: normal; color: var(--muted); font-size: 12px; }
+.isi-hsi-map-graph { display: grid; gap: var(--isi-space-3); margin-top: var(--isi-space-3); }
+.isi-hsi-map-nodes { display: flex; flex-wrap: wrap; gap: 6px; }
+.isi-hsi-node {
+  padding: 4px 10px; border-radius: var(--isi-radius-sm); border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--primary) 6%, var(--surface)); font-size: 12px;
+}
+.isi-hsi-map-edges { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.isi-hsi-map-edges li { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; }
+.isi-hsi-entity-grid { display: grid; gap: var(--isi-space-3); grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.isi-hsi-explain-grid { display: grid; gap: var(--isi-space-3); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.isi-hsi-card {
+  display: grid; gap: 6px; padding: var(--isi-space-3);
+  border: 1px solid var(--border); border-radius: var(--isi-radius); background: var(--surface);
+}
+.isi-hsi-translate-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: var(--isi-space-3); }
+.isi-hsi-translate-list li { display: grid; gap: 4px; padding-bottom: var(--isi-space-3); border-bottom: 1px solid var(--border); }

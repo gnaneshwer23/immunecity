@@ -61,14 +61,35 @@ export type PartnerLock = HonestyFlags & {
   lockedPilot?: boolean;
   scopeLocked?: boolean;
   activeScope?: string;
+  researchQuestion?: string;
+  honesty?: string[];
+  disease?: { id?: string; label?: string; shortLabel?: string };
+  partner?: { id?: string; label?: string; type?: string; outreachStatus?: string };
+  seedPathway?: {
+    id?: string;
+    label?: string;
+    rationale?: string;
+    primaryClaimIds?: string[];
+    primaryEdgeIds?: string[];
+    primaryPmids?: string[];
+  };
+  status?: string;
 };
 
 export type PilotEvidencePack = {
   schemaVersion?: string;
   notCds?: boolean;
+  disease?: string;
+  researchQuestion?: string;
   ask?: unknown;
   evidenceMap?: unknown;
   competingExplanations?: unknown;
+  expertShortlist?: unknown;
+  entitySlice?: unknown;
+  partnerScopedEntitySlice?: unknown;
+  partnerLock?: unknown;
+  uncertainties?: unknown;
+  summary?: unknown;
 };
 
 const LOAD_PRIORITY_ORDER = [
@@ -190,6 +211,8 @@ export type ConsumeLoadResult = {
   licensing?: Record<string, unknown>;
   flipReadiness?: Record<string, unknown>;
   r2?: Record<string, unknown>;
+  /** Optional VALIDATE/TRANSLATE packs — absent must not block ASK→MAP→REVIEW. */
+  translation?: Record<string, unknown>;
   loadedFiles: string[];
   askStaysRa: boolean;
   honesty: {
@@ -264,7 +287,7 @@ async function tryLoadFromBase(
           99),
     );
 
-  const [vertical, licensing, flipReadiness, r2] = await Promise.all([
+  const [vertical, licensing, flipReadiness, r2, translation] = await Promise.all([
     fetchJson<Record<string, unknown>>(abs("hsi-vertical-decision.json")).catch(
       () => undefined,
     ),
@@ -277,6 +300,9 @@ async function tryLoadFromBase(
     fetchJson<Record<string, unknown>>(abs("hsi-r2-validation.json")).catch(
       () => undefined,
     ),
+    fetchJson<Record<string, unknown>>(
+      abs("hsi-translation-handoff.json"),
+    ).catch(() => undefined),
   ]);
 
   const askStaysRa =
@@ -300,6 +326,7 @@ async function tryLoadFromBase(
     licensing,
     flipReadiness,
     r2,
+    translation,
     loadedFiles: loadable.map((a) => a.fileName),
     askStaysRa: true,
     honesty: {

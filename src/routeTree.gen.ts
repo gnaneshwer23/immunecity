@@ -25,6 +25,7 @@ import { Route as EvidenceMethodsRouteImport } from './routes/evidence-methods'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as HsiConsumeRouteImport } from './routes/hsi-consume'
+import { Route as HsiDiscoveryRouteImport } from './routes/hsi.discovery'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as MethodsRouteImport } from './routes/methods'
@@ -146,6 +147,11 @@ const GraphRoute = GraphRouteImport.update({
 const HsiConsumeRoute = HsiConsumeRouteImport.update({
   id: '/hsi-consume',
   path: '/hsi-consume',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HsiDiscoveryRoute = HsiDiscoveryRouteImport.update({
+  id: '/hsi/discovery',
+  path: '/hsi/discovery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
+  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
@@ -440,6 +447,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
+  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
@@ -502,6 +510,7 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
+  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
@@ -564,6 +573,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/hsi-consume'
+    | '/hsi/discovery'
     | '/insights'
     | '/learn'
     | '/methods'
@@ -624,6 +634,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/hsi-consume'
+    | '/hsi/discovery'
     | '/insights'
     | '/learn'
     | '/methods'
@@ -685,6 +696,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/hsi-consume'
+    | '/hsi/discovery'
     | '/insights'
     | '/learn'
     | '/methods'
@@ -747,6 +759,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   GraphRoute: typeof GraphRoute
   HsiConsumeRoute: typeof HsiConsumeRoute
+  HsiDiscoveryRoute: typeof HsiDiscoveryRoute
   InsightsRoute: typeof InsightsRoute
   LearnRoute: typeof LearnRoute
   MethodsRoute: typeof MethodsRoute
@@ -901,6 +914,13 @@ declare module '@tanstack/react-router' {
       path: '/hsi-consume'
       fullPath: '/hsi-consume'
       preLoaderRoute: typeof HsiConsumeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hsi/discovery': {
+      id: '/hsi/discovery'
+      path: '/hsi/discovery'
+      fullPath: '/hsi/discovery'
+      preLoaderRoute: typeof HsiDiscoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -1248,6 +1268,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   GraphRoute: GraphRoute,
   HsiConsumeRoute: HsiConsumeRoute,
+  HsiDiscoveryRoute: HsiDiscoveryRoute,
   InsightsRoute: InsightsRoute,
   LearnRoute: LearnRoute,
   MethodsRoute: MethodsRoute,

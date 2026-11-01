@@ -45,6 +45,7 @@ export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem
     items: [
       { label: "Research library", path: "/research" },
       { label: "Research Radar", path: "/discovery" },
+      { label: "HSI Discovery", path: "/hsi/discovery" },
       { label: "Ask Immune", path: "/ask" },
       { label: "Scientific reasoning", path: "/reasoning" },
     ],
@@ -140,6 +141,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
     items: [
       { n: "R1", path: "/research", title: "Research library", desc: "Journal metadata, candidate claims and workbench." },
       { n: "R2", path: "/discovery", title: "Research Radar", desc: "Evidence-governed unknowns and defensible next questions — ISI coverage, not worldwide absence." },
+      { n: "R2b", path: "/hsi/discovery", title: "HSI Discovery", desc: "ASK → MAP → REVIEW on published HSI packs — research / HITL only, not CDS." },
       { n: "R3", path: "/evidence", title: "Evidence explorer", desc: "Landmark trials and live claim-review coverage." },
       { n: "R4", path: "/reasoning", title: "Scientific reasoning", desc: "Retrieval grounding, curated pathways and path tracing — tools, not a second chatbot." },
       { n: "R5", path: "/simulator", title: "System simulator", desc: "Illustrative teaching model — not a prediction." },
