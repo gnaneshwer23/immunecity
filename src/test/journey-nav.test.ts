@@ -48,7 +48,9 @@ describe("primary entries", () => {
     const explore = JOURNEY_NAV.find((g) => g.label === "Explore")!.items.map((i) => i.path);
     const research = JOURNEY_NAV.find((g) => g.label === "Research")!.items.map((i) => i.path);
     expect(explore).toEqual(expect.arrayContaining(["/explore", "/atlas", "/graph", "/mechanism"]));
-    expect(research).toEqual(expect.arrayContaining(["/research", "/discovery", "/evidence", "/simulator"]));
+    expect(research).toEqual(
+      expect.arrayContaining(["/research", "/discovery", "/hsi/discovery", "/evidence", "/simulator"]),
+    );
   });
   it("Ask Immune pillar is the chatbot; Reasoning is tools, not a second chat", () => {
     const ask = JOURNEY_NAV.find((g) => g.label === "Ask Immune")!.items;
@@ -64,7 +66,13 @@ describe("brief simplification mapping", () => {
   const find = (label: string) => JOURNEY_NAV.find((g) => g.label === label)!.items.map((i) => i.title);
   it("puts Research library, Simulator and Research Radar under Research", () => {
     expect(find("Research")).toEqual(
-      expect.arrayContaining(["System simulator", "Research library", "Evidence explorer", "Research Radar"]),
+      expect.arrayContaining([
+        "System simulator",
+        "Research library",
+        "Evidence explorer",
+        "Research Radar",
+        "HSI Discovery",
+      ]),
     );
   });
   it("keeps Methods in secondary chrome, not a sixth science pillar", () => {

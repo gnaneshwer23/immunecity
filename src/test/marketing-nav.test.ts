@@ -119,6 +119,7 @@ describe("marketing IA wiring", () => {
           item.path === "/ask" ||
           item.path === "/research" ||
           item.path === "/discovery" ||
+          item.path === "/hsi/discovery" ||
           item.path === "/reasoning" ||
           item.path === "/atlas" ||
           item.path === "/graph" ||
