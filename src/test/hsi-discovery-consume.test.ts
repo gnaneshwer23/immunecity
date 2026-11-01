@@ -20,14 +20,14 @@ function loadVendor<T>(name: string): T {
 }
 
 describe("HSI Discovery consume honesty", () => {
-  it("rejects partnerSigned without fixture / named / allow flag", () => {
+  it("rejects partnerSigned without hypothetical fixture / allow flag", () => {
     expect(() =>
       assertHonestyFlags(
         { notCds: true, autoApproveIntoKg: false, partnerSigned: true },
         "bad-lock",
         { allowHypothetical: false },
       ),
-    ).toThrow(/ALLOW_HYPOTHETICAL_PARTNER|hypothetical|named_partner|legal_mou/);
+    ).toThrow(/ALLOW_HYPOTHETICAL_PARTNER|hypothetical/);
   });
 
   it("accepts hypothetical_test_only partnerSigned", () => {
@@ -46,24 +46,7 @@ describe("HSI Discovery consume honesty", () => {
     );
   });
 
-  it("accepts named_partner legal_mou with lockedPilot (still not CDS)", () => {
-    assertHonestyFlags(
-      {
-        notCds: true,
-        autoApproveIntoKg: false,
-        partnerSigned: true,
-        isHypothetical: false,
-        legalBinding: true,
-        agreementKind: "legal_mou",
-        lockedPilot: true,
-        productionPartnerSigned: true,
-      },
-      "named-lock",
-      { allowHypothetical: false },
-    );
-  });
-
-  it("rejects legalBinding=true with isHypothetical=true (fake MoU)", () => {
+  it("rejects legalBinding=true even with allow flag", () => {
     expect(() =>
       assertHonestyFlags(
         {
@@ -77,7 +60,7 @@ describe("HSI Discovery consume honesty", () => {
         "fake-mou",
         { allowHypothetical: true },
       ),
-    ).toThrow(/legalBinding|fake MoU|isHypothetical/);
+    ).toThrow(/legalBinding/);
   });
 
   it("loads vendored consume contract with Gate C pending + no auto-approve", () => {
@@ -98,19 +81,14 @@ describe("HSI Discovery consume honesty", () => {
     }
   });
 
-  it("vendored index notCds; partner lock named Apolo Pharma OK", () => {
+  it("vendored index notCds; partner lock hypothetical fixture only", () => {
     const index = loadVendor<Record<string, unknown>>("index.json");
     const lock = loadVendor<Record<string, unknown>>("hsi-partner-lock.json");
     assertHonestyFlags(index as never, "index");
     assertHonestyFlags(lock as never, "lock", { requireNotCds: false });
-    expect(lock.partnerSigned).toBe(true);
-    expect(lock.legalBinding).toBe(true);
-    expect(lock.lockedPilot).toBe(true);
-    expect(lock.isHypothetical).toBe(false);
-    expect(lock.agreementKind).toBe("legal_mou");
-    expect((lock.partner as { id?: string } | undefined)?.id).toBe(
-      "partner:apolo-pharma",
-    );
+    expect(lock.lockedPilot).not.toBe(true);
+    expect(lock.legalBinding).toBe(false);
+    expect(lock.agreementKind).toBe("hypothetical_test_only");
   });
 
   it("summarizeConsume reports licensing counts from vendor stub", () => {
@@ -120,13 +98,12 @@ describe("HSI Discovery consume honesty", () => {
     const contract = loadVendor<IsiConsumeContract>(
       "hsi-isi-consume-contract.json",
     );
-    const lock = loadVendor<Record<string, unknown>>("hsi-partner-lock.json");
     const fake = {
       source: "local" as const,
       baseUrl: "/hsi-discovery",
       index: loadVendor("index.json"),
       contract,
-      partnerLock: lock,
+      partnerLock: loadVendor("hsi-partner-lock.json"),
       pilotPack: loadVendor("hsi-pilot-evidence-pack.json"),
       gateC: loadVendor("gate-c-checklist.json"),
       licensing,
@@ -136,9 +113,7 @@ describe("HSI Discovery consume honesty", () => {
         notCds: true as const,
         autoApproveIntoKg: false as const,
         gateCPending: true as const,
-        partnerSignedProduction: Boolean(
-          lock.legalBinding === true && lock.isHypothetical === false,
-        ),
+        partnerSignedProduction: false as const,
       },
     } satisfies ConsumeLoadResult;
 

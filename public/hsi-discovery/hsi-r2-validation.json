@@ -5,12 +5,12 @@
   "notCds": true,
   "noPatientLevelActions": true,
   "autoApproveIntoKg": false,
-  "generatedAt": "2026-11-01T20:58:00.457Z",
+  "generatedAt": "2026-11-01T20:21:39.173Z",
   "disease": "Rheumatoid arthritis",
   "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
   "scopeLocked": true,
   "partnerSigned": true,
-  "lockedPilot": true,
+  "lockedPilot": false,
   "framing": "ASK → MAP → REVIEW → VALIDATE",
   "hypothesisCards": [
     {
