@@ -9,8 +9,8 @@
   "productSurfacePath": "/discovery",
   "framing": "ASK → MAP → REVIEW → VALIDATE → TRANSLATE",
   "phase": "8",
-  "generatedAt": "2026-11-01T21:11:52.891Z",
-  "bundleId": "hsi-core-0.1.0-20261101T211152891Z",
+  "generatedAt": "2026-11-01T21:22:52.034Z",
+  "bundleId": "hsi-core-0.1.0-20261101T212252034Z",
   "disease": "Rheumatoid arthritis",
   "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
   "scopeLocked": true,
@@ -70,7 +70,7 @@
     "P3.3 FAIR ESM-2 stub: hsi-esm-adapter-proposals.json — proposal + sidecar refs; runtime stub|esm; Gate C pending; no weight vendoring.",
     "AF3/TDC/ISI research sign-off fixtures + Boltz weights policy: hsi-af3|tdc|boltz|isi-agents-adapter-proposals.json — stub proposals; AF3 notCommercial; Boltz WEIGHTS_POLICY_ACK; no weight vendoring.",
     "P0.2-HSI: hsi-isi-consume-contract.json + hsi-partner-flip-readiness.json — ISI load map + flip checklist; fixture may set partnerSigned under hypothetical_test_only; lockedPilot=false until legalBinding.",
-    "P0.3 stub: hsi-source-licensing-stub.json — pack PMIDs licenseStatus=needs_review.",
+    "P0.3 stub: hsi-source-licensing-stub.json — pack PMIDs with clearanceScope + partnerClearedCount.",
     "Phase 7 done = R2 validation (hsi-r2-validation.json) on VALIDATE tab.",
     "Phase 8 done = HSI translation substrate (hsi-translation-handoff.json) on TRANSLATE tab + in-repo Akeno HITL consumer at /akeno (not CDS)."
   ]

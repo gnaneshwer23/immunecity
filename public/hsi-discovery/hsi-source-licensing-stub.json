@@ -4,9 +4,16 @@
   "notCds": true,
   "containsPhi": false,
   "partnerSigned": false,
-  "generatedAt": "2026-11-01T21:11:52.891Z",
+  "generatedAt": "2026-11-01T21:22:52.034Z",
   "reviewDate": "2026-11-01",
   "reviewMethod": "Europe PMC REST search resultType=core (isOpenAccess, inPMC, license, pmcid) + Crossref /works license URLs for ambiguous OA; conservative — no invented CC-BY; free PMC without clear CC → unknown; paywall/no OA → restricted; explicit CC → ok_oa. Bibliographic PMID citation always OK regardless of status.",
+  "partnerClearance": {
+    "partnerId": "partner:apolo-pharma",
+    "partnerLabel": "Apolo Pharma",
+    "clearedAt": "2026-11-01",
+    "policy": "apolo_stage1_cite_metadata_and_oa_reuse",
+    "note": "ok_oa → oa_reuse; restricted/ok_cite → cite_metadata_pilot; unknown → uncleared (needs_confirm). Cite-metadata pilot does not grant FT redistribution. No invented commercial publisher licenses."
+  },
   "summary": {
     "pmidCount": 48,
     "okCiteCount": 0,
@@ -14,8 +21,13 @@
     "restrictedCount": 27,
     "unknownCount": 10,
     "needsReviewCount": 0,
-    "partnerClearedCount": 0,
-    "blockedCount": 0
+    "partnerClearedCount": 38,
+    "clearanceScopeCounts": {
+      "oa_reuse": 11,
+      "cite_metadata_pilot": 27,
+      "uncleared": 10
+    },
+    "blockedCount": 10
   },
   "rows": [
     {
@@ -28,7 +40,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/2993897",
       "doi": "10.1038/316552a0",
       "publisherLicense": null,
-      "reviewNotes": "Nature 1985; no OA/PMC; paywall — cite metadata / PMID locator only."
+      "reviewNotes": "Nature 1985; no OA/PMC; paywall — cite metadata / PMID locator only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "10622295",
@@ -40,7 +57,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/10622295",
       "doi": "10.1016/s0140-6736(99)05246-0",
       "publisherLicense": null,
-      "reviewNotes": "Lancet 1999; no OA/PMC — cite metadata only."
+      "reviewNotes": "Lancet 1999; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "10662881",
@@ -52,7 +74,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/10662881",
       "doi": "10.1093/rheumatology/39.1.97",
       "publisherLicense": null,
-      "reviewNotes": "Rheumatology (OUP) 2000; no OA/PMC — cite metadata only."
+      "reviewNotes": "Rheumatology (OUP) 2000; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "10839541",
@@ -64,7 +91,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/10839541",
       "doi": "10.1038/35013070",
       "publisherLicense": null,
-      "reviewNotes": "Nature 2000; no OA/PMC — cite metadata only."
+      "reviewNotes": "Nature 2000; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "11087881",
@@ -76,7 +108,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/11087881",
       "doi": "10.1056/nejm200011233432103",
       "publisherLicense": null,
-      "reviewNotes": "NEJM 2000; no OA/PMC — cite metadata only."
+      "reviewNotes": "NEJM 2000; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "11244034",
@@ -88,7 +125,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/11244034",
       "doi": "10.1146/annurev.immunol.19.1.163",
       "publisherLicense": null,
-      "reviewNotes": "Annu Rev Immunol 2001; no OA/PMC — cite metadata only."
+      "reviewNotes": "Annu Rev Immunol 2001; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "11901203",
@@ -101,7 +143,12 @@
       "doi": "10.1084/jem.20011714",
       "pmcid": "PMC2193606",
       "publisherLicense": "cc by-nc-sa",
-      "reviewNotes": "J Exp Med 2002 Bernik pharmacologic cholinergic pathway; PMC free — check Rockefeller reuse; cite + PMC."
+      "reviewNotes": "J Exp Med 2002 Bernik pharmacologic cholinergic pathway; PMC free — check Rockefeller reuse; cite + PMC.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "12469056",
@@ -113,7 +160,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/12469056",
       "doi": "10.1067/mva.2002.129643",
       "publisherLicense": null,
-      "reviewNotes": "J Vasc Surg 2002 Bernik IR TNF; no OA/PMC — cite metadata only."
+      "reviewNotes": "J Vasc Surg 2002 Bernik IR TNF; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "12490958",
@@ -125,7 +177,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/12490958",
       "doi": "10.1038/nature01321",
       "publisherLicense": null,
-      "reviewNotes": "Nature 2002; no OA/PMC — cite metadata only."
+      "reviewNotes": "Nature 2002; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "12508119",
@@ -137,7 +194,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/12508119",
       "doi": "10.1038/nature01339",
       "publisherLicense": null,
-      "reviewNotes": "Nature 2003; no OA/PMC — cite metadata only."
+      "reviewNotes": "Nature 2003; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "16025117",
@@ -149,7 +211,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/16025117",
       "doi": "10.1038/ni1229",
       "publisherLicense": null,
-      "reviewNotes": "Nat Immunol 2005; no OA/PMC — cite metadata only."
+      "reviewNotes": "Nat Immunol 2005; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "16339522",
@@ -161,7 +228,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/16339522",
       "doi": "10.4049/jimmunol.175.12.7867",
       "publisherLicense": null,
-      "reviewNotes": "J Immunol 2005; no OA/PMC — cite metadata only."
+      "reviewNotes": "J Immunol 2005; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "16385515",
@@ -173,7 +245,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/16385515",
       "doi": "10.1002/art.21526",
       "publisherLicense": null,
-      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only."
+      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "16508927",
@@ -185,7 +262,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/16508927",
       "doi": "10.1002/art.21671",
       "publisherLicense": null,
-      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only."
+      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "16785311",
@@ -198,7 +280,12 @@
       "doi": "10.1084/jem.20052362",
       "pmcid": "PMC2118357",
       "publisherLicense": "cc by-nc-sa",
-      "reviewNotes": "J Exp Med 2006; PMC free — check Rockefeller reuse terms; cite metadata + PMC."
+      "reviewNotes": "J Exp Med 2006; PMC free — check Rockefeller reuse terms; cite metadata + PMC.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "17133559",
@@ -210,7 +297,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/17133559",
       "doi": "10.1002/art.22214",
       "publisherLicense": null,
-      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only."
+      "reviewNotes": "Arthritis Rheum 2006; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "17581616",
@@ -222,7 +314,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/17581616",
       "doi": "10.1038/sj.jid.5700919",
       "publisherLicense": null,
-      "reviewNotes": "J Invest Dermatol 2007; no OA/PMC — cite metadata only."
+      "reviewNotes": "J Invest Dermatol 2007; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "18375541",
@@ -235,7 +332,12 @@
       "doi": "10.1136/ard.2007.084715",
       "pmcid": "PMC2596303",
       "publisherLicense": "cc by",
-      "reviewNotes": "ARD; Europe PMC license=cc by + PMC full text — OA reuse under CC BY (retain attribution; verify figure reuse)."
+      "reviewNotes": "ARD; Europe PMC license=cc by + PMC full text — OA reuse under CC BY (retain attribution; verify figure reuse).",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "18625622",
@@ -248,7 +350,12 @@
       "doi": "10.1136/ard.2008.092932",
       "pmcid": "PMC3811149",
       "publisherLicense": "cc by-nc",
-      "reviewNotes": "ARD; Europe PMC license=cc by-nc — non-commercial OA; commercial redistribution still restricted."
+      "reviewNotes": "ARD; Europe PMC license=cc by-nc — non-commercial OA; commercial redistribution still restricted.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "18669662",
@@ -261,7 +368,12 @@
       "doi": "10.1073/pnas.0803237105",
       "pmcid": "PMC2504833",
       "publisherLicense": null,
-      "reviewNotes": "PNAS 2008; PMC free author manuscript — cite + link; no invented CC-BY."
+      "reviewNotes": "PNAS 2008; PMC free author manuscript — cite + link; no invented CC-BY.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "19180481",
@@ -273,7 +385,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/19180481",
       "doi": "10.1002/art.24249",
       "publisherLicense": null,
-      "reviewNotes": "Arthritis Rheum 2009 rituximab dcSSc; no OA/PMC — cite metadata only."
+      "reviewNotes": "Arthritis Rheum 2009 rituximab dcSSc; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "19542466",
@@ -286,7 +403,12 @@
       "doi": "10.4049/jimmunol.0802684",
       "pmcid": "PMC2763207",
       "publisherLicense": null,
-      "reviewNotes": "J Immunol 2009 Huston CD11b trafficking; PMC free — cite + link; no invented CC-BY."
+      "reviewNotes": "J Immunol 2009 Huston CD11b trafficking; PMC free — cite + link; no invented CC-BY.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "19625695",
@@ -299,7 +421,12 @@
       "doi": "10.3945/jn.109.104638",
       "pmcid": "PMC2728689",
       "publisherLicense": null,
-      "reviewNotes": "J Nutr; free in PMC but Europe PMC license null; Crossref lists Elsevier OA userlicense (not CC) — do not invent CC-BY."
+      "reviewNotes": "J Nutr; free in PMC but Europe PMC license null; Crossref lists Elsevier OA userlicense (not CC) — do not invent CC-BY.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "20699241",
@@ -311,7 +438,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/20699241",
       "doi": "10.1136/ard.2010.138461",
       "publisherLicense": null,
-      "reviewNotes": "ARD 2010 classification criteria; Europe PMC no OA/PMC — cite metadata only."
+      "reviewNotes": "ARD 2010 classification criteria; Europe PMC no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "21205640",
@@ -324,7 +456,12 @@
       "doi": "10.1126/science.1198469",
       "pmcid": "PMC3969237",
       "publisherLicense": null,
-      "reviewNotes": "Science; author manuscript in PMC (green); publisher HTML still subscription; no clear CC on VoR — cite + link PMC; no FT republication claim."
+      "reviewNotes": "Science; author manuscript in PMC (green); publisher HTML still subscription; no clear CC on VoR — cite + link PMC; no FT republication claim.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "21314428",
@@ -336,7 +473,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/21314428",
       "doi": "10.1146/annurev-immunol-031210-101400",
       "publisherLicense": null,
-      "reviewNotes": "Annu Rev Immunol 2011; no OA/PMC — cite metadata only."
+      "reviewNotes": "Annu Rev Immunol 2011; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "21921156",
@@ -349,7 +491,12 @@
       "doi": "10.1126/science.1209985",
       "pmcid": "PMC4548937",
       "publisherLicense": null,
-      "reviewNotes": "Science; PMC author manuscript free; no clear CC on VoR — unknown beyond citation/link."
+      "reviewNotes": "Science; PMC author manuscript free; no clear CC on VoR — unknown beyond citation/link.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "23828891",
@@ -362,7 +509,12 @@
       "doi": "10.1126/science.1241165",
       "pmcid": "PMC3807819",
       "publisherLicense": null,
-      "reviewNotes": "Science; PMC free author manuscript; no Europe PMC CC — unknown reuse beyond citation/link."
+      "reviewNotes": "Science; PMC free author manuscript; no Europe PMC CC — unknown reuse beyond citation/link.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "23842501",
@@ -374,7 +526,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/23842501",
       "doi": "10.1038/nature12331",
       "publisherLicense": null,
-      "reviewNotes": "Nature 2013; no OA/PMC — cite metadata only."
+      "reviewNotes": "Nature 2013; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24129067",
@@ -387,7 +544,12 @@
       "doi": "10.1038/jid.2013.423",
       "pmcid": "PMC3961515",
       "publisherLicense": "cc by-nc-sa",
-      "reviewNotes": "J Invest Dermatol; Europe PMC license=cc by-nc-sa — NC-SA constraints on reuse."
+      "reviewNotes": "J Invest Dermatol; Europe PMC license=cc by-nc-sa — NC-SA constraints on reuse.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24226770",
@@ -399,7 +561,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/24226770",
       "doi": "10.1038/nature12721",
       "publisherLicense": null,
-      "reviewNotes": "Nature 2013; no OA/PMC — cite metadata only."
+      "reviewNotes": "Nature 2013; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24226773",
@@ -411,7 +578,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/24226773",
       "doi": "10.1038/nature12726",
       "publisherLicense": null,
-      "reviewNotes": "Nature 2013 Arpaia metabolites→Treg; no OA VoR — cite metadata only."
+      "reviewNotes": "Nature 2013 Arpaia metabolites→Treg; no OA VoR — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24350901",
@@ -423,7 +595,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/24350901",
       "doi": "10.1056/NEJMoa1114576",
       "publisherLicense": null,
-      "reviewNotes": "NEJM 2014 CXCL4/SSc; no OA/PMC VoR — cite metadata only."
+      "reviewNotes": "NEJM 2014 CXCL4/SSc; no OA/PMC VoR — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24390544",
@@ -436,7 +613,12 @@
       "doi": "10.1073/pnas.1322269111",
       "pmcid": "PMC3926023",
       "publisherLicense": null,
-      "reviewNotes": "PNAS 2014 Chang butyrate/macrophage HDAC; PMC free author manuscript — cite + link; no invented CC-BY."
+      "reviewNotes": "PNAS 2014 Chang butyrate/macrophage HDAC; PMC free author manuscript — cite + link; no invented CC-BY.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24412617",
@@ -449,7 +631,12 @@
       "doi": "10.1016/j.immuni.2013.12.007",
       "pmcid": "PMC4305274",
       "publisherLicense": null,
-      "reviewNotes": "Immunity 2014; NIHMS/PMC manuscript — cite + link; no invented CC-BY."
+      "reviewNotes": "Immunity 2014; NIHMS/PMC manuscript — cite + link; no invented CC-BY.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "24586782",
@@ -462,7 +649,12 @@
       "doi": "10.1371/journal.pone.0089442",
       "pmcid": "PMC3937352",
       "publisherLicense": "cc by",
-      "reviewNotes": "PLOS ONE; Europe PMC license=cc by — OA under CC BY."
+      "reviewNotes": "PLOS ONE; Europe PMC license=cc by — OA under CC BY.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "24917457",
@@ -475,7 +667,12 @@
       "doi": "10.1038/mi.2014.44",
       "pmcid": "PMC4263689",
       "publisherLicense": null,
-      "reviewNotes": "Mucosal Immunol; EPMC isOpenAccess=Y + PMC but license null; Crossref Elsevier OA userlicense (not CC) — unknown for CC-style reuse."
+      "reviewNotes": "Mucosal Immunol; EPMC isOpenAccess=Y + PMC but license null; Crossref Elsevier OA userlicense (not CC) — unknown for CC-style reuse.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "25865369",
@@ -488,7 +685,12 @@
       "doi": "10.1016/j.chom.2015.03.005",
       "pmcid": "PMC4430144",
       "publisherLicense": null,
-      "reviewNotes": "Cell Host Microbe 2015 Kelly SCFA/HIF; PMC manuscript — cite + link; no invented CC-BY."
+      "reviewNotes": "Cell Host Microbe 2015 Kelly SCFA/HIF; PMC manuscript — cite + link; no invented CC-BY.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "27382171",
@@ -501,7 +703,12 @@
       "doi": "10.1073/pnas.1605635113",
       "pmcid": "PMC4961187",
       "publisherLicense": null,
-      "reviewNotes": "PNAS 2016; free in PMC; Europe PMC license null / Crossref no CC URL — unknown (do not invent CC-BY)."
+      "reviewNotes": "PNAS 2016; free in PMC; Europe PMC license null / Crossref no CC URL — unknown (do not invent CC-BY).",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "29163504",
@@ -514,7 +721,12 @@
       "doi": "10.3389/fimmu.2017.01429",
       "pmcid": "PMC5670331",
       "publisherLicense": "cc by",
-      "reviewNotes": "Front Immunol 2017; OA under CC BY."
+      "reviewNotes": "Front Immunol 2017; OA under CC BY.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "29514998",
@@ -526,7 +738,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/29514998",
       "doi": "10.1126/scitranslmed.aaf5307",
       "publisherLicense": null,
-      "reviewNotes": "Sci Transl Med 2018; no OA/PMC — cite metadata only."
+      "reviewNotes": "Sci Transl Med 2018; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "29626172",
@@ -538,7 +755,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/29626172",
       "doi": "10.1126/sciimmunol.aat6417",
       "publisherLicense": null,
-      "reviewNotes": "Sci Immunol 2018; no OA/PMC — cite metadata only."
+      "reviewNotes": "Sci Immunol 2018; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "29853453",
@@ -550,7 +772,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/29853453",
       "doi": "10.1136/annrheumdis-2018-213031",
       "publisherLicense": null,
-      "reviewNotes": "Ann Rheum Dis 2018 faSScinate IL-6/TGF-β; paywall signal — cite metadata only."
+      "reviewNotes": "Ann Rheum Dis 2018 faSScinate IL-6/TGF-β; paywall signal — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "30760472",
@@ -562,7 +789,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/30760472",
       "doi": "10.1136/annrheumdis-2018-214382",
       "publisherLicense": null,
-      "reviewNotes": "Ann Rheum Dis 2019; no OA/PMC — cite metadata only."
+      "reviewNotes": "Ann Rheum Dis 2019; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "30918945",
@@ -575,7 +807,12 @@
       "doi": "10.1093/ibd/izz046",
       "pmcid": "PMC6701512",
       "publisherLicense": null,
-      "reviewNotes": "Inflamm Bowel Dis; free in PMC; Crossref CHORUS/standard OUP model (not CC) — unknown for redistribution."
+      "reviewNotes": "Inflamm Bowel Dis; free in PMC; Crossref CHORUS/standard OUP model (not CC) — unknown for redistribution.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "33175976",
@@ -587,7 +824,12 @@
       "europePmcUrl": "https://europepmc.org/article/MED/33175976",
       "doi": "10.1093/rheumatology/keaa669",
       "publisherLicense": null,
-      "reviewNotes": "Rheumatology (OUP) 2021; no OA/PMC — cite metadata only."
+      "reviewNotes": "Rheumatology (OUP) 2021; no OA/PMC — cite metadata only.",
+      "partnerCleared": true,
+      "clearanceScope": "cite_metadata_pilot",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 cite-metadata-only pilot (partner:apolo-pharma, operator-asserted 2026-11-01): bibliographic PMID/metadata citation OK for pilot Discovery; does NOT grant full-text redistribution or figure republication rights.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     },
     {
       "pmid": "34031030",
@@ -600,7 +842,12 @@
       "doi": "10.1136/annrheumdis-2021-220209",
       "pmcid": "PMC8516708",
       "publisherLicense": null,
-      "reviewNotes": "Ann Rheum Dis 2021; PMC author manuscript — cite + link; no invented CC-BY."
+      "reviewNotes": "Ann Rheum Dis 2021; PMC author manuscript — cite + link; no invented CC-BY.",
+      "partnerCleared": false,
+      "clearanceScope": "uncleared",
+      "partnerClearanceNote": "needs_confirm — license unclear after curator pass; left uncleared (cite-only optional after confirm; no OA/FT claim).",
+      "partnerId": null,
+      "partnerClearedAt": null
     },
     {
       "pmid": "37763102",
@@ -613,14 +860,21 @@
       "doi": "10.3390/jpm13091334",
       "pmcid": "PMC10532941",
       "publisherLicense": "cc by",
-      "reviewNotes": "J Pers Med (MDPI); Europe PMC license=cc by — OA under CC BY."
+      "reviewNotes": "J Pers Med (MDPI); Europe PMC license=cc by — OA under CC BY.",
+      "partnerCleared": true,
+      "clearanceScope": "oa_reuse",
+      "partnerClearanceNote": "Apolo Pharma Stage 1 (partner:apolo-pharma, operator-asserted 2026-11-01): OA reuse under publisher CC/OA terms — cite + OA full text as license permits; respect NC/SA; no invented commercial publisher license.",
+      "partnerId": "partner:apolo-pharma",
+      "partnerClearedAt": "2026-11-01"
     }
   ],
   "honesty": [
     "Curator reviewDate=2026-11-01; method recorded on bundle.reviewMethod.",
     "Statuses: ok_cite (citation-only cleared) · ok_oa (CC / clear reuse) · restricted (paywall ARR — metadata cite only) · unknown (unclear — no invented CC).",
-    "ok_oa ≠ partner commercial corpus clearance; partnerSigned stays false until named partner agrees attribution for the pilot lock.",
-    "PMID presence ≠ republication rights for PDFs or figures beyond what the row license allows.",
+    "Apolo Pharma Stage 1 partner clearance (2026-11-01): partnerClearedCount=38 (oa_reuse=11, cite_metadata_pilot=27, uncleared=10).",
+    "clearanceScope=cite_metadata_pilot ≠ full-text redistribution rights; oa_reuse still bound by publisher CC/OA terms (NC/SA).",
+    "Stub partnerSigned stays false (not a publisher MoU); partnerCleared* records Stage 1 pilot attribution scope only.",
+    "PMID presence ≠ republication rights for PDFs or figures beyond what the row license + clearanceScope allow.",
     "Does not contain PHI; does not auto-approve Gate C."
   ]
 }

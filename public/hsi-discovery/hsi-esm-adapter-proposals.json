@@ -20,7 +20,7 @@
     "blockedUntilSignOff": false,
     "docsUrl": "https://github.com/facebookresearch/esm/blob/main/LICENSE"
   },
-  "generatedAt": "2026-11-01T21:11:52.891Z",
+  "generatedAt": "2026-11-01T21:22:52.034Z",
   "embeddings": [
     {
       "fixtureId": "tnf",
@@ -60,7 +60,7 @@
       "dim": 1280,
       "vectorRef": "omit://fair-esm2/stub/HSI-E-RA-001",
       "contentHash": "sha256:95a6d1a8ac5d6bac3e2c5f0945a5319763bc1c3031c35a1ad52107266fad6613",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "doesNotSetHsiGrade": true,
       "mayFlipEvidenceGrade": false,
       "autoApprove": false,
@@ -74,7 +74,7 @@
       "dim": 1280,
       "vectorRef": "omit://fair-esm2/stub/HSI-E-GUT-003",
       "contentHash": "sha256:220f2937ba8ac9582e9a5ff337345ad0760c0bb2abe8763bd11ba5acad57005e",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "doesNotSetHsiGrade": true,
       "mayFlipEvidenceGrade": false,
       "autoApprove": false,
@@ -105,7 +105,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z"
+      "createdAt": "2026-11-01T21:22:52.034Z"
     },
     {
       "proposalId": "HSI-MP-ESM2-FOXP3-001",
@@ -128,7 +128,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z"
+      "createdAt": "2026-11-01T21:22:52.034Z"
     }
   ],
   "instructions": [

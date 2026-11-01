@@ -2,7 +2,7 @@
   "schemaVersion": "hsi-gate-c-checklist-1",
   "notCds": true,
   "autoApproveIntoKg": false,
-  "generatedAt": "2026-11-01T21:11:52.891Z",
+  "generatedAt": "2026-11-01T21:22:52.034Z",
   "summary": {
     "totalRows": 32,
     "curatedWithRel": 13,
@@ -943,7 +943,7 @@
         "pack:hsi-ssc-pathway-pack"
       ],
       "suggestedTeachingStatus": "associative",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -965,7 +965,7 @@
         "card:HSI-CARD-SSC-IL21"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -988,7 +988,7 @@
         "axis:gut_microbiome"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1012,7 +1012,7 @@
         "axis:neuroimmune"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1037,7 +1037,7 @@
         "axis:cheminformatics"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1062,7 +1062,7 @@
         "axis:cheminformatics"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1087,7 +1087,7 @@
         "axis:molecular-dynamics"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1112,7 +1112,7 @@
         "axis:molecular-dynamics"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1139,7 +1139,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1166,7 +1166,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1196,7 +1196,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1226,7 +1226,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1253,7 +1253,7 @@
         "commercialAf3RightsClaimed:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1280,7 +1280,7 @@
         "commercialAf3RightsClaimed:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1306,7 +1306,7 @@
         "replaceWithLegalSignOff:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1332,7 +1332,7 @@
         "replaceWithLegalSignOff:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1358,7 +1358,7 @@
         "vendorsModelWeights:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1384,7 +1384,7 @@
         "vendorsModelWeights:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1411,7 +1411,7 @@
         "runtimeOutOfRepo:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
@@ -1438,7 +1438,7 @@
         "runtimeOutOfRepo:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:11:52.891Z",
+      "createdAt": "2026-11-01T21:22:52.034Z",
       "proposalKind": "model_draft",
       "gateCStatus": "pending",
       "autoApprove": false,
