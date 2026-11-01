@@ -20,7 +20,7 @@
     "docsUrl": "https://github.com/jwohlwend/boltz/blob/main/LICENSE",
     "weightsPolicyDoc": "docs/P3_WEIGHTS_AND_LICENSE_POLICY.md"
   },
-  "generatedAt": "2026-11-01T21:52:13.887Z",
+  "generatedAt": "2026-11-01T21:57:56.514Z",
   "fixtures": [
     {
       "fixtureId": "tnf",
@@ -59,7 +59,7 @@
         "vendorsModelWeights:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     },
     {
       "proposalId": "HSI-MP-BOLTZ-FOXP3-001",
@@ -78,7 +78,7 @@
         "vendorsModelWeights:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     }
   ],
   "instructions": [

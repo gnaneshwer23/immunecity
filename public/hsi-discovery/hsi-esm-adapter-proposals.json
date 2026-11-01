@@ -13,14 +13,14 @@
   "containsPhi": false,
   "partnerSigned": false,
   "neverClinicRecommendationPath": true,
-  "boltzDeferred": true,
+  "boltzDeferred": false,
   "licenseGate": {
     "adapterId": "adapter-esm",
     "signOffStatus": "research_ok_documented",
     "blockedUntilSignOff": false,
     "docsUrl": "https://github.com/facebookresearch/esm/blob/main/LICENSE"
   },
-  "generatedAt": "2026-11-01T21:52:13.887Z",
+  "generatedAt": "2026-11-01T21:57:56.514Z",
   "embeddings": [
     {
       "fixtureId": "tnf",
@@ -60,7 +60,7 @@
       "dim": 1280,
       "vectorRef": "omit://fair-esm2/stub/HSI-E-RA-001",
       "contentHash": "sha256:95a6d1a8ac5d6bac3e2c5f0945a5319763bc1c3031c35a1ad52107266fad6613",
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "doesNotSetHsiGrade": true,
       "mayFlipEvidenceGrade": false,
       "autoApprove": false,
@@ -74,7 +74,7 @@
       "dim": 1280,
       "vectorRef": "omit://fair-esm2/stub/HSI-E-GUT-003",
       "contentHash": "sha256:220f2937ba8ac9582e9a5ff337345ad0760c0bb2abe8763bd11ba5acad57005e",
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "doesNotSetHsiGrade": true,
       "mayFlipEvidenceGrade": false,
       "autoApprove": false,
@@ -105,7 +105,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     },
     {
       "proposalId": "HSI-MP-ESM2-FOXP3-001",
@@ -128,7 +128,7 @@
         "neverClinicRecommendationPath:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     }
   ],
   "instructions": [
@@ -137,7 +137,7 @@
     "License gate: refuse adapters with blockedUntilSignOff=true (this row is research_ok_documented / MIT FAIR).",
     "runtime=stub when esm Python is absent; runtime=esm when python3+esm import succeeds (import-only; no multi-GB weights).",
     "Emit hash/ref sidecars only (P2.2 schema); never vendor weights; never PHI / clinic sequences.",
-    "Boltz weights path deferred (avoid multi-GB download).",
+    "Boltz unblocked under WEIGHTS_POLICY_ACK (docs/P3_WEIGHTS_AND_LICENSE_POLICY.md); still no multi-GB weight vendoring.",
     "Never set hsiGrade / curationReview / autoApprove / partnerSigned=true.",
     "No PHI · no CDS · similarity ≠ mechanism · packs remain evidence authority.",
     "See docs/P3_ADAPTER_RFC.md · src/adapters/esmAdapter.ts."

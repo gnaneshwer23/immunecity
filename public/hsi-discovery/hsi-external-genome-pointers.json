@@ -10,7 +10,7 @@
   "reviewRequired": true,
   "containsPhi": false,
   "containsBulkGenomeDump": false,
-  "generatedAt": "2026-11-01T21:52:13.887Z",
+  "generatedAt": "2026-11-01T21:57:56.514Z",
   "summary": {
     "pointerCount": 7,
     "clinVarCount": 4,
@@ -32,7 +32,7 @@
       "edgeIds": [
         "HSI-E-RA-001"
       ],
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "notes": "ClinVar gene-term citation for TNF — optional grounding for RA/TNF pathway; does not set hsiGrade; Gate C still required.",
       "url": "https://www.ncbi.nlm.nih.gov/clinvar/?term=TNF[gene]",
       "reviewRequired": true,
@@ -54,7 +54,7 @@
         "autoimmunity susceptibility (literature shelf — not a seeded claim edge)"
       ],
       "edgeIds": [],
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "notes": "Classic RA genetics shelf pointer (PTPN22) — citation only; no bulk variants; not linked to a graded edge until curated.",
       "url": "https://www.ncbi.nlm.nih.gov/clinvar/?term=PTPN22[gene]",
       "reviewRequired": true,
@@ -79,7 +79,7 @@
         "HSI-E-SSC-002",
         "HSI-E-SSC-003"
       ],
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "notes": "ClinVar IL21 gene citation for dual-track SSc IL-21 axis — packs + PMIDs remain evidence authority.",
       "url": "https://www.ncbi.nlm.nih.gov/clinvar/?term=IL21[gene]",
       "reviewRequired": true,
@@ -103,7 +103,7 @@
       "edgeIds": [
         "HSI-E-IO-001"
       ],
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "notes": "ClinVar PDCD1 (PD-1) gene citation — discovery IO wedge; never CDS / never auto Gate C.",
       "url": "https://www.ncbi.nlm.nih.gov/clinvar/?term=PDCD1[gene]",
       "reviewRequired": true,
@@ -126,7 +126,7 @@
         "TCGA / GDC public data portal (index — not a dump)"
       ],
       "edgeIds": [],
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "notes": "GDC portal shelf pointer — respect TCGA/dbGaP access rules; no PHI; no bulk genome dump in hsi-core.",
       "reviewRequired": true,
       "doesNotSetHsiGrade": true,
@@ -150,7 +150,7 @@
         "HSI-E-IO-001",
         "HSI-E-IO-002"
       ],
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "notes": "GDC gene page for CD274 (PD-L1) — citation/ref for IO edges; does not embed expression matrices or PHI.",
       "url": "https://portal.gdc.cancer.gov/genes/ENSG00000120217",
       "reviewRequired": true,
@@ -173,7 +173,7 @@
         "curated TCGA resource index (IARCbioinfo/awesome-TCGA)"
       ],
       "edgeIds": [],
-      "createdAt": "2026-11-01T21:52:13.887Z",
+      "createdAt": "2026-11-01T21:57:56.514Z",
       "notes": "awesome-TCGA index shelf (VISION_REPO_ALIGNMENT) — reference-only; hsi-sources remains archival; no auto-ingest.",
       "reviewRequired": true,
       "doesNotSetHsiGrade": true,

@@ -21,7 +21,7 @@
     "blockedUntilSignOff": false,
     "docsUrl": "https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md"
   },
-  "generatedAt": "2026-11-01T21:52:13.887Z",
+  "generatedAt": "2026-11-01T21:57:56.514Z",
   "fixtures": [
     {
       "fixtureId": "tnf",
@@ -61,7 +61,7 @@
         "commercialAf3RightsClaimed:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     },
     {
       "proposalId": "HSI-MP-AF3-IL21-001",
@@ -81,7 +81,7 @@
         "commercialAf3RightsClaimed:false"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     }
   ],
   "instructions": [

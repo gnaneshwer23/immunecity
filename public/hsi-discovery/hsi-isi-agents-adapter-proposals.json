@@ -21,7 +21,7 @@
     "blockedUntilSignOff": false,
     "docsUrl": "https://github.com/gnaneshwer23/hsi-core/blob/main/docs/HSI_AI_NEURAL_FUTURE_HEALTHCARE.md"
   },
-  "generatedAt": "2026-11-01T21:52:13.887Z",
+  "generatedAt": "2026-11-01T21:57:56.514Z",
   "fixtures": [
     {
       "fixtureId": "literature",
@@ -61,7 +61,7 @@
         "runtimeOutOfRepo:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     },
     {
       "proposalId": "HSI-MP-ISI-AGENTS-PATHWAY-001",
@@ -81,7 +81,7 @@
         "runtimeOutOfRepo:true"
       ],
       "suggestedTeachingStatus": "hypothesized",
-      "createdAt": "2026-11-01T21:52:13.887Z"
+      "createdAt": "2026-11-01T21:57:56.514Z"
     }
   ],
   "instructions": [
