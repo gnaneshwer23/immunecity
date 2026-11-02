@@ -1,0 +1,15 @@
+---
+description: Load frontend/design skills when editing ISI UI, CSS, or Ask surfaces
+globs: "src/**/*.{tsx,css},src/components/**/*.tsx"
+alwaysApply: false
+---
+
+# Frontend skills
+
+Primary picks (one first):
+
+- `~/.cursor/skills/vercel-react-best-practices/SKILL.md`
+- `~/.cursor/skills/hallmark/SKILL.md` or `taste-skill/SKILL.md`
+- `~/.cursor/skills/better-ui/SKILL.md` / `better-accessibility/SKILL.md`
+
+Respect `biotech.css` / `isi.css`, `JOURNEY_NAV`, and journey page anatomy in AGENTS.md. Full map: `docs/AGENT_SKILLS.md`.

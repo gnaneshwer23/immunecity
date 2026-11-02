@@ -9,6 +9,9 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
+## Personal agent skills (on demand)
+- ~590 skills under `~/.cursor/skills/` — load via [`docs/AGENT_SKILLS.md`](docs/AGENT_SKILLS.md) and `.cursor/rules/` only when the task matches (SEO, frontend, defensive security, etc.). Do not alwaysApply the pack; do not invent MoU/Gate C auto-approve/CDS-PHI product surfaces; do not wire PentAGI/RAG-Anything/Anime.js/MediSearch/Hippocratic/Nabla into product code.
+
 ## Product identity
 - User-facing product name is **Immune Super Intelligence** (`src/lib/brand.ts`, canonical https://www.immune-super-intelligence.co.uk/). Internal paths may still say `immune-city`. Brand marks live in `public/favicon.svg`, `public/logo.svg`, and the Shell logo.
 

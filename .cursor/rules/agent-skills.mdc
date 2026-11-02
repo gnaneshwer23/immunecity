@@ -1,0 +1,13 @@
+---
+description: When to load personal Cursor skills for ISI / immunecity (thin pointer)
+alwaysApply: true
+---
+
+# Skills (load on demand)
+
+Personal skills: `~/.cursor/skills/`. **Do not** always-load the ~590 pack.
+
+1. Match task → [`docs/AGENT_SKILLS.md`](docs/AGENT_SKILLS.md) (full map also in hsi-core `docs/AGENT_SKILLS.md`).
+2. `Read` the matching `~/.cursor/skills/<name>/SKILL.md` before applying.
+3. Prefer one skill. No Gate C auto-approve, invented MoU, live CDS/PHI, or wiring PentAGI/RAG-Anything/Anime.js/MediSearch/Hippocratic/Nabla into product.
+4. Keep Continuous build human-gated. Built-ins: `~/.cursor/skills-cursor/`.
