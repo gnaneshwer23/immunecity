@@ -2,6 +2,7 @@
    Counts and versions must stay consistent across homepage, footer, Methods and exports. */
 import kgJson from "@/data/kg.json";
 import { KG } from "@/lib/immune/engine";
+import { EXT_PROVENANCE } from "@/data/extensions";
 
 const raw = kgJson as {
   version?: string;
@@ -11,7 +12,7 @@ const raw = kgJson as {
 };
 
 export const GRAPH_CORE_VERSION = String(raw.version ?? "0.3");
-export const GRAPH_EXTENSIONS_VERSION = "draft-ext-5";
+export const GRAPH_EXTENSIONS_VERSION = EXT_PROVENANCE.version;
 export const GRAPH_SCHEMA_VERSION = "0.3";
 
 export interface GraphReleaseSnapshot {

@@ -186,6 +186,7 @@ export type IsiRelSuggestion = {
   status: IsiRelSuggestionStatus;
   autoApprove: false;
   note?: string;
+  rationale?: string;
   isiNodeIds?: string[];
   [key: string]: unknown;
 };
@@ -520,19 +521,15 @@ export function linkClaimToMarker(
 }
 
 export function seedClaimLoincMap(): Array<HsiClaimMarkerLink & { claim: HsiClaim; loinc: string }> {
-  const links = (pin.exportBundle.claimLoincLinks ?? []) as Array<{
-    claimId: string;
-    markerId: string;
-    loinc?: string;
-  }>;
+  const links = pin.exportBundle.claimLoincLinks ?? [];
   const claimById = new Map(HSI_T2D_IMMUNO_SEED_CLAIMS.map((c) => [c.id, c]));
   return links
     .map((l) => {
       const claim = claimById.get(l.claimId);
-      const marker = markerByNodeId(l.markerId);
+      const marker = markerByNodeId(l.marker.id);
       const loinc = l.loinc ?? marker?.loinc;
       if (!claim || !loinc) return null;
-      return { claimId: l.claimId, markerId: l.markerId, claim, loinc };
+      return { claimId: l.claimId, markerId: l.marker.id, claim, loinc };
     })
     .filter((x): x is HsiClaimMarkerLink & { claim: HsiClaim; loinc: string } => x != null);
 }

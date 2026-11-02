@@ -1,3 +1,4 @@
+import { parseJsonObject, parseJsonValue } from "@/lib/jsonValue";
 /**
  * SME workspace server functions — reviewer-gated.
  * Rematch requires PMID+DOI+passage; decisions are audited; never auto-approves Gate C.
@@ -111,7 +112,7 @@ export const getSmeWorkspaceSnapshot = createServerFn({ method: "GET" })
               row.detectionSource === "melanoma_matrix"
                 ? row.detectionSource
                 : "evidence_gap",
-            detectionDetail: (row.detectionDetail as Record<string, unknown>) ?? {},
+            detectionDetail: parseJsonObject(row.detectionDetail ?? {}),
             coverageLabel: row.coverageLabel,
             autoReviewed: false,
           };
@@ -657,7 +658,7 @@ export const listSmeWorkItemEvents = createServerFn({ method: "GET" })
         actor: e.actor,
         action: e.action,
         rationale: e.rationale,
-        payload: e.payloadJson,
+        payload: parseJsonValue(e.payloadJson ?? null),
         createdAt: e.createdAt.toISOString(),
       })),
     };

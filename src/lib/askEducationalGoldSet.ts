@@ -339,11 +339,11 @@ export function runAskEducationalGoldEval(now: Date = new Date()): AskEduEvalBun
       "Educational beta — teaching with references; not CDS, not clinical validation.",
       "clinicalAdvice=false · kgWrite=false.",
       "Clinical-personal and empty-match cases must fail closed before the model.",
-      status === "awaiting_sme"
-        ? "Human sign-off still open — founder may later set founder_sme_interim; named external SME → signed_off. No partner agreement invented."
-        : status === "founder_sme_interim"
-          ? "founder_sme_interim accepts frozen case protocol only; external SME still recommended for institutional claims. No partner agreement invented."
-          : "signed_off reserved for named human SME acceptance recorded in docs/SME_GOLD_SET_SIGNOFF.md.",
+      {
+        awaiting_sme: "Human sign-off still open — founder may later set founder_sme_interim; named external SME → signed_off. No partner agreement invented.",
+        founder_sme_interim: "founder_sme_interim accepts frozen case protocol only; external SME still recommended for institutional claims. No partner agreement invented.",
+        signed_off: "signed_off reserved for named human SME acceptance recorded in docs/SME_GOLD_SET_SIGNOFF.md.",
+      }[status],
     ],
   };
 }

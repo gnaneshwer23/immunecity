@@ -37,7 +37,7 @@
 | Ontology crosswalks / assay cut-offs | Curator-supplied only — empty by design |
 | Trial Intelligence prod flag | Stays off until product sign-off |
 
-## C) This ship (engineering leftovers closed)
+## C) Engineering leftovers addressed in the earlier ship
 
 1. SME workflow aids (status from events, checklists, deep-link, S-P-O proposal, Discovery gold merge).
 2. Opportunity review server + dossier UI.

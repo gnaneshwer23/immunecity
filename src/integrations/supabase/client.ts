@@ -18,7 +18,7 @@ function serverSupabaseUrl(publicUrl: string, supabaseKey: string): string | und
 function createSupabaseFetch(supabaseUrl: string, supabaseKey: string): typeof fetch {
   const publicUrl = supabaseUrl.replace(/\/+$/, '');
   const serverUrl = serverSupabaseUrl(publicUrl, supabaseKey);
-  return (input, init) => {
+  return Object.assign((input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
     const headers = new Headers(
       typeof Request !== 'undefined' && input instanceof Request ? input.headers : undefined,
     );
@@ -42,7 +42,7 @@ function createSupabaseFetch(supabaseUrl: string, supabaseKey: string): typeof f
       }
     }
     return fetch(input, { ...init, headers });
-  };
+  }, globalThis.fetch);
 }
 
 

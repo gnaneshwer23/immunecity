@@ -12,7 +12,7 @@ bun run build
 
 The sync script generates in an isolated temporary source copy before updating reviewed snapshot files here. The current snapshot restores HSI's hypothetical fixture: `lockedPilot=false`, `legalBinding=false`, `partnerSignedProduction=false`. A fixture `partnerSigned=true` must not be described as a commercial agreement. The old vendored Apolo production-lock claim is no longer current.
 
-40 targeted tests and the client/server production build pass. Full TypeScript checking has 136 pre-existing diagnostics, confirmed against a clean archive of the original commit; this integration does not claim that check passes. HSI-specific mobile table overflow is corrected. Database-backed review writes were not tested; all existing sign-in, role checks and human review gates remain.
+The production audit resolved all 136 original TypeScript diagnostics; full type checking and the client/server production build now pass. `bun run test` runs Vitest and Bun-native suites separately, with no assertions disabled. Shared server JSON payloads are validated rather than cast from unknown data. HSI-specific mobile table overflow is corrected. Database-backed review writes were not tested; all existing sign-in, role checks and human review gates remain.
 
 The frozen lock's registry mirror is blocked in this cloud instance. Dependencies are installed through a disposable lock copy resolving identical integrity-pinned public packages at registry.npmjs.org. The repository lockfile and package manifest are unchanged. The tested helper is `/workspace/install-immunecity.sh`, also captured in the cloud environment configuration draft.
 

@@ -1,3 +1,4 @@
+import { parseJsonObject } from "@/lib/jsonValue";
 /**
  * Neon-backed research profiles for Discovery Radar.
  * Ownership-scoped to signed-in user_id — no casual admin list-all.
@@ -52,7 +53,7 @@ function mapError(err: unknown): Error {
 function toRow(row: typeof researchProfiles.$inferSelect): ResearchProfileRow {
   const interests =
     row.interestsJson && typeof row.interestsJson === "object" && !Array.isArray(row.interestsJson)
-      ? (row.interestsJson as Record<string, unknown>)
+      ? parseJsonObject(row.interestsJson)
       : {};
   return {
     id: row.id,
@@ -73,7 +74,7 @@ const upsertInput = z.object({
   focusDiseases: z.array(z.string().min(1).max(40)).max(20).optional(),
   focusDomains: z.array(z.string().min(1).max(40)).max(20).optional(),
   modalities: z.array(z.string().min(1).max(40)).max(20).optional(),
-  interests: z.record(z.string(), z.unknown()).optional(),
+  interests: z.record(z.string(), z.json()).optional(),
   /** Client cannot elevate — ignored if present. */
   entitlement: z.string().optional(),
 });

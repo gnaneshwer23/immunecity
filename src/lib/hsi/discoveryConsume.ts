@@ -34,6 +34,7 @@ export type IsiConsumeContractArtifact = {
 
 export type IsiConsumeContract = HonestyFlags & {
   schemaVersion: string;
+  generatedAt?: string;
   contractVersion?: string;
   autoApproveIntoKg: false;
   notCds: true;
@@ -50,11 +51,13 @@ export type IsiConsumeContract = HonestyFlags & {
 
 export type DiscoveryIndex = HonestyFlags & {
   schemaVersion: string;
+  generatedAt?: string;
   files: string[];
 };
 
 export type GateCChecklist = {
   schemaVersion?: string;
+  generatedAt?: string;
   notCds?: boolean;
   autoApproveIntoKg?: boolean;
   /** Published checklist rows (hsi-gate-c-checklist-1). */
@@ -88,6 +91,7 @@ export type PartnerLock = HonestyFlags & {
 
 export type PilotEvidencePack = {
   schemaVersion?: string;
+  generatedAt?: string;
   notCds?: boolean;
   partnerSigned?: boolean;
   lockedPilot?: boolean;
@@ -215,6 +219,7 @@ export function assertHonestyFlags(
 async function fetchHttpJson<T>(url: string): Promise<T> {
   const res = await fetch(url, {
     headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(10_000),
   });
   if (!res.ok) {
     throw new Error(`fetch ${url} → HTTP ${res.status}`);
@@ -312,6 +317,18 @@ async function tryLoadFromBase(
 
   const gateC = await fetchJson<GateCChecklist>(abs("gate-c-checklist.json"));
   assertHonestyFlags(gateC, "gate-c-checklist");
+  const requiredSchemas = [
+    [index.schemaVersion, "hsi-discovery-centre-public-1"],
+    [contract.schemaVersion, "hsi-isi-consume-contract-1"],
+    [partnerLock.schemaVersion, "hsi-partner-lock-1"],
+    [pilotPack.schemaVersion, "hsi-pilot-evidence-pack-2"],
+    [gateC.schemaVersion, "hsi-gate-c-checklist-1"],
+  ];
+  if (requiredSchemas.some(([actual, expected]) => actual !== expected)) throw new Error("Unsupported HSI artifact schema version");
+  const generatedAt = index.generatedAt;
+  if (!generatedAt || !Number.isFinite(Date.parse(generatedAt)) || [contract.generatedAt, pilotPack.generatedAt, gateC.generatedAt].some((value) => value !== generatedAt)) {
+    throw new Error("Mixed or missing HSI snapshot generation timestamps");
+  }
 
   const byPriority = new Map<string, number>(
     LOAD_PRIORITY_ORDER.map((p, i) => [p, i]),

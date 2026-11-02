@@ -1,5 +1,11 @@
 import { defineConfig } from "vitest/config";
 import path from "node:path";
+import { readdirSync, readFileSync } from "node:fs";
+
+// Bun-native suites run under test:bun; Vitest must not bundle bun:test as browser code.
+const bunSuites = readdirSync(new URL("./src/test", import.meta.url))
+  .filter((name) => /\.(test|spec)\.tsx?$/.test(name) && /from ["']bun:test["']/.test(readFileSync(new URL(`./src/test/${name}`, import.meta.url), "utf8")))
+  .map((name) => `src/test/${name}`);
 
 /** D-11: avoid @vitejs/plugin-react here — it hung Vitest at collection. */
 export default defineConfig({
@@ -11,6 +17,7 @@ export default defineConfig({
     // bun:test module. These files are run with `bun test`, not the vitest pool.
     // bun:test module. These files are run with `bun test`, not the vitest pool (D-11 hang risk).
     exclude: [
+      ...bunSuites,
       "src/test/phase2-scientific-ux.test.ts",
       "src/test/community-phase3.test.ts",
       "src/test/community-phase4.test.ts",
@@ -39,7 +46,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "hsi-core": path.resolve(
-        "/Users/gnaneshwerjadav/Projects/hsi-core/src/index.ts",
+        __dirname, "./src/lib/hsi/hsiCorePin.ts",
       ),
     },
   },

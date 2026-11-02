@@ -1,0 +1,21 @@
+name: Research release
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.11'
+      - run: bun scripts/install-ci.ts
+      - run: bun run typecheck
+      - run: bun scripts/verify-hsi-release.ts
+      - run: bun run test
+      - run: bun run build

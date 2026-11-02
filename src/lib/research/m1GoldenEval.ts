@@ -227,7 +227,7 @@ function briefBlob(brief: InvestigationBrief): string {
     brief.question,
     brief.disclaimer,
     ...brief.sections.map((s) => `${s.title}\n${s.body}`),
-    ...brief.claimStatements.map((c) => c.summary),
+    ...brief.claimStatements.map((c) => c.assertion),
   ].join("\n");
 }
 

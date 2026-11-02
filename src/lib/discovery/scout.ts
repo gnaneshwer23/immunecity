@@ -86,7 +86,7 @@ export type ScoutRunReport = {
   coverage: ScoutCoverage;
   retrieval: RetrievalRunReport | null;
   adapterResults: Array<{ corpus: ScoutCorpus; result: AdapterSearchResult }>;
-  budget: typeof SCOUT_POLICY.defaultBudget & { queriesRun: number; wallMs: number };
+  budget: Record<keyof typeof SCOUT_POLICY.defaultBudget, number> & { queriesRun: number; wallMs: number };
   /**
    * Monitor / citation-chaining hooks.
    * When activateHooks=true on a run, hooks enable for that run only — never schedules prod cron.

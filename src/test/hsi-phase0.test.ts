@@ -28,6 +28,7 @@ import {
   loadIsiHsiExportSnapshot,
   parseGateCDecisionStatusByEdge,
   summarizeGradeCounts,
+  seedClaimLoincMap,
   summarizeIsiRelMappings,
   validateHsiEdge,
   validateTranslationCard,
@@ -35,6 +36,12 @@ import {
 import { resolveGraphRelationshipId } from "@/lib/immune/graphInventory";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+
+it("retains all eight structured claim-to-LOINC links from the published HSI export", () => {
+  const links = seedClaimLoincMap();
+  expect(links).toHaveLength(8);
+  expect(links.every((link) => Boolean(link.markerId && link.loinc && link.claim))).toBe(true);
+});
 
 describe("HSI package import", () => {
   it("maps ISI curation reviews onto coarse HSI grades without silent promotion", () => {

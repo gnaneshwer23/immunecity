@@ -2,6 +2,7 @@
  * Browser-safe Discovery Intelligence types.
  * Persistence lives in Neon via schema.server.ts + *.functions.ts.
  */
+import type { JsonObject } from "@/lib/jsonValue";
 
 /** Discovery plan stubs on research_profiles.entitlement — not user_roles. */
 export const RESEARCH_ENTITLEMENTS = ["free", "researcher_pro", "team", "enterprise"] as const;
@@ -69,7 +70,7 @@ export type ResearchGapCandidate = {
   whyItMatters: string;
   searchScope: SearchScope;
   detectionSource: DetectionSource;
-  detectionDetail: Record<string, unknown>;
+  detectionDetail: JsonObject;
   coverageLabel: string | null;
   /** Always false until a human reviewer promotes. */
   autoReviewed: false;
@@ -80,7 +81,7 @@ export type ResearchProfileDraft = {
   focusDiseases: string[];
   focusDomains: string[];
   modalities: string[];
-  interests: Record<string, unknown>;
+  interests: JsonObject;
 };
 
 export type ResearchProfileRow = ResearchProfileDraft & {

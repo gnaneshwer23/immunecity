@@ -36,13 +36,13 @@ function NewPostPage() {
   const navigate = useNavigate();
   const create = useServerFn(createCommunityPost);
   const [topics, setTopics] = useState<{ slug: string; title: string }[]>([]);
-  const [topicSlug, setTopicSlug] = useState(search.topic);
+  const [topicSlug, setTopicSlug] = useState<string>(search.topic);
   const [kind, setKind] = useState<(typeof POST_KINDS)[number]>("discussion");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [pmid, setPmid] = useState("");
   const [doi, setDoi] = useState("");
-  const [concept, setConcept] = useState(search.concept);
+  const [concept, setConcept] = useState<string>(search.concept);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [available, setAvailable] = useState(true);

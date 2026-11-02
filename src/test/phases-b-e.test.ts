@@ -3,7 +3,7 @@ import { byId, KG, shortestPath } from "@/lib/immune/engine";
 import { GRAPH_EXTENSIONS_VERSION, graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { EXT_LESSONS, EXT_NODES, EXT_PROVENANCE, EXT_ROUTES } from "@/data/extensions";
 import { IMPLEMENTATION_PHASES, phaseStatusSummary } from "@/data/implementation-phases";
-import { domainCoverageReport, knowledgeGapQueue } from "@/lib/immune/domainCoverage";
+import { domainCoverageReport, knowledgeGapQueue, KNOWLEDGE_DOMAINS } from "@/lib/immune/domainCoverage";
 import {
   MODEL_REGISTRY,
   adapterPromotionGate,
@@ -60,8 +60,8 @@ import {
 
 describe("Phase B knowledge extensions", () => {
   it("bumps extensions version and provenance", () => {
-    expect(GRAPH_EXTENSIONS_VERSION).toBe("draft-ext-5");
-    expect(EXT_PROVENANCE.version).toBe("draft-ext-5");
+    expect(GRAPH_EXTENSIONS_VERSION).toBe("draft-ext-6");
+    expect(EXT_PROVENANCE.version).toBe("draft-ext-6");
   });
 
   it("adds immunogenetics and thin-domain concepts as draft with stable IDs", () => {
@@ -87,7 +87,7 @@ describe("Phase B knowledge extensions", () => {
     expect(drafts.length).toBe(EXT_NODES.length);
     expect(drafts.every((n) => n.draft)).toBe(true);
     const snap = graphReleaseSnapshot();
-    expect(snap.extensionsVersion).toBe("draft-ext-5");
+    expect(snap.extensionsVersion).toBe("draft-ext-6");
     expect(snap.coreNodes + snap.draftNodes).toBe(snap.runtimeNodes);
   });
 
@@ -100,12 +100,15 @@ describe("Phase B knowledge extensions", () => {
 
   it("reports domain coverage and a gap queue without inventing approvals", () => {
     const report = domainCoverageReport();
-    expect(report.extensionsVersion).toBe("draft-ext-5");
+    expect(report.extensionsVersion).toBe("draft-ext-6");
     expect(report.domains.length).toBe(7);
     expect(report.summary.lessonsPresent).toBe(7);
     expect(report.summary.isolatedConcepts).toBe(0);
     expect(report.summary.thinDomains).toBe(0);
-    expect(report.summary.draftNodesInDomains).toBeGreaterThanOrEqual(EXT_NODES.length);
+    const domainDrafts = EXT_NODES.filter((node) => KNOWLEDGE_DOMAINS.some((domain) => domain.prefixes.some((prefix) => node.id.startsWith(prefix))));
+    expect(report.summary.draftNodesInDomains).toBe(domainDrafts.length);
+    // The four contrast-finding DISCOVERY nodes are not thin-domain concepts.
+    expect(EXT_NODES.filter((node) => !domainDrafts.includes(node)).every((node) => node.node_type === "DISCOVERY" && node.id.startsWith("CXF"))).toBe(true);
     const immuno = report.domains.find((d) => d.domain.id === "immunogenetics");
     expect(immuno?.lessonPresent).toBe(true);
     expect(immuno?.routeCount).toBeGreaterThan(0);

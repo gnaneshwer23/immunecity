@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/lib/db/schema.server";
+import { isiDatabaseConnectionOptions } from "./connection-options";
 
 /**
  * Node Postgres driver. This module is server-only (`*.server.ts`).
@@ -17,14 +18,7 @@ function resolveDatabaseUrl(): string {
       "Missing DATABASE_URL (or DATABASE_URL_UNPOOLED). Pull from Vercel Neon integration / `vercel env pull`.",
     );
   }
-  try {
-    const u = new URL(raw);
-    u.searchParams.delete("channel_binding");
-    if (!u.searchParams.has("sslmode")) u.searchParams.set("sslmode", "require");
-    return u.toString();
-  } catch {
-    return raw;
-  }
+  return raw;
 }
 
 declare global {
@@ -34,7 +28,9 @@ declare global {
 
 function getSql(): Sql {
   if (!globalThis.__immuneCitySql) {
-    globalThis.__immuneCitySql = postgres(resolveDatabaseUrl(), {
+    const connection = isiDatabaseConnectionOptions(resolveDatabaseUrl());
+    globalThis.__immuneCitySql = postgres(connection.url, {
+      ssl: connection.ssl,
       prepare: false, // Neon pooler / serverless
       max: 1,
     });

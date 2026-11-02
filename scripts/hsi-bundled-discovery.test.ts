@@ -47,4 +47,11 @@ describe("bundled HSI integration", () => {
     const second = await loadVendoredHsiDiscovery();
     expect(second.partnerLock.lockedPilot).toBe(false);
   });
+  it("rejects mixed releases even when each artifact has safe individual flags", async () => {
+    await expect(loadHsiDiscoveryConsume({ preferLocal: true, readArtifact: async (file) => {
+      const data = JSON.parse(readFileSync(new URL(`../public/hsi-discovery/${file}`, import.meta.url), "utf8"));
+      if (file === "gate-c-checklist.json") data.generatedAt = "2000-01-01T00:00:00.000Z";
+      return data;
+    } })).rejects.toThrow("snapshot generation");
+  });
 });

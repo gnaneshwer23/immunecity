@@ -1,3 +1,4 @@
+import { parseJsonObject } from "@/lib/jsonValue";
 /**
  * Browser-safe research profile planning / ownership.
  * Persistence: profiles.functions.ts (Neon research_profiles).
@@ -77,7 +78,7 @@ export function sanitizeProfileDraft(input: {
     labelRaw.length >= 1 && labelRaw.length <= MAX_PROFILE_LABEL ? labelRaw : null;
   const interests =
     input.interests && typeof input.interests === "object" && !Array.isArray(input.interests)
-      ? { ...input.interests }
+      ? parseJsonObject(input.interests)
       : {};
   return {
     displayLabel,

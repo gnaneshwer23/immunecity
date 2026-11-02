@@ -97,7 +97,7 @@ describe("Phase 2 ISI-A08 light comparability", () => {
     expect(facet.diseaseStage).toMatch(/melanoma/i);
     expect(facet.endpointTypes.length).toBeGreaterThan(0);
     expect(facet.analysisPopulation.length).toBeGreaterThan(0);
-    expect(facet.treatmentLine).toBe(MELANOMA_PILOT_TRIALS[0]!.treatmentLine);
+    expect(facet.treatmentLine).toBe(MELANOMA_PILOT_TRIALS[0]!.treatmentLine!);
     expect(facet.treatmentLine).not.toMatch(/as stated in curated summary/i);
   });
 

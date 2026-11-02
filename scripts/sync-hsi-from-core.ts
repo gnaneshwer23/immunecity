@@ -4,7 +4,7 @@
  * Defaults to a sibling hsi-core checkout; override HSI_CORE_PATH when needed.
  * Generates in isolation; run for an intentional snapshot refresh, not on Vercel.
  */
-import { cpSync, existsSync, mkdirSync, writeFileSync, mkdtempSync, rmSync, readFileSync, symlinkSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, writeFileSync, mkdtempSync, rmSync, readFileSync, symlinkSync, openSync, closeSync, unlinkSync } from "node:fs";
 import { join, resolve, relative } from "node:path";
 import { tmpdir } from "node:os";
 import { assertHonestyFlags } from "../src/lib/hsi/discoveryConsume";
@@ -17,6 +17,11 @@ if (!existsSync(join(SOURCE_CORE, "src/index.ts"))) {
   process.exit(1);
 }
 
+// Serialise multi-file snapshot writers; never steal an existing lock.
+const lockPath = join(ROOT, ".hsi-sync.lock");
+let lockDescriptor: number;
+try { lockDescriptor = openSync(lockPath, "wx", 0o600); } catch { throw new Error("HSI snapshot sync is locked by another writer"); }
+process.on("exit", () => { closeSync(lockDescriptor); unlinkSync(lockPath); });
 // Publish refreshes tracked site JSON. Generate in isolation, preserving all HSI work.
 const stage = mkdtempSync(join(tmpdir(), "isi-hsi-sync-"));
 process.on("exit", () => rmSync(stage, { recursive: true, force: true }));

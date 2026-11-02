@@ -18,7 +18,7 @@ export const MARKETING_NAV_PRIMARY = [
  * Secondary header items. Empty by design: a single Insights destination does not
  * justify a More menu (and overflow clipping). Keep Insights in the footer.
  */
-export const MARKETING_NAV_MORE = [] as const;
+export const MARKETING_NAV_MORE: readonly { label: string; path: string }[] = [];
 
 /** Collaborate destination — footer Organisation only; not a header item. */
 export const MARKETING_NAV_ACTION = { label: "Collaborate", path: "/collaborate" } as const;
@@ -182,7 +182,7 @@ export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[
  * Empty by design: the five primaries live in JOURNEY_NAV pillars.
  * Account / workspace stay in the account menu; Methods in JOURNEY_SECONDARY.
  */
-export const JOURNEY_PRIMARY = [] as const;
+export const JOURNEY_PRIMARY: readonly { label: string; path: string }[] = [];
 
 /** Secondary header links shown after the journeys (org / trust). */
 export const JOURNEY_SECONDARY = [

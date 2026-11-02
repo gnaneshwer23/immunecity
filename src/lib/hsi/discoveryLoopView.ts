@@ -177,8 +177,8 @@ export function partnerScopedEvidenceRows(
   );
 }
 
-export function gradeCounts(rows: EvidenceRowView[]): Record<string, number> {
-  const out: Record<string, number> = {
+export function gradeCounts(rows: EvidenceRowView[]): Record<"established" | "uncertain" | "unexplored", number> & Record<string, number> {
+  const out: Record<"established" | "uncertain" | "unexplored", number> & Record<string, number> = {
     established: 0,
     uncertain: 0,
     unexplored: 0,

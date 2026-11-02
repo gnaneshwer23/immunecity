@@ -1,4 +1,5 @@
 /* Browser-safe retrieval and guardrails for Ask Immune (tested in src/test/ai-grounding.test.ts). */
+export type { CitationLike } from "@/lib/immune/evidenceStatus";
 import { KG, byId, human, out, inn, relId, edgeRef, edgeByRel, shortestPath, type KGNode, type KGEdge } from "@/lib/immune/engine";
 import { conceptExtras } from "@/lib/immune/concepts";
 import { partitionEvidencePolarity } from "@/lib/immune/evidenceInvariants";

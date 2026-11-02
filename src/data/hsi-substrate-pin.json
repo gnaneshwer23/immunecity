@@ -1,7 +1,7 @@
 {
   "schemaVersion": "hsi-isi-substrate-pin-1",
   "notCds": true,
-  "generatedAt": "2026-11-02T18:35:30.294Z",
+  "generatedAt": "2026-11-02T19:25:00.281Z",
   "domains": [
     "t2d",
     "immuno_metabolic",
@@ -3254,7 +3254,7 @@
     "schemaVersion": "hsi-isi-export-1",
     "productLabel": "immune-super-intelligence",
     "notCds": true,
-    "generatedAt": "2026-11-02T18:35:30.294Z",
+    "generatedAt": "2026-11-02T19:25:00.281Z",
     "grades": [
       "established",
       "uncertain",

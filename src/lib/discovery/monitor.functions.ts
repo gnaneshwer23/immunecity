@@ -1,3 +1,4 @@
+import { parseJsonObject } from "@/lib/jsonValue";
 /**
  * Phase 6 — Discovery monitor + in-app alerts server functions.
  * Cron-ready runner also lives in scripts/run-discovery-monitor.ts.
@@ -57,7 +58,7 @@ function profileDraftFromRow(row: typeof researchProfiles.$inferSelect | undefin
     modalities: row.modalities ?? [],
     interests:
       row.interestsJson && typeof row.interestsJson === "object" && !Array.isArray(row.interestsJson)
-        ? (row.interestsJson as Record<string, unknown>)
+        ? parseJsonObject(row.interestsJson)
         : {},
   };
 }

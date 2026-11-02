@@ -83,7 +83,6 @@ export function routeForReview(input: RoutingInput): ReviewRoute {
     contested ||
     v.support > 0 ||
     v.contradict > 0 ||
-    adj === "route_sme" ||
     (input.draft?.gapClass === "research_opportunity" && input.draft.opportunityStatus === "assessed");
 
   // High model confidence cannot override missing evidence → keep/escalate risk.

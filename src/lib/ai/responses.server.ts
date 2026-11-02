@@ -19,7 +19,7 @@ export function createResponsesCall(
     baseURL: `${config.baseURL.replace(/\/+$/, "").replace(/\/v1$/, "")}/v1`,
     apiKey: config.apiKey,
     headers: { "Lovable-API-Key": config.apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
-    fetch: runIdFetch.fetch,
+    fetch: Object.assign(runIdFetch.fetch, globalThis.fetch),
   });
   const result = streamText({
     model: provider.responses(config.model),

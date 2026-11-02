@@ -3,6 +3,7 @@
  * Discovery Gate C + public cite handoff. Never auto-approves. Not CDS.
  */
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import gateCDecisionsPin from "../../../public/hsi-discovery/gate-c-decisions.json";
 import {
   NEON_GATE_C_CURATOR_WARNINGS,

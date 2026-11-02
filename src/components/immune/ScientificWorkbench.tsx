@@ -495,7 +495,7 @@ export default function ScientificWorkbench({
                 const note = session.evidence[session.evidence.length - 1];
                 if (!note) return;
                 lookupWorkbenchSource({ data: { pmid: evPmid, doi: evDoi } })
-                  .then((result) => setSession(recordSourceLookup(session, note.note_id, result)))
+                  .then((result) => setSession(recordSourceLookup(session, note.note_id, { ok: result.verification === "verified", pmid: result.verifiedPmid, doi: result.verifiedDoi })))
                   .catch(() => setSession(recordSourceLookup(session, note.note_id, { ok: false })));
               }}
             >

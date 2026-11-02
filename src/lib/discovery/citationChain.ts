@@ -139,7 +139,7 @@ export async function runBoundedCitationChain(input: {
     });
     const pmids = (result.pmids ?? [])
       .map((p) => validatePmid(p))
-      .filter((p): p is string => Boolean(p) && !seenRelated.has(p))
+      .filter((p): p is string => p !== null && !seenRelated.has(p))
       .slice(0, CITATION_CHAIN_POLICY.maxRelatedPerSeed);
 
     for (const p of pmids) {

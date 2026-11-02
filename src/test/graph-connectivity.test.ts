@@ -37,12 +37,13 @@ describe("knowledge-graph connectivity", () => {
     expect(orphans).toEqual([]);
   });
 
-  it("keeps almost the whole graph in one connected component", () => {
+  it("keeps at least 99% of the curated graph connected without relying on draft nodes", () => {
+    const curated = new Set(KG.nodes.filter((node) => !node.draft).map((node) => node.id));
     const seen = new Set<string>([KG.nodes[0]!.id]);
     const stack = [KG.nodes[0]!.id];
     while (stack.length)
-      for (const m of neighbours(stack.pop()!)) if (!seen.has(m)) (seen.add(m), stack.push(m));
-    expect(seen.size / KG.nodes.length).toBeGreaterThanOrEqual(0.99);
+      for (const m of neighbours(stack.pop()!)) if (curated.has(m) && !seen.has(m)) (seen.add(m), stack.push(m));
+    expect(seen.size / curated.size).toBeGreaterThanOrEqual(0.99);
   });
 
   it("publishes pipelines for melanoma, ANCA vasculitis and gout", () => {

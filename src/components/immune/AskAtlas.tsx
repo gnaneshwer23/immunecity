@@ -681,7 +681,7 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                           <p className="xs muted">
                             Surface focus: {classifyAskGatewayIntent(q, grounding.queryClass).replace(/_/g, " ")}.
                             Follow-up links open Explore, Research, Academy or Methods — they do not run additional
-                            agents. Discovery Intel remains educational scaffolding until each path is evaluated.
+                            agents. Discovery Intel remains an educational preview until each path is evaluated.
                           </p>
                         </details>
                       ) : null}

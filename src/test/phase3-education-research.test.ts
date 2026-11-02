@@ -53,7 +53,7 @@ describe("Phase 3 exit gate — learning and research share graph ids", () => {
     const lessonReturn = source("src/components/immune/LessonReturn.tsx");
     expect(lessonReturn).toContain('to="/mechanism/$id"');
     expect(lessonReturn).toMatch(/progress stay/i);
-    expect(lessonForGraphConcept("R001")).toBe(moduleForLesson("tlr4")?.module.lessonId);
+    expect(lessonForGraphConcept("R001")).toBe(moduleForLesson("tlr4")!.module.lessonId);
   });
 
   it("does not claim a second store of scientific facts for saved paths", () => {

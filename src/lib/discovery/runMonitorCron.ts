@@ -1,3 +1,4 @@
+import { parseJsonObject } from "@/lib/jsonValue";
 /**
  * Shared Discovery monitor cron job — used by CLI (`bun run discovery:monitor`)
  * and Vercel Cron (`GET /api/cron/discovery-monitor`).
@@ -47,7 +48,7 @@ function draftFromProfile(row: typeof researchProfiles.$inferSelect): ResearchPr
     modalities: row.modalities ?? [],
     interests:
       row.interestsJson && typeof row.interestsJson === "object" && !Array.isArray(row.interestsJson)
-        ? (row.interestsJson as Record<string, unknown>)
+        ? parseJsonObject(row.interestsJson)
         : {},
   };
 }

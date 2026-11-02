@@ -36,16 +36,18 @@ describe("Google sign-in handoff", () => {
   it("posts Google sign-in through the same-origin auth proxy", async () => {
     vi.stubEnv("VITE_NEON_AUTH_URL", "https://auth.example.test/neondb/auth");
     vi.stubEnv("NEON_AUTH_BASE_URL", "https://auth.example.test/neondb/auth");
-    const fetchMock = vi.fn(async () =>
+    const fetchMock = vi.fn<(...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>>(async () =>
       new Response(JSON.stringify({ url: "https://accounts.google.com/o/oauth" }), {
         status: 200,
         headers: { "content-type": "application/json" },
       }),
     );
     vi.stubGlobal("fetch", fetchMock);
-    vi.spyOn(window.location, "assign").mockImplementation(() => undefined);
+    const assign = vi.fn();
+    vi.stubGlobal("window", { location: { assign } });
     const result = await neonAuth.signInWithGoogle("https://www.example.test/auth?redirect=%2F");
     expect(result.error).toBeNull();
+    expect(assign).toHaveBeenCalledWith("https://accounts.google.com/o/oauth");
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/api/auth/sign-in/social");
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const body = JSON.parse(String(init.body));
@@ -56,7 +58,7 @@ describe("Google sign-in handoff", () => {
 
   it("redeems the verifier through the same-origin proxy", async () => {
     vi.stubEnv("VITE_NEON_AUTH_URL", "https://auth.example.test/neondb/auth");
-    const fetchMock = vi.fn(async () =>
+    const fetchMock = vi.fn<(...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>>(async () =>
       new Response(JSON.stringify({ session: { id: "s" }, user: { id: "u", email: "a@example.test" } }), {
         status: 200,
         headers: { "content-type": "application/json" },

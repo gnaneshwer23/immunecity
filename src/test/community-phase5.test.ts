@@ -105,7 +105,8 @@ describe("member deletion", () => {
     expect(plan.writesGraph).toBe(false);
     expect(plan.changesRoles).toBe(false);
     const server = readFileSync(resolve(root, "src/lib/privacy.functions.ts"), "utf8");
-    expect(server).not.toMatch(/\.delete\(communityPosts|\.delete\(communityComments|\.delete\(evidence/);
+    // User-owned evidenceCollections are deletable; shared evidenceRecords are not.
+    expect(server).not.toMatch(/\.delete\((?:communityPosts|communityComments|evidenceRecords)\)/);
     expect(server).toContain("REMOVED_MEMBER_NAME");
   });
 });

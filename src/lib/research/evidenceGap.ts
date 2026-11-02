@@ -90,8 +90,8 @@ function incidentEdges(conceptId: string): KGEdge[] {
 function graphEmerging(conceptId: string): boolean {
   const node = byId[conceptId];
   if (!node) return false;
-  const st = (node.evidence_status || "").toUpperCase();
-  if (st === "EMERGING" || st === "HYPOTHESIS") return true;
+  const status = (node.evidence_status ?? "").toUpperCase();
+  if (status === "EMERGING" || status === "HYPOTHESIS") return true;
   return incidentEdges(conceptId).some((e) => {
     const es = (e.evidence_status || "").toUpperCase();
     return es === "EMERGING" || es === "HYPOTHESIS";

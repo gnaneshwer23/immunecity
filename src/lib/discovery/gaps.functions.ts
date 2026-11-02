@@ -1,3 +1,4 @@
+import { parseJsonObject, type JsonObject } from "@/lib/jsonValue";
 /**
  * Discovery gap list / persist / verify / review / subscribe server functions.
  * Detection is deterministic (detect.ts). Persistence is additive Neon (0020).
@@ -162,7 +163,7 @@ function candidateFromRow(
       "evidence_gap",
     detectionDetail:
       row.detectionDetail && typeof row.detectionDetail === "object" && !Array.isArray(row.detectionDetail)
-        ? (row.detectionDetail as Record<string, unknown>)
+        ? parseJsonObject(row.detectionDetail)
         : (fallback?.detectionDetail ?? {}),
     coverageLabel: row.coverageLabel ?? fallback?.coverageLabel ?? null,
     gapClass:
@@ -395,7 +396,7 @@ export const listMyDiscoveryRadar = createServerFn({ method: "GET" })
       focusDiseases: string[];
       focusDomains: string[];
       modalities: string[];
-      interests: Record<string, unknown>;
+      interests: JsonObject;
     } | null;
     let feedbackSignals: GapFeedbackSignal[] = [];
     const updatedAtByKey: Record<string, string> = {};
@@ -415,7 +416,7 @@ export const listMyDiscoveryRadar = createServerFn({ method: "GET" })
           modalities: row.modalities ?? [],
           interests:
             row.interestsJson && typeof row.interestsJson === "object" && !Array.isArray(row.interestsJson)
-              ? (row.interestsJson as Record<string, unknown>)
+              ? parseJsonObject(row.interestsJson)
               : {},
         };
       }

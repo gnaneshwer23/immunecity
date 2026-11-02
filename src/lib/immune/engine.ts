@@ -8,7 +8,7 @@ export type NodeType =
   | "CELL" | "MOLECULE" | "RECEPTOR" | "PATHWAY" | "COMPARTMENT"
   | "PATHOGEN" | "DISEASE" | "INTERVENTION" | "BIOMARKER" | "TRIAL" | "DATA" | "AI_METHOD" | "DISCOVERY";
 
-export interface KGNode { id: string; name: string; node_type: NodeType; desc: string; draft?: boolean }
+export interface KGNode { id: string; name: string; node_type: NodeType; desc: string; draft?: boolean; evidence_status?: string }
 export interface KGEdge {
   subject_id: string; relation: string; object_id: string; mechanism: string;
   confidence: "high" | "medium" | "low"; evidence_status: string;

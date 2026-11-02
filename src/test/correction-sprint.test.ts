@@ -200,8 +200,8 @@ describe("4 — Treatment-line labels: curated only", () => {
     const cm = MELANOMA_PILOT_TRIALS[1]!;
     expect(kn.treatmentLine).toBeTruthy();
     expect(cm.treatmentLine).toBeTruthy();
-    expect(curatedTreatmentLine(kn)).toBe(kn.treatmentLine);
-    expect(trialComparabilityFacet(kn).treatmentLine).toBe(kn.treatmentLine);
+    expect(curatedTreatmentLine(kn)).toBe(kn.treatmentLine!);
+    expect(trialComparabilityFacet(kn).treatmentLine).toBe(kn.treatmentLine!);
     const report = compareTrials(kn, cm);
     expect(report.mismatches.some((m) => m.dimension === "treatment_line")).toBe(true);
   });

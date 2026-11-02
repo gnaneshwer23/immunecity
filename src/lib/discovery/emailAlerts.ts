@@ -115,7 +115,7 @@ export function planEmailAlertDelivery(
 export async function sendDiscoveryAlertEmail(
   payload: EmailAlertPayload,
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
-  fetchImpl: typeof fetch = fetch,
+  fetchImpl: (...args: Parameters<typeof fetch>) => ReturnType<typeof fetch> = fetch,
 ): Promise<EmailSendResult> {
   const plan = planEmailAlertDelivery(env);
   if (!plan.canSend || plan.provider !== "resend" || !plan.from) {
