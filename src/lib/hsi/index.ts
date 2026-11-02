@@ -92,8 +92,12 @@ export {
 export {
   NEON_GATE_C_CURATOR_WARNINGS,
   buildHsiBridgeCurationQueue,
+  isCiteReadyAfterGateCItem,
   isNeonGateCReadyItem,
+  listCiteReadyAfterGateCItems,
   listNeonGateCReadyItems,
+  parseGateCDecisionStatusByEdge,
+  type GateCDecisionStatusByEdge,
   type HsiBridgeCurationQueue,
   type HsiBridgeQueueItem,
   type HsiBridgeSpo,

@@ -19,17 +19,22 @@ import {
   hsiAxesForEdge,
   hsiGradeFromCuration,
   isCdsSurfacable,
+  isCiteReadyAfterGateCItem,
   isNeonGateCReadyItem,
   listBridgeCandidates,
+  listCiteReadyAfterGateCItems,
   listIsiRelSuggestions,
   listNeonGateCReadyItems,
   loadIsiHsiExportSnapshot,
+  parseGateCDecisionStatusByEdge,
   summarizeGradeCounts,
   summarizeIsiRelMappings,
   validateHsiEdge,
   validateTranslationCard,
 } from "@/lib/hsi";
 import { resolveGraphRelationshipId } from "@/lib/immune/graphInventory";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 describe("HSI package import", () => {
   it("maps ISI curation reviews onto coarse HSI grades without silent promotion", () => {
@@ -170,7 +175,8 @@ describe("HSI bridge → REL curation queue", () => {
 
     expect(queue.summary.curated).toBeGreaterThanOrEqual(9);
     expect(queue.summary.neonGateCReady).toBeGreaterThanOrEqual(9);
-    expect(queue.neonGateCPath.length).toBe(4);
+    expect(queue.summary.citeReadyAfterGateC).toBe(0);
+    expect(queue.neonGateCPath.length).toBe(5);
 
     const withPmid = queue.items.filter((i) => i.pmid);
     expect(withPmid.length).toBeGreaterThanOrEqual(9);
@@ -215,5 +221,33 @@ describe("HSI bridge → REL curation queue", () => {
     expect(NEON_GATE_C_CURATOR_WARNINGS.some((w) => w.includes("source-verified"))).toBe(true);
     expect(NEON_GATE_C_CURATOR_WARNINGS.some((w) => w.toLowerCase().includes("cds"))).toBe(true);
     expect(NEON_GATE_C_CURATOR_WARNINGS.some((w) => w.includes("autoApprove"))).toBe(true);
+  });
+
+  it("P2.2 cite-ready after Gate C overlays human_approved without auto-approve", () => {
+    const pin = JSON.parse(
+      readFileSync(resolve(process.cwd(), "public/hsi-discovery/gate-c-decisions.json"), "utf8"),
+    );
+    expect(pin.autoApprove).toBe(false);
+    expect(pin.productionApproved).toBe(false);
+    expect(pin.mayFlipHsiGrade).toBe(false);
+
+    const byEdge = parseGateCDecisionStatusByEdge(pin);
+    expect(byEdge.get("HSI-E-IO-001")).toBe("human_approved");
+
+    const queue = buildHsiBridgeCurationQueue(byEdge);
+    const citeReady = listCiteReadyAfterGateCItems(queue);
+
+    expect(queue.summary.citeReadyAfterGateC).toBe(citeReady.length);
+    expect(citeReady.length).toBeGreaterThanOrEqual(9);
+    expect(citeReady.every((i) => isCiteReadyAfterGateCItem(i))).toBe(true);
+    expect(citeReady.every((i) => i.autoApprove === false)).toBe(true);
+    expect(citeReady.every((i) => i.cdsSurfacable === false)).toBe(true);
+    expect(citeReady.every((i) => i.isiGateCDecisionStatus === "human_approved")).toBe(true);
+    expect(citeReady.every((i) => i.neonGateCReady === false)).toBe(true);
+    expect(citeReady.every((i) => i.neonGateCHref?.includes("hsi=cite"))).toBe(true);
+
+    const pd1 = citeReady.find((i) => i.edgeId === "HSI-E-IO-001");
+    expect(pd1?.suggestedIsiRelationshipId).toBe("REL-R011-drives-P015");
+    expect(pd1?.pmid).toBe("16382236");
   });
 });

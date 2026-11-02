@@ -1,32 +1,94 @@
 /**
  * Curation panel: hsi-core bridge candidates ↔ suggested ISI REL-* ids.
- * Discovery / Gate C handoff only. Never auto-approves. Not CDS.
+ * Discovery Gate C + public cite handoff. Never auto-approves. Not CDS.
  */
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import gateCDecisionsPin from "../../../public/hsi-discovery/gate-c-decisions.json";
 import {
   NEON_GATE_C_CURATOR_WARNINGS,
   buildHsiBridgeCurationQueue,
+  listCiteReadyAfterGateCItems,
   listNeonGateCReadyItems,
+  parseGateCDecisionStatusByEdge,
 } from "@/lib/hsi/bridgeCurationQueue";
 
 export default function HsiBridgeCurationPanel() {
-  const queue = buildHsiBridgeCurationQueue();
+  const queue = useMemo(
+    () =>
+      buildHsiBridgeCurationQueue(
+        parseGateCDecisionStatusByEdge(gateCDecisionsPin),
+      ),
+    [],
+  );
   const neonReady = listNeonGateCReadyItems(queue);
+  const citeReady = listCiteReadyAfterGateCItems(queue);
   const [readyOnly, setReadyOnly] = useState(true);
 
   return (
     <div className="isi-auth-panel" data-testid="hsi-bridge-curation-queue">
       <p className="isi-auth-lede">
         Bridge-candidate seeds from <code>hsi-core</code> with suggested Immune City{" "}
-        <code>REL-*</code> matches. HSI <code>curated</code> + PMID ≠ Neon Gate C pass.
-        Human path only: <strong>Check → claim_support=supports → Approve</strong> on the mapped REL.
+        <code>REL-*</code> matches. Discovery Gate C human_approved ≠ public cite.
+        Human cite path: <strong>Check → claim_support=supports → Approve</strong> on the mapped REL.
         <strong> autoApprove stays false.</strong> Not clinical decision support.
       </p>
 
+      <div className="isi-auth-panel" data-testid="hsi-cite-ready-after-gate-c">
+        <p className="isi-auth-lede">
+          P2.2 cite-ready after Discovery Gate C ({queue.summary.citeReadyAfterGateC}{" "}
+          human_approved · PMID · mapped REL-* in KG — still need Check → supports → Approve):
+        </p>
+        {citeReady.length === 0 ? (
+          <p className="mkt-aside">No cite-ready rows yet — finish Discovery Gate C first.</p>
+        ) : (
+          <div className="isi-auth-table-wrap">
+            <table className="isi-auth-table">
+              <thead>
+                <tr>
+                  <th scope="col">REL id</th>
+                  <th scope="col">S-P-O</th>
+                  <th scope="col">PMID</th>
+                  <th scope="col">Cite path</th>
+                </tr>
+              </thead>
+              <tbody>
+                {citeReady.map((row) => (
+                  <tr key={row.edgeId} data-testid={`hsi-cite-ready-${row.edgeId}`}>
+                    <td>
+                      <code>{row.suggestedIsiRelationshipId}</code>
+                    </td>
+                    <td>{row.spo?.label ?? row.relLabel ?? "—"}</td>
+                    <td>
+                      {row.pmid ? (
+                        <a
+                          href={`https://pubmed.ncbi.nlm.nih.gov/${row.pmid}/`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {row.pmid}
+                        </a>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      {row.neonGateCHref ? (
+                        <a href={row.neonGateCHref}>Open /curation</a>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       <div className="isi-auth-panel" data-testid="hsi-neon-gate-c-path">
         <p className="isi-auth-lede">
-          Human Neon Gate C path for curated / PMID-linked RELs ({queue.summary.neonGateCReady}{" "}
+          Still awaiting Discovery Gate C ({queue.summary.neonGateCReady}{" "}
           ready — evidence-linked · Gate C pending · has PMID · mapped REL-*):
         </p>
         <ol className="mkt-aside">

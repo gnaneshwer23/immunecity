@@ -68,11 +68,18 @@ export type HsiBridgeQueueItem = {
   /** Curator-facing compound label (e.g. evidence-linked · Gate C pending). */
   evidenceHandoffLabel: string;
   /**
-   * Ready for human Neon Gate C when:
+   * Ready for human Discovery Gate C (REVIEW queue) when:
    * evidence-linked + Gate C pending + PMID + curated map + REL-* in live KG.
-   * Still autoApprove=false — curator must Check → claim_support=supports → Approve.
+   * Still autoApprove=false.
    */
   neonGateCReady: boolean;
+  /**
+   * P2.2 — Discovery Gate C already human_approved on autumn-snow;
+   * public cite still needs Check → claim_support=supports → Approve on /curation.
+   */
+  citeReadyAfterGateC: boolean;
+  /** autumn-snow / pin decision status when known. */
+  isiGateCDecisionStatus: string | null;
   /** Deep-link hash + query for /curation evidence filter. */
   neonGateCHref: string | null;
   /** Always false — documentation invariant. */
@@ -114,10 +121,11 @@ export type HsiBridgeCurationQueue = {
   axesNote: string;
   /** Human-only Neon path copy for the panel. */
   neonGateCPath: readonly [
-    "1. Check identifiers (PubMed/Crossref)",
-    "2. Map relationship_id to the suggested REL-*",
-    "3. Assess claim_support = supports (or contradicts/partial)",
-    "4. Approve — only then Gate C counts",
+    "1. Discovery Gate C on /hsi/discovery REVIEW (approve/reject/defer)",
+    "2. Check identifiers (PubMed/Crossref) on /curation",
+    "3. Map relationship_id to the suggested REL-*",
+    "4. Assess claim_support = supports (or contradicts/partial)",
+    "5. Approve — only then public cite counts (separate from Discovery Gate C)",
   ];
   summary: {
     items: number;
@@ -131,10 +139,56 @@ export type HsiBridgeCurationQueue = {
     evidenceLinked: number;
     gateCPending: number;
     neonGateCReady: number;
+    citeReadyAfterGateC: number;
     mapping: ReturnType<typeof summarizeIsiRelMappings>;
   };
   items: HsiBridgeQueueItem[];
 };
+
+/** Decision status keyed by HSI edge id (from autumn-snow or pin JSON). */
+export type GateCDecisionStatusByEdge = ReadonlyMap<string, string>;
+
+export function parseGateCDecisionStatusByEdge(
+  raw: unknown,
+): GateCDecisionStatusByEdge {
+  const map = new Map<string, string>();
+  const doc =
+    raw && typeof raw === "object" && !Array.isArray(raw)
+      ? (raw as Record<string, unknown>)
+      : null;
+  const list = Array.isArray(raw)
+    ? raw
+    : Array.isArray(doc?.decisions)
+      ? doc!.decisions
+      : [];
+  for (const row of list) {
+    if (!row || typeof row !== "object") continue;
+    const r = row as Record<string, unknown>;
+    const edgeId = typeof r.edgeId === "string" ? r.edgeId : "";
+    const status = typeof r.status === "string" ? r.status : "";
+    if (edgeId && status) map.set(edgeId, status);
+  }
+  return map;
+}
+
+export function isCiteReadyAfterGateCItem(
+  item: Pick<
+    HsiBridgeQueueItem,
+    | "pmid"
+    | "suggestedIsiRelationshipId"
+    | "relExistsInGraph"
+    | "isiGateCDecisionStatus"
+    | "autoApprove"
+  >,
+): boolean {
+  return (
+    item.isiGateCDecisionStatus === "human_approved" &&
+    Boolean(item.pmid) &&
+    Boolean(item.suggestedIsiRelationshipId?.startsWith("REL-")) &&
+    item.relExistsInGraph === true &&
+    item.autoApprove === false
+  );
+}
 
 function spoFor(relId: string | null): HsiBridgeSpo | null {
   if (!relId) return null;
@@ -166,8 +220,11 @@ function nodeLabels(ids: string[]): string[] {
 /**
  * Build the curator-facing queue from hsi-core suggestions + live KG validation.
  * Prefer bridge candidates; include non-bridge IO/AU suggestions that have REL pointers.
+ * Optional `gateCDecisionsByEdge` overlays autumn-snow / pin human decisions (P2.2 cite path).
  */
-export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
+export function buildHsiBridgeCurationQueue(
+  gateCDecisionsByEdge: GateCDecisionStatusByEdge = new Map(),
+): HsiBridgeCurationQueue {
   const suggestions = listIsiRelSuggestions();
   const edgeById = new Map(HSI_T2D_IMMUNO_SEED_EDGES.map((e) => [e.id, e]));
   const claimById = new Map(claimsWithIsiMappings(HSI_T2D_IMMUNO_SEED_CLAIMS).map((c) => [c.id, c]));
@@ -192,7 +249,11 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
     const relExistsInGraph = Boolean(relId && resolveGraphRelationshipId(relId));
     const handoff = hsiEvidenceHandoff(edge);
     const spo = relExistsInGraph ? spoFor(relId) : null;
-    const draft: Omit<HsiBridgeQueueItem, "neonGateCReady"> = {
+    const isiGateCDecisionStatus = gateCDecisionsByEdge.get(edge.id) ?? null;
+    const draft: Omit<
+      HsiBridgeQueueItem,
+      "neonGateCReady" | "citeReadyAfterGateC" | "neonGateCHref"
+    > = {
       edgeId: edge.id,
       claimId: claim.id,
       assertion: claim.assertion,
@@ -216,21 +277,33 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
       evidenceLink: handoff.evidenceLink,
       gateCHandoff: handoff.gateC,
       evidenceHandoffLabel: handoff.label,
-      neonGateCHref: relId
-        ? `/curation?q=${encodeURIComponent(relId)}&hsi=ready#import`
-        : null,
+      isiGateCDecisionStatus,
       autoApprove: false,
       cdsSurfacable: false,
     };
+    const neonGateCReady =
+      isiGateCDecisionStatus === "human_approved"
+        ? false
+        : isNeonGateCReadyItem(draft);
+    const citeReadyAfterGateC = isCiteReadyAfterGateCItem({
+      ...draft,
+      isiGateCDecisionStatus,
+    });
+    const hsiFlag = citeReadyAfterGateC ? "cite" : "ready";
     items.push({
       ...draft,
-      neonGateCReady: isNeonGateCReadyItem(draft),
+      neonGateCReady,
+      citeReadyAfterGateC,
+      neonGateCHref: relId
+        ? `/curation?q=${encodeURIComponent(relId)}&hsi=${hsiFlag}#import`
+        : null,
     });
   }
 
-  // Stable: Neon-ready first, then bridges, then exact, related, unmapped.
+  // Stable: cite-ready first, then Discovery-Gate-C-ready, then bridges…
   const rank = (i: HsiBridgeQueueItem) => {
     let score = 0;
+    if (i.citeReadyAfterGateC) score += 300;
     if (i.neonGateCReady) score += 200;
     if (i.bridgeCandidate) score += 100;
     if (i.matchKind === "exact_concept_pair") score += 50;
@@ -248,10 +321,11 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
     autoApproveIntoKg: false,
     axesNote: HSI_AXES_NOTE,
     neonGateCPath: [
-      "1. Check identifiers (PubMed/Crossref)",
-      "2. Map relationship_id to the suggested REL-*",
-      "3. Assess claim_support = supports (or contradicts/partial)",
-      "4. Approve — only then Gate C counts",
+      "1. Discovery Gate C on /hsi/discovery REVIEW (approve/reject/defer)",
+      "2. Check identifiers (PubMed/Crossref) on /curation",
+      "3. Map relationship_id to the suggested REL-*",
+      "4. Assess claim_support = supports (or contradicts/partial)",
+      "5. Approve — only then public cite counts (separate from Discovery Gate C)",
     ] as const,
     summary: {
       items: items.length,
@@ -265,23 +339,33 @@ export function buildHsiBridgeCurationQueue(): HsiBridgeCurationQueue {
       evidenceLinked: items.filter((i) => i.evidenceLink === "evidence_linked").length,
       gateCPending: items.filter((i) => i.gateCHandoff === "pending").length,
       neonGateCReady: items.filter((i) => i.neonGateCReady).length,
+      citeReadyAfterGateC: items.filter((i) => i.citeReadyAfterGateC).length,
       mapping,
     },
     items,
   };
 }
 
-/** Curator sprint slice: only Neon Gate C–ready rows (human path; never auto-approve). */
+/** Curator sprint slice: only Discovery Gate C–ready rows (human path; never auto-approve). */
 export function listNeonGateCReadyItems(
   queue: HsiBridgeCurationQueue = buildHsiBridgeCurationQueue(),
 ): HsiBridgeQueueItem[] {
   return queue.items.filter((i) => i.neonGateCReady && isNeonGateCReadyItem(i));
 }
 
+/** P2.2 — cite Check→supports→Approve candidates after Discovery Gate C approve. */
+export function listCiteReadyAfterGateCItems(
+  queue: HsiBridgeCurationQueue = buildHsiBridgeCurationQueue(),
+): HsiBridgeQueueItem[] {
+  return queue.items.filter(
+    (i) => i.citeReadyAfterGateC && isCiteReadyAfterGateCItem(i),
+  );
+}
+
 /** Fixed curator warnings shown on the Gate C–ready panel (not CDS). */
 export const NEON_GATE_C_CURATOR_WARNINGS = [
   "Re-read the mapped S-P-O before claim_support=supports — the paper must support this directional claim, not a nearby axis.",
-  "HSI source-verified / curated ≠ Neon Gate C approved. Only Check → claim_support=supports → Approve on the REL counts.",
+  "HSI source-verified / curated ≠ Discovery Gate C human_approved ≠ public cite. Only Check → claim_support=supports → Approve on /curation counts for cites.",
   "autoApprove stays false everywhere — never bulk-approve or invent PMIDs.",
-  "Not clinical decision support (CDS). teachingStatus ≠ hsiGrade ≠ Neon Gate C.",
+  "Not clinical decision support (CDS). teachingStatus ≠ hsiGrade ≠ Discovery Gate C ≠ public cite.",
 ] as const;
