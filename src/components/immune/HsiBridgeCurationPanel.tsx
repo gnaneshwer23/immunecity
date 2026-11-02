@@ -35,8 +35,15 @@ export default function HsiBridgeCurationPanel() {
 
       <div className="isi-auth-panel" data-testid="hsi-cite-ready-after-gate-c">
         <p className="isi-auth-lede">
-          P2.2 cite-ready after Discovery Gate C ({queue.summary.citeReadyAfterGateC}{" "}
-          human_approved · PMID · mapped REL-* in KG — still need Check → supports → Approve):
+          P2.3 cite path after Discovery Gate C ({queue.summary.citeReadyAfterGateC}{" "}
+          human_approved · PMID · mapped REL-*): run identifier Check (
+          <code>bun run scripts/check-cite-candidates-from-gate-c.ts</code>
+          ), then on each row set <code>claim_support=supports</code> only if the paper
+          backs the S-P-O, then Approve. Never bulk-invent supports.
+        </p>
+        <p className="isi-auth-links">
+          <a href="/curation?hsi=cite#import">Open /curation · HSI cite filter</a>
+          <a href="/hsi-discovery/cite-check-worksheet.json">Cite-check worksheet JSON</a>
         </p>
         {citeReady.length === 0 ? (
           <p className="mkt-aside">No cite-ready rows yet — finish Discovery Gate C first.</p>

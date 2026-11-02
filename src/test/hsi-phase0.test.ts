@@ -250,4 +250,29 @@ describe("HSI bridge → REL curation queue", () => {
     expect(pd1?.suggestedIsiRelationshipId).toBe("REL-R011-drives-P015");
     expect(pd1?.pmid).toBe("16382236");
   });
+
+  it("P2.3 cite-check worksheet never claims auto-approve or grade flip", () => {
+    const sheet = JSON.parse(
+      readFileSync(
+        resolve(process.cwd(), "public/hsi-discovery/cite-check-worksheet.json"),
+        "utf8",
+      ),
+    );
+    expect(sheet.autoApprove).toBe(false);
+    expect(sheet.mayFlipHsiGrade).toBe(false);
+    expect(sheet.productionApproved).toBe(false);
+    expect(sheet.notCds).toBe(true);
+    expect(sheet.summary.rows).toBeGreaterThanOrEqual(9);
+    expect(sheet.summary.verifiedOrMatched).toBe(sheet.summary.rows);
+    expect(sheet.summary.stillUnassessedClaimSupport).toBe(sheet.summary.rows);
+    expect(sheet.summary.stillUnreviewed).toBe(sheet.summary.rows);
+    expect(
+      sheet.items.every(
+        (i: { claimSupport: string; curation: string; autoApprove: boolean }) =>
+          i.claimSupport === "unassessed" &&
+          i.curation === "unreviewed" &&
+          i.autoApprove === false,
+      ),
+    ).toBe(true);
+  });
 });

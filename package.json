@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "hsi:check": "bun test src/test/hsi-phase0.test.ts",
+    "hsi:cite-check": "bun run scripts/check-cite-candidates-from-gate-c.ts",
     "hsi:sync-export": "bun scripts/sync-hsi-from-core.ts",
     "test:e2e": "node ./node_modules/@playwright/test/cli.js test",
     "test:e2e:nav": "node ./node_modules/@playwright/test/cli.js test e2e/marketing-nav.spec.ts",

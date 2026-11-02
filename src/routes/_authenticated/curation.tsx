@@ -35,7 +35,13 @@ import {
   exemplarQueueFocus,
 } from "@/lib/immune/exemplarPathways";
 import { isReadyForSupportsApproval } from "@/lib/immune/evidenceInvariants";
-import { listNeonGateCReadyItems } from "@/lib/hsi/bridgeCurationQueue";
+import {
+  listCiteReadyAfterGateCItems,
+  listNeonGateCReadyItems,
+  parseGateCDecisionStatusByEdge,
+  buildHsiBridgeCurationQueue,
+} from "@/lib/hsi/bridgeCurationQueue";
+import gateCDecisionsPin from "../../../public/hsi-discovery/gate-c-decisions.json";
 import { PRODUCT_NAME } from "@/lib/brand";
 
 const TOC = [
@@ -51,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/curation")({
   validateSearch: zodValidator(
     z.object({
       q: fallback(z.string(), "").default(""),
-      hsi: fallback(z.enum(["", "ready"]), "").default(""),
+      hsi: fallback(z.enum(["", "ready", "cite"]), "").default(""),
     }),
   ),
   head: () =>
@@ -113,6 +119,7 @@ function Curation() {
   });
   const [p0Only, setP0Only] = useState(false);
   const [hsiReadyOnly, setHsiReadyOnly] = useState(search.hsi === "ready");
+  const [hsiCiteOnly, setHsiCiteOnly] = useState(search.hsi === "cite");
   const [open, setOpen] = useState<string | null>(null);
   const isAdmin = administrator;
   const p0RelIds = useMemo(() => new Set(EXEMPLAR_CURATOR_TARGETS.map((t) => t.relId)), []);
@@ -125,10 +132,28 @@ function Curation() {
       ),
     [],
   );
+  const hsiCiteRelIds = useMemo(
+    () =>
+      new Set(
+        listCiteReadyAfterGateCItems(
+          buildHsiBridgeCurationQueue(parseGateCDecisionStatusByEdge(gateCDecisionsPin)),
+        )
+          .map((i) => i.suggestedIsiRelationshipId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    [],
+  );
 
   useEffect(() => {
     if (search.q) setFilter((f) => ({ ...f, q: search.q }));
-    if (search.hsi === "ready") setHsiReadyOnly(true);
+    if (search.hsi === "ready") {
+      setHsiReadyOnly(true);
+      setHsiCiteOnly(false);
+    }
+    if (search.hsi === "cite") {
+      setHsiCiteOnly(true);
+      setHsiReadyOnly(false);
+    }
   }, [search.q, search.hsi]);
 
   const load = useCallback(async () => {
@@ -339,7 +364,10 @@ function Curation() {
     (filter.curation === "all" || r.curation === filter.curation) &&
     (!filter.q || `${r.node_name} ${r.evidence_id} ${r.source_ref ?? ""} ${r.relationship_id ?? ""}`.toLowerCase().includes(filter.q.toLowerCase())) &&
     (!p0Only || (!!r.relationship_id && p0RelIds.has(r.relationship_id))) &&
-    (!hsiReadyOnly || (!!r.relationship_id && hsiReadyRelIds.has(r.relationship_id))),
+    (!hsiReadyOnly || (!!r.relationship_id && hsiReadyRelIds.has(r.relationship_id))) &&
+    (!hsiCiteOnly ||
+      r.evidence_id.startsWith("hsi-gate-c-cite-") ||
+      (!!r.relationship_id && hsiCiteRelIds.has(r.relationship_id))),
   );
   const types = [...new Set(KG.nodes.map((r) => r.node_type))];
 
@@ -507,20 +535,44 @@ function Curation() {
               </p>
               <Toolbar
                 count={
-                  hsiReadyOnly
-                    ? "HSI Gate C filter on"
-                    : p0Only
-                      ? "P0 page filter on"
-                      : undefined
+                  hsiCiteOnly
+                    ? "HSI cite filter on"
+                    : hsiReadyOnly
+                      ? "HSI Gate C filter on"
+                      : p0Only
+                        ? "P0 page filter on"
+                        : undefined
                 }
               >
                 <div className="isi-auth-btn-row">
+                  <button
+                    type="button"
+                    className={`btn sm${hsiCiteOnly ? " primary" : ""}`}
+                    data-testid="hsi-cite-filter"
+                    onClick={() => {
+                      const next = !hsiCiteOnly;
+                      setHsiCiteOnly(next);
+                      setHsiReadyOnly(false);
+                      setP0Only(false);
+                      void navigate({
+                        to: "/curation",
+                        search: (prev: { q?: string; hsi?: string }) => ({
+                          ...prev,
+                          hsi: next ? "cite" : "",
+                        }),
+                      });
+                    }}
+                    title="Show Gate C cite candidates (hsi-gate-c-cite-*). Check → claim_support → Approve. Never auto-approve."
+                  >
+                    {hsiCiteOnly ? "HSI cite filter on" : "HSI cite filter"}
+                  </button>
                   <button
                     type="button"
                     className={`btn sm${hsiReadyOnly ? " primary" : ""}`}
                     onClick={() => {
                       const next = !hsiReadyOnly;
                       setHsiReadyOnly(next);
+                      setHsiCiteOnly(false);
                       setP0Only(false);
                       void navigate({
                         to: "/curation",
@@ -540,6 +592,7 @@ function Curation() {
                     onClick={() => {
                       setP0Only((v) => !v);
                       setHsiReadyOnly(false);
+                      setHsiCiteOnly(false);
                     }}
                     title="Show only rows on this page whose relationship_id is a P0 PD-1/IFN exemplar target"
                   >
