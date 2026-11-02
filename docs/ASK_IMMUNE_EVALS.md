@@ -16,6 +16,10 @@ bun scripts/smoke-prd-a2.ts
 # SME sign-off status (unsigned until a human SME signs)
 bun run sme:status
 
+# Focused Ask educational gold-set v0 (separate from M1 G-Ask/G-Mech)
+bun test src/test/ask-educational-gold-set.test.ts
+# Sign-off how-to: docs/ASK_EDUCATIONAL_GOLD_SET.md
+
 # Hybrid retrieval baseline (no vector DB)
 bun run benchmark:retrieval
 
@@ -27,9 +31,12 @@ Do **not** rely on live PubMed/Europe PMC in CI — provisional fetch is soft-fa
 
 **SME / Gate C (human process — not automated in these phases):**
 
+- `Ask-edu-gold-v0` (`src/lib/askEducationalGoldSet.ts`) records `expertReviewStatus=founder_sme_interim` (founder-authorized 2026-11-02) per `docs/ASK_EDUCATIONAL_GOLD_SET.md` — protocol only; named SME still open in `docs/SME_GOLD_SET_SIGNOFF.md`; never invent MoU / external SME.
 - `docs/SME_GOLD_SET_SIGNOFF.md` remains awaiting a named human expert. Engineering expansion of graph-true cases does **not** constitute sign-off.
+- Keep separate from M1 G-Ask/G-Mech (`docs/M1_GOLDEN_EVAL_SME_SIGNOFF.md`).
 - Gate C claim approvals stay curator-only (`docs/CURATOR_EVIDENCE_QUEUE.md`). Do not mass-approve or invent PMIDs.
 - Admin Ask quality dashboard on Methods shows redacted gate outcome rates by `PROMPT_VERSION` only — never personal-health question text.
+- Automated gold checks are `baselinesOnly` — do not invent accuracy % for marketing.
 
 ## What the suite covers
 

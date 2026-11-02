@@ -23,8 +23,13 @@ import {
 } from "@/lib/askGrounding";
 import EdgeReference, { NodeCitations } from "./EdgeReference";
 import GroundingPanel from "./GroundingPanel";
+import InvestigationBriefView from "./InvestigationBriefView";
 import { ImmuneCellSpeaker } from "./ImmuneCellSpeaker";
 import { Button } from "@/components/ui/button";
+import {
+  buildInvestigationBrief,
+  type InvestigationBrief,
+} from "@/lib/research/investigationBrief";
 
 type SpeechRecognitionLike = {
   continuous: boolean;
@@ -202,6 +207,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const [copied, setCopied] = useState<string | null>(null);
   const [provisionalNote, setProvisionalNote] = useState<string | null>(null);
   const [researchTraceText, setResearchTraceText] = useState<string | null>(null);
+  const [investigationBrief, setInvestigationBrief] = useState<InvestigationBrief | null>(null);
+  const [briefError, setBriefError] = useState<string | null>(null);
   useEffect(() => {
     if (!persistKey) return;
     try {
@@ -227,6 +234,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     setLocalNote(null);
     setProvisionalNote(null);
     setResearchTraceText(null);
+    setInvestigationBrief(null);
+    setBriefError(null);
     setInput("");
     inputRef.current?.focus();
   };
@@ -366,6 +375,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
     setResearchTraceText(null);
     setLocalNote(null);
     setProvisionalNote(null);
+    setInvestigationBrief(null);
+    setBriefError(null);
     setInput("");
     void (async () => {
       try {
@@ -417,6 +428,23 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
   const runAction = (action: ExplanationAction) => {
     if (!grounding) return;
     setLocalNote(runExplanationAction(action, grounding));
+  };
+
+  const generateInvestigationBrief = () => {
+    if (!grounding) return;
+    const lastUser = [...messages].reverse().find((x) => x.role === "user");
+    const q =
+      lastUser?.parts.map((p) => (p.type === "text" ? p.text : "")).join("").trim() ||
+      grounding.nodes[0]?.name ||
+      "";
+    const result = buildInvestigationBrief({ question: q, grounding });
+    if (!result.ok) {
+      setInvestigationBrief(null);
+      setBriefError(result.reason);
+      return;
+    }
+    setBriefError(null);
+    setInvestigationBrief(result.brief);
   };
 
   const renderLink = ({ href, children }: { href?: string | undefined; children?: ReactNode }) => {
@@ -494,7 +522,8 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
             </span>
           </div>
           <p className="ask-tagline">
-            Your immunology chatbot — ask by typing or voice. The immune-cell speaker can read answers aloud.
+            Your immunology chatbot — ask by typing or voice. After a graph-matched answer, generate an investigation
+            brief (Available research capability — not clinical claims). The immune-cell speaker can read answers aloud.
           </p>
           {howOpen ? (
             <div className="ask-how" id={howId}>
@@ -593,7 +622,26 @@ export default function AskAtlas({ persistKey, initialInput = "", groupedSuggest
                         {EXPLAIN_ACTIONS.map((a) => (
                           <button key={a.id} type="button" className="chip" onClick={() => runAction(a.id)}>{a.label}</button>
                         ))}
+                        <button
+                          type="button"
+                          className="chip"
+                          onClick={generateInvestigationBrief}
+                          title="M1 Biomedical Discovery Brief from this retrieval"
+                        >
+                          Generate investigation brief
+                        </button>
                       </div>
+                    ) : null}
+                    {briefError && m === lastAssistant ? (
+                      <p className="callout" role="alert">
+                        {briefError}
+                      </p>
+                    ) : null}
+                    {investigationBrief && m === lastAssistant ? (
+                      <InvestigationBriefView
+                        brief={investigationBrief}
+                        onClear={() => setInvestigationBrief(null)}
+                      />
                     ) : null}
                     {localNote && m === lastAssistant ? (
                       <pre className="ask-local-note xs">{localNote}</pre>

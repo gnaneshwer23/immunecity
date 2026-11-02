@@ -140,3 +140,11 @@ export {
   type GateCStatus,
   type GateCStoredDecision,
 } from "./gateCQueue";
+
+export {
+  GATE_C_CURATOR_INVENTORY,
+  summarizeCiteCheckWorksheet,
+  summarizeGateCCuratorPath,
+  type CiteCheckWorksheetSummary,
+  type GateCCuratorPathStatus,
+} from "./gateCCuratorStatus";

@@ -45,6 +45,7 @@ const REL_LABEL: Record<string, string> = {
   evaluates_in: "is evaluated in",
   depletes_producers_of: "depletes the producers of",
   supports_axis_of: "supports the axis of",
+  CONTRADICTS: "contradicts",
 };
 export const human = (rel: string) => REL_LABEL[rel] || rel.replace(/_/g, " ");
 /* citations may carry several references separated by | or ; — search on the first */

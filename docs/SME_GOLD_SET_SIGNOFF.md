@@ -1,11 +1,13 @@
 # SME gold-set sign-off — Immune Super Intelligence
 
-**Status:** ⏳ **Awaiting SME** (cannot be completed by AI or engineering alone)  
+**Status:** ⏳ **Awaiting named SME** (cannot be completed by AI or engineering alone)  
 **Scope:** Public educational beta — teaching with references; not clinician CDS  
-**Automated starter set:** `src/test/eval/scientific-eval-set.ts` — **75** graph-true cases (not yet SME-signed; PRD target 100+)  
-**Harness:** `bun scripts/sme-gold-set-status.ts` · smoke `bun scripts/smoke-prd-a2.ts` · retrieval baseline `bun scripts/benchmark-retrieval-baseline.ts`  
+**Focused v0 educational gold-set:** `Ask-edu-gold-v0` in `src/lib/askEducationalGoldSet.ts` — concept lookup · mechanism Q · clinical_person refuse · empty match (`expertReviewStatus=founder_sme_interim` as of 2026-11-02; see `docs/ASK_EDUCATIONAL_GOLD_SET.md`)  
+**Automated starter set (broader):** `src/test/eval/scientific-eval-set.ts` — **75** graph-true cases (not yet SME-signed; PRD target 100+)  
+**Harness:** `bun scripts/sme-gold-set-status.ts` · `bun test src/test/ask-educational-gold-set.test.ts` · smoke `bun scripts/smoke-prd-a2.ts` · retrieval baseline `bun scripts/benchmark-retrieval-baseline.ts`  
 **Estimated SME time:** 60–90 minutes for the checklist below  
-**Status unchanged:** still **awaiting named SME** — engineering expansions do not constitute sign-off.
+**Named SME status unchanged:** still **awaiting named SME** for `signed_off` — founder interim does not close this table.  
+**Separate from M1:** G-Ask/G-Mech (`docs/M1_GOLDEN_EVAL_SME_SIGNOFF.md`) is a different bundle — do not merge sign-off.
 
 ---
 
@@ -35,6 +37,8 @@ Paste this table (or CI artefact) into the release gate as **engineering smoke a
 
 A fixed scientific evaluation set used to catch regressions in Ask grounding, path reasoning, clinical/omics abstentions, and citation hygiene. Engineering can run the automated checks; an immunology SME must **sign off** that expected answers and prohibitions remain scientifically acceptable for educational beta.
 
+**v0 focused module** (`Ask-edu-gold-v0`): minimal educational cases for concept lookup, mechanism questions, clinical-personal refuse, and empty match — see `docs/ASK_EDUCATIONAL_GOLD_SET.md`. Founder interim (`founder_sme_interim`, 2026-11-02) recorded for **protocol acceptance only**; **named** external SME still fills this document for `signed_off`. No MoU is invented by engineering.
+
 ## What AI / engineering must not do
 
 - Do not mark this checklist complete without a named human SME.
@@ -46,9 +50,12 @@ A fixed scientific evaluation set used to catch regressions in Ask grounding, pa
 
 | Item | Owner | Status |
 |------|-------|--------|
-| Run `bun scripts/sme-gold-set-status.ts` (75 cases) | Engineering | Done for SHA `bd51a46` |
+| Ship `Ask-edu-gold-v0` + automated prepareAsk checks | Engineering | Done — `founder_sme_interim` (protocol) |
+| Run `bun test src/test/ask-educational-gold-set.test.ts` | Engineering | Required before handoff |
+| Run `bun scripts/sme-gold-set-status.ts` (75 cases + v0 module) | Engineering | Done for SHA `bd51a46` (re-run on RC); `signOffStatus` stays `awaiting_sme` for named SME |
 | Run `bun scripts/smoke-prd-a2.ts` | Engineering | **ALL PASSED** on SHA `bd51a46` |
 | Attach smoke output / note SHA | Engineering | ☑ attached above (2026-10-21) |
+| Founder interim (`founder_sme_interim`) | Founder | **Done 2026-11-02** — protocol only; see `docs/ASK_EDUCATIONAL_GOLD_SET.md` |
 | Expand toward PRD 100+ expert items | SME + eng | Open — only with graph-true expectations (gap 25) |
 | Confirm path/endpoint expectations are graph-true | SME | ☐ Awaiting SME |
 | Confirm refusal/abstention wording is appropriate | SME | ☐ Awaiting SME |
@@ -93,6 +100,19 @@ Open `src/test/eval/scientific-eval-set.ts` and verify endpoints / retrieval IDs
 
 ☐ Path spot-check complete · Defects filed: ________
 
+### A2. Focused v0 educational gold-set (≈10 min)
+
+Spot-check `src/lib/askEducationalGoldSet.ts` (`Ask-edu-gold-v0`) — same refuse/match honesty as below; separate from M1:
+
+| Case id | Kind | Expect |
+|---------|------|--------|
+| `edu-concept-tnf` / `edu-concept-pd1` | concept_lookup | Retrieves M001 / R011; may call model |
+| `edu-mech-tnf-ra` / `edu-mech-pd1-melanoma` | mechanism_q | Graph match on TNF–RA / PD-1–melanoma neighbourhood |
+| `edu-refuse-clinical-dose` / `edu-refuse-clinical-diagnose` | clinical_person_refuse | Refuse before model |
+| `edu-empty-no-match` | empty_match | Unsupported abstention |
+
+☐ v0 educational cases acceptable · Defects: ________
+
 ### B. Clinical refusal + omics abstention (≈15 min)
 
 Confirm these refuse / abstain **before** any model call (wording may educate but must not dose/diagnose):
@@ -135,7 +155,7 @@ Propose ≤20 additional gold questions toward PRD 100+. Each must include graph
 | SME name | _awaiting_ |
 | Affiliation / role | _awaiting_ |
 | Date (UTC) | _awaiting_ |
-| Starter set version | **75** cases in `scientific-eval-set.ts` |
+| Starter set version | **Ask-edu-gold-v0** + **75** cases in `scientific-eval-set.ts` |
 | Deploy / git SHA reviewed | _awaiting_ (engineering smoke attach: `bd51a46`) |
 | Smoke result attached | ☑ engineering (`ALL PASSED`, 75 cases) · ☐ SME reviewed |
 | Decision | ☐ Accept for educational beta · ☐ Accept with defects · ☐ Reject |
@@ -144,13 +164,16 @@ Propose ≤20 additional gold questions toward PRD 100+. Each must include graph
 
 **Acceptance meaning:** educational-beta eval set is scientifically acceptable to catch regressions. It does **not** mean Gate C evidence coverage is complete, Ask is fully evidence-grounded, or the product is CDS-ready.
 
+**Next human gate (evidence):** Gate C curator cite path — Check → `claim_support` → Approve/Reject; dry-run `bun run hsi:curator-status`; full steps in [`GATE_C_CURATOR_PATH.md`](./GATE_C_CURATOR_PATH.md). Orthogonal to this SME table.
+
 ---
 
 ## Engineering command
 
 ```bash
+bun test src/test/ask-educational-gold-set.test.ts
 bun scripts/sme-gold-set-status.ts
 bun scripts/smoke-prd-a2.ts
 ```
 
-Until the Sign-off table above is filled by a human SME, Gate E remains **PASS with SME open** and this document must stay **Awaiting SME**.
+Until the Sign-off table above is filled by a named human SME, Gate E remains **PASS with SME open** and this document must stay **Awaiting named SME**. Founder interim for `Ask-edu-gold-v0` (`founder_sme_interim`, 2026-11-02) does **not** close named-SME acceptance — see `docs/ASK_EDUCATIONAL_GOLD_SET.md`.

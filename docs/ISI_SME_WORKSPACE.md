@@ -55,7 +55,7 @@ bun run db:sme-workspace
 ## Gold-set / eval commands
 
 ```bash
-bun run sme:status          # Ask eval set — stays awaiting_sme
+bun run sme:status          # named SME doc stays awaiting_sme; Ask-edu-gold-v0 reports founder_sme_interim
 bun run sme:eval            # Workspace harness — honest denominators
 bun run discovery:eval      # Discovery gold scaffold (scores null)
 ```

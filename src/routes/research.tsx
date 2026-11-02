@@ -247,7 +247,15 @@ function Research() {
         id="brief"
         n={5}
         title="Research brief (AI/draft)"
-        lede="Draft-only synthesis with rationale, evidence, hypotheses, biomarkers, trials and limitations. Cites retrieved concepts only and fails closed on unsupported references. Export JSON or Markdown for human review — cannot approve into the KG."
+        lede={
+          <>
+            Manual workbench draft (rationale, evidence, hypotheses, biomarkers, trials, limitations) cites retrieved
+            concepts only and fails closed on unsupported references. For the Scientific Intelligence MVP (Workflow B /
+            M1 Biomedical Discovery Brief — entities, mechanisms, claim categories), ask a scientific question on{" "}
+            <Link to="/ask">Ask Immune</Link> and choose <em>Generate investigation brief</em>. Available research
+            capability only — not clinical claims. Exports stay unreviewed and cannot approve into the KG.
+          </>
+        }
       >
         <ResearchBriefPanel
           seedQuestion={search.q || undefined}

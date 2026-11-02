@@ -84,6 +84,50 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     sourceOfTruth: "src/lib/askGrounding.ts + provisionalLit.server.ts",
   },
   {
+    id: "m1-investigation-brief",
+    name: "M1 Biomedical Discovery Brief (Workflow B)",
+    page: "scientific-ai",
+    description:
+      "Available research capability: structured investigation brief from Ask graph retrieval — entities, mechanisms, evidence, contradictions/gaps, claim categories (Observed N/A; hypotheses unvalidated). Includes Cap 6/10/11 companions (m1-2). Not clinical claims; not HSI Trials.",
+    status: "partial",
+    statusAsOf: "2026-11",
+    relatedAppRoute: "/ask",
+    sourceOfTruth: "src/lib/research/investigationBrief.ts + AskAtlas",
+  },
+  {
+    id: "cap6-human-evidence",
+    name: "Cap 6 Human evidence prioritisation",
+    page: "scientific-ai",
+    description:
+      "Comparison table from Ask retrieval: organism/design cues from available text only; Gate C orthogonal to species cues; no automatic human>preclinical rank. Available research capability.",
+    status: "partial",
+    statusAsOf: "2026-11",
+    relatedAppRoute: "/ask",
+    sourceOfTruth: "src/lib/research/humanEvidencePrioritisation.ts",
+  },
+  {
+    id: "cap10-contradictions",
+    name: "Cap 10 Scientific contradictions",
+    page: "scientific-ai",
+    description:
+      "Unresolved contradiction report with first-class CONTRADICTS gold pairs (both sides retained), opposite-sign edges, counterevidence cites, optional discovery conflicts. No majority vote; no silent merge.",
+    status: "partial",
+    statusAsOf: "2026-11",
+    relatedAppRoute: "/ask",
+    sourceOfTruth: "src/lib/research/contradictionReport.ts",
+  },
+  {
+    id: "cap11-research-gaps",
+    name: "Cap 11 Research gaps (scope honesty)",
+    page: "scientific-ai",
+    description:
+      "Prioritised underexplored-mechanism / gap register (cap11-2): search-scope honesty, priority bands, Cap 10 cross-links, suggested next steps, atlas paths. Not in KG ≠ not in literature. Available research capability.",
+    status: "partial",
+    statusAsOf: "2026-11",
+    relatedAppRoute: "/ask",
+    sourceOfTruth: "src/lib/research/researchGapRegister.ts",
+  },
+  {
     id: "research-planner",
     name: "Bounded research planner",
     page: "research",

@@ -23,6 +23,18 @@ bun run hsi:sync-export   # requires local ~/Projects/hsi-core; refreshes export
 Bridge map: `buildHsiBridgeCurationQueue()` + `/curation#hsi-bridge`. Suggestions set
 `isiRelationshipId` pointers only — never Gate C approval, never invent PMIDs.
 
+## Gate C curator path (human)
+
+Operator checklist: [`docs/GATE_C_CURATOR_PATH.md`](../../../docs/GATE_C_CURATOR_PATH.md).
+
+```bash
+bun run hsi:curator-status          # dry-run counts; no Approve writes
+bun run hsi:cite-check              # identifier Check only
+bun test src/test/hsi-gate-c-curator-status.test.ts
+```
+
+UI: `/hsi/discovery` REVIEW → `/curation?hsi=cite` (Check → claim_support → Approve). Autumn-snow only; red-wave refused for Gate C writes.
+
 ## Discovery JSON consume (product + diagnostics)
 
 - Client: `src/lib/hsi/discoveryConsume.ts` (honesty asserts + load order)

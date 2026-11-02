@@ -37,3 +37,7 @@ Both chat hosts use `/api/ask` + `/api/ask/prepare` and guardrails / intent rout
 5. Homepage Ask entry
 
 Do not add AskAtlas embeds on other pages. Reasoning remains tools under Research — not a second chat.
+
+## M1 Biomedical Discovery Brief (Workflow B)
+
+After a graph-matched Ask turn, **Generate investigation brief** builds a structured research brief from the same `AskGrounding` (entities, mechanisms, supporting evidence, contradictions/gaps, limitations, claim categories). Observed patient facts are N/A on this research path; hypotheses are labelled unvalidated. Capability label: Available research capability — not clinical / trials products. Implementation: `src/lib/research/investigationBrief.ts` (schema `m1-1`).

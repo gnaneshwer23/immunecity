@@ -21,6 +21,12 @@ import {
   askResponseContractSchema,
 } from "../src/lib/askResponseContract";
 import { SCIENTIFIC_EVAL_SET } from "../src/test/eval/scientific-eval-set";
+import {
+  ASK_EDU_GOLD_CASES,
+  ASK_EDU_GOLD_SET_ID,
+  ASK_EDU_SME_SIGNOFF,
+  runAskEducationalGoldEval,
+} from "../src/lib/askEducationalGoldSet";
 
 let failed = 0;
 function check(name: string, ok: boolean, detail = "") {
@@ -43,6 +49,28 @@ check(
   "eval set stays fail-closed honest",
   SCIENTIFIC_EVAL_SET.some((c) => c.kind === "clinical-refusal") &&
     SCIENTIFIC_EVAL_SET.some((c) => c.kind === "unsupported"),
+);
+
+check("Ask-edu-gold-v0 id", ASK_EDU_GOLD_SET_ID === "Ask-edu-gold-v0");
+check(
+  "Ask-edu-gold-v0 kinds present",
+  ASK_EDU_GOLD_CASES.some((c) => c.kind === "concept_lookup") &&
+    ASK_EDU_GOLD_CASES.some((c) => c.kind === "mechanism_q") &&
+    ASK_EDU_GOLD_CASES.some((c) => c.kind === "clinical_person_refuse") &&
+    ASK_EDU_GOLD_CASES.some((c) => c.kind === "empty_match"),
+  String(ASK_EDU_GOLD_CASES.length),
+);
+check(
+  "Ask-edu-gold-v0 founder_sme_interim (no forged external SME)",
+  ASK_EDU_SME_SIGNOFF.expertReviewStatus === "founder_sme_interim" &&
+    ASK_EDU_SME_SIGNOFF.targetsConfirmedBy === "founder-authorized 2026-11-02" &&
+    ASK_EDU_SME_SIGNOFF.signedOffAt === "2026-11-02T00:00:00.000Z",
+);
+const eduBundle = runAskEducationalGoldEval();
+check(
+  "Ask-edu-gold-v0 automated baselines",
+  eduBundle.baselinesOnly && eduBundle.separateFromM1 && eduBundle.summary.failed === 0,
+  `${eduBundle.summary.passed}/${eduBundle.summary.caseCount}`,
 );
 
 const sample = prepareAsk("How does TNF relate to rheumatoid arthritis?");

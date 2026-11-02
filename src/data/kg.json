@@ -14328,7 +14328,8 @@
   "nominates": "0",
   "models": "0",
   "enhances": "+",
-  "performs": "+"
+  "performs": "+",
+  "CONTRADICTS": "0"
  },
  "audit": [
   {

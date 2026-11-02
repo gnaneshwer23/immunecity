@@ -2,12 +2,18 @@
    (microbiome, vaccines, transplantation, primary immunodeficiency, immunogenetics, frontier).
    Every item is merged with draft: true and needs expert review before it is treated as curated.
    The user's kg.json stays the source of truth; these are merged at load time.
-   Provenance: textbook / review-level consensus drafted for education; not claim-approved. */
+   Provenance: textbook / review-level consensus drafted for education; not claim-approved.
+   Cap 10 first-class CONTRADICTS finding nodes/edges come from contradictionGoldPairs.ts. */
+
+import {
+  EXT_CONTRADICTION_EDGES,
+  EXT_CONTRADICTION_NODES,
+} from "./contradictionGoldPairs";
 
 export const EXT_PROVENANCE = {
-  version: "draft-ext-5",
-  label: "Phase B draft gap fills (coverage + teaching)",
-  note: "Draft educational extensions. evidence_status is a graph label, not curator approval. No PMIDs fabricated.",
+  version: "draft-ext-6",
+  label: "Phase B draft gap fills (coverage + teaching + Cap 10 CONTRADICTS gold)",
+  note: "Draft educational extensions. evidence_status is a graph label, not curator approval. No PMIDs fabricated. CONTRADICTS gold pairs retain both sides (majorityVote=false).",
 };
 
 type N = {
@@ -28,6 +34,8 @@ type E = {
   confidence: "high" | "medium" | "low";
   location?: string;
   provenance?: string;
+  /** Bibliographic placeholders only — never invent PMIDs. */
+  source_refs?: string[];
 };
 
 const PROV = "draft-extension; educational consensus; expert review required";
@@ -128,6 +136,8 @@ export const EXT_NODES: N[] = [
   // frontier
   n("EF01", "INTERVENTION", "CD19 CAR-T (autoimmune)", "CD19-directed CAR-T used to reset B-cell autoimmunity", "EMERGING", "lymphoid tissue"),
   n("EV10", "PATHWAY", "Herd / indirect protection", "High population immunity reduces transmission and protects unvaccinated contacts for some pathogens", "ESTABLISHED", "population"),
+  // Cap 10 first-class CONTRADICTS finding nodes (draft) — see contradictionGoldPairs.ts
+  ...EXT_CONTRADICTION_NODES,
 ];
 
 export const EXT_EDGES: E[] = [
@@ -348,6 +358,9 @@ export const EXT_EDGES: E[] = [
   e("EG04", "is_a", "R025", "HLA-B*57:01 is an HLA class I (HLA-B) allele.", "genetics"),
   e("EG05", "is_a", "R025", "HLA-B*15:02 is an HLA class I (HLA-B) allele.", "genetics"),
   e("C015", "mediates", "EG12", "Drug-specific CD8 cytotoxic T cells drive keratinocyte death in SJS/TEN (granulysin, perforin).", "skin"),
+
+  // Cap 10 first-class CONTRADICTS (Finding → Finding); both sides retained — see contradictionGoldPairs.ts
+  ...EXT_CONTRADICTION_EDGES,
 ];
 
 const step = (name: string, type: string, phase: string, desc: string, fn: string, absent: string, clinical: string) => ({ name, type, phase, desc, fn, absent, clinical });
