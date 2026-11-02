@@ -18,6 +18,8 @@ This is the concrete curator path after Discovery consume wiring. It does **not*
 | Approve-eligible (`verified` + mapped REL + `claim_support=supports`) | **0** |
 | `publicCiteApproved` / Neon `publicApprovedSupports` | **0** |
 
+**Remeasure (2026-11-02 later):** Founder reported cite `claim_support`/Approve done → `bun run hsi:curator-status -- --neon` still **13 verified / 13 unassessed / 0 supports / 0 publicCiteApproved** (all `hsi-gate-c-cite-*` rows unchanged since Check). Before = after. Do **not** invent counts; human S-P-O → `claim_support=supports` → Approve still required on `/curation?hsi=cite` (**Claim support** is on the row Check column; Approve stays replaced by “Set supports first” until supports).
+
 **Founder authorization (2026-11-02):** public cite **Approve** is authorized **only** for rows that already meet eligibility (verified + mapped + `claim_support=supports`). That does **not** authorize inventing `supports` or bulk-approving the 13 verified-but-unassessed rows. Agent/script path: none that can write Approve without Neon Auth reviewer session — use `/curation?hsi=cite` after human S-P-O assess.
 
 **Dry-run status (no writes):**
@@ -137,10 +139,10 @@ Runs PubMed/Crossref metadata checks. May set `check_status=verified|…` and en
 
 #### Exact curator clicks (after Check)
 
-1. Sign in as **scientific reviewer** or **administrator** (Neon Auth).
-2. Open **`/curation?hsi=cite`**.
-3. For each row below: open PubMed URL → re-read paper vs S-P-O → set **claim_support** dropdown (`supports` / `partial` / `contradicts` / …).
-4. Only rows with `claim_support=supports` appear in **ready to Approve**; use per-row Approve or page **Approve claim-assessed** (`updateRecord` → `evidenceInvariants` require verified + supports).
+1. Sign in as **scientific reviewer** or **administrator** (Neon Auth). Member-only shows read-only decisions — no Approve.
+2. Open **`/curation?hsi=cite`** → scroll to **Evidence records** (HSI cite callout explains the path).
+3. For each row: open PubMed → re-read paper vs mapped REL S-P-O → in the **Check** column set the visible **Claim support** dropdown to **Supports** (also available under **Details** → Claim mapping). Until then Decision shows **Set supports first**, not Approve.
+4. Once `claim_support=supports` (and ID verified + mapped), Decision shows **Approve**. Or use page **Approve N supports-assessed**. Server still enforces `evidenceInvariants` — no auto-approve.
 5. Confirm with `bun run hsi:curator-status -- --neon` — counters must move from live Neon, never by editing worksheet JSON.
 
 #### Rows ready for human **supports assess** (not yet Approve)
@@ -197,7 +199,7 @@ Tests: `src/test/hsi-gate-c-queue.test.ts`, `src/test/hsi-gate-c-curator-status.
 |------|-----|-------------|
 | Ask-edu-gold-v0 SME | `docs/ASK_EDUCATIONAL_GOLD_SET.md`, `docs/SME_GOLD_SET_SIGNOFF.md` | `founder_sme_interim` (protocol); named SME still open for `signed_off` |
 | M1 G-Ask/G-Mech | `docs/M1_GOLDEN_EVAL_SME_SIGNOFF.md` | Founder interim for protocol; external SME open |
-| **This path** | Cite Approve on autumn-snow | Check done (13/13); **blocked** on human `claim_support` then Approve (0 eligible) |
+| **This path** | Cite Approve on autumn-snow | Check done (13/13); remeasure still **0** supports / **0** publicCiteApproved — **blocked** on human `claim_support` then Approve |
 | Partner lock | hsi-core partner fixture | No invented MoU |
 
 Upstream map checklist (hsi-core checkout `~/Projects/hsi-core`): `docs/IMMUNECITY_GATE_C_COMMIT_MANUAL.md` · `docs/ISI_IMMUNICITY_WIRING_PLAYBOOK.md` (§4, P2.2–P2.3).

@@ -38,8 +38,9 @@ export default function HsiBridgeCurationPanel() {
           P2.3 cite path after Discovery Gate C ({queue.summary.citeReadyAfterGateC}{" "}
           human_approved · PMID · mapped REL-*): run identifier Check (
           <code>bun run scripts/check-cite-candidates-from-gate-c.ts</code>
-          ), then on each row set <code>claim_support=supports</code> only if the paper
-          backs the S-P-O, then Approve. Never bulk-invent supports.
+          ), then on each Evidence row set the inline <strong>Claim support</strong>{" "}
+          dropdown to Supports only if the paper backs the S-P-O (also under Details).
+          Approve stays disabled until eligible. Never bulk-invent supports.
         </p>
         <p className="isi-auth-links">
           <a href="/curation?hsi=cite#import">Open /curation · HSI cite filter</a>

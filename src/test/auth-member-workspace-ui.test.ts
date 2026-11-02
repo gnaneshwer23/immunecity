@@ -24,6 +24,10 @@ describe("Auth member workspace UI", () => {
     expect(src).toContain("Three dimensions stay separate");
     expect(src).toContain("ScientificReviewQueuePanel");
     expect(src).toContain("OntologyMappingPanel");
+    // Gate C cite: claim_support must be visible on the row (not only behind Details)
+    expect(src).toContain("isi-curation-claim-inline");
+    expect(src).toContain("Set supports first");
+    expect(src).toContain("hsi-cite-approve-path");
   });
 
   it("review and ontology panels drop nested card dumps", () => {

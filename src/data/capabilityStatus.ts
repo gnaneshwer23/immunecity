@@ -66,9 +66,10 @@ export const CAPABILITY_FEATURES: readonly CapabilityFeature[] = [
     id: "evidence-curation",
     name: "Evidence curation",
     page: "evidence",
-    description: "Relationship-level citation review with claim_support; coverage still sparse.",
+    description:
+      "Relationship-level citation review with inline claim_support on /curation; Approve gated until verified+mapped+supports. Gate C cite coverage still sparse (0 public approved supports as of 2026-11).",
     status: "partial",
-    statusAsOf: "2026-04",
+    statusAsOf: "2026-11",
     relatedAppRoute: "/evidence",
     sourceOfTruth: "src/lib/immune/evidenceStatus.ts",
   },

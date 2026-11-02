@@ -25,7 +25,6 @@ import { Route as EvidenceMethodsRouteImport } from './routes/evidence-methods'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as HsiConsumeRouteImport } from './routes/hsi-consume'
-import { Route as HsiDiscoveryRouteImport } from './routes/hsi.discovery'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as MethodsRouteImport } from './routes/methods'
@@ -54,19 +53,21 @@ import { Route as CommunityModerationRouteImport } from './routes/community.mode
 import { Route as CommunityNewRouteImport } from './routes/community.new'
 import { Route as CommunityNotificationsRouteImport } from './routes/community.notifications'
 import { Route as CommunitySavedRouteImport } from './routes/community.saved'
+import { Route as DiscoveryIndexRouteImport } from './routes/discovery.index'
+import { Route as DiscoveryAlertsRouteImport } from './routes/discovery.alerts'
+import { Route as DiscoveryOnboardingRouteImport } from './routes/discovery.onboarding'
+import { Route as DiscoveryProfileRouteImport } from './routes/discovery.profile'
+import { Route as HsiDiscoveryRouteImport } from './routes/hsi.discovery'
 import { Route as MechanismIndexRouteImport } from './routes/mechanism.index'
 import { Route as MechanismIdRouteImport } from './routes/mechanism.$id'
 import { Route as PipelineIndexRouteImport } from './routes/pipeline.index'
 import { Route as PipelineDiseaseRouteImport } from './routes/pipeline.$disease'
 import { Route as ApiAskPrepareRouteImport } from './routes/api/ask.prepare'
+import { Route as ApiCronDiscoveryMonitorRouteImport } from './routes/api/cron/discovery-monitor'
 import { Route as CommunityPostPostIdRouteImport } from './routes/community.post.$postId'
 import { Route as CommunityProfileIndexRouteImport } from './routes/community.profile.index'
 import { Route as CommunityProfileUserIdRouteImport } from './routes/community.profile.$userId'
 import { Route as CommunityTopicSlugRouteImport } from './routes/community.topic.$slug'
-import { Route as DiscoveryIndexRouteImport } from './routes/discovery.index'
-import { Route as DiscoveryOnboardingRouteImport } from './routes/discovery.onboarding'
-import { Route as DiscoveryProfileRouteImport } from './routes/discovery.profile'
-import { Route as DiscoveryAlertsRouteImport } from './routes/discovery.alerts'
 import { Route as DiscoveryGapsIndexRouteImport } from './routes/discovery.gaps.index'
 import { Route as DiscoveryGapsGapIdRouteImport } from './routes/discovery.gaps.$gapId'
 
@@ -147,11 +148,6 @@ const GraphRoute = GraphRouteImport.update({
 const HsiConsumeRoute = HsiConsumeRouteImport.update({
   id: '/hsi-consume',
   path: '/hsi-consume',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HsiDiscoveryRoute = HsiDiscoveryRouteImport.update({
-  id: '/hsi/discovery',
-  path: '/hsi/discovery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -294,6 +290,31 @@ const CommunitySavedRoute = CommunitySavedRouteImport.update({
   path: '/community/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoveryIndexRoute = DiscoveryIndexRouteImport.update({
+  id: '/discovery/',
+  path: '/discovery/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryAlertsRoute = DiscoveryAlertsRouteImport.update({
+  id: '/discovery/alerts',
+  path: '/discovery/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryOnboardingRoute = DiscoveryOnboardingRouteImport.update({
+  id: '/discovery/onboarding',
+  path: '/discovery/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryProfileRoute = DiscoveryProfileRouteImport.update({
+  id: '/discovery/profile',
+  path: '/discovery/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HsiDiscoveryRoute = HsiDiscoveryRouteImport.update({
+  id: '/hsi/discovery',
+  path: '/hsi/discovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MechanismIndexRoute = MechanismIndexRouteImport.update({
   id: '/mechanism/',
   path: '/mechanism/',
@@ -319,6 +340,11 @@ const ApiAskPrepareRoute = ApiAskPrepareRouteImport.update({
   path: '/prepare',
   getParentRoute: () => ApiAskRoute,
 } as any)
+const ApiCronDiscoveryMonitorRoute = ApiCronDiscoveryMonitorRouteImport.update({
+  id: '/api/cron/discovery-monitor',
+  path: '/api/cron/discovery-monitor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommunityPostPostIdRoute = CommunityPostPostIdRouteImport.update({
   id: '/community/post/$postId',
   path: '/community/post/$postId',
@@ -337,26 +363,6 @@ const CommunityProfileUserIdRoute = CommunityProfileUserIdRouteImport.update({
 const CommunityTopicSlugRoute = CommunityTopicSlugRouteImport.update({
   id: '/community/topic/$slug',
   path: '/community/topic/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoveryIndexRoute = DiscoveryIndexRouteImport.update({
-  id: '/discovery/',
-  path: '/discovery/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoveryOnboardingRoute = DiscoveryOnboardingRouteImport.update({
-  id: '/discovery/onboarding',
-  path: '/discovery/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoveryProfileRoute = DiscoveryProfileRouteImport.update({
-  id: '/discovery/profile',
-  path: '/discovery/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoveryAlertsRoute = DiscoveryAlertsRouteImport.update({
-  id: '/discovery/alerts',
-  path: '/discovery/alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiscoveryGapsIndexRoute = DiscoveryGapsIndexRouteImport.update({
@@ -386,7 +392,6 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
-  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
@@ -413,23 +418,25 @@ export interface FileRoutesByFullPath {
   '/community/new': typeof CommunityNewRoute
   '/community/notifications': typeof CommunityNotificationsRoute
   '/community/saved': typeof CommunitySavedRoute
+  '/discovery/alerts': typeof DiscoveryAlertsRoute
+  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
+  '/discovery/profile': typeof DiscoveryProfileRoute
+  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas/': typeof AtlasIndexRoute
   '/community/': typeof CommunityIndexRoute
+  '/discovery/': typeof DiscoveryIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
+  '/api/cron/discovery-monitor': typeof ApiCronDiscoveryMonitorRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
-  '/community/profile/': typeof CommunityProfileIndexRoute
-  '/discovery/': typeof DiscoveryIndexRoute
-  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
-  '/discovery/profile': typeof DiscoveryProfileRoute
-  '/discovery/alerts': typeof DiscoveryAlertsRoute
-  '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
   '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
+  '/community/profile/': typeof CommunityProfileIndexRoute
+  '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -447,7 +454,6 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
-  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
@@ -474,23 +480,25 @@ export interface FileRoutesByTo {
   '/community/new': typeof CommunityNewRoute
   '/community/notifications': typeof CommunityNotificationsRoute
   '/community/saved': typeof CommunitySavedRoute
+  '/discovery/alerts': typeof DiscoveryAlertsRoute
+  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
+  '/discovery/profile': typeof DiscoveryProfileRoute
+  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas': typeof AtlasIndexRoute
   '/community': typeof CommunityIndexRoute
+  '/discovery': typeof DiscoveryIndexRoute
   '/mechanism': typeof MechanismIndexRoute
   '/pipeline': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
+  '/api/cron/discovery-monitor': typeof ApiCronDiscoveryMonitorRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
-  '/community/profile': typeof CommunityProfileIndexRoute
-  '/discovery': typeof DiscoveryIndexRoute
-  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
-  '/discovery/profile': typeof DiscoveryProfileRoute
-  '/discovery/alerts': typeof DiscoveryAlertsRoute
-  '/discovery/gaps': typeof DiscoveryGapsIndexRoute
   '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
+  '/community/profile': typeof CommunityProfileIndexRoute
+  '/discovery/gaps': typeof DiscoveryGapsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -510,7 +518,6 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
-  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/insights': typeof InsightsRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
@@ -537,23 +544,25 @@ export interface FileRoutesById {
   '/community/new': typeof CommunityNewRoute
   '/community/notifications': typeof CommunityNotificationsRoute
   '/community/saved': typeof CommunitySavedRoute
+  '/discovery/alerts': typeof DiscoveryAlertsRoute
+  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
+  '/discovery/profile': typeof DiscoveryProfileRoute
+  '/hsi/discovery': typeof HsiDiscoveryRoute
   '/mechanism/$id': typeof MechanismIdRoute
   '/pipeline/$disease': typeof PipelineDiseaseRoute
   '/atlas/': typeof AtlasIndexRoute
   '/community/': typeof CommunityIndexRoute
+  '/discovery/': typeof DiscoveryIndexRoute
   '/mechanism/': typeof MechanismIndexRoute
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
+  '/api/cron/discovery-monitor': typeof ApiCronDiscoveryMonitorRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
-  '/community/profile/': typeof CommunityProfileIndexRoute
-  '/discovery/': typeof DiscoveryIndexRoute
-  '/discovery/onboarding': typeof DiscoveryOnboardingRoute
-  '/discovery/profile': typeof DiscoveryProfileRoute
-  '/discovery/alerts': typeof DiscoveryAlertsRoute
-  '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
   '/discovery/gaps/$gapId': typeof DiscoveryGapsGapIdRoute
+  '/community/profile/': typeof CommunityProfileIndexRoute
+  '/discovery/gaps/': typeof DiscoveryGapsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -573,7 +582,6 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/hsi-consume'
-    | '/hsi/discovery'
     | '/insights'
     | '/learn'
     | '/methods'
@@ -600,23 +608,25 @@ export interface FileRouteTypes {
     | '/community/new'
     | '/community/notifications'
     | '/community/saved'
+    | '/discovery/alerts'
+    | '/discovery/onboarding'
+    | '/discovery/profile'
+    | '/hsi/discovery'
     | '/mechanism/$id'
     | '/pipeline/$disease'
     | '/atlas/'
     | '/community/'
+    | '/discovery/'
     | '/mechanism/'
     | '/pipeline/'
     | '/api/ask/prepare'
+    | '/api/cron/discovery-monitor'
     | '/community/post/$postId'
     | '/community/profile/$userId'
     | '/community/topic/$slug'
-    | '/community/profile/'
-    | '/discovery/'
-    | '/discovery/onboarding'
-    | '/discovery/profile'
-    | '/discovery/alerts'
-    | '/discovery/gaps/'
     | '/discovery/gaps/$gapId'
+    | '/community/profile/'
+    | '/discovery/gaps/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -634,7 +644,6 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/hsi-consume'
-    | '/hsi/discovery'
     | '/insights'
     | '/learn'
     | '/methods'
@@ -661,23 +670,25 @@ export interface FileRouteTypes {
     | '/community/new'
     | '/community/notifications'
     | '/community/saved'
+    | '/discovery/alerts'
+    | '/discovery/onboarding'
+    | '/discovery/profile'
+    | '/hsi/discovery'
     | '/mechanism/$id'
     | '/pipeline/$disease'
     | '/atlas'
     | '/community'
+    | '/discovery'
     | '/mechanism'
     | '/pipeline'
     | '/api/ask/prepare'
+    | '/api/cron/discovery-monitor'
     | '/community/post/$postId'
     | '/community/profile/$userId'
     | '/community/topic/$slug'
-    | '/community/profile'
-    | '/discovery'
-    | '/discovery/onboarding'
-    | '/discovery/profile'
-    | '/discovery/alerts'
-    | '/discovery/gaps'
     | '/discovery/gaps/$gapId'
+    | '/community/profile'
+    | '/discovery/gaps'
   id:
     | '__root__'
     | '/'
@@ -696,7 +707,6 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/hsi-consume'
-    | '/hsi/discovery'
     | '/insights'
     | '/learn'
     | '/methods'
@@ -723,23 +733,25 @@ export interface FileRouteTypes {
     | '/community/new'
     | '/community/notifications'
     | '/community/saved'
+    | '/discovery/alerts'
+    | '/discovery/onboarding'
+    | '/discovery/profile'
+    | '/hsi/discovery'
     | '/mechanism/$id'
     | '/pipeline/$disease'
     | '/atlas/'
     | '/community/'
+    | '/discovery/'
     | '/mechanism/'
     | '/pipeline/'
     | '/api/ask/prepare'
+    | '/api/cron/discovery-monitor'
     | '/community/post/$postId'
     | '/community/profile/$userId'
     | '/community/topic/$slug'
-    | '/community/profile/'
-    | '/discovery/'
-    | '/discovery/onboarding'
-    | '/discovery/profile'
-    | '/discovery/alerts'
-    | '/discovery/gaps/'
     | '/discovery/gaps/$gapId'
+    | '/community/profile/'
+    | '/discovery/gaps/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -759,7 +771,6 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   GraphRoute: typeof GraphRoute
   HsiConsumeRoute: typeof HsiConsumeRoute
-  HsiDiscoveryRoute: typeof HsiDiscoveryRoute
   InsightsRoute: typeof InsightsRoute
   LearnRoute: typeof LearnRoute
   MethodsRoute: typeof MethodsRoute
@@ -784,22 +795,24 @@ export interface RootRouteChildren {
   CommunityNewRoute: typeof CommunityNewRoute
   CommunityNotificationsRoute: typeof CommunityNotificationsRoute
   CommunitySavedRoute: typeof CommunitySavedRoute
+  DiscoveryAlertsRoute: typeof DiscoveryAlertsRoute
+  DiscoveryOnboardingRoute: typeof DiscoveryOnboardingRoute
+  DiscoveryProfileRoute: typeof DiscoveryProfileRoute
+  HsiDiscoveryRoute: typeof HsiDiscoveryRoute
   MechanismIdRoute: typeof MechanismIdRoute
   PipelineDiseaseRoute: typeof PipelineDiseaseRoute
   AtlasIndexRoute: typeof AtlasIndexRoute
   CommunityIndexRoute: typeof CommunityIndexRoute
+  DiscoveryIndexRoute: typeof DiscoveryIndexRoute
   MechanismIndexRoute: typeof MechanismIndexRoute
   PipelineIndexRoute: typeof PipelineIndexRoute
+  ApiCronDiscoveryMonitorRoute: typeof ApiCronDiscoveryMonitorRoute
   CommunityPostPostIdRoute: typeof CommunityPostPostIdRoute
   CommunityProfileUserIdRoute: typeof CommunityProfileUserIdRoute
   CommunityTopicSlugRoute: typeof CommunityTopicSlugRoute
-  CommunityProfileIndexRoute: typeof CommunityProfileIndexRoute
-  DiscoveryIndexRoute: typeof DiscoveryIndexRoute
-  DiscoveryOnboardingRoute: typeof DiscoveryOnboardingRoute
-  DiscoveryProfileRoute: typeof DiscoveryProfileRoute
-  DiscoveryAlertsRoute: typeof DiscoveryAlertsRoute
-  DiscoveryGapsIndexRoute: typeof DiscoveryGapsIndexRoute
   DiscoveryGapsGapIdRoute: typeof DiscoveryGapsGapIdRoute
+  CommunityProfileIndexRoute: typeof CommunityProfileIndexRoute
+  DiscoveryGapsIndexRoute: typeof DiscoveryGapsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -914,13 +927,6 @@ declare module '@tanstack/react-router' {
       path: '/hsi-consume'
       fullPath: '/hsi-consume'
       preLoaderRoute: typeof HsiConsumeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hsi/discovery': {
-      id: '/hsi/discovery'
-      path: '/hsi/discovery'
-      fullPath: '/hsi/discovery'
-      preLoaderRoute: typeof HsiDiscoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -1119,6 +1125,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunitySavedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discovery/': {
+      id: '/discovery/'
+      path: '/discovery'
+      fullPath: '/discovery/'
+      preLoaderRoute: typeof DiscoveryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery/alerts': {
+      id: '/discovery/alerts'
+      path: '/discovery/alerts'
+      fullPath: '/discovery/alerts'
+      preLoaderRoute: typeof DiscoveryAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery/onboarding': {
+      id: '/discovery/onboarding'
+      path: '/discovery/onboarding'
+      fullPath: '/discovery/onboarding'
+      preLoaderRoute: typeof DiscoveryOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery/profile': {
+      id: '/discovery/profile'
+      path: '/discovery/profile'
+      fullPath: '/discovery/profile'
+      preLoaderRoute: typeof DiscoveryProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hsi/discovery': {
+      id: '/hsi/discovery'
+      path: '/hsi/discovery'
+      fullPath: '/hsi/discovery'
+      preLoaderRoute: typeof HsiDiscoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mechanism/': {
       id: '/mechanism/'
       path: '/mechanism'
@@ -1154,6 +1195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAskPrepareRouteImport
       parentRoute: typeof ApiAskRoute
     }
+    '/api/cron/discovery-monitor': {
+      id: '/api/cron/discovery-monitor'
+      path: '/api/cron/discovery-monitor'
+      fullPath: '/api/cron/discovery-monitor'
+      preLoaderRoute: typeof ApiCronDiscoveryMonitorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/community/post/$postId': {
       id: '/community/post/$postId'
       path: '/community/post/$postId'
@@ -1180,34 +1228,6 @@ declare module '@tanstack/react-router' {
       path: '/community/topic/$slug'
       fullPath: '/community/topic/$slug'
       preLoaderRoute: typeof CommunityTopicSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discovery/': {
-      id: '/discovery/'
-      path: '/discovery'
-      fullPath: '/discovery/'
-      preLoaderRoute: typeof DiscoveryIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discovery/onboarding': {
-      id: '/discovery/onboarding'
-      path: '/discovery/onboarding'
-      fullPath: '/discovery/onboarding'
-      preLoaderRoute: typeof DiscoveryOnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discovery/profile': {
-      id: '/discovery/profile'
-      path: '/discovery/profile'
-      fullPath: '/discovery/profile'
-      preLoaderRoute: typeof DiscoveryProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discovery/alerts': {
-      id: '/discovery/alerts'
-      path: '/discovery/alerts'
-      fullPath: '/discovery/alerts'
-      preLoaderRoute: typeof DiscoveryAlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/discovery/gaps/': {
@@ -1268,7 +1288,6 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   GraphRoute: GraphRoute,
   HsiConsumeRoute: HsiConsumeRoute,
-  HsiDiscoveryRoute: HsiDiscoveryRoute,
   InsightsRoute: InsightsRoute,
   LearnRoute: LearnRoute,
   MethodsRoute: MethodsRoute,
@@ -1293,22 +1312,24 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityNewRoute: CommunityNewRoute,
   CommunityNotificationsRoute: CommunityNotificationsRoute,
   CommunitySavedRoute: CommunitySavedRoute,
+  DiscoveryAlertsRoute: DiscoveryAlertsRoute,
+  DiscoveryOnboardingRoute: DiscoveryOnboardingRoute,
+  DiscoveryProfileRoute: DiscoveryProfileRoute,
+  HsiDiscoveryRoute: HsiDiscoveryRoute,
   MechanismIdRoute: MechanismIdRoute,
   PipelineDiseaseRoute: PipelineDiseaseRoute,
   AtlasIndexRoute: AtlasIndexRoute,
   CommunityIndexRoute: CommunityIndexRoute,
+  DiscoveryIndexRoute: DiscoveryIndexRoute,
   MechanismIndexRoute: MechanismIndexRoute,
   PipelineIndexRoute: PipelineIndexRoute,
+  ApiCronDiscoveryMonitorRoute: ApiCronDiscoveryMonitorRoute,
   CommunityPostPostIdRoute: CommunityPostPostIdRoute,
   CommunityProfileUserIdRoute: CommunityProfileUserIdRoute,
   CommunityTopicSlugRoute: CommunityTopicSlugRoute,
-  CommunityProfileIndexRoute: CommunityProfileIndexRoute,
-  DiscoveryIndexRoute: DiscoveryIndexRoute,
-  DiscoveryOnboardingRoute: DiscoveryOnboardingRoute,
-  DiscoveryProfileRoute: DiscoveryProfileRoute,
-  DiscoveryAlertsRoute: DiscoveryAlertsRoute,
-  DiscoveryGapsIndexRoute: DiscoveryGapsIndexRoute,
   DiscoveryGapsGapIdRoute: DiscoveryGapsGapIdRoute,
+  CommunityProfileIndexRoute: CommunityProfileIndexRoute,
+  DiscoveryGapsIndexRoute: DiscoveryGapsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

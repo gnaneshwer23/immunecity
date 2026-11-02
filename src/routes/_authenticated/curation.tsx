@@ -25,7 +25,7 @@ import ScientificReviewQueuePanel from "@/components/immune/ScientificReviewQueu
 import HsiBridgeCurationPanel from "@/components/immune/HsiBridgeCurationPanel";
 import manifest from "@/data/citation-manifest.json";
 import relationshipQueue from "@/data/relationship-evidence-queue.json";
-import { byId, human, inn, out, relId } from "@/lib/immune/engine";
+import { byId, edgeByRel, human, inn, out, relId } from "@/lib/immune/engine";
 import { Button } from "@/components/ui/button";
 import { KG } from "@/lib/immune/engine";
 import {
@@ -663,6 +663,14 @@ function Curation() {
         title="Evidence records"
         lede="Statistics and batch actions apply to the current page of records. Keyset pagination keeps the browser load bounded."
       >
+        {hsiCiteOnly ? (
+          <p className="callout" role="note" data-testid="hsi-cite-approve-path">
+            HSI cite path: each row already has a mapped REL. In the Check column, set{" "}
+            <strong>Claim support → Supports</strong> after S-P-O re-read. The Decision column then
+            enables <strong>Approve</strong> (reviewer/admin only). Identifier verified alone never
+            Approves. No auto-approve.
+          </p>
+        ) : null}
         <div className="isi-auth-stats" aria-label="Page statistics">
           <div className="isi-auth-stat">
             <b>{stats.total}</b>
@@ -854,30 +862,94 @@ function Curation() {
                         <span className={`badge ${STATUS_CLASS[r.check_status] ?? ""}`}>
                           {STATUS_LABEL[r.check_status] ?? r.check_status}
                         </span>
+                        {r.relationship_id ? (
+                          <div className="xs muted" style={{ marginTop: 4 }}>
+                            Mapped{" "}
+                            <span className="mono">{r.relationship_id}</span>
+                            {r.curation === "approved" && r.claim_support === "supports"
+                              ? " · public cite"
+                              : null}
+                          </div>
+                        ) : (
+                          <div className="xs muted" style={{ marginTop: 4 }}>
+                            No relationship mapped yet
+                          </div>
+                        )}
+                        {canReview && r.relationship_id ? (
+                          <label className="field isi-curation-claim-inline" style={{ marginTop: 6, display: "block" }}>
+                            <span className="xs">Claim support</span>
+                            <select
+                              aria-label={`Claim support for ${r.evidence_id}`}
+                              data-testid={`claim-support-${r.evidence_id}`}
+                              value={r.claim_support ?? "unassessed"}
+                              onChange={(e) => patch(r.id, { claim_support: e.target.value })}
+                            >
+                              <option value="unassessed">Not assessed</option>
+                              <option value="supports">Supports</option>
+                              <option value="partial">Partial</option>
+                              <option value="contradicts">Contradicts</option>
+                              <option value="unrelated">Unrelated</option>
+                            </select>
+                          </label>
+                        ) : null}
                         <div>
                           <button
                             type="button"
                             className="nodelink xs"
+                            data-testid={`curation-details-${r.evidence_id}`}
                             onClick={() => setOpen(open === r.id ? null : r.id)}
                           >
-                            {open === r.id ? "Hide" : "Details"}
+                            {open === r.id
+                              ? "Hide details"
+                              : r.relationship_id
+                                ? "Details (remap / identifiers)"
+                                : "Details — map relationship"}
                           </button>
                         </div>
                       </td>
                       <td>
                         {canReview ? (
-                          <div className="isi-auth-btn-row">
-                            <button
-                              type="button"
-                              className={`btn sm${r.curation === "approved" ? " primary" : ""}`}
-                              onClick={() =>
-                                patch(r.id, {
-                                  curation: r.curation === "approved" ? "unreviewed" : "approved",
-                                })
-                              }
-                            >
-                              Approve
-                            </button>
+                          <div className="isi-auth-btn-row" style={{ flexWrap: "wrap", gap: 6 }}>
+                            {r.curation !== "approved" && !isReadyForSupportsApproval(r) ? (
+                              <button
+                                type="button"
+                                className="btn sm"
+                                data-testid={`assess-before-approve-${r.evidence_id}`}
+                                title="Identifier verified alone cannot Approve. Set claim_support=supports after S-P-O re-read."
+                                onClick={() => {
+                                  setOpen(r.id);
+                                  setMsg(
+                                    r.relationship_id
+                                      ? "Set Claim support → Supports on this row (or in Details), then Approve. No auto-approve."
+                                      : "Open Details → map a relationship, set claim_support=supports, then Approve.",
+                                  );
+                                }}
+                              >
+                                {r.relationship_id
+                                  ? (r.claim_support ?? "unassessed") === "supports"
+                                    ? "Needs ID verify first"
+                                    : "Set supports first"
+                                  : "Map claim first"}
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                className={`btn sm${r.curation === "approved" ? " primary" : ""}`}
+                                data-testid={`approve-${r.evidence_id}`}
+                                title={
+                                  r.curation === "approved"
+                                    ? "Click to revert to unreviewed"
+                                    : "Approve public cite (verified + mapped + supports)"
+                                }
+                                onClick={() =>
+                                  patch(r.id, {
+                                    curation: r.curation === "approved" ? "unreviewed" : "approved",
+                                  })
+                                }
+                              >
+                                Approve
+                              </button>
+                            )}
                             <button
                               type="button"
                               className={`btn sm${r.curation === "rejected" ? " primary" : ""}`}
@@ -946,17 +1018,20 @@ function Curation() {
 
 function RecordDetail({ r, isAdmin, onSave, onClaim }: { r: Rec; isAdmin: boolean; onSave: (p: { pmid: string | null; doi: string | null }) => void; onClaim: (p: { relationship_id?: string | null; claim_support?: string }) => void }) {
   const links = [...(out[r.node_id] || []), ...(inn[r.node_id] || [])];
+  const mappedEdge = r.relationship_id ? edgeByRel[r.relationship_id] : undefined;
+  const linkIds = new Set(links.map((l) => relId(l)));
   const [pmid, setPmid] = useState(r.pmid ?? "");
   const [doi, setDoi] = useState(r.doi ?? "");
   const d = r.check_detail || {};
   const cands: any[] = d.candidates || (d.candidate ? [d.candidate] : []);
   return (
-    <div className="ev-diff">
+    <div className="ev-diff" data-testid="curation-record-detail">
       <div className="ev-col">
         <h5>Manifest</h5>
         <dl>
           <dt>Status</dt><dd>{r.manifest_status}</dd>
           <dt>Reference</dt><dd>{r.source_ref ?? "—"}</dd>
+          <dt>Evidence id</dt><dd className="mono">{r.evidence_id}</dd>
           <dt>Search hint</dt><dd>{r.search_query ? <a href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(r.search_query)}`} target="_blank" rel="noreferrer">{r.search_query}</a> : "—"}</dd>
           {d.term ? <><dt>Query used</dt><dd className="mono">{d.term}</dd></> : null}
           {d.reason ? <><dt>Note</dt><dd>{d.reason}</dd></> : null}
@@ -977,17 +1052,40 @@ function RecordDetail({ r, isAdmin, onSave, onClaim }: { r: Rec; isAdmin: boolea
           ) : null}
         </div>
       ))}
-      <div className="ev-col">
-        <h5>Claim mapping</h5>
-        <p className="xs muted" style={{ marginBottom: 8 }}>A source only supports a link once it is mapped to that exact directional claim and its support is assessed.</p>
+      <div className="ev-col" id={`claim-mapping-${r.id}`}>
+        <h5>Claim mapping (required before Approve)</h5>
+        <p className="xs muted" style={{ marginBottom: 8 }}>
+          Set <strong>Claim support → Supports</strong> only after re-reading the paper against the mapped S-P-O.
+          Approve stays blocked until then. No auto-approve.
+        </p>
+        {mappedEdge ? (
+          <p className="xs" style={{ marginBottom: 8 }} role="status">
+            Mapped claim: <b>{byId[mappedEdge.subject_id]?.name}</b> {human(mappedEdge.relation)}{" "}
+            <b>{byId[mappedEdge.object_id]?.name}</b>
+            <span className="mono muted"> · {r.relationship_id}</span>
+          </p>
+        ) : null}
         <label className="field">Relationship
           <select value={r.relationship_id ?? ""} disabled={!isAdmin} onChange={(e) => onClaim({ relationship_id: e.target.value || null })}>
             <option value="">Concept-level only (no link claim)</option>
+            {r.relationship_id && mappedEdge && !linkIds.has(r.relationship_id) ? (
+              <option value={r.relationship_id}>
+                {byId[mappedEdge.subject_id]?.name} {human(mappedEdge.relation)} {byId[mappedEdge.object_id]?.name}
+              </option>
+            ) : null}
+            {r.relationship_id && !mappedEdge && !linkIds.has(r.relationship_id) ? (
+              <option value={r.relationship_id}>{r.relationship_id}</option>
+            ) : null}
             {links.map((l) => <option key={relId(l)} value={relId(l)}>{byId[l.subject_id]?.name} {human(l.relation)} {byId[l.object_id]?.name}</option>)}
           </select>
         </label>
         <label className="field" style={{ marginTop: 8 }}>Claim support
-          <select value={r.claim_support ?? "unassessed"} disabled={!isAdmin || !r.relationship_id} onChange={(e) => onClaim({ claim_support: e.target.value })}>
+          <select
+            data-testid={`claim-support-detail-${r.evidence_id}`}
+            value={r.claim_support ?? "unassessed"}
+            disabled={!isAdmin || !r.relationship_id}
+            onChange={(e) => onClaim({ claim_support: e.target.value })}
+          >
             <option value="unassessed">Not assessed</option>
             <option value="supports">Supports (counts as reviewed support once approved)</option>
             <option value="partial">Partial — counterevidence, not reviewed support</option>
@@ -995,6 +1093,11 @@ function RecordDetail({ r, isAdmin, onSave, onClaim }: { r: Rec; isAdmin: boolea
             <option value="unrelated">Does not address it</option>
           </select>
         </label>
+        {!r.relationship_id ? (
+          <p className="xs muted" style={{ marginTop: 8 }} role="status">
+            Map a relationship above to enable Claim support. HSI cite rows should already be mapped.
+          </p>
+        ) : null}
         {(r.claim_support === "partial" || r.claim_support === "contradicts") && (
           <p className="xs muted" style={{ marginTop: 8 }} role="status">
             This assessment is counterevidence for Ask and the inspector. It does not count as reviewed support, even if the record is later approved.

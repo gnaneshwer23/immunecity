@@ -19,7 +19,7 @@ const TOC = [
   { id: "next", label: "Get started" },
 ];
 
-export const Route = createFileRoute("/discovery")({
+export const Route = createFileRoute("/discovery/")({
   head: () =>
     seoHead({
       title: `Research Discovery Radar | ${PRODUCT_NAME}`,

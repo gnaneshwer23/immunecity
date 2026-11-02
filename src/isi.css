@@ -903,6 +903,15 @@ textarea.community-input { min-height: 120px; padding: 10px; }
 .isi-auth-table-wrap:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .isi-auth-table { margin: 0; width: 100%; }
 .isi-auth-table th, .isi-auth-table td { padding: 8px 10px; vertical-align: top; }
+/* Gate C cite: claim_support on the Check column (not Details-only) */
+.isi-curation-claim-inline {
+  max-width: 11rem;
+}
+.isi-curation-claim-inline select {
+  width: 100%;
+  margin-top: 2px;
+  font-size: 12px;
+}
 .isi-auth-pager {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: var(--isi-space-3); margin-top: var(--isi-space-3);
