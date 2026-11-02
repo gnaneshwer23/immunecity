@@ -1,31 +1,37 @@
 {
   "schemaVersion": "hsi-gap-report-1",
-  "generatedAt": "2026-11-01T21:57:56.514Z",
+  "generatedAt": "2026-11-02T18:35:30.191Z",
   "summary": {
-    "seedEdges": 79,
-    "bridgeCandidates": 18,
+    "seedEdges": 88,
+    "bridgeCandidates": 22,
     "gradeCounts": {
       "established": 0,
-      "uncertain": 68,
+      "uncertain": 77,
       "unexplored": 11
     },
     "claimsMappedToIsi": 13,
     "claimsMappedToAksh": 22,
-    "claimsWithDurableLocator": 66,
+    "claimsWithDurableLocator": 75,
     "loinc": {
-      "edgeCount": 79,
+      "edgeCount": 88,
       "claimsWithLoincMarker": 8,
       "markersWithLoinc": 7,
       "markersMissingLoinc": 1
     },
     "edgeTypesInUse": [
       "associated_with",
+      "associates_neuroimmune",
       "biomarker_of",
       "bridges_domain",
       "contributes_to",
       "drives",
       "inhibits",
+      "modulates_immune",
+      "produces",
+      "produces_metabolite_sensed_by",
       "risk_factor_for",
+      "signals_via_axis",
+      "suppresses_peripheral_inflammation",
       "treats",
       "upregulates",
       "worsens"
@@ -37,7 +43,10 @@
       "t2d"
     ],
     "unusedEdgeTypes": [
-      "downregulates"
+      "downregulates",
+      "activates",
+      "suppresses",
+      "differentiates_into"
     ],
     "unusedDomains": [
       "general"
@@ -743,6 +752,32 @@
       ]
     },
     {
+      "claimId": "HSI-C-SSC-016",
+      "edgeId": "HSI-E-SSC-016",
+      "assertion": "Systemic sclerosis pathogenesis is framed by early vascular injury alongside immune dysregulation and fibrosis (review-level triad neighbourhood — associative; not a full SSc atlas; not CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-SSC-017",
+      "edgeId": "HSI-E-SSC-017",
+      "assertion": "Systemic sclerosis is a prototypic multisystem fibrotic disorder in which fibroblast activation and TGF-β pathway signalling are central pathogenetic themes (review-level fibrosis neighbourhood — associative; not dosing CDS).",
+      "domain": "autoimmunity",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
       "claimId": "HSI-C-GUT-001",
       "edgeId": "HSI-E-GUT-001",
       "assertion": "Indigenous Clostridium clusters IV and XIVa promote accumulation of colonic Foxp3+ regulatory T cells (mouse gut–immune neighbourhood seed — not CDS; not Stage 1 RA lock).",
@@ -899,6 +934,32 @@
       ]
     },
     {
+      "claimId": "HSI-C-GUT-013",
+      "edgeId": "HSI-E-GUT-013",
+      "assertion": "Segmented filamentous bacteria can induce intestinal Th17 cells (microbiota→Th17 hop — mouse; hypothesized competing neighbourhood alongside SCFA Th17 promote/inhibit frames; not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-GUT-014",
+      "edgeId": "HSI-E-GUT-014",
+      "assertion": "Microbiota-derived tryptophan catabolites engage aryl hydrocarbon receptor signalling and help balance mucosal reactivity via interleukin-22 (AhR hop beyond SCFA-only neighbourhood — mouse; not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
       "claimId": "HSI-C-NI-001",
       "edgeId": "HSI-E-NI-001",
       "assertion": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
@@ -1040,6 +1101,71 @@
         "loinc_marker",
         "gate_c_approved"
       ]
+    },
+    {
+      "claimId": "HSI-C-NI-012",
+      "edgeId": "HSI-E-NI-012",
+      "assertion": "Resting microglial cells continuously survey brain parenchyma with highly dynamic processes (CNS-resident myeloid hop — complementary to vagus reflex; not an MS/neurodegeneration atlas; not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-013",
+      "edgeId": "HSI-E-NI-013",
+      "assertion": "Systemic infections and peripheral inflammation can modulate chronic CNS inflammatory and neurodegenerative processes (immune-to-brain neighbourhood frame — review-level; not a clinical cure claim).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-014",
+      "edgeId": "HSI-E-NI-014",
+      "assertion": "The blood–brain barrier both separates and reconnects the immune and central nervous systems via regulated cytokine/cell exchange and immunomodulatory signalling (BBB interface neighbourhood — not CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-015",
+      "edgeId": "HSI-E-NI-015",
+      "assertion": "Interleukin-1α can cross the blood–brain barrier via saturable transport (and related extracellular pathways) — mechanistic BBB cytokine hop (rodent; not human dosing CDS).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
+    },
+    {
+      "claimId": "HSI-C-NI-016",
+      "edgeId": "HSI-E-NI-016",
+      "assertion": "Cerebral microglia can recruit monocytes into the brain in response to tumour necrosis factor-α signalling during peripheral organ inflammation (microglia–peripheral inflammation hop — mouse; hypothesized translational breadth only).",
+      "domain": "immuno_metabolic",
+      "hsiGrade": "uncertain",
+      "missing": [
+        "isi_relationship_id",
+        "aksh_node_id",
+        "loinc_marker",
+        "gate_c_approved"
+      ]
     }
   ],
   "bridgeShortlist": [
@@ -1170,6 +1296,15 @@
       "matchKind": "unspecified"
     },
     {
+      "edgeId": "HSI-E-GUT-014",
+      "claimId": "HSI-C-GUT-014",
+      "assertion": "Microbiota-derived tryptophan catabolites engage aryl hydrocarbon receptor signalling and help balance mucosal reactivity via interleukin-22 (AhR hop beyond SCFA-only neighbourhood — mouse; not CDS).",
+      "subjectLabel": "Microbiota tryptophan catabolites (AhR ligands)",
+      "objectLabel": "Mucosal IL-22 / reactivity balance",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
       "edgeId": "HSI-E-NI-001",
       "claimId": "HSI-C-NI-001",
       "assertion": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
@@ -1204,6 +1339,33 @@
       "objectLabel": "Macrophage TNF synthesis / release",
       "suggestedIsiRelationshipId": null,
       "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-NI-012",
+      "claimId": "HSI-C-NI-012",
+      "assertion": "Resting microglial cells continuously survey brain parenchyma with highly dynamic processes (CNS-resident myeloid hop — complementary to vagus reflex; not an MS/neurodegeneration atlas; not CDS).",
+      "subjectLabel": "Resting / surveying microglia",
+      "objectLabel": "Brain parenchyma immune surveillance",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-NI-013",
+      "claimId": "HSI-C-NI-013",
+      "assertion": "Systemic infections and peripheral inflammation can modulate chronic CNS inflammatory and neurodegenerative processes (immune-to-brain neighbourhood frame — review-level; not a clinical cure claim).",
+      "subjectLabel": "Systemic infection / peripheral inflammation",
+      "objectLabel": "CNS inflammatory / neurodegenerative tone",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
+    },
+    {
+      "edgeId": "HSI-E-NI-014",
+      "claimId": "HSI-C-NI-014",
+      "assertion": "The blood–brain barrier both separates and reconnects the immune and central nervous systems via regulated cytokine/cell exchange and immunomodulatory signalling (BBB interface neighbourhood — not CDS).",
+      "subjectLabel": "Blood–brain barrier (neuroimmune interface)",
+      "objectLabel": "Peripheral immune ↔ CNS communication axis",
+      "suggestedIsiRelationshipId": null,
+      "matchKind": "unspecified"
     }
   ],
   "isiRelMapping": {
@@ -1215,7 +1377,7 @@
     "curated": 13,
     "acceptedForCuration": 0,
     "bridgeCandidatesCovered": 6,
-    "bridgeCandidatesTotal": 18,
+    "bridgeCandidatesTotal": 22,
     "autoApproveIntoKg": false
   },
   "akshNodeMapping": {

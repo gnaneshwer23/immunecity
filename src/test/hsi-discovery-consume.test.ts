@@ -131,18 +131,18 @@ describe("HSI Discovery consume honesty", () => {
     }
   });
 
-  it("vendored index notCds; partner lock named Apolo Pharma OK", () => {
+  it("vendored index notCds; partner remains a hypothetical fixture without a legal pilot", () => {
     const index = loadVendor<Record<string, unknown>>("index.json");
     const lock = loadVendor<Record<string, unknown>>("hsi-partner-lock.json");
     assertHonestyFlags(index as never, "index");
     assertHonestyFlags(lock as never, "lock", { requireNotCds: false });
     expect(lock.partnerSigned).toBe(true);
-    expect(lock.legalBinding).toBe(true);
-    expect(lock.lockedPilot).toBe(true);
-    expect(lock.isHypothetical).toBe(false);
-    expect(lock.agreementKind).toBe("legal_mou");
+    expect(lock.legalBinding).toBe(false);
+    expect(lock.lockedPilot).toBe(false);
+    expect(lock.isHypothetical).toBe(true);
+    expect(lock.agreementKind).toBe("hypothetical_test_only");
     expect((lock.partner as { id?: string } | undefined)?.id).toBe(
-      "partner:apolo-pharma",
+      "test:hypothetical-isi-pilot-partner",
     );
   });
 

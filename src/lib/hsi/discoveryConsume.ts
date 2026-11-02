@@ -89,6 +89,8 @@ export type PartnerLock = HonestyFlags & {
 export type PilotEvidencePack = {
   schemaVersion?: string;
   notCds?: boolean;
+  partnerSigned?: boolean;
+  lockedPilot?: boolean;
   disease?: string;
   researchQuestion?: string;
   ask?: unknown;
@@ -210,7 +212,7 @@ export function assertHonestyFlags(
   }
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
+async function fetchHttpJson<T>(url: string): Promise<T> {
   const res = await fetch(url, {
     headers: { Accept: "application/json" },
   });
@@ -248,7 +250,14 @@ export type ConsumeLoadResult = {
 async function tryLoadFromBase(
   base: string,
   origin?: string,
+  readArtifact?: (file: string) => Promise<unknown>,
 ): Promise<ConsumeLoadResult> {
+  async function fetchJson<T>(url: string): Promise<T> {
+    if (base === LOCAL_HSI_DISCOVERY_BASE && readArtifact) {
+      return await readArtifact(url.split("/").at(-1)!) as T;
+    }
+    return fetchHttpJson<T>(url);
+  }
   const abs = (file: string) => {
     if (base.startsWith("http")) return `${base}/${file}`;
     const root = origin?.replace(/\/$/, "") ?? "";
@@ -295,11 +304,14 @@ async function tryLoadFromBase(
   const pilotPack = await fetchJson<PilotEvidencePack>(
     abs("hsi-pilot-evidence-pack.json"),
   );
-  if (pilotPack.notCds === false) {
-    throw new Error("pilot-pack: notCds must not be false");
+  // The pack repeats partner booleans; legal/fixture details live in the lock.
+  assertHonestyFlags({ ...pilotPack, partnerSigned: undefined }, "pilot-pack");
+  if (pilotPack.partnerSigned !== partnerLock.partnerSigned || pilotPack.lockedPilot !== partnerLock.lockedPilot) {
+    throw new Error("pilot-pack: partner flags differ from the validated partner lock");
   }
 
   const gateC = await fetchJson<GateCChecklist>(abs("gate-c-checklist.json"));
+  assertHonestyFlags(gateC, "gate-c-checklist");
 
   const byPriority = new Map<string, number>(
     LOAD_PRIORITY_ORDER.map((p, i) => [p, i]),
@@ -377,6 +389,8 @@ async function tryLoadFromBase(
 export async function loadHsiDiscoveryConsume(opts?: {
   origin?: string;
   preferLocal?: boolean;
+  /** Bundled snapshots avoid SSR self-fetch and private GitHub runtime access. */
+  readArtifact?: (file: string) => Promise<unknown>;
 }): Promise<ConsumeLoadResult> {
   const remote = hsiArtifactBaseUrl();
   const local = LOCAL_HSI_DISCOVERY_BASE;
@@ -384,8 +398,10 @@ export async function loadHsiDiscoveryConsume(opts?: {
 
   if (opts?.preferLocal) {
     try {
-      return await tryLoadFromBase(local, origin);
-    } catch {
+      return await tryLoadFromBase(local, origin, opts.readArtifact);
+    } catch (error) {
+      // An invalid bundled release must fail closed, not silently switch releases.
+      if (opts.readArtifact) throw error;
       return await tryLoadFromBase(remote, origin);
     }
   }
@@ -394,7 +410,7 @@ export async function loadHsiDiscoveryConsume(opts?: {
     return await tryLoadFromBase(remote, origin);
   } catch (remoteErr) {
     try {
-      return await tryLoadFromBase(local, origin);
+      return await tryLoadFromBase(local, origin, opts?.readArtifact);
     } catch {
       throw remoteErr instanceof Error
         ? remoteErr

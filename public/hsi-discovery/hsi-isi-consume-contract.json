@@ -6,16 +6,16 @@
   "autoApproveIntoKg": false,
   "containsPhi": false,
   "partnerSigned": true,
-  "lockedPilot": true,
-  "productionPartnerSigned": true,
-  "agreementKind": "legal_mou",
-  "legalBinding": true,
-  "isHypothetical": false,
-  "notALegalAgreement": false,
-  "testPilotMode": false,
-  "testFixtureBanner": null,
+  "lockedPilot": false,
+  "productionPartnerSigned": false,
+  "agreementKind": "hypothetical_test_only",
+  "legalBinding": false,
+  "isHypothetical": true,
+  "notALegalAgreement": true,
+  "testPilotMode": true,
+  "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
   "allowHypotheticalPartnerEnv": "ALLOW_HYPOTHETICAL_PARTNER",
-  "generatedAt": "2026-11-01T21:57:56.514Z",
+  "generatedAt": "2026-11-02T18:35:30.191Z",
   "package": "hsi-core",
   "outputsManifestSchema": "hsi-outputs-manifest-1",
   "compatibility": {
@@ -27,11 +27,11 @@
       "Do not edit immunecity from the hsi-core workspace — consume published exports only.",
       "HSI Neon is red-wave only; Gate C approve+supports stays in ISI Neon autumn-snow (out of repo).",
       "Manifest invariants: notCds=true, autoApproveIntoKg=false, autoSurfaceCds=false.",
-      "Partner lock at publish: scopeLocked=true, partnerSigned=true, lockedPilot=true, agreementKind=legal_mou, legalBinding=true, isHypothetical=false.",
-      "No hypothetical fixture active.",
+      "Partner lock at publish: scopeLocked=true, partnerSigned=true, lockedPilot=false, agreementKind=hypothetical_test_only, legalBinding=false, isHypothetical=true.",
+      "TEST FIXTURE — replace before real pilot Production ISI must ignore partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true. Swap via src/hypotheticalPartnerFixture.ts.",
       "Vertical: dual_track · activeScope=ra-tnf · prdMvpTarget=ssc-tfh-b-il21.",
       "Technical adapter spikes (RDKit/OpenMM/REINVENT4/ESM) are optional_proposal — do not block ISI Discovery core load.",
-      "Further hsi-core BUILD NEXT without a real named partner should not invent more adapter spikes — prefer real partnerNamed or out-of-repo ISI wiring."
+      "P1.6 curator UX + P1.7 Gate C decisions dry-run/fixtures shipped (examples/gate-c-decisions/*; hypothetical ≠ production). Next: live Apolo Gate C on immunecity autumn-snow → bun run curator-ux --decisions <export> — still no auto-approve / no hsiGrade flip."
     ]
   },
   "vertical": {
@@ -168,7 +168,7 @@
         "partner_readiness"
       ],
       "autoApproveIntoKg": false,
-      "notes": "scopeLocked=true; fixture may set partnerSigned under hypothetical_test_only; lockedPilot requires legalBinding. Do not invent MoU."
+      "notes": "scopeLocked=true; named Apolo Pharma may set partnerSigned=true + legalBinding=true → lockedPilot=true; fixture path uses hypothetical_test_only. Do not invent MoU contacts."
     },
     {
       "manifestKey": "verticalDecisionJson",
@@ -224,7 +224,7 @@
         "partner_readiness"
       ],
       "autoApproveIntoKg": false,
-      "notes": "Stage 1 acceptance pass/fail/pending — fixture partnerSigned is path-testing; lockedPilot still false until legalBinding."
+      "notes": "Stage 1 acceptance pass/fail/pending — Apolo named path may show lockedPilot=true + licensing pass; fixture path keeps lockedPilot=false until legalBinding."
     },
     {
       "manifestKey": "pilotWalkthroughMd",
@@ -236,7 +236,7 @@
         "ask_map_review"
       ],
       "autoApproveIntoKg": false,
-      "notes": "Partner session script for RA/anti-TNF scope."
+      "notes": "Partner session script for RA/anti-TNF scope (P0.6 Apolo hygiene: named lock + 48/48 clearance + lockedPilot)."
     },
     {
       "manifestKey": "gapReportJson",
@@ -245,10 +245,23 @@
       "loadPriority": "recommended_secondary",
       "consumerSurfaces": [
         "ask_map_review",
-        "validate"
+        "validate",
+        "gate_c_queue"
       ],
       "autoApproveIntoKg": false,
-      "notes": "Schema / mapping gaps for curator backlog."
+      "notes": "Schema / mapping gaps for curator backlog (P1.6 richer markdown buckets)."
+    },
+    {
+      "manifestKey": "curatorUxJson",
+      "fileName": "hsi-curator-ux.json",
+      "schemaHint": "hsi-curator-ux-1",
+      "loadPriority": "recommended_secondary",
+      "consumerSurfaces": [
+        "gate_c_queue",
+        "ask_map_review"
+      ],
+      "autoApproveIntoKg": false,
+      "notes": "P1.6/P1.7 curator UX briefing — gap buckets + Gate C queue; dry-run/fixtures in examples/gate-c-decisions; awaiting live partner session when decisions=[]; never invents outcomes / never flips hsiGrade."
     },
     {
       "manifestKey": "r2ValidationJson",
@@ -468,9 +481,9 @@
   ],
   "discoveryJsonPaths": [
     {
-      "sitePath": "site/public/discovery/index.json",
+      "sitePath": "site/public/discovery/catalogue.json",
       "regenerableFrom": "bun run outputs",
-      "role": "Discovery Centre public index (framing + file list)",
+      "role": "Discovery Centre public catalogue (framing + file list); also mirrored at site/public/discovery.json — /discovery is the product UI",
       "notCds": true
     },
     {
@@ -549,16 +562,16 @@
     "6. optional_aksh: node map + HITL cards (Aksh consumer — not ISI Discovery core)"
   ],
   "summary": {
-    "artifactCount": 31,
+    "artifactCount": 32,
     "requiredCoreCount": 4,
     "requiredPilotCount": 9,
-    "recommendedSecondaryCount": 8,
+    "recommendedSecondaryCount": 9,
     "optionalProposalCount": 8,
     "discoveryPathCount": 12
   },
   "honesty": [
     "P0.2-HSI documents ISI consume + partner flip-readiness — MoU paperwork for named partners is operator-asserted; never invent emails/phones.",
-    "Named partner partner:apolo-pharma: partnerSigned=true; legalBinding=true; lockedPilot=true; productionPartnerSigned=true. Still not CDS; Gate C never auto-approves.",
+    "Hypothetical fixture may set partnerSigned=true under agreementKind=hypothetical_test_only; productionPartnerSigned=false; lockedPilot=false while legalBinding=false.",
     "Production ISI must ignore fixture partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true.",
     "Swap / inspect partner via src/hypotheticalPartnerFixture.ts.",
     "No CDS / PHI / shared Neon (HSI = red-wave only).",

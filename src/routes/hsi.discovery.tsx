@@ -9,10 +9,10 @@ import { HsiDiscoveryLoop } from "@/components/immune/HsiDiscoveryLoop";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 import {
-  loadHsiDiscoveryConsume,
   summarizeConsume,
   type ConsumeLoadResult,
 } from "@/lib/hsi/discoveryConsume";
+import { loadVendoredHsiDiscovery } from "@/lib/hsi/vendoredDiscovery";
 
 type LoaderData =
   | { ok: true; result: ConsumeLoadResult; summary: ReturnType<typeof summarizeConsume> }
@@ -21,16 +21,7 @@ type LoaderData =
 export const Route = createFileRoute("/hsi/discovery")({
   loader: async (): Promise<LoaderData> => {
     try {
-      const origin =
-        typeof window !== "undefined"
-          ? window.location.origin
-          : process.env.VITE_SITE_ORIGIN ||
-            process.env.E2E_BASE_URL ||
-            "http://127.0.0.1:4173";
-      const result = await loadHsiDiscoveryConsume({
-        origin,
-        preferLocal: true,
-      });
+      const result = await loadVendoredHsiDiscovery();
       return { ok: true, result, summary: summarizeConsume(result) };
     } catch (e) {
       return {

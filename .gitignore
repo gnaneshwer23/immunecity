@@ -43,4 +43,5 @@ Untitled/
 
 # Playwright
 test-results/
+src/data/.hsi-sync-stamp
 playwright-report/

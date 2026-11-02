@@ -3,20 +3,20 @@
   "phase": "P0.2-HSI",
   "notCds": true,
   "containsPhi": false,
-  "generatedAt": "2026-11-01T21:57:56.514Z",
+  "generatedAt": "2026-11-02T18:35:30.191Z",
   "partnerSigned": true,
-  "lockedPilot": true,
+  "lockedPilot": false,
   "scopeLocked": true,
-  "agreementKind": "legal_mou",
-  "legalBinding": true,
-  "isHypothetical": false,
-  "testPilotMode": false,
-  "testFixtureBanner": null,
+  "agreementKind": "hypothetical_test_only",
+  "legalBinding": false,
+  "isHypothetical": true,
+  "testPilotMode": true,
+  "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
   "partner": {
-    "id": "partner:apolo-pharma",
-    "label": "Apolo Pharma",
-    "type": "named_partner",
-    "outreachStatus": "confirmed"
+    "id": "test:hypothetical-isi-pilot-partner",
+    "label": "Hypothetical ISI Pilot Partner (replace with real org)",
+    "type": "hypothetical_test_fixture",
+    "outreachStatus": "test_fixture"
   },
   "disease": "Rheumatoid arthritis",
   "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
@@ -25,91 +25,122 @@
       "id": "named_org",
       "label": "Named partner organisation",
       "requirement": "Named partner confirms disease = rheumatoid arthritis (or explicitly chooses a different disease — then re-lock scope).",
-      "status": "pass",
-      "evidence": "partner.id=partner:apolo-pharma type=named_partner legalBinding=true",
-      "blocksPartnerSigned": true
+      "status": "satisfied_by_fixture",
+      "evidence": "TEST FIXTURE partner.id=test:hypothetical-isi-pilot-partner; type=hypothetical_test_fixture; agreementKind=hypothetical_test_only. Satisfies path-testing only — replace with real org.",
+      "blocksPartnerSigned": false,
+      "pendingRealReplacementSteps": [
+        "Replace partner.id/label in src/hypotheticalPartnerFixture.ts (USE_HYPOTHETICAL_PARTNER_FIXTURE=false + REAL_PARTNER_REPLACEMENT).",
+        "Obtain written disease + question confirmation from the real org.",
+        "Do not invent emails or MoUs."
+      ]
     },
     {
       "id": "question_confirm",
       "label": "Research question confirmation",
       "requirement": "Named partner confirms or rewrites the research question in their words.",
-      "status": "pass",
-      "evidence": "Named partner confirmed/rewrote the research question in writing.",
-      "blocksPartnerSigned": true
+      "status": "satisfied_by_fixture",
+      "evidence": "Fixture reuses scope-locked engineering question for path testing — real partner must still confirm or rewrite.",
+      "blocksPartnerSigned": false,
+      "pendingRealReplacementSteps": [
+        "Ask the real partner to confirm or rewrite the anti-TNF response-heterogeneity question.",
+        "If they choose a different disease/question, re-lock scope before lockedPilot."
+      ]
     },
     {
       "id": "licensing",
       "label": "Source licensing / attribution",
       "requirement": "Agree source licensing / attribution for the partner source set.",
-      "status": "pass",
-      "evidence": "Apolo Pharma Stage 1 corpus clearance (operator-asserted 2026-11-01): partnerClearedCount=48 (oa_reuse=11, cite_metadata_pilot=37, uncleared=0). Cite-metadata pilot ≠ FT redistribution; pack PMIDs fully cleared for Stage 1 cite/OA scopes (no invented CC).",
+      "status": "pending",
+      "evidence": "hsi-source-licensing-stub.json curator-reviewed; fixture does not clear partner corpus attribution (partnerClearedCount stays 0 on hypothetical path).",
       "blocksPartnerSigned": true
     },
     {
       "id": "thresholds",
       "label": "Numeric review thresholds",
       "requirement": "Agree scientific review rubric thresholds (partner-scoped edges, competing frames, LOINC claims, Gate C pending policy, qualitative KPIs) with the partner.",
-      "status": "pass",
-      "evidence": "partner_agreed under thresholdSource=partner_agreed; partnerId=partner:apolo-pharma; replaceWithPartnerAgreedThresholds=false: minPartnerScopedEdges=12, minCompetingExplanations=4, minLoincLinkedClaims=6, gateCPendingAllowed=true, acceptanceOverallAllowed=green_with_pending. Apolo Pharma operator-agreed 2026-11-01.",
-      "blocksPartnerSigned": true
+      "status": "set_for_test",
+      "evidence": "set_for_test under thresholdSource=hypothetical_test_fixture: minPartnerScopedEdges=12, minCompetingExplanations=4, minLoincLinkedClaims=6, gateCPendingAllowed=true, acceptanceOverallAllowed=green_with_pending. replaceWithPartnerAgreedThresholds=true — real partner must re-agree.",
+      "blocksPartnerSigned": true,
+      "pendingRealReplacementSteps": [
+        "Re-agree numeric Stage 1 cut-offs with the real partner (do not treat fixture numbers as MoU KPIs).",
+        "Set thresholdSource=partner_agreed / replaceWithPartnerAgreedThresholds=false after written confirm.",
+        "Refresh hsi-pilot-review-rubric.* via bun run outputs."
+      ]
     },
     {
       "id": "shortlist_row",
       "label": "Shortlist tracking row",
       "requirement": "Record real outreach row in ISI_PILOT_PARTNER_SHORTLIST.md (org, type, region, status) — still no invented emails.",
-      "status": "pass",
-      "evidence": "docs/ISI_PILOT_PARTNER_SHORTLIST.md records Apolo Pharma (partner:apolo-pharma) confirmed — no invented emails.",
-      "blocksPartnerSigned": true
+      "status": "satisfied_by_fixture",
+      "evidence": "docs/ISI_PILOT_PARTNER_SHORTLIST.md notes hypothetical fixture row; real named org row still pending.",
+      "blocksPartnerSigned": false,
+      "pendingRealReplacementSteps": [
+        "Add a real outreach row (org, type, region, status) — never invent emails.",
+        "Remove or demote the hypothetical fixture row when replacing."
+      ]
     },
     {
       "id": "partner_signed_flip",
       "label": "Flip partnerSigned / lockedPilot",
       "requirement": "For path testing: partnerSigned may be true under hypothetical_test_only. For production: legalBinding=true → lockedPilot=true, type=named_partner.",
-      "status": "pass",
-      "evidence": "partnerSigned=true; lockedPilot=true; legalBinding=true; status=scoping; agreementKind=legal_mou. Named partner path — MoU operator-asserted; still not CDS.",
-      "blocksPartnerSigned": true
+      "status": "satisfied_by_fixture",
+      "evidence": "partnerSigned=true; lockedPilot=false; legalBinding=false; status=scope_locked; agreementKind=hypothetical_test_only. Fixture keeps lockedPilot=false.",
+      "blocksPartnerSigned": false,
+      "pendingRealReplacementSteps": [
+        "Set legalBinding=true after written confirm → lockedPilot becomes true.",
+        "Clear isHypothetical / notALegalAgreement / testPilotMode / testFixtureBanner."
+      ]
     },
     {
       "id": "real_partner_replacement",
       "label": "Replace hypothetical fixture with real org",
       "requirement": "Swap src/hypotheticalPartnerFixture.ts to a real named_partner (USE_HYPOTHETICAL_PARTNER_FIXTURE=false).",
-      "status": "pass",
-      "evidence": "Named partner active: partner:apolo-pharma (Apolo Pharma); USE_HYPOTHETICAL_PARTNER_FIXTURE=false; replaceWithRealPartner=false.",
-      "blocksPartnerSigned": false
+      "status": "pending",
+      "evidence": "Active fixture test:hypothetical-isi-pilot-partner — replaceWithRealPartner=true.",
+      "blocksPartnerSigned": false,
+      "pendingRealReplacementSteps": [
+        "USE_HYPOTHETICAL_PARTNER_FIXTURE=false",
+        "Fill REAL_PARTNER_REPLACEMENT id/label/region/contactChannel",
+        "bun run outputs"
+      ]
     },
     {
       "id": "outputs_refresh",
       "label": "Refresh outputs after sign",
       "requirement": "Re-run bun run outputs and refresh the pilot evidence pack + review rubric against the signed question.",
-      "status": "pass",
-      "evidence": "Named partner lock regenerable via bun run outputs; Discovery + immunecity vendor sync after publish.",
+      "status": "satisfied_by_fixture",
+      "evidence": "Fixture path regenerable via bun run outputs; refresh again after real partner swap.",
       "blocksPartnerSigned": false
     }
   ],
   "summary": {
     "total": 8,
-    "pass": 8,
+    "pass": 0,
     "fail": 0,
-    "pending": 0,
-    "satisfiedByFixture": 0,
-    "setForTest": 0,
-    "readyToFlipPartnerSigned": true,
-    "readyForRealPartnerReplacement": false,
-    "blockingIds": []
+    "pending": 2,
+    "satisfiedByFixture": 5,
+    "setForTest": 1,
+    "readyToFlipPartnerSigned": false,
+    "readyForRealPartnerReplacement": true,
+    "blockingIds": [
+      "licensing"
+    ]
   },
   "nextHumanActions": [
-    "Named partner active: Apolo Pharma (partner:apolo-pharma) — MoU paperwork operator-asserted; still not CDS.",
-    "Apolo Pharma Stage 1 corpus licensing clearance applied (oa_reuse + cite_metadata_pilot; pack PMIDs cleared — uncleared=0). See docs/HOW_TO_SOURCE_LICENSING.md.",
-    "Stage 1 numeric rubric thresholds are partner_agreed with Apolo Pharma (2026-11-01) — keep pack depth ≥ 12/4/6.",
-    "Keep Gate C human-only — never auto-approve into ISI product KG.",
-    "Refresh bun run outputs + re-sync immunecity public/hsi-discovery after pack depth changes.",
-    "Never invent emails, phones, or named PI contacts in code."
+    "TEST FIXTURE — replace before real pilot",
+    "Name a real partner organisation (or rewrite disease/question with them) — do not invent org/email in code.",
+    "Record outreach row in docs/ISI_PILOT_PARTNER_SHORTLIST.md when interest is real.",
+    "Agree partner attribution for the PMID corpus (ok_oa ≠ partner clearance on fixture path). See docs/HOW_TO_SOURCE_LICENSING.md.",
+    "Numeric Stage 1 thresholds are set_for_test under the hypothetical fixture — real partner must re-agree numbers before formal user testing; then refresh hsi-pilot-review-rubric.*.",
+    "Only then set legalBinding=true / lockedPilot=true via REAL_PARTNER_REPLACEMENT and re-run bun run outputs.",
+    "Production ISI must ignore fixture partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true.",
+    "ISI product wiring (immunecity consume of this contract) remains OUT OF REPO."
   ],
   "honesty": [
-    "readyToFlipPartnerSigned=true once named_partner + legalBinding + partnerSigned (Apolo Pharma path).",
+    "readyToFlipPartnerSigned stays false until a real named_partner + legalBinding path is ready.",
     "satisfied_by_fixture ≠ pass for production MoU claims.",
-    "Apolo Pharma Stage 1 KPIs are partner_agreed; licensing clearanceScope=oa_reuse|cite_metadata_pilot applied (uncleared=0).",
-    "Named partner: partnerSigned=true + legalBinding=true → lockedPilot=true; MoU operator-asserted — still not CDS / no auto Gate C.",
+    "set_for_test / pending thresholds ≠ partner-agreed KPIs — replaceWithPartnerAgreedThresholds=true until re-agreed.",
+    "partnerSigned may be true under hypothetical_test_only; lockedPilot stays false while legalBinding=false.",
     "This pack must never invent emails, phones, or named PI contacts.",
     "scopeLocked=true is engineering lock for RA/anti-TNF; dual-track secondary packs continue.",
     "Technical adapter spikes do not satisfy flipRequirements."

@@ -9,10 +9,10 @@ import { PageToc, Section } from "@/components/immune/page";
 import { PRODUCT_NAME } from "@/lib/brand";
 import { seoHead } from "@/lib/seo";
 import {
-  loadHsiDiscoveryConsume,
   summarizeConsume,
   type ConsumeLoadResult,
 } from "@/lib/hsi/discoveryConsume";
+import { loadVendoredHsiDiscovery } from "@/lib/hsi/vendoredDiscovery";
 
 const TOC = [
   { id: "honesty", label: "Honesty" },
@@ -30,17 +30,7 @@ type LoaderData =
 export const Route = createFileRoute("/hsi-consume")({
   loader: async (): Promise<LoaderData> => {
     try {
-      const origin =
-        typeof window !== "undefined"
-          ? window.location.origin
-          : process.env.VITE_SITE_ORIGIN ||
-            process.env.E2E_BASE_URL ||
-            "http://127.0.0.1:4173";
-      // Prefer local vendor during SSR (reliable).
-      const result = await loadHsiDiscoveryConsume({
-        origin,
-        preferLocal: true,
-      });
+      const result = await loadVendoredHsiDiscovery();
       return { ok: true, result, summary: summarizeConsume(result) };
     } catch (e) {
       return {

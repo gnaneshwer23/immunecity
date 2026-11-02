@@ -2,7 +2,7 @@
   "schemaVersion": "hsi-ssc-pathway-pack-1",
   "notCds": true,
   "autoApproveIntoKg": false,
-  "generatedAt": "2026-11-01T21:57:56.514Z",
+  "generatedAt": "2026-11-02T18:35:30.191Z",
   "pathway": {
     "id": "ssc-tfh-b-il21",
     "label": "SSc · CD4/Tfh–B-cell–IL-21",
@@ -25,7 +25,9 @@
       "HSI-C-SSC-012",
       "HSI-C-SSC-013",
       "HSI-C-SSC-014",
-      "HSI-C-SSC-015"
+      "HSI-C-SSC-015",
+      "HSI-C-SSC-016",
+      "HSI-C-SSC-017"
     ],
     "primaryEdgeIds": [
       "HSI-E-SSC-001",
@@ -42,7 +44,9 @@
       "HSI-E-SSC-012",
       "HSI-E-SSC-013",
       "HSI-E-SSC-014",
-      "HSI-E-SSC-015"
+      "HSI-E-SSC-015",
+      "HSI-E-SSC-016",
+      "HSI-E-SSC-017"
     ],
     "primaryPmids": [
       "30760472",
@@ -58,9 +62,11 @@
       "24129067",
       "24350901",
       "29853453",
-      "19180481"
+      "19180481",
+      "19420368",
+      "17332883"
     ],
-    "deepenPhase": "p1_ssc_depth_cxcl4_il6_ritux",
+    "deepenPhase": "p1_9_ssc_vascular_fibrosis_neighbourhood",
     "entities": [
       {
         "id": "HSI-N-ssc",
@@ -136,6 +142,16 @@
         "id": "HSI-N-ebv",
         "label": "EBV",
         "kind": "pathogen_hypothesis"
+      },
+      {
+        "id": "HSI-N-ssc-vascular-injury",
+        "label": "SSc vasculopathy / endothelial injury",
+        "kind": "phenotype"
+      },
+      {
+        "id": "HSI-N-ssc-fibroblast-tgfb",
+        "label": "SSc fibroblast / TGF-β fibrotic programme",
+        "kind": "pathway"
       }
     ]
   },
@@ -168,7 +184,7 @@
           "ontology": "CL",
           "id": "CL:0002038",
           "label": "T follicular helper cell",
-          "bindStatus": "hint_only"
+          "bindStatus": "curator_confirmed"
         }
       ],
       "markers": [
@@ -193,7 +209,7 @@
         "29514998"
       ],
       "spineNodeId": "HSI-IC-sub-tfh",
-      "notes": "PRD SSc vertical subset. CL hint only — not Gate C approved ontology bind."
+      "notes": "PRD SSc vertical subset. P2.0 curator_confirmed CL:0002038 (OLS); not Gate C claim approval / not CDS."
     },
     {
       "id": "HSI-CARD-SSC-TFH1",
@@ -237,7 +253,7 @@
           "ontology": "CL",
           "id": "CL:0000236",
           "label": "B cell",
-          "bindStatus": "hint_only"
+          "bindStatus": "curator_confirmed"
         }
       ],
       "markers": [
@@ -262,7 +278,7 @@
         "37763102"
       ],
       "spineNodeId": "HSI-IC-lin-b",
-      "notes": "CL hint only. CD21^low framing cites PMID 37763102 — not CDS."
+      "notes": "P2.0 curator_confirmed CL:0000236 (OLS). CD21^low framing cites PMID 37763102 — not CDS."
     },
     {
       "id": "HSI-CARD-SSC-PLASMABLAST",
@@ -275,7 +291,7 @@
           "ontology": "CL",
           "id": "CL:0000980",
           "label": "plasmablast",
-          "bindStatus": "hint_only"
+          "bindStatus": "curator_confirmed"
         }
       ],
       "markers": [
@@ -296,7 +312,7 @@
         "16339522"
       ],
       "spineNodeId": "HSI-IC-sub-plasmablast",
-      "notes": "Core SSc pathway object (Ricard 2019). CL hint only."
+      "notes": "Core SSc pathway object (Ricard 2019). P2.0 curator_confirmed CL:0000980 (OLS); not Gate C / not CDS."
     },
     {
       "id": "HSI-CARD-SSC-IL21",
@@ -349,7 +365,7 @@
           "ontology": "MONDO",
           "id": "MONDO:0005100",
           "label": "systemic sclerosis",
-          "bindStatus": "hint_only"
+          "bindStatus": "curator_confirmed"
         }
       ],
       "markers": [],
@@ -368,7 +384,7 @@
         "37763102"
       ],
       "spineNodeId": null,
-      "notes": "MONDO hint only. Does not replace RA Stage 1 activeScope. partnerSigned stays false."
+      "notes": "P2.0 curator_confirmed MONDO:0005100 (OLS). Does not replace RA Stage 1 activeScope. Not Gate C / not CDS."
     },
     {
       "id": "HSI-CARD-SSC-FIBROSIS",
@@ -493,7 +509,7 @@
       "edgeId": "HSI-E-SSC-002",
       "claimId": "HSI-C-SSC-002",
       "subject": "T follicular helper (Tfh) cells",
-      "predicate": "upregulates",
+      "predicate": "produces",
       "object": "IL-21",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -656,6 +672,30 @@
       "pmid": "19180481",
       "citationLabel": "Lafyatis R et al. Arthritis Rheum 2009 — B cell depletion with rituximab in patients with diffuse cutaneous systemic sclerosis.",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19180481/"
+    },
+    {
+      "edgeId": "HSI-E-SSC-016",
+      "claimId": "HSI-C-SSC-016",
+      "subject": "SSc vasculopathy / endothelial injury",
+      "predicate": "associated_with",
+      "object": "Systemic sclerosis",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "19420368",
+      "citationLabel": "Gabrielli A et al. N Engl J Med 2009 — Scleroderma.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19420368/"
+    },
+    {
+      "edgeId": "HSI-E-SSC-017",
+      "claimId": "HSI-C-SSC-017",
+      "subject": "SSc fibroblast / TGF-β fibrotic programme",
+      "predicate": "associated_with",
+      "object": "Systemic sclerosis",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "17332883",
+      "citationLabel": "Varga J, Abraham D. J Clin Invest 2007 — Systemic sclerosis: a prototypic multisystem fibrotic disorder.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17332883/"
     }
   ],
   "competingExplanations": [
@@ -841,6 +881,20 @@
       "domain": "autoimmunity",
       "isiRelationshipId": null,
       "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-SSC-016",
+      "assertion": "Systemic sclerosis pathogenesis is framed by early vascular injury alongside immune dysregulation and fibrosis (review-level triad neighbourhood — associative; not a full SSc atlas; not CDS).",
+      "domain": "autoimmunity",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-SSC-017",
+      "assertion": "Systemic sclerosis is a prototypic multisystem fibrotic disorder in which fibroblast activation and TGF-β pathway signalling are central pathogenetic themes (review-level fibrosis neighbourhood — associative; not dosing CDS).",
+      "domain": "autoimmunity",
+      "isiRelationshipId": null,
+      "akshNodeId": null
     }
   ],
   "edges": [
@@ -869,7 +923,7 @@
     },
     {
       "id": "HSI-E-SSC-002",
-      "edgeType": "upregulates",
+      "edgeType": "produces",
       "subjectId": "HSI-N-tfh",
       "subjectLabel": "T follicular helper (Tfh) cells",
       "objectId": "HSI-N-il21",
@@ -884,7 +938,7 @@
         "doi": "10.1146/annurev-immunol-031210-101400",
         "citationLabel": "Crotty S. Annu Rev Immunol 2011 — Follicular helper CD4 T cells (TFH).",
         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21314428/",
-        "notes": "Foundational Tfh→IL-21 axis (not SSc-specific). PMID 21314428 verified. Maps via ISI produces→HSI upregulates until HSI_EDGE_TYPES expands. Pairs with Ricard 2019 SSc IL-21 pathway. Gate C = human only. Not CDS.",
+        "notes": "Foundational Tfh→IL-21 axis (not SSc-specific). PMID 21314428 verified. P1.4 first-class edgeType produces (was alias ISI produces→upregulates). Pairs with Ricard 2019 SSc IL-21 pathway. Gate C = human only. Not CDS.",
         "recordedAt": "2026-11-01T17:00:00.000Z"
       },
       "bridgeCandidate": false,
@@ -1188,16 +1242,62 @@
       },
       "bridgeCandidate": false,
       "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-SSC-016",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-ssc-vascular-injury",
+      "subjectLabel": "SSc vasculopathy / endothelial injury",
+      "objectId": "HSI-N-ssc",
+      "objectLabel": "Systemic sclerosis",
+      "claimId": "HSI-C-SSC-016",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "autoimmunity",
+      "provenance": {
+        "pmid": "19420368",
+        "doi": "10.1056/NEJMra0806188",
+        "citationLabel": "Gabrielli A et al. N Engl J Med 2009 — Scleroderma.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19420368/",
+        "notes": "P1.9 SSc vasculopathy neighbourhood. PMID 19420368 verified (review). teaching=associative; do not invent vascular-therapy CDS. Complements Tfh–B–IL-21 without replacing RA ASK. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T17:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-SSC-017",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-ssc-fibroblast-tgfb",
+      "subjectLabel": "SSc fibroblast / TGF-β fibrotic programme",
+      "objectId": "HSI-N-ssc",
+      "objectLabel": "Systemic sclerosis",
+      "claimId": "HSI-C-SSC-017",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "autoimmunity",
+      "provenance": {
+        "pmid": "17332883",
+        "doi": "10.1172/JCI31139",
+        "citationLabel": "Varga J, Abraham D. J Clin Invest 2007 — Systemic sclerosis: a prototypic multisystem fibrotic disorder.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17332883/",
+        "notes": "P1.9 SSc fibrosis neighbourhood. PMID 17332883 verified (review). Complements faSScinate IL-6/TGF-β biospecimen insight without inventing anti-fibrotic CDS. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T17:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
     }
   ],
   "honesty": [
     "Dual-track option A: RA Stage 1 scopeLocked packs untouched; this pack is parallel PRD MVP depth.",
     "Discovery ASK question remains the RA / anti-TNF research question.",
-    "partnerSigned=true; lockedPilot=true; legalBinding=true; isHypothetical=false — MoU operator-asserted when named; still not CDS.",
+    "partnerSigned=true; lockedPilot=false; legalBinding=false; isHypothetical=true — MoU operator-asserted when named; still not CDS.",
     "EBV edge is hypothesized/uncertain only — do not overclaim.",
     "Cell cards carry CL·MONDO (and related) hints with bindStatus=hint_only — not full ontology bind.",
     "Not clinical decision support. autoApproveIntoKg=false.",
     "deepSeedsPresent=true because verified PMID edges landed.",
-    "P1.1 deepen: 10 neighbourhood cards · 15 edges."
+    "P1.1 deepen: 10 neighbourhood cards · 17 edges."
   ]
 }

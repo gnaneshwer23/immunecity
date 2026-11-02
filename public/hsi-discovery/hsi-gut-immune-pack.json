@@ -2,7 +2,7 @@
   "schemaVersion": "hsi-gut-immune-pack-1",
   "notCds": true,
   "autoApproveIntoKg": false,
-  "generatedAt": "2026-11-01T21:57:56.514Z",
+  "generatedAt": "2026-11-02T18:35:30.191Z",
   "pathway": {
     "id": "gut-scfa-mucosal-treg-th17",
     "label": "Gut–immune · SCFA / butyrate ↔ mucosal Treg / Th17",
@@ -22,7 +22,9 @@
       "HSI-C-GUT-009",
       "HSI-C-GUT-010",
       "HSI-C-GUT-011",
-      "HSI-C-GUT-012"
+      "HSI-C-GUT-012",
+      "HSI-C-GUT-013",
+      "HSI-C-GUT-014"
     ],
     "primaryEdgeIds": [
       "HSI-E-GUT-001",
@@ -36,7 +38,9 @@
       "HSI-E-GUT-009",
       "HSI-E-GUT-010",
       "HSI-E-GUT-011",
-      "HSI-E-GUT-012"
+      "HSI-E-GUT-012",
+      "HSI-E-GUT-013",
+      "HSI-E-GUT-014"
     ],
     "primaryPmids": [
       "21205640",
@@ -50,9 +54,11 @@
       "29163504",
       "24226773",
       "24390544",
-      "25865369"
+      "25865369",
+      "19836068",
+      "23973224"
     ],
-    "deepenPhase": "p1_3_gut_arpaia_macrophage_hif_depth",
+    "deepenPhase": "p1_9_gut_sfb_ahr_neighbourhood",
     "entities": [
       {
         "id": "HSI-N-scfa",
@@ -123,6 +129,21 @@
         "id": "HSI-N-clostridia-human-mix",
         "label": "Human Clostridia mix",
         "kind": "community"
+      },
+      {
+        "id": "HSI-N-sfb",
+        "label": "Segmented filamentous bacteria",
+        "kind": "taxon_class"
+      },
+      {
+        "id": "HSI-N-trp-catabolites-ahr",
+        "label": "Tryptophan catabolites (AhR ligands)",
+        "kind": "metabolite"
+      },
+      {
+        "id": "HSI-N-mucosal-il22-balance",
+        "label": "Mucosal IL-22 / reactivity balance",
+        "kind": "phenotype"
       }
     ]
   },
@@ -148,9 +169,9 @@
       "edgeId": "HSI-E-GUT-001",
       "claimId": "HSI-C-GUT-001",
       "subject": "Clostridium clusters IV / XIVa (gut)",
-      "predicate": "associated_with",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Colonic / mucosal Foxp3+ Treg",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -162,9 +183,9 @@
       "edgeId": "HSI-E-GUT-002",
       "claimId": "HSI-C-GUT-002",
       "subject": "Human microbiota Clostridia mix (17-strain class)",
-      "predicate": "associated_with",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Colonic / mucosal Foxp3+ Treg",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -176,9 +197,9 @@
       "edgeId": "HSI-E-GUT-003",
       "claimId": "HSI-C-GUT-003",
       "subject": "Butyrate (SCFA)",
-      "predicate": "upregulates",
+      "predicate": "produces_metabolite_sensed_by",
       "systemsPredicate": "produces_metabolite_sensed_by",
-      "systemsPredicateMapsToHsi": "upregulates",
+      "systemsPredicateMapsToHsi": "produces_metabolite_sensed_by",
       "object": "Colonic / mucosal Foxp3+ Treg",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -190,9 +211,9 @@
       "edgeId": "HSI-E-GUT-004",
       "claimId": "HSI-C-GUT-004",
       "subject": "Short-chain fatty acids (class)",
-      "predicate": "associated_with",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Colonic / mucosal Foxp3+ Treg",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -232,9 +253,9 @@
       "edgeId": "HSI-E-GUT-007",
       "claimId": "HSI-C-GUT-007",
       "subject": "Butyrate (SCFA)",
-      "predicate": "upregulates",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Intestinal epithelial barrier / tight junctions",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -246,9 +267,9 @@
       "edgeId": "HSI-E-GUT-008",
       "claimId": "HSI-C-GUT-008",
       "subject": "GPR109A (HCAR2) — butyrate / niacin receptor",
-      "predicate": "inhibits",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Colonic inflammation tone",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -260,9 +281,9 @@
       "edgeId": "HSI-E-GUT-009",
       "claimId": "HSI-C-GUT-009",
       "subject": "Butyrate (SCFA)",
-      "predicate": "upregulates",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "IL-10+ type-1 regulatory T cells (Tr1-like)",
       "evidenceGrade": "uncertain",
       "teachingStatus": "hypothesized",
@@ -274,9 +295,9 @@
       "edgeId": "HSI-E-GUT-010",
       "claimId": "HSI-C-GUT-010",
       "subject": "Commensal bacterial metabolites (SCFA neighbourhood)",
-      "predicate": "associated_with",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Peripheral Foxp3+ regulatory T cells",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -288,9 +309,9 @@
       "edgeId": "HSI-E-GUT-011",
       "claimId": "HSI-C-GUT-011",
       "subject": "Butyrate (SCFA)",
-      "predicate": "inhibits",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Intestinal macrophage HDAC activity / inflammatory tone",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -302,15 +323,43 @@
       "edgeId": "HSI-E-GUT-012",
       "claimId": "HSI-C-GUT-012",
       "subject": "SCFA (class)",
-      "predicate": "upregulates",
+      "predicate": "modulates_immune",
       "systemsPredicate": "modulates_immune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "modulates_immune",
       "object": "Intestinal epithelial HIF-supported barrier function",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
       "pmid": "25865369",
       "citationLabel": "Kelly CJ et al. Cell Host Microbe 2015 — Crosstalk between Microbiota-Derived Short-Chain Fatty Acids and Intestinal Epithelial HIF Augments Tissue Barrier Function.",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25865369/"
+    },
+    {
+      "edgeId": "HSI-E-GUT-013",
+      "claimId": "HSI-C-GUT-013",
+      "subject": "Segmented filamentous bacteria (SFB)",
+      "predicate": "upregulates",
+      "systemsPredicate": "hypothesized_gut_immune",
+      "systemsPredicateMapsToHsi": "associated_with",
+      "object": "Mucosal / intestinal Th17 cells",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "pmid": "19836068",
+      "citationLabel": "Ivanov II et al. Cell 2009 — Induction of intestinal Th17 cells by segmented filamentous bacteria.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19836068/"
+    },
+    {
+      "edgeId": "HSI-E-GUT-014",
+      "claimId": "HSI-C-GUT-014",
+      "subject": "Microbiota tryptophan catabolites (AhR ligands)",
+      "predicate": "modulates_immune",
+      "systemsPredicate": "modulates_immune",
+      "systemsPredicateMapsToHsi": "modulates_immune",
+      "object": "Mucosal IL-22 / reactivity balance",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "23973224",
+      "citationLabel": "Zelante T et al. Immunity 2013 — Tryptophan catabolites from microbiota engage aryl hydrocarbon receptor and balance mucosal reactivity via interleukin-22.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23973224/"
     }
   ],
   "competingExplanations": [
@@ -472,12 +521,26 @@
       "domain": "immuno_metabolic",
       "isiRelationshipId": null,
       "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-GUT-013",
+      "assertion": "Segmented filamentous bacteria can induce intestinal Th17 cells (microbiota→Th17 hop — mouse; hypothesized competing neighbourhood alongside SCFA Th17 promote/inhibit frames; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-GUT-014",
+      "assertion": "Microbiota-derived tryptophan catabolites engage aryl hydrocarbon receptor signalling and help balance mucosal reactivity via interleukin-22 (AhR hop beyond SCFA-only neighbourhood — mouse; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
     }
   ],
   "edges": [
     {
       "id": "HSI-E-GUT-001",
-      "edgeType": "associated_with",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-clostridia-iv-xiva",
       "subjectLabel": "Clostridium clusters IV / XIVa (gut)",
       "objectId": "HSI-N-mucosal-treg",
@@ -500,7 +563,7 @@
     },
     {
       "id": "HSI-E-GUT-002",
-      "edgeType": "associated_with",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-clostridia-human-mix",
       "subjectLabel": "Human microbiota Clostridia mix (17-strain class)",
       "objectId": "HSI-N-mucosal-treg",
@@ -523,7 +586,7 @@
     },
     {
       "id": "HSI-E-GUT-003",
-      "edgeType": "upregulates",
+      "edgeType": "produces_metabolite_sensed_by",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-mucosal-treg",
@@ -538,7 +601,7 @@
         "doi": "10.1038/nature12721",
         "citationLabel": "Furusawa Y et al. Nature 2013 — Commensal microbe-derived butyrate induces the differentiation of colonic regulatory T cells.",
         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24226770/",
-        "notes": "P1.3 primary SCFA→Treg edge. PMID 24226770 verified. Maps systemsPredicate produces_metabolite_sensed_by → HSI upregulates. Mouse / HDAC–Foxp3 mechanism — not human disease claim. Gate C = human only. Not CDS.",
+        "notes": "P1.3 primary SCFA→Treg edge. PMID 24226770 verified. P1.4 first-class edgeType produces_metabolite_sensed_by (was alias→upregulates). Mouse / HDAC–Foxp3 mechanism — not human disease claim. Gate C = human only. Not CDS.",
         "recordedAt": "2026-11-01T18:30:00.000Z"
       },
       "bridgeCandidate": true,
@@ -546,7 +609,7 @@
     },
     {
       "id": "HSI-E-GUT-004",
-      "edgeType": "associated_with",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-scfa",
       "subjectLabel": "Short-chain fatty acids (class)",
       "objectId": "HSI-N-mucosal-treg",
@@ -615,7 +678,7 @@
     },
     {
       "id": "HSI-E-GUT-007",
-      "edgeType": "upregulates",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-gut-barrier",
@@ -638,7 +701,7 @@
     },
     {
       "id": "HSI-E-GUT-008",
-      "edgeType": "inhibits",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-gpr109a",
       "subjectLabel": "GPR109A (HCAR2) — butyrate / niacin receptor",
       "objectId": "HSI-N-colonic-inflammation",
@@ -661,7 +724,7 @@
     },
     {
       "id": "HSI-E-GUT-009",
-      "edgeType": "upregulates",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-tr1-like",
@@ -684,7 +747,7 @@
     },
     {
       "id": "HSI-E-GUT-010",
-      "edgeType": "associated_with",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-commensal-metabolites",
       "subjectLabel": "Commensal bacterial metabolites (SCFA neighbourhood)",
       "objectId": "HSI-N-peripheral-treg",
@@ -707,7 +770,7 @@
     },
     {
       "id": "HSI-E-GUT-011",
-      "edgeType": "inhibits",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-intestinal-macrophage-hdac",
@@ -730,7 +793,7 @@
     },
     {
       "id": "HSI-E-GUT-012",
-      "edgeType": "upregulates",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-scfa",
       "subjectLabel": "SCFA (class)",
       "objectId": "HSI-N-epithelial-hif-barrier",
@@ -750,16 +813,63 @@
       },
       "bridgeCandidate": false,
       "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-GUT-013",
+      "edgeType": "upregulates",
+      "subjectId": "HSI-N-sfb",
+      "subjectLabel": "Segmented filamentous bacteria (SFB)",
+      "objectId": "HSI-N-mucosal-th17",
+      "objectLabel": "Mucosal / intestinal Th17 cells",
+      "claimId": "HSI-C-GUT-013",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "19836068",
+        "doi": "10.1016/j.cell.2009.09.033",
+        "citationLabel": "Ivanov II et al. Cell 2009 — Induction of intestinal Th17 cells by segmented filamentous bacteria.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19836068/",
+        "notes": "P1.9 SFB→Th17. PMID 19836068 verified. Mouse — teaching=hypothesized; keep separate from butyrate Th17 promote/inhibit; never invent IBD dosing CDS. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T18:30:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-GUT-014",
+      "edgeType": "modulates_immune",
+      "subjectId": "HSI-N-trp-catabolites-ahr",
+      "subjectLabel": "Microbiota tryptophan catabolites (AhR ligands)",
+      "objectId": "HSI-N-mucosal-il22-balance",
+      "objectLabel": "Mucosal IL-22 / reactivity balance",
+      "claimId": "HSI-C-GUT-014",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "23973224",
+        "doi": "10.1016/j.immuni.2013.08.003",
+        "citationLabel": "Zelante T et al. Immunity 2013 — Tryptophan catabolites from microbiota engage aryl hydrocarbon receptor and balance mucosal reactivity via interleukin-22.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23973224/",
+        "notes": "P1.9 AhR/IL-22 hop. PMID 23973224 verified. Mouse — teaching=associative; do not invent tryptophan-supplement CDS. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T18:30:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
     }
   ],
   "honesty": [
     "Systems secondary axis only — Discovery ASK question remains the RA / anti-TNF research question.",
     "SSc dual-track A pack untouched; RA Stage 1 scopeLocked packs untouched.",
-    "partnerSigned=true; lockedPilot=true; legalBinding=true; isHypothetical=false — MoU operator-asserted when named; still not CDS.",
+    "partnerSigned=true; lockedPilot=false; legalBinding=false; isHypothetical=true — MoU operator-asserted when named; still not CDS.",
     "Th17 promote (Park) vs inhibit (Chen) are hypothesized competing frames — never collapse.",
     "Most PMIDs are mouse or Caco-2 — hsiGrade stays uncertain (source-verified); not human therapeutic claims.",
     "Not clinical decision support. autoApproveIntoKg=false.",
     "deepSeedsPresent=true because verified PMID edges landed.",
-    "P1.3 slice: 12 edges · 12 PMIDs."
+    "P1.3 slice: 14 edges · 14 PMIDs.",
+    "P1.4: modulates_immune / produces_metabolite_sensed_by are first-class HSI_EDGE_TYPES (identity map); hypothesized Th17 frames keep Phase 0 directional types."
   ]
 }

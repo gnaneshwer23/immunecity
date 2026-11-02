@@ -1,7 +1,7 @@
 {
   "schemaVersion": "hsi-isi-substrate-pin-1",
   "notCds": true,
-  "generatedAt": "2026-11-01T21:31:13.302Z",
+  "generatedAt": "2026-11-02T18:35:30.294Z",
   "domains": [
     "t2d",
     "immuno_metabolic",
@@ -20,7 +20,16 @@
     "risk_factor_for",
     "treats",
     "worsens",
-    "bridges_domain"
+    "bridges_domain",
+    "modulates_immune",
+    "produces_metabolite_sensed_by",
+    "suppresses_peripheral_inflammation",
+    "signals_via_axis",
+    "associates_neuroimmune",
+    "produces",
+    "activates",
+    "suppresses",
+    "differentiates_into"
   ],
   "edges": [
     {
@@ -991,7 +1000,7 @@
     },
     {
       "id": "HSI-E-SSC-002",
-      "edgeType": "upregulates",
+      "edgeType": "produces",
       "subjectId": "HSI-N-tfh",
       "subjectLabel": "T follicular helper (Tfh) cells",
       "objectId": "HSI-N-il21",
@@ -1006,7 +1015,7 @@
         "doi": "10.1146/annurev-immunol-031210-101400",
         "citationLabel": "Crotty S. Annu Rev Immunol 2011 — Follicular helper CD4 T cells (TFH).",
         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21314428/",
-        "notes": "Foundational Tfh→IL-21 axis (not SSc-specific). PMID 21314428 verified. Maps via ISI produces→HSI upregulates until HSI_EDGE_TYPES expands. Pairs with Ricard 2019 SSc IL-21 pathway. Gate C = human only. Not CDS.",
+        "notes": "Foundational Tfh→IL-21 axis (not SSc-specific). PMID 21314428 verified. P1.4 first-class edgeType produces (was alias ISI produces→upregulates). Pairs with Ricard 2019 SSc IL-21 pathway. Gate C = human only. Not CDS.",
         "recordedAt": "2026-11-01T17:00:00.000Z"
       },
       "bridgeCandidate": false,
@@ -1312,8 +1321,54 @@
       "seedKind": "placeholder"
     },
     {
-      "id": "HSI-E-GUT-001",
+      "id": "HSI-E-SSC-016",
       "edgeType": "associated_with",
+      "subjectId": "HSI-N-ssc-vascular-injury",
+      "subjectLabel": "SSc vasculopathy / endothelial injury",
+      "objectId": "HSI-N-ssc",
+      "objectLabel": "Systemic sclerosis",
+      "claimId": "HSI-C-SSC-016",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "autoimmunity",
+      "provenance": {
+        "pmid": "19420368",
+        "doi": "10.1056/NEJMra0806188",
+        "citationLabel": "Gabrielli A et al. N Engl J Med 2009 — Scleroderma.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19420368/",
+        "notes": "P1.9 SSc vasculopathy neighbourhood. PMID 19420368 verified (review). teaching=associative; do not invent vascular-therapy CDS. Complements Tfh–B–IL-21 without replacing RA ASK. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T17:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-SSC-017",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-ssc-fibroblast-tgfb",
+      "subjectLabel": "SSc fibroblast / TGF-β fibrotic programme",
+      "objectId": "HSI-N-ssc",
+      "objectLabel": "Systemic sclerosis",
+      "claimId": "HSI-C-SSC-017",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "autoimmunity",
+      "provenance": {
+        "pmid": "17332883",
+        "doi": "10.1172/JCI31139",
+        "citationLabel": "Varga J, Abraham D. J Clin Invest 2007 — Systemic sclerosis: a prototypic multisystem fibrotic disorder.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17332883/",
+        "notes": "P1.9 SSc fibrosis neighbourhood. PMID 17332883 verified (review). Complements faSScinate IL-6/TGF-β biospecimen insight without inventing anti-fibrotic CDS. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T17:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-GUT-001",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-clostridia-iv-xiva",
       "subjectLabel": "Clostridium clusters IV / XIVa (gut)",
       "objectId": "HSI-N-mucosal-treg",
@@ -1336,7 +1391,7 @@
     },
     {
       "id": "HSI-E-GUT-002",
-      "edgeType": "associated_with",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-clostridia-human-mix",
       "subjectLabel": "Human microbiota Clostridia mix (17-strain class)",
       "objectId": "HSI-N-mucosal-treg",
@@ -1359,7 +1414,7 @@
     },
     {
       "id": "HSI-E-GUT-003",
-      "edgeType": "upregulates",
+      "edgeType": "produces_metabolite_sensed_by",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-mucosal-treg",
@@ -1374,7 +1429,7 @@
         "doi": "10.1038/nature12721",
         "citationLabel": "Furusawa Y et al. Nature 2013 — Commensal microbe-derived butyrate induces the differentiation of colonic regulatory T cells.",
         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24226770/",
-        "notes": "P1.3 primary SCFA→Treg edge. PMID 24226770 verified. Maps systemsPredicate produces_metabolite_sensed_by → HSI upregulates. Mouse / HDAC–Foxp3 mechanism — not human disease claim. Gate C = human only. Not CDS.",
+        "notes": "P1.3 primary SCFA→Treg edge. PMID 24226770 verified. P1.4 first-class edgeType produces_metabolite_sensed_by (was alias→upregulates). Mouse / HDAC–Foxp3 mechanism — not human disease claim. Gate C = human only. Not CDS.",
         "recordedAt": "2026-11-01T18:30:00.000Z"
       },
       "bridgeCandidate": true,
@@ -1382,7 +1437,7 @@
     },
     {
       "id": "HSI-E-GUT-004",
-      "edgeType": "associated_with",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-scfa",
       "subjectLabel": "Short-chain fatty acids (class)",
       "objectId": "HSI-N-mucosal-treg",
@@ -1451,7 +1506,7 @@
     },
     {
       "id": "HSI-E-GUT-007",
-      "edgeType": "upregulates",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-gut-barrier",
@@ -1474,7 +1529,7 @@
     },
     {
       "id": "HSI-E-GUT-008",
-      "edgeType": "inhibits",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-gpr109a",
       "subjectLabel": "GPR109A (HCAR2) — butyrate / niacin receptor",
       "objectId": "HSI-N-colonic-inflammation",
@@ -1497,7 +1552,7 @@
     },
     {
       "id": "HSI-E-GUT-009",
-      "edgeType": "upregulates",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-tr1-like",
@@ -1520,7 +1575,7 @@
     },
     {
       "id": "HSI-E-GUT-010",
-      "edgeType": "associated_with",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-commensal-metabolites",
       "subjectLabel": "Commensal bacterial metabolites (SCFA neighbourhood)",
       "objectId": "HSI-N-peripheral-treg",
@@ -1543,7 +1598,7 @@
     },
     {
       "id": "HSI-E-GUT-011",
-      "edgeType": "inhibits",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-butyrate",
       "subjectLabel": "Butyrate (SCFA)",
       "objectId": "HSI-N-intestinal-macrophage-hdac",
@@ -1566,7 +1621,7 @@
     },
     {
       "id": "HSI-E-GUT-012",
-      "edgeType": "upregulates",
+      "edgeType": "modulates_immune",
       "subjectId": "HSI-N-scfa",
       "subjectLabel": "SCFA (class)",
       "objectId": "HSI-N-epithelial-hif-barrier",
@@ -1588,8 +1643,54 @@
       "seedKind": "placeholder"
     },
     {
+      "id": "HSI-E-GUT-013",
+      "edgeType": "upregulates",
+      "subjectId": "HSI-N-sfb",
+      "subjectLabel": "Segmented filamentous bacteria (SFB)",
+      "objectId": "HSI-N-mucosal-th17",
+      "objectLabel": "Mucosal / intestinal Th17 cells",
+      "claimId": "HSI-C-GUT-013",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "19836068",
+        "doi": "10.1016/j.cell.2009.09.033",
+        "citationLabel": "Ivanov II et al. Cell 2009 — Induction of intestinal Th17 cells by segmented filamentous bacteria.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19836068/",
+        "notes": "P1.9 SFB→Th17. PMID 19836068 verified. Mouse — teaching=hypothesized; keep separate from butyrate Th17 promote/inhibit; never invent IBD dosing CDS. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T18:30:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-GUT-014",
+      "edgeType": "modulates_immune",
+      "subjectId": "HSI-N-trp-catabolites-ahr",
+      "subjectLabel": "Microbiota tryptophan catabolites (AhR ligands)",
+      "objectId": "HSI-N-mucosal-il22-balance",
+      "objectLabel": "Mucosal IL-22 / reactivity balance",
+      "claimId": "HSI-C-GUT-014",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "23973224",
+        "doi": "10.1016/j.immuni.2013.08.003",
+        "citationLabel": "Zelante T et al. Immunity 2013 — Tryptophan catabolites from microbiota engage aryl hydrocarbon receptor and balance mucosal reactivity via interleukin-22.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23973224/",
+        "notes": "P1.9 AhR/IL-22 hop. PMID 23973224 verified. Mouse — teaching=associative; do not invent tryptophan-supplement CDS. Gate C = human only. Not CDS.",
+        "recordedAt": "2026-11-01T18:30:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
       "id": "HSI-E-NI-001",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-vagus-efferent",
       "subjectLabel": "Efferent vagus nerve stimulation",
       "objectId": "HSI-N-peripheral-tnf-tone",
@@ -1612,7 +1713,7 @@
     },
     {
       "id": "HSI-E-NI-002",
-      "edgeType": "bridges_domain",
+      "edgeType": "signals_via_axis",
       "subjectId": "HSI-N-inflammatory-reflex",
       "subjectLabel": "Inflammatory reflex (cholinergic axis)",
       "objectId": "HSI-N-peripheral-tnf-tone",
@@ -1627,7 +1728,7 @@
         "doi": "10.1038/nature01321",
         "citationLabel": "Tracey KJ. Nature 2002 — The inflammatory reflex.",
         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12490958/",
-        "notes": "P2.1 conceptual axis frame. PMID 12490958 verified (review). Maps signals_via_axis → bridges_domain. Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
+        "notes": "P2.1 conceptual axis frame. PMID 12490958 verified (review). P1.4 first-class edgeType signals_via_axis (was alias→bridges_domain). Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
         "recordedAt": "2026-11-01T19:00:00.000Z"
       },
       "bridgeCandidate": true,
@@ -1635,7 +1736,7 @@
     },
     {
       "id": "HSI-E-NI-003",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-alpha7-nachr",
       "subjectLabel": "Nicotinic ACh receptor α7 subunit (macrophage)",
       "objectId": "HSI-N-macrophage-tnf-release",
@@ -1658,7 +1759,7 @@
     },
     {
       "id": "HSI-E-NI-004",
-      "edgeType": "associated_with",
+      "edgeType": "associates_neuroimmune",
       "subjectId": "HSI-N-vagus-efferent",
       "subjectLabel": "Efferent vagus nerve stimulation",
       "objectId": "HSI-N-alpha7-jak2-stat3",
@@ -1681,7 +1782,7 @@
     },
     {
       "id": "HSI-E-NI-005",
-      "edgeType": "bridges_domain",
+      "edgeType": "signals_via_axis",
       "subjectId": "HSI-N-chat-memory-tcell",
       "subjectLabel": "Acetylcholine-synthesizing memory T cells",
       "objectId": "HSI-N-macrophage-tnf-release",
@@ -1750,7 +1851,7 @@
     },
     {
       "id": "HSI-E-NI-008",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-splenic-nerve",
       "subjectLabel": "Splenic nerve (catecholaminergic)",
       "objectId": "HSI-N-macrophage-tnf-release",
@@ -1773,7 +1874,7 @@
     },
     {
       "id": "HSI-E-NI-009",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-cholinergic-agonist",
       "subjectLabel": "Pharmacologic cholinergic anti-inflammatory stimulation",
       "objectId": "HSI-N-peripheral-tnf-tone",
@@ -1796,7 +1897,7 @@
     },
     {
       "id": "HSI-E-NI-010",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-splenic-cholinergic-signal",
       "subjectLabel": "Cholinergic neural signals to the spleen",
       "objectId": "HSI-N-leukocyte-trafficking-cd11b",
@@ -1819,7 +1920,7 @@
     },
     {
       "id": "HSI-E-NI-011",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-cholinergic-antiinflam-pathway",
       "subjectLabel": "Cholinergic anti-inflammatory pathway",
       "objectId": "HSI-N-ischemia-reperfusion-tnf",
@@ -1835,6 +1936,121 @@
         "citationLabel": "Bernik TR et al. J Vasc Surg 2002 — Cholinergic antiinflammatory pathway inhibition of tumor necrosis factor during ischemia reperfusion.",
         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12469056/",
         "notes": "Depth deepen: PMID 12469056 verified. Rodent IR context — teaching=associative; never invent perioperative VNS CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-012",
+      "edgeType": "associates_neuroimmune",
+      "subjectId": "HSI-N-microglia-surveillance",
+      "subjectLabel": "Resting / surveying microglia",
+      "objectId": "HSI-N-brain-parenchyma-surveillance",
+      "objectLabel": "Brain parenchyma immune surveillance",
+      "claimId": "HSI-C-NI-012",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "15831717",
+        "doi": "10.1126/science.1110647",
+        "citationLabel": "Nimmerjahn A et al. Science 2005 — Resting microglial cells are highly dynamic surveillants of brain parenchyma in vivo.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/15831717/",
+        "notes": "P1.9 microglia neighbourhood. PMID 15831717 verified. In-vivo imaging — teaching=associative; do not invent disease-specific CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-013",
+      "edgeType": "associates_neuroimmune",
+      "subjectId": "HSI-N-systemic-inflammation",
+      "subjectLabel": "Systemic infection / peripheral inflammation",
+      "objectId": "HSI-N-cns-inflammatory-tone",
+      "objectLabel": "CNS inflammatory / neurodegenerative tone",
+      "claimId": "HSI-C-NI-013",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "17220915",
+        "doi": "10.1038/nri2015",
+        "citationLabel": "Perry VH et al. Nat Rev Immunol 2007 — Systemic infections and inflammation affect chronic neurodegeneration.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17220915/",
+        "notes": "P1.9 peripheral→CNS frame. PMID 17220915 verified (review). teaching=associative; never invent neurodegeneration therapy CDS. Complements vagus TNF brake without collapsing frames. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-014",
+      "edgeType": "signals_via_axis",
+      "subjectId": "HSI-N-bbb",
+      "subjectLabel": "Blood–brain barrier (neuroimmune interface)",
+      "objectId": "HSI-N-peripheral-immune-cns-axis",
+      "objectLabel": "Peripheral immune ↔ CNS communication axis",
+      "claimId": "HSI-C-NI-014",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "25172555",
+        "doi": "10.1016/j.bbi.2014.08.007",
+        "citationLabel": "Banks WA. Brain Behav Immun 2015 — The blood-brain barrier in neuroimmunology: Tales of separation and assimilation.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25172555/",
+        "notes": "P1.9 BBB axis frame. PMID 25172555 verified (review). teaching=associative; not clinical BBB-opening CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-015",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-il1-alpha-circulating",
+      "subjectLabel": "Circulating interleukin-1α",
+      "objectId": "HSI-N-bbb",
+      "objectLabel": "Blood–brain barrier",
+      "claimId": "HSI-C-NI-015",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "8707929",
+        "doi": "10.1016/0165-5728(96)00036-7",
+        "citationLabel": "Banks WA et al. J Neuroimmunol 1996 — Comparison of saturable transport and extracellular pathways in the passage of interleukin-1 alpha across the blood-brain barrier.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/8707929/",
+        "notes": "P1.9 BBB cytokine transport. PMID 8707929 verified. systemsPredicate crosses_bbb (alias→associated_with). teaching=associative; never invent cytokine CNS dosing. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-016",
+      "edgeType": "associates_neuroimmune",
+      "subjectId": "HSI-N-microglia-surveillance",
+      "subjectLabel": "Cerebral microglia",
+      "objectId": "HSI-N-monocyte-cns-recruitment",
+      "objectLabel": "Monocyte recruitment into brain",
+      "claimId": "HSI-C-NI-016",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "19228962",
+        "doi": "10.1523/JNEUROSCI.3567-08.2009",
+        "citationLabel": "D'Mello C et al. J Neurosci 2009 — Cerebral microglia recruit monocytes into the brain in response to tumor necrosis factoralpha signaling during peripheral organ inflammation.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19228962/",
+        "notes": "P1.9 microglia–peripheral TNF hop. PMID 19228962 verified. Mouse — teaching=hypothesized; do not invent human monocyte-trafficking CDS or MS claims. Gate C = human only. Not CDS. No PHI.",
         "recordedAt": "2026-11-01T19:00:00.000Z"
       },
       "bridgeCandidate": false,
@@ -2235,6 +2451,20 @@
       "akshNodeId": null
     },
     {
+      "id": "HSI-C-SSC-016",
+      "assertion": "Systemic sclerosis pathogenesis is framed by early vascular injury alongside immune dysregulation and fibrosis (review-level triad neighbourhood — associative; not a full SSc atlas; not CDS).",
+      "domain": "autoimmunity",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-SSC-017",
+      "assertion": "Systemic sclerosis is a prototypic multisystem fibrotic disorder in which fibroblast activation and TGF-β pathway signalling are central pathogenetic themes (review-level fibrosis neighbourhood — associative; not dosing CDS).",
+      "domain": "autoimmunity",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
       "id": "HSI-C-GUT-001",
       "assertion": "Indigenous Clostridium clusters IV and XIVa promote accumulation of colonic Foxp3+ regulatory T cells (mouse gut–immune neighbourhood seed — not CDS; not Stage 1 RA lock).",
       "domain": "immuno_metabolic",
@@ -2319,6 +2549,20 @@
       "akshNodeId": null
     },
     {
+      "id": "HSI-C-GUT-013",
+      "assertion": "Segmented filamentous bacteria can induce intestinal Th17 cells (microbiota→Th17 hop — mouse; hypothesized competing neighbourhood alongside SCFA Th17 promote/inhibit frames; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-GUT-014",
+      "assertion": "Microbiota-derived tryptophan catabolites engage aryl hydrocarbon receptor signalling and help balance mucosal reactivity via interleukin-22 (AhR hop beyond SCFA-only neighbourhood — mouse; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
       "id": "HSI-C-NI-001",
       "assertion": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
       "domain": "immuno_metabolic",
@@ -2391,6 +2635,41 @@
     {
       "id": "HSI-C-NI-011",
       "assertion": "The cholinergic anti-inflammatory pathway can inhibit tumor necrosis factor during ischemia–reperfusion injury (context expand beyond endotoxin — rodent; not clinical cure).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-012",
+      "assertion": "Resting microglial cells continuously survey brain parenchyma with highly dynamic processes (CNS-resident myeloid hop — complementary to vagus reflex; not an MS/neurodegeneration atlas; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-013",
+      "assertion": "Systemic infections and peripheral inflammation can modulate chronic CNS inflammatory and neurodegenerative processes (immune-to-brain neighbourhood frame — review-level; not a clinical cure claim).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-014",
+      "assertion": "The blood–brain barrier both separates and reconnects the immune and central nervous systems via regulated cytokine/cell exchange and immunomodulatory signalling (BBB interface neighbourhood — not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-015",
+      "assertion": "Interleukin-1α can cross the blood–brain barrier via saturable transport (and related extracellular pathways) — mechanistic BBB cytokine hop (rodent; not human dosing CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-016",
+      "assertion": "Cerebral microglia can recruit monocytes into the brain in response to tumour necrosis factor-α signalling during peripheral organ inflammation (microglia–peripheral inflammation hop — mouse; hypothesized translational breadth only).",
       "domain": "immuno_metabolic",
       "isiRelationshipId": null,
       "akshNodeId": null
@@ -2975,7 +3254,7 @@
     "schemaVersion": "hsi-isi-export-1",
     "productLabel": "immune-super-intelligence",
     "notCds": true,
-    "generatedAt": "2026-11-01T21:31:13.303Z",
+    "generatedAt": "2026-11-02T18:35:30.294Z",
     "grades": [
       "established",
       "uncertain",
@@ -2983,11 +3262,11 @@
     ],
     "gradeCounts": {
       "established": 0,
-      "uncertain": 68,
+      "uncertain": 77,
       "unexplored": 11
     },
     "loincCoverage": {
-      "edgeCount": 79,
+      "edgeCount": 88,
       "claimsWithLoincMarker": 8,
       "markersWithLoinc": 7,
       "markersMissingLoinc": 1
@@ -3961,7 +4240,7 @@
       },
       {
         "id": "HSI-E-SSC-002",
-        "edgeType": "upregulates",
+        "edgeType": "produces",
         "subjectId": "HSI-N-tfh",
         "subjectLabel": "T follicular helper (Tfh) cells",
         "objectId": "HSI-N-il21",
@@ -3976,7 +4255,7 @@
           "doi": "10.1146/annurev-immunol-031210-101400",
           "citationLabel": "Crotty S. Annu Rev Immunol 2011 — Follicular helper CD4 T cells (TFH).",
           "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21314428/",
-          "notes": "Foundational Tfh→IL-21 axis (not SSc-specific). PMID 21314428 verified. Maps via ISI produces→HSI upregulates until HSI_EDGE_TYPES expands. Pairs with Ricard 2019 SSc IL-21 pathway. Gate C = human only. Not CDS.",
+          "notes": "Foundational Tfh→IL-21 axis (not SSc-specific). PMID 21314428 verified. P1.4 first-class edgeType produces (was alias ISI produces→upregulates). Pairs with Ricard 2019 SSc IL-21 pathway. Gate C = human only. Not CDS.",
           "recordedAt": "2026-11-01T17:00:00.000Z"
         },
         "bridgeCandidate": false,
@@ -4282,8 +4561,54 @@
         "seedKind": "placeholder"
       },
       {
-        "id": "HSI-E-GUT-001",
+        "id": "HSI-E-SSC-016",
         "edgeType": "associated_with",
+        "subjectId": "HSI-N-ssc-vascular-injury",
+        "subjectLabel": "SSc vasculopathy / endothelial injury",
+        "objectId": "HSI-N-ssc",
+        "objectLabel": "Systemic sclerosis",
+        "claimId": "HSI-C-SSC-016",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "associative",
+        "domain": "autoimmunity",
+        "provenance": {
+          "pmid": "19420368",
+          "doi": "10.1056/NEJMra0806188",
+          "citationLabel": "Gabrielli A et al. N Engl J Med 2009 — Scleroderma.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19420368/",
+          "notes": "P1.9 SSc vasculopathy neighbourhood. PMID 19420368 verified (review). teaching=associative; do not invent vascular-therapy CDS. Complements Tfh–B–IL-21 without replacing RA ASK. Gate C = human only. Not CDS.",
+          "recordedAt": "2026-11-01T17:00:00.000Z"
+        },
+        "bridgeCandidate": false,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-SSC-017",
+        "edgeType": "associated_with",
+        "subjectId": "HSI-N-ssc-fibroblast-tgfb",
+        "subjectLabel": "SSc fibroblast / TGF-β fibrotic programme",
+        "objectId": "HSI-N-ssc",
+        "objectLabel": "Systemic sclerosis",
+        "claimId": "HSI-C-SSC-017",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "associative",
+        "domain": "autoimmunity",
+        "provenance": {
+          "pmid": "17332883",
+          "doi": "10.1172/JCI31139",
+          "citationLabel": "Varga J, Abraham D. J Clin Invest 2007 — Systemic sclerosis: a prototypic multisystem fibrotic disorder.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17332883/",
+          "notes": "P1.9 SSc fibrosis neighbourhood. PMID 17332883 verified (review). Complements faSScinate IL-6/TGF-β biospecimen insight without inventing anti-fibrotic CDS. Gate C = human only. Not CDS.",
+          "recordedAt": "2026-11-01T17:00:00.000Z"
+        },
+        "bridgeCandidate": false,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-GUT-001",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-clostridia-iv-xiva",
         "subjectLabel": "Clostridium clusters IV / XIVa (gut)",
         "objectId": "HSI-N-mucosal-treg",
@@ -4306,7 +4631,7 @@
       },
       {
         "id": "HSI-E-GUT-002",
-        "edgeType": "associated_with",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-clostridia-human-mix",
         "subjectLabel": "Human microbiota Clostridia mix (17-strain class)",
         "objectId": "HSI-N-mucosal-treg",
@@ -4329,7 +4654,7 @@
       },
       {
         "id": "HSI-E-GUT-003",
-        "edgeType": "upregulates",
+        "edgeType": "produces_metabolite_sensed_by",
         "subjectId": "HSI-N-butyrate",
         "subjectLabel": "Butyrate (SCFA)",
         "objectId": "HSI-N-mucosal-treg",
@@ -4344,7 +4669,7 @@
           "doi": "10.1038/nature12721",
           "citationLabel": "Furusawa Y et al. Nature 2013 — Commensal microbe-derived butyrate induces the differentiation of colonic regulatory T cells.",
           "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24226770/",
-          "notes": "P1.3 primary SCFA→Treg edge. PMID 24226770 verified. Maps systemsPredicate produces_metabolite_sensed_by → HSI upregulates. Mouse / HDAC–Foxp3 mechanism — not human disease claim. Gate C = human only. Not CDS.",
+          "notes": "P1.3 primary SCFA→Treg edge. PMID 24226770 verified. P1.4 first-class edgeType produces_metabolite_sensed_by (was alias→upregulates). Mouse / HDAC–Foxp3 mechanism — not human disease claim. Gate C = human only. Not CDS.",
           "recordedAt": "2026-11-01T18:30:00.000Z"
         },
         "bridgeCandidate": true,
@@ -4352,7 +4677,7 @@
       },
       {
         "id": "HSI-E-GUT-004",
-        "edgeType": "associated_with",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-scfa",
         "subjectLabel": "Short-chain fatty acids (class)",
         "objectId": "HSI-N-mucosal-treg",
@@ -4421,7 +4746,7 @@
       },
       {
         "id": "HSI-E-GUT-007",
-        "edgeType": "upregulates",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-butyrate",
         "subjectLabel": "Butyrate (SCFA)",
         "objectId": "HSI-N-gut-barrier",
@@ -4444,7 +4769,7 @@
       },
       {
         "id": "HSI-E-GUT-008",
-        "edgeType": "inhibits",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-gpr109a",
         "subjectLabel": "GPR109A (HCAR2) — butyrate / niacin receptor",
         "objectId": "HSI-N-colonic-inflammation",
@@ -4467,7 +4792,7 @@
       },
       {
         "id": "HSI-E-GUT-009",
-        "edgeType": "upregulates",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-butyrate",
         "subjectLabel": "Butyrate (SCFA)",
         "objectId": "HSI-N-tr1-like",
@@ -4490,7 +4815,7 @@
       },
       {
         "id": "HSI-E-GUT-010",
-        "edgeType": "associated_with",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-commensal-metabolites",
         "subjectLabel": "Commensal bacterial metabolites (SCFA neighbourhood)",
         "objectId": "HSI-N-peripheral-treg",
@@ -4513,7 +4838,7 @@
       },
       {
         "id": "HSI-E-GUT-011",
-        "edgeType": "inhibits",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-butyrate",
         "subjectLabel": "Butyrate (SCFA)",
         "objectId": "HSI-N-intestinal-macrophage-hdac",
@@ -4536,7 +4861,7 @@
       },
       {
         "id": "HSI-E-GUT-012",
-        "edgeType": "upregulates",
+        "edgeType": "modulates_immune",
         "subjectId": "HSI-N-scfa",
         "subjectLabel": "SCFA (class)",
         "objectId": "HSI-N-epithelial-hif-barrier",
@@ -4558,8 +4883,54 @@
         "seedKind": "placeholder"
       },
       {
+        "id": "HSI-E-GUT-013",
+        "edgeType": "upregulates",
+        "subjectId": "HSI-N-sfb",
+        "subjectLabel": "Segmented filamentous bacteria (SFB)",
+        "objectId": "HSI-N-mucosal-th17",
+        "objectLabel": "Mucosal / intestinal Th17 cells",
+        "claimId": "HSI-C-GUT-013",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "hypothesized",
+        "domain": "immuno_metabolic",
+        "provenance": {
+          "pmid": "19836068",
+          "doi": "10.1016/j.cell.2009.09.033",
+          "citationLabel": "Ivanov II et al. Cell 2009 — Induction of intestinal Th17 cells by segmented filamentous bacteria.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19836068/",
+          "notes": "P1.9 SFB→Th17. PMID 19836068 verified. Mouse — teaching=hypothesized; keep separate from butyrate Th17 promote/inhibit; never invent IBD dosing CDS. Gate C = human only. Not CDS.",
+          "recordedAt": "2026-11-01T18:30:00.000Z"
+        },
+        "bridgeCandidate": false,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-GUT-014",
+        "edgeType": "modulates_immune",
+        "subjectId": "HSI-N-trp-catabolites-ahr",
+        "subjectLabel": "Microbiota tryptophan catabolites (AhR ligands)",
+        "objectId": "HSI-N-mucosal-il22-balance",
+        "objectLabel": "Mucosal IL-22 / reactivity balance",
+        "claimId": "HSI-C-GUT-014",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "associative",
+        "domain": "immuno_metabolic",
+        "provenance": {
+          "pmid": "23973224",
+          "doi": "10.1016/j.immuni.2013.08.003",
+          "citationLabel": "Zelante T et al. Immunity 2013 — Tryptophan catabolites from microbiota engage aryl hydrocarbon receptor and balance mucosal reactivity via interleukin-22.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23973224/",
+          "notes": "P1.9 AhR/IL-22 hop. PMID 23973224 verified. Mouse — teaching=associative; do not invent tryptophan-supplement CDS. Gate C = human only. Not CDS.",
+          "recordedAt": "2026-11-01T18:30:00.000Z"
+        },
+        "bridgeCandidate": true,
+        "seedKind": "placeholder"
+      },
+      {
         "id": "HSI-E-NI-001",
-        "edgeType": "inhibits",
+        "edgeType": "suppresses_peripheral_inflammation",
         "subjectId": "HSI-N-vagus-efferent",
         "subjectLabel": "Efferent vagus nerve stimulation",
         "objectId": "HSI-N-peripheral-tnf-tone",
@@ -4582,7 +4953,7 @@
       },
       {
         "id": "HSI-E-NI-002",
-        "edgeType": "bridges_domain",
+        "edgeType": "signals_via_axis",
         "subjectId": "HSI-N-inflammatory-reflex",
         "subjectLabel": "Inflammatory reflex (cholinergic axis)",
         "objectId": "HSI-N-peripheral-tnf-tone",
@@ -4597,7 +4968,7 @@
           "doi": "10.1038/nature01321",
           "citationLabel": "Tracey KJ. Nature 2002 — The inflammatory reflex.",
           "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12490958/",
-          "notes": "P2.1 conceptual axis frame. PMID 12490958 verified (review). Maps signals_via_axis → bridges_domain. Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
+          "notes": "P2.1 conceptual axis frame. PMID 12490958 verified (review). P1.4 first-class edgeType signals_via_axis (was alias→bridges_domain). Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
           "recordedAt": "2026-11-01T19:00:00.000Z"
         },
         "bridgeCandidate": true,
@@ -4605,7 +4976,7 @@
       },
       {
         "id": "HSI-E-NI-003",
-        "edgeType": "inhibits",
+        "edgeType": "suppresses_peripheral_inflammation",
         "subjectId": "HSI-N-alpha7-nachr",
         "subjectLabel": "Nicotinic ACh receptor α7 subunit (macrophage)",
         "objectId": "HSI-N-macrophage-tnf-release",
@@ -4628,7 +4999,7 @@
       },
       {
         "id": "HSI-E-NI-004",
-        "edgeType": "associated_with",
+        "edgeType": "associates_neuroimmune",
         "subjectId": "HSI-N-vagus-efferent",
         "subjectLabel": "Efferent vagus nerve stimulation",
         "objectId": "HSI-N-alpha7-jak2-stat3",
@@ -4651,7 +5022,7 @@
       },
       {
         "id": "HSI-E-NI-005",
-        "edgeType": "bridges_domain",
+        "edgeType": "signals_via_axis",
         "subjectId": "HSI-N-chat-memory-tcell",
         "subjectLabel": "Acetylcholine-synthesizing memory T cells",
         "objectId": "HSI-N-macrophage-tnf-release",
@@ -4720,7 +5091,7 @@
       },
       {
         "id": "HSI-E-NI-008",
-        "edgeType": "inhibits",
+        "edgeType": "suppresses_peripheral_inflammation",
         "subjectId": "HSI-N-splenic-nerve",
         "subjectLabel": "Splenic nerve (catecholaminergic)",
         "objectId": "HSI-N-macrophage-tnf-release",
@@ -4743,7 +5114,7 @@
       },
       {
         "id": "HSI-E-NI-009",
-        "edgeType": "inhibits",
+        "edgeType": "suppresses_peripheral_inflammation",
         "subjectId": "HSI-N-cholinergic-agonist",
         "subjectLabel": "Pharmacologic cholinergic anti-inflammatory stimulation",
         "objectId": "HSI-N-peripheral-tnf-tone",
@@ -4766,7 +5137,7 @@
       },
       {
         "id": "HSI-E-NI-010",
-        "edgeType": "inhibits",
+        "edgeType": "suppresses_peripheral_inflammation",
         "subjectId": "HSI-N-splenic-cholinergic-signal",
         "subjectLabel": "Cholinergic neural signals to the spleen",
         "objectId": "HSI-N-leukocyte-trafficking-cd11b",
@@ -4789,7 +5160,7 @@
       },
       {
         "id": "HSI-E-NI-011",
-        "edgeType": "inhibits",
+        "edgeType": "suppresses_peripheral_inflammation",
         "subjectId": "HSI-N-cholinergic-antiinflam-pathway",
         "subjectLabel": "Cholinergic anti-inflammatory pathway",
         "objectId": "HSI-N-ischemia-reperfusion-tnf",
@@ -4805,6 +5176,121 @@
           "citationLabel": "Bernik TR et al. J Vasc Surg 2002 — Cholinergic antiinflammatory pathway inhibition of tumor necrosis factor during ischemia reperfusion.",
           "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12469056/",
           "notes": "Depth deepen: PMID 12469056 verified. Rodent IR context — teaching=associative; never invent perioperative VNS CDS. Gate C = human only. Not CDS. No PHI.",
+          "recordedAt": "2026-11-01T19:00:00.000Z"
+        },
+        "bridgeCandidate": false,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-NI-012",
+        "edgeType": "associates_neuroimmune",
+        "subjectId": "HSI-N-microglia-surveillance",
+        "subjectLabel": "Resting / surveying microglia",
+        "objectId": "HSI-N-brain-parenchyma-surveillance",
+        "objectLabel": "Brain parenchyma immune surveillance",
+        "claimId": "HSI-C-NI-012",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "associative",
+        "domain": "immuno_metabolic",
+        "provenance": {
+          "pmid": "15831717",
+          "doi": "10.1126/science.1110647",
+          "citationLabel": "Nimmerjahn A et al. Science 2005 — Resting microglial cells are highly dynamic surveillants of brain parenchyma in vivo.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/15831717/",
+          "notes": "P1.9 microglia neighbourhood. PMID 15831717 verified. In-vivo imaging — teaching=associative; do not invent disease-specific CDS. Gate C = human only. Not CDS. No PHI.",
+          "recordedAt": "2026-11-01T19:00:00.000Z"
+        },
+        "bridgeCandidate": true,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-NI-013",
+        "edgeType": "associates_neuroimmune",
+        "subjectId": "HSI-N-systemic-inflammation",
+        "subjectLabel": "Systemic infection / peripheral inflammation",
+        "objectId": "HSI-N-cns-inflammatory-tone",
+        "objectLabel": "CNS inflammatory / neurodegenerative tone",
+        "claimId": "HSI-C-NI-013",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "associative",
+        "domain": "immuno_metabolic",
+        "provenance": {
+          "pmid": "17220915",
+          "doi": "10.1038/nri2015",
+          "citationLabel": "Perry VH et al. Nat Rev Immunol 2007 — Systemic infections and inflammation affect chronic neurodegeneration.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17220915/",
+          "notes": "P1.9 peripheral→CNS frame. PMID 17220915 verified (review). teaching=associative; never invent neurodegeneration therapy CDS. Complements vagus TNF brake without collapsing frames. Gate C = human only. Not CDS. No PHI.",
+          "recordedAt": "2026-11-01T19:00:00.000Z"
+        },
+        "bridgeCandidate": true,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-NI-014",
+        "edgeType": "signals_via_axis",
+        "subjectId": "HSI-N-bbb",
+        "subjectLabel": "Blood–brain barrier (neuroimmune interface)",
+        "objectId": "HSI-N-peripheral-immune-cns-axis",
+        "objectLabel": "Peripheral immune ↔ CNS communication axis",
+        "claimId": "HSI-C-NI-014",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "associative",
+        "domain": "immuno_metabolic",
+        "provenance": {
+          "pmid": "25172555",
+          "doi": "10.1016/j.bbi.2014.08.007",
+          "citationLabel": "Banks WA. Brain Behav Immun 2015 — The blood-brain barrier in neuroimmunology: Tales of separation and assimilation.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25172555/",
+          "notes": "P1.9 BBB axis frame. PMID 25172555 verified (review). teaching=associative; not clinical BBB-opening CDS. Gate C = human only. Not CDS. No PHI.",
+          "recordedAt": "2026-11-01T19:00:00.000Z"
+        },
+        "bridgeCandidate": true,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-NI-015",
+        "edgeType": "associated_with",
+        "subjectId": "HSI-N-il1-alpha-circulating",
+        "subjectLabel": "Circulating interleukin-1α",
+        "objectId": "HSI-N-bbb",
+        "objectLabel": "Blood–brain barrier",
+        "claimId": "HSI-C-NI-015",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "associative",
+        "domain": "immuno_metabolic",
+        "provenance": {
+          "pmid": "8707929",
+          "doi": "10.1016/0165-5728(96)00036-7",
+          "citationLabel": "Banks WA et al. J Neuroimmunol 1996 — Comparison of saturable transport and extracellular pathways in the passage of interleukin-1 alpha across the blood-brain barrier.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/8707929/",
+          "notes": "P1.9 BBB cytokine transport. PMID 8707929 verified. systemsPredicate crosses_bbb (alias→associated_with). teaching=associative; never invent cytokine CNS dosing. Gate C = human only. Not CDS. No PHI.",
+          "recordedAt": "2026-11-01T19:00:00.000Z"
+        },
+        "bridgeCandidate": false,
+        "seedKind": "placeholder"
+      },
+      {
+        "id": "HSI-E-NI-016",
+        "edgeType": "associates_neuroimmune",
+        "subjectId": "HSI-N-microglia-surveillance",
+        "subjectLabel": "Cerebral microglia",
+        "objectId": "HSI-N-monocyte-cns-recruitment",
+        "objectLabel": "Monocyte recruitment into brain",
+        "claimId": "HSI-C-NI-016",
+        "curationReview": "source-verified",
+        "hsiGrade": "uncertain",
+        "teachingStatus": "hypothesized",
+        "domain": "immuno_metabolic",
+        "provenance": {
+          "pmid": "19228962",
+          "doi": "10.1523/JNEUROSCI.3567-08.2009",
+          "citationLabel": "D'Mello C et al. J Neurosci 2009 — Cerebral microglia recruit monocytes into the brain in response to tumor necrosis factoralpha signaling during peripheral organ inflammation.",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19228962/",
+          "notes": "P1.9 microglia–peripheral TNF hop. PMID 19228962 verified. Mouse — teaching=hypothesized; do not invent human monocyte-trafficking CDS or MS claims. Gate C = human only. Not CDS. No PHI.",
           "recordedAt": "2026-11-01T19:00:00.000Z"
         },
         "bridgeCandidate": false,
@@ -5205,6 +5691,20 @@
         "akshNodeId": null
       },
       {
+        "id": "HSI-C-SSC-016",
+        "assertion": "Systemic sclerosis pathogenesis is framed by early vascular injury alongside immune dysregulation and fibrosis (review-level triad neighbourhood — associative; not a full SSc atlas; not CDS).",
+        "domain": "autoimmunity",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
+        "id": "HSI-C-SSC-017",
+        "assertion": "Systemic sclerosis is a prototypic multisystem fibrotic disorder in which fibroblast activation and TGF-β pathway signalling are central pathogenetic themes (review-level fibrosis neighbourhood — associative; not dosing CDS).",
+        "domain": "autoimmunity",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
         "id": "HSI-C-GUT-001",
         "assertion": "Indigenous Clostridium clusters IV and XIVa promote accumulation of colonic Foxp3+ regulatory T cells (mouse gut–immune neighbourhood seed — not CDS; not Stage 1 RA lock).",
         "domain": "immuno_metabolic",
@@ -5289,6 +5789,20 @@
         "akshNodeId": null
       },
       {
+        "id": "HSI-C-GUT-013",
+        "assertion": "Segmented filamentous bacteria can induce intestinal Th17 cells (microbiota→Th17 hop — mouse; hypothesized competing neighbourhood alongside SCFA Th17 promote/inhibit frames; not CDS).",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
+        "id": "HSI-C-GUT-014",
+        "assertion": "Microbiota-derived tryptophan catabolites engage aryl hydrocarbon receptor signalling and help balance mucosal reactivity via interleukin-22 (AhR hop beyond SCFA-only neighbourhood — mouse; not CDS).",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
         "id": "HSI-C-NI-001",
         "assertion": "Electrical stimulation of the peripheral vagus nerve attenuates systemic inflammatory responses to endotoxin, including hepatic and serum TNF, in rodent endotoxaemia models (cholinergic anti-inflammatory neighbourhood — not CDS).",
         "domain": "immuno_metabolic",
@@ -5361,6 +5875,41 @@
       {
         "id": "HSI-C-NI-011",
         "assertion": "The cholinergic anti-inflammatory pathway can inhibit tumor necrosis factor during ischemia–reperfusion injury (context expand beyond endotoxin — rodent; not clinical cure).",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
+        "id": "HSI-C-NI-012",
+        "assertion": "Resting microglial cells continuously survey brain parenchyma with highly dynamic processes (CNS-resident myeloid hop — complementary to vagus reflex; not an MS/neurodegeneration atlas; not CDS).",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
+        "id": "HSI-C-NI-013",
+        "assertion": "Systemic infections and peripheral inflammation can modulate chronic CNS inflammatory and neurodegenerative processes (immune-to-brain neighbourhood frame — review-level; not a clinical cure claim).",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
+        "id": "HSI-C-NI-014",
+        "assertion": "The blood–brain barrier both separates and reconnects the immune and central nervous systems via regulated cytokine/cell exchange and immunomodulatory signalling (BBB interface neighbourhood — not CDS).",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
+        "id": "HSI-C-NI-015",
+        "assertion": "Interleukin-1α can cross the blood–brain barrier via saturable transport (and related extracellular pathways) — mechanistic BBB cytokine hop (rodent; not human dosing CDS).",
+        "domain": "immuno_metabolic",
+        "isiRelationshipId": null,
+        "akshNodeId": null
+      },
+      {
+        "id": "HSI-C-NI-016",
+        "assertion": "Cerebral microglia can recruit monocytes into the brain in response to tumour necrosis factor-α signalling during peripheral organ inflammation (microglia–peripheral inflammation hop — mouse; hypothesized translational breadth only).",
         "domain": "immuno_metabolic",
         "isiRelationshipId": null,
         "akshNodeId": null
@@ -5603,7 +6152,7 @@
       "curated": 13,
       "acceptedForCuration": 0,
       "bridgeCandidatesCovered": 6,
-      "bridgeCandidatesTotal": 18,
+      "bridgeCandidatesTotal": 22,
       "autoApproveIntoKg": false
     },
     "akshNodeMapping": {
@@ -5637,7 +6186,7 @@
             "id": "ask",
             "label": "ASK",
             "order": 1,
-            "desc": "Scoped research question for one immune-mediated disease (RA/TNF working scope; partnerSigned still open). SSc is secondary PRD target only — does not replace this ASK."
+            "desc": "Scoped research question for one immune-mediated disease (RA/TNF Stage 1 scope; Apolo Pharma lockedPilot=true). SSc is secondary PRD target only — does not replace this ASK."
           },
           {
             "id": "map",
@@ -5737,22 +6286,22 @@
         "schemaVersion": "hsi-partner-lock-1",
         "scopeLocked": true,
         "partnerSigned": true,
-        "lockedPilot": true,
+        "lockedPilot": false,
         "provisionalLock": false,
-        "status": "scoping",
+        "status": "scope_locked",
         "disease": "Rheumatoid arthritis",
         "researchQuestion": "Why do some patients with rheumatoid arthritis respond differently to anti-TNF therapy, and which biomarkers or immune mechanisms are best supported for defining those subgroups?",
-        "partner": "partner:apolo-pharma",
-        "partnerType": "named_partner",
-        "partnerLabel": "Apolo Pharma",
+        "partner": "test:hypothetical-isi-pilot-partner",
+        "partnerType": "hypothetical_test_fixture",
+        "partnerLabel": "Hypothetical ISI Pilot Partner (replace with real org)",
         "seedPathwayId": "ra-tnf-response-heterogeneity",
-        "agreementKind": "legal_mou",
-        "replaceWithRealPartner": false,
-        "legalBinding": true,
-        "isHypothetical": false,
-        "notALegalAgreement": false,
-        "testPilotMode": false,
-        "testFixtureBanner": null,
+        "agreementKind": "hypothetical_test_only",
+        "replaceWithRealPartner": true,
+        "legalBinding": false,
+        "isHypothetical": true,
+        "notALegalAgreement": true,
+        "testPilotMode": true,
+        "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
         "verticalStrategy": "dual_track",
         "activeScope": "ra-tnf",
         "prdMvpTarget": "ssc-tfh-b-il21"
@@ -5775,7 +6324,7 @@
         "seedPathway": {
           "id": "ra-tnf-response-heterogeneity",
           "label": "RA · TNF / ACPA / ADA · anti-TNF response heterogeneity",
-          "rationale": "Phase 3 deepened partner-scoped slice: TNF→RA + anti-CCP/RF (LOINC) + IL-6 / anti-TNF-refractory + ADA/immunogenicity + serology competing frames + MTX+anti-TNF combo background. Matches pilot-brief questions on therapy response and subgroup biomarkers. Working Stage 1 scope (scopeLocked); fixture partnerSigned is path-testing only.",
+          "rationale": "Phase 3 deepened partner-scoped slice: TNF→RA + anti-CCP/RF (LOINC) + IL-6 / anti-TNF-refractory + ADA/immunogenicity + serology competing frames + MTX+anti-TNF combo background. Matches pilot-brief questions on therapy response and subgroup biomarkers. Working Stage 1 scope (scopeLocked); real named partner still TBD — lockedPilot stays false until legalBinding with a real org.",
           "primaryClaimIds": [
             "HSI-C-RA-001",
             "HSI-C-RA-002",
@@ -5836,39 +6385,45 @@
         },
         "updatedAt": "2026-11-01T20:00:00.000Z",
         "partnerSigned": true,
-        "lockedPilot": true,
-        "status": "scoping",
+        "lockedPilot": false,
+        "status": "scope_locked",
         "partner": {
-          "id": "partner:apolo-pharma",
-          "label": "Apolo Pharma",
-          "type": "named_partner",
+          "id": "test:hypothetical-isi-pilot-partner",
+          "label": "Hypothetical ISI Pilot Partner (replace with real org)",
+          "type": "hypothetical_test_fixture",
           "region": "unspecified",
-          "contactChannel": "programme_introduction",
-          "outreachStatus": "confirmed",
-          "notes": "Named pilot partner Apolo Pharma (id partner:apolo-pharma). MoU / written-confirm paperwork is operator-asserted by HSI workspace instruction (2026-11-01) — no invented emails, phones, or named PI contacts in code. Still not CDS; Gate C never auto-approves. RA Stage 1 activeScope unchanged; dual-track SSc/gut/neuro continues. Stage 1 numeric KPIs partner_agreed (2026-11-01); Stage 1 corpus licensing clearance applied (oa_reuse + cite_metadata_pilot; unknown uncleared)."
+          "contactChannel": "none",
+          "outreachStatus": "test_fixture",
+          "notes": "TEST FIXTURE — replace before real pilot. Not a legal MoU/MoA or named org. agreementKind=hypothetical_test_only; legalBinding=false; replaceWithRealPartner=true. Production ISI must ignore partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true. Swap via src/hypotheticalPartnerFixture.ts."
         },
-        "agreementKind": "legal_mou",
-        "replaceWithRealPartner": false,
-        "legalBinding": true,
-        "isHypothetical": false,
-        "notALegalAgreement": false,
-        "testPilotMode": false,
-        "testFixtureBanner": null,
+        "agreementKind": "hypothetical_test_only",
+        "replaceWithRealPartner": true,
+        "legalBinding": false,
+        "isHypothetical": true,
+        "notALegalAgreement": true,
+        "testPilotMode": true,
+        "testFixtureBanner": "TEST FIXTURE — replace before real pilot",
         "flipRequirements": [
+          "REPLACE FIXTURE: set USE_HYPOTHETICAL_PARTNER_FIXTURE=false in src/hypotheticalPartnerFixture.ts and fill REAL_PARTNER_REPLACEMENT with a real named org (never invent).",
           "Named partner confirms disease = rheumatoid arthritis (or explicitly chooses a different disease — then re-lock scope).",
           "Named partner confirms or rewrites the research question in their words.",
           "Record real outreach row in ISI_PILOT_PARTNER_SHORTLIST.md (org, type, region, status) — still no invented emails.",
           "Agree source licensing / attribution for the partner source set.",
           "Agree scientific review rubric thresholds (time saved, usefulness, rejections) with the partner.",
-          "Keep partnerSigned=true, lockedPilot=true (scopeLocked + legalBinding), status=scoping|active, partner.type=named_partner, partner.outreachStatus=confirmed.",
+          "Set legalBinding=true, agreementKind=written_confirm|legal_mou, partner.type=named_partner, outreachStatus=confirmed, replaceWithRealPartner=false, isHypothetical=false → lockedPilot becomes true.",
           "Re-run bun run outputs and refresh the pilot evidence pack + review rubric against the signed question."
         ],
         "honesty": [
-          "Named partner Apolo Pharma (partner:apolo-pharma) — type=named_partner; partnerSigned=true; legalBinding=true → lockedPilot=true when scopeLocked.",
-          "MoU / written-confirm paperwork is operator-asserted by HSI workspace instruction (2026-11-01) — never invent emails, phones, or named PI contacts in code.",
-          "Still not CDS; Gate C never auto-approves; no PHI; HSI Neon remains red-wave only.",
-          "Phase 2 done = scopeLocked=true (disease + researchQuestion are working Stage 1 scope). RA activeScope unchanged; dual-track SSc/gut/neuro continues.",
-          "Apolo Pharma Stage 1 corpus licensing clearance applied (oa_reuse + cite_metadata_pilot; unknown uncleared/needs_confirm). Stage 1 numeric KPIs are partner_agreed."
+          "TEST FIXTURE — replace before real pilot. Banner must stay visible in packs / MANIFEST / walkthrough.",
+          "partnerSigned=true under agreementKind=hypothetical_test_only is PATH-TESTING ONLY — not a MoU.",
+          "legalBinding=false → lockedPilot=false even when partnerSigned=true.",
+          "Production ISI must ignore fixture partnerSigned unless ALLOW_HYPOTHETICAL_PARTNER=true.",
+          "Phase 2 done = scopeLocked=true (disease + researchQuestion are working Stage 1 scope).",
+          "Phase 3 done = partner-scoped evidence depth for this locked RA/anti-TNF question (ADA, serology tension, RF LOINC, MTX combo).",
+          "Phase 5 done = pilot acceptance pack (checklist + walkthrough; real named partner still pending).",
+          "scopeLocked does NOT mean a commercial partner signed or locked a MoU.",
+          "Hypothetical fixture partners are not MoUs; do not invent personal contacts.",
+          "Exports must surface isHypothetical=true + notALegalAgreement=true + testFixtureBanner."
         ]
       },
       "verticalDecision": {

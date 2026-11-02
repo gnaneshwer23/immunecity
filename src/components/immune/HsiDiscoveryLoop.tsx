@@ -39,7 +39,7 @@ function EvidenceTable({ rows }: { rows: EvidenceRowView[] }) {
     return <p className="small muted">No partner-scoped evidence rows in this pin.</p>;
   }
   return (
-    <div className="isi-hsi-table-wrap">
+    <div className="isi-hsi-table-wrap" tabIndex={0} role="region" aria-label="Scoped HSI evidence table">
       <table className="isi-hsi-table">
         <thead>
           <tr>

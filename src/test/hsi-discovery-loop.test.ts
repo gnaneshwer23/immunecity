@@ -39,7 +39,9 @@ describe("HSI Discovery product loop", () => {
     expect(contract.gateC.autoApprove).toBe(false);
     expect(contract.gateC.statusOnPublish).toBe("pending");
     expect(lock.activeScope).toBe("ra-tnf");
-    expect(lock.partner?.id).toBe("partner:apolo-pharma");
+    expect(lock.partner?.id).toBe("test:hypothetical-isi-pilot-partner");
+    expect(lock.lockedPilot).toBe(false);
+    expect(lock.legalBinding).toBe(false);
   });
 
   it("scopes MAP evidence to partner pathway claim IDs", () => {

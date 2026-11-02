@@ -53,7 +53,7 @@
     "playbookRawMain": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/main/docs/ISI_IMMUNICITY_WIRING_PLAYBOOK.md",
     "consumeContractRawMain": "https://raw.githubusercontent.com/gnaneshwer23/hsi-core/main/site/public/discovery/hsi-isi-consume-contract.json",
     "discoveryFiles": [
-      "index.json",
+      "catalogue.json",
       "hsi-isi-consume-contract.json",
       "hsi-isi-wiring-spec.json",
       "hsi-partner-lock.json",
@@ -90,7 +90,7 @@
     ]
   },
   "loadOrder": [
-    "1. MANIFEST.json or discovery index.json — verify notCds / autoApproveIntoKg=false / partnerSigned=false",
+    "1. MANIFEST.json or discovery catalogue.json — verify notCds / autoApproveIntoKg=false / partnerSigned=false",
     "2. required_core: hsi-isi-export.json + hsi-isi-rel-map.json + gate-c-checklist.*",
     "3. required_pilot: partner lock + vertical + pilot pack/rubric/acceptance/walkthrough + flip-readiness + consume contract + wiring spec",
     "4. recommended_secondary: gap / R2 / SSc / gut / neuro / translation / systems vision / licensing stub",
@@ -145,7 +145,7 @@
     {
       "hsiPath": "/discovery",
       "tab": null,
-      "files": ["index.json"],
+      "files": ["catalogue.json"],
       "immunecitySurfaceHint": "product_discovery_home",
       "notCds": true
     },

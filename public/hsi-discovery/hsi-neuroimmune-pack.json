@@ -2,15 +2,15 @@
   "schemaVersion": "hsi-neuroimmune-pack-1",
   "notCds": true,
   "autoApproveIntoKg": false,
-  "generatedAt": "2026-11-01T21:57:56.514Z",
+  "generatedAt": "2026-11-02T18:35:30.191Z",
   "pathway": {
     "id": "neuro-vagus-cholinergic-reflex",
     "label": "Neuroimmune · vagus / cholinergic anti-inflammatory reflex",
     "role": "systems_secondary_axis",
     "verticalStrategy": "dual_track",
     "deepSeedsPresent": true,
-    "neighbourhoodChoiceRationale": "Clearest landmark PMID chain (Borovikova → Tracey → Wang α7 → de Jonge STAT3 → Rosas-Ballina ChAT-T → Koopman VNS pilot) vs microglia–cytokine or BBB cytokine atlases; coherent S–P–O without inventing MS/neurodegeneration disease packs.",
-    "rationale": "P2.1 first honest neuroimmune literature slice for systems vision. Secondary Discovery axis only — does not replace RA ASK. Human VNS–RA kept hypothesized; animal mechanism edges uncertain/associative. No clinical cure claims.",
+    "neighbourhoodChoiceRationale": "Clearest landmark PMID chain (Borovikova → Tracey → Wang α7 → de Jonge STAT3 → Rosas-Ballina ChAT-T → Koopman VNS pilot) as P2.1 core; P1.9 adds complementary microglia/BBB cytokine neighbourhood (Nimmerjahn / Perry / Banks / D'Mello) without inventing MS/neurodegeneration disease packs.",
+    "rationale": "P2.1 first honest neuroimmune literature slice for systems vision + P1.9 microglia/BBB deepen. Secondary Discovery axis only — does not replace RA ASK. Human VNS–RA kept hypothesized; animal mechanism edges uncertain/associative. No clinical cure claims.",
     "primaryClaimIds": [
       "HSI-C-NI-001",
       "HSI-C-NI-002",
@@ -22,7 +22,12 @@
       "HSI-C-NI-008",
       "HSI-C-NI-009",
       "HSI-C-NI-010",
-      "HSI-C-NI-011"
+      "HSI-C-NI-011",
+      "HSI-C-NI-012",
+      "HSI-C-NI-013",
+      "HSI-C-NI-014",
+      "HSI-C-NI-015",
+      "HSI-C-NI-016"
     ],
     "primaryEdgeIds": [
       "HSI-E-NI-001",
@@ -35,7 +40,12 @@
       "HSI-E-NI-008",
       "HSI-E-NI-009",
       "HSI-E-NI-010",
-      "HSI-E-NI-011"
+      "HSI-E-NI-011",
+      "HSI-E-NI-012",
+      "HSI-E-NI-013",
+      "HSI-E-NI-014",
+      "HSI-E-NI-015",
+      "HSI-E-NI-016"
     ],
     "primaryPmids": [
       "10839541",
@@ -48,9 +58,14 @@
       "18669662",
       "11901203",
       "19542466",
-      "12469056"
+      "12469056",
+      "15831717",
+      "17220915",
+      "25172555",
+      "8707929",
+      "19228962"
     ],
-    "deepenPhase": "p2_1_neuro_pharmacologic_trafficking_ir_depth",
+    "deepenPhase": "p1_9_neuro_microglia_bbb_neighbourhood",
     "entities": [
       {
         "id": "HSI-N-vagus-efferent",
@@ -126,6 +141,46 @@
         "id": "HSI-N-splenic-cholinergic-signal",
         "label": "Cholinergic neural signals to spleen",
         "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-microglia-surveillance",
+        "label": "Microglia (CNS-resident myeloid)",
+        "kind": "glial_or_barrier_cell"
+      },
+      {
+        "id": "HSI-N-brain-parenchyma-surveillance",
+        "label": "Brain parenchyma surveillance",
+        "kind": "cns_compartment"
+      },
+      {
+        "id": "HSI-N-systemic-inflammation",
+        "label": "Systemic / peripheral inflammation",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-cns-inflammatory-tone",
+        "label": "CNS inflammatory tone",
+        "kind": "cns_compartment"
+      },
+      {
+        "id": "HSI-N-bbb",
+        "label": "Blood–brain barrier",
+        "kind": "cns_compartment"
+      },
+      {
+        "id": "HSI-N-peripheral-immune-cns-axis",
+        "label": "Peripheral immune ↔ CNS axis",
+        "kind": "neuroimmune_axis"
+      },
+      {
+        "id": "HSI-N-il1-alpha-circulating",
+        "label": "Circulating IL-1α",
+        "kind": "neuro_mediator"
+      },
+      {
+        "id": "HSI-N-monocyte-cns-recruitment",
+        "label": "Monocyte CNS recruitment",
+        "kind": "glial_or_barrier_cell"
       }
     ]
   },
@@ -151,9 +206,9 @@
       "edgeId": "HSI-E-NI-001",
       "claimId": "HSI-C-NI-001",
       "subject": "Efferent vagus nerve stimulation",
-      "predicate": "inhibits",
+      "predicate": "suppresses_peripheral_inflammation",
       "systemsPredicate": "suppresses_peripheral_inflammation",
-      "systemsPredicateMapsToHsi": "inhibits",
+      "systemsPredicateMapsToHsi": "suppresses_peripheral_inflammation",
       "object": "Peripheral / systemic TNF inflammatory tone",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -165,9 +220,9 @@
       "edgeId": "HSI-E-NI-002",
       "claimId": "HSI-C-NI-002",
       "subject": "Inflammatory reflex (cholinergic axis)",
-      "predicate": "bridges_domain",
+      "predicate": "signals_via_axis",
       "systemsPredicate": "signals_via_axis",
-      "systemsPredicateMapsToHsi": "bridges_domain",
+      "systemsPredicateMapsToHsi": "signals_via_axis",
       "object": "Peripheral / systemic TNF inflammatory tone",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -179,9 +234,9 @@
       "edgeId": "HSI-E-NI-003",
       "claimId": "HSI-C-NI-003",
       "subject": "Nicotinic ACh receptor α7 subunit (macrophage)",
-      "predicate": "inhibits",
+      "predicate": "suppresses_peripheral_inflammation",
       "systemsPredicate": "suppresses_peripheral_inflammation",
-      "systemsPredicateMapsToHsi": "inhibits",
+      "systemsPredicateMapsToHsi": "suppresses_peripheral_inflammation",
       "object": "Macrophage TNF synthesis / release",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -193,9 +248,9 @@
       "edgeId": "HSI-E-NI-004",
       "claimId": "HSI-C-NI-004",
       "subject": "Efferent vagus nerve stimulation",
-      "predicate": "associated_with",
+      "predicate": "associates_neuroimmune",
       "systemsPredicate": "associates_neuroimmune",
-      "systemsPredicateMapsToHsi": "associated_with",
+      "systemsPredicateMapsToHsi": "associates_neuroimmune",
       "object": "α7 nAChR–Jak2–STAT3 macrophage programme",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -207,9 +262,9 @@
       "edgeId": "HSI-E-NI-005",
       "claimId": "HSI-C-NI-005",
       "subject": "Acetylcholine-synthesizing memory T cells",
-      "predicate": "bridges_domain",
+      "predicate": "signals_via_axis",
       "systemsPredicate": "signals_via_axis",
-      "systemsPredicateMapsToHsi": "bridges_domain",
+      "systemsPredicateMapsToHsi": "signals_via_axis",
       "object": "Macrophage TNF synthesis / release",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -249,9 +304,9 @@
       "edgeId": "HSI-E-NI-008",
       "claimId": "HSI-C-NI-008",
       "subject": "Splenic nerve (catecholaminergic)",
-      "predicate": "inhibits",
+      "predicate": "suppresses_peripheral_inflammation",
       "systemsPredicate": "suppresses_peripheral_inflammation",
-      "systemsPredicateMapsToHsi": "inhibits",
+      "systemsPredicateMapsToHsi": "suppresses_peripheral_inflammation",
       "object": "Macrophage TNF release",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -263,9 +318,9 @@
       "edgeId": "HSI-E-NI-009",
       "claimId": "HSI-C-NI-009",
       "subject": "Pharmacologic cholinergic anti-inflammatory stimulation",
-      "predicate": "inhibits",
+      "predicate": "suppresses_peripheral_inflammation",
       "systemsPredicate": "suppresses_peripheral_inflammation",
-      "systemsPredicateMapsToHsi": "inhibits",
+      "systemsPredicateMapsToHsi": "suppresses_peripheral_inflammation",
       "object": "Peripheral / systemic TNF inflammatory tone",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -277,9 +332,9 @@
       "edgeId": "HSI-E-NI-010",
       "claimId": "HSI-C-NI-010",
       "subject": "Cholinergic neural signals to the spleen",
-      "predicate": "inhibits",
+      "predicate": "suppresses_peripheral_inflammation",
       "systemsPredicate": "suppresses_peripheral_inflammation",
-      "systemsPredicateMapsToHsi": "inhibits",
+      "systemsPredicateMapsToHsi": "suppresses_peripheral_inflammation",
       "object": "Leukocyte trafficking via CD11b",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
@@ -291,15 +346,85 @@
       "edgeId": "HSI-E-NI-011",
       "claimId": "HSI-C-NI-011",
       "subject": "Cholinergic anti-inflammatory pathway",
-      "predicate": "inhibits",
+      "predicate": "suppresses_peripheral_inflammation",
       "systemsPredicate": "suppresses_peripheral_inflammation",
-      "systemsPredicateMapsToHsi": "inhibits",
+      "systemsPredicateMapsToHsi": "suppresses_peripheral_inflammation",
       "object": "Ischemia–reperfusion TNF response",
       "evidenceGrade": "uncertain",
       "teachingStatus": "associative",
       "pmid": "12469056",
       "citationLabel": "Bernik TR et al. J Vasc Surg 2002 — Cholinergic antiinflammatory pathway inhibition of tumor necrosis factor during ischemia reperfusion.",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12469056/"
+    },
+    {
+      "edgeId": "HSI-E-NI-012",
+      "claimId": "HSI-C-NI-012",
+      "subject": "Resting / surveying microglia",
+      "predicate": "associates_neuroimmune",
+      "systemsPredicate": "associates_neuroimmune",
+      "systemsPredicateMapsToHsi": "associates_neuroimmune",
+      "object": "Brain parenchyma immune surveillance",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "15831717",
+      "citationLabel": "Nimmerjahn A et al. Science 2005 — Resting microglial cells are highly dynamic surveillants of brain parenchyma in vivo.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/15831717/"
+    },
+    {
+      "edgeId": "HSI-E-NI-013",
+      "claimId": "HSI-C-NI-013",
+      "subject": "Systemic infection / peripheral inflammation",
+      "predicate": "associates_neuroimmune",
+      "systemsPredicate": "associates_neuroimmune",
+      "systemsPredicateMapsToHsi": "associates_neuroimmune",
+      "object": "CNS inflammatory / neurodegenerative tone",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "17220915",
+      "citationLabel": "Perry VH et al. Nat Rev Immunol 2007 — Systemic infections and inflammation affect chronic neurodegeneration.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17220915/"
+    },
+    {
+      "edgeId": "HSI-E-NI-014",
+      "claimId": "HSI-C-NI-014",
+      "subject": "Blood–brain barrier (neuroimmune interface)",
+      "predicate": "signals_via_axis",
+      "systemsPredicate": "signals_via_axis",
+      "systemsPredicateMapsToHsi": "signals_via_axis",
+      "object": "Peripheral immune ↔ CNS communication axis",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "25172555",
+      "citationLabel": "Banks WA. Brain Behav Immun 2015 — The blood-brain barrier in neuroimmunology: Tales of separation and assimilation.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25172555/"
+    },
+    {
+      "edgeId": "HSI-E-NI-015",
+      "claimId": "HSI-C-NI-015",
+      "subject": "Circulating interleukin-1α",
+      "predicate": "associated_with",
+      "systemsPredicate": "crosses_bbb",
+      "systemsPredicateMapsToHsi": "associated_with",
+      "object": "Blood–brain barrier",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "associative",
+      "pmid": "8707929",
+      "citationLabel": "Banks WA et al. J Neuroimmunol 1996 — Comparison of saturable transport and extracellular pathways in the passage of interleukin-1 alpha across the blood-brain barrier.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/8707929/"
+    },
+    {
+      "edgeId": "HSI-E-NI-016",
+      "claimId": "HSI-C-NI-016",
+      "subject": "Cerebral microglia",
+      "predicate": "associates_neuroimmune",
+      "systemsPredicate": "associates_neuroimmune",
+      "systemsPredicateMapsToHsi": "associates_neuroimmune",
+      "object": "Monocyte recruitment into brain",
+      "evidenceGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "pmid": "19228962",
+      "citationLabel": "D'Mello C et al. J Neurosci 2009 — Cerebral microglia recruit monocytes into the brain in response to tumor necrosis factoralpha signaling during peripheral organ inflammation.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19228962/"
     }
   ],
   "competingExplanations": [
@@ -453,12 +578,47 @@
       "domain": "immuno_metabolic",
       "isiRelationshipId": null,
       "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-012",
+      "assertion": "Resting microglial cells continuously survey brain parenchyma with highly dynamic processes (CNS-resident myeloid hop — complementary to vagus reflex; not an MS/neurodegeneration atlas; not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-013",
+      "assertion": "Systemic infections and peripheral inflammation can modulate chronic CNS inflammatory and neurodegenerative processes (immune-to-brain neighbourhood frame — review-level; not a clinical cure claim).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-014",
+      "assertion": "The blood–brain barrier both separates and reconnects the immune and central nervous systems via regulated cytokine/cell exchange and immunomodulatory signalling (BBB interface neighbourhood — not CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-015",
+      "assertion": "Interleukin-1α can cross the blood–brain barrier via saturable transport (and related extracellular pathways) — mechanistic BBB cytokine hop (rodent; not human dosing CDS).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
+    },
+    {
+      "id": "HSI-C-NI-016",
+      "assertion": "Cerebral microglia can recruit monocytes into the brain in response to tumour necrosis factor-α signalling during peripheral organ inflammation (microglia–peripheral inflammation hop — mouse; hypothesized translational breadth only).",
+      "domain": "immuno_metabolic",
+      "isiRelationshipId": null,
+      "akshNodeId": null
     }
   ],
   "edges": [
     {
       "id": "HSI-E-NI-001",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-vagus-efferent",
       "subjectLabel": "Efferent vagus nerve stimulation",
       "objectId": "HSI-N-peripheral-tnf-tone",
@@ -481,7 +641,7 @@
     },
     {
       "id": "HSI-E-NI-002",
-      "edgeType": "bridges_domain",
+      "edgeType": "signals_via_axis",
       "subjectId": "HSI-N-inflammatory-reflex",
       "subjectLabel": "Inflammatory reflex (cholinergic axis)",
       "objectId": "HSI-N-peripheral-tnf-tone",
@@ -496,7 +656,7 @@
         "doi": "10.1038/nature01321",
         "citationLabel": "Tracey KJ. Nature 2002 — The inflammatory reflex.",
         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12490958/",
-        "notes": "P2.1 conceptual axis frame. PMID 12490958 verified (review). Maps signals_via_axis → bridges_domain. Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
+        "notes": "P2.1 conceptual axis frame. PMID 12490958 verified (review). P1.4 first-class edgeType signals_via_axis (was alias→bridges_domain). Teaching=associative; not clinical protocol. Gate C = human only. Not CDS.",
         "recordedAt": "2026-11-01T19:00:00.000Z"
       },
       "bridgeCandidate": true,
@@ -504,7 +664,7 @@
     },
     {
       "id": "HSI-E-NI-003",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-alpha7-nachr",
       "subjectLabel": "Nicotinic ACh receptor α7 subunit (macrophage)",
       "objectId": "HSI-N-macrophage-tnf-release",
@@ -527,7 +687,7 @@
     },
     {
       "id": "HSI-E-NI-004",
-      "edgeType": "associated_with",
+      "edgeType": "associates_neuroimmune",
       "subjectId": "HSI-N-vagus-efferent",
       "subjectLabel": "Efferent vagus nerve stimulation",
       "objectId": "HSI-N-alpha7-jak2-stat3",
@@ -550,7 +710,7 @@
     },
     {
       "id": "HSI-E-NI-005",
-      "edgeType": "bridges_domain",
+      "edgeType": "signals_via_axis",
       "subjectId": "HSI-N-chat-memory-tcell",
       "subjectLabel": "Acetylcholine-synthesizing memory T cells",
       "objectId": "HSI-N-macrophage-tnf-release",
@@ -619,7 +779,7 @@
     },
     {
       "id": "HSI-E-NI-008",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-splenic-nerve",
       "subjectLabel": "Splenic nerve (catecholaminergic)",
       "objectId": "HSI-N-macrophage-tnf-release",
@@ -642,7 +802,7 @@
     },
     {
       "id": "HSI-E-NI-009",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-cholinergic-agonist",
       "subjectLabel": "Pharmacologic cholinergic anti-inflammatory stimulation",
       "objectId": "HSI-N-peripheral-tnf-tone",
@@ -665,7 +825,7 @@
     },
     {
       "id": "HSI-E-NI-010",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-splenic-cholinergic-signal",
       "subjectLabel": "Cholinergic neural signals to the spleen",
       "objectId": "HSI-N-leukocyte-trafficking-cd11b",
@@ -688,7 +848,7 @@
     },
     {
       "id": "HSI-E-NI-011",
-      "edgeType": "inhibits",
+      "edgeType": "suppresses_peripheral_inflammation",
       "subjectId": "HSI-N-cholinergic-antiinflam-pathway",
       "subjectLabel": "Cholinergic anti-inflammatory pathway",
       "objectId": "HSI-N-ischemia-reperfusion-tnf",
@@ -708,17 +868,133 @@
       },
       "bridgeCandidate": false,
       "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-012",
+      "edgeType": "associates_neuroimmune",
+      "subjectId": "HSI-N-microglia-surveillance",
+      "subjectLabel": "Resting / surveying microglia",
+      "objectId": "HSI-N-brain-parenchyma-surveillance",
+      "objectLabel": "Brain parenchyma immune surveillance",
+      "claimId": "HSI-C-NI-012",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "15831717",
+        "doi": "10.1126/science.1110647",
+        "citationLabel": "Nimmerjahn A et al. Science 2005 — Resting microglial cells are highly dynamic surveillants of brain parenchyma in vivo.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/15831717/",
+        "notes": "P1.9 microglia neighbourhood. PMID 15831717 verified. In-vivo imaging — teaching=associative; do not invent disease-specific CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-013",
+      "edgeType": "associates_neuroimmune",
+      "subjectId": "HSI-N-systemic-inflammation",
+      "subjectLabel": "Systemic infection / peripheral inflammation",
+      "objectId": "HSI-N-cns-inflammatory-tone",
+      "objectLabel": "CNS inflammatory / neurodegenerative tone",
+      "claimId": "HSI-C-NI-013",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "17220915",
+        "doi": "10.1038/nri2015",
+        "citationLabel": "Perry VH et al. Nat Rev Immunol 2007 — Systemic infections and inflammation affect chronic neurodegeneration.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17220915/",
+        "notes": "P1.9 peripheral→CNS frame. PMID 17220915 verified (review). teaching=associative; never invent neurodegeneration therapy CDS. Complements vagus TNF brake without collapsing frames. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-014",
+      "edgeType": "signals_via_axis",
+      "subjectId": "HSI-N-bbb",
+      "subjectLabel": "Blood–brain barrier (neuroimmune interface)",
+      "objectId": "HSI-N-peripheral-immune-cns-axis",
+      "objectLabel": "Peripheral immune ↔ CNS communication axis",
+      "claimId": "HSI-C-NI-014",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "25172555",
+        "doi": "10.1016/j.bbi.2014.08.007",
+        "citationLabel": "Banks WA. Brain Behav Immun 2015 — The blood-brain barrier in neuroimmunology: Tales of separation and assimilation.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/25172555/",
+        "notes": "P1.9 BBB axis frame. PMID 25172555 verified (review). teaching=associative; not clinical BBB-opening CDS. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": true,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-015",
+      "edgeType": "associated_with",
+      "subjectId": "HSI-N-il1-alpha-circulating",
+      "subjectLabel": "Circulating interleukin-1α",
+      "objectId": "HSI-N-bbb",
+      "objectLabel": "Blood–brain barrier",
+      "claimId": "HSI-C-NI-015",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "associative",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "8707929",
+        "doi": "10.1016/0165-5728(96)00036-7",
+        "citationLabel": "Banks WA et al. J Neuroimmunol 1996 — Comparison of saturable transport and extracellular pathways in the passage of interleukin-1 alpha across the blood-brain barrier.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/8707929/",
+        "notes": "P1.9 BBB cytokine transport. PMID 8707929 verified. systemsPredicate crosses_bbb (alias→associated_with). teaching=associative; never invent cytokine CNS dosing. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
+    },
+    {
+      "id": "HSI-E-NI-016",
+      "edgeType": "associates_neuroimmune",
+      "subjectId": "HSI-N-microglia-surveillance",
+      "subjectLabel": "Cerebral microglia",
+      "objectId": "HSI-N-monocyte-cns-recruitment",
+      "objectLabel": "Monocyte recruitment into brain",
+      "claimId": "HSI-C-NI-016",
+      "curationReview": "source-verified",
+      "hsiGrade": "uncertain",
+      "teachingStatus": "hypothesized",
+      "domain": "immuno_metabolic",
+      "provenance": {
+        "pmid": "19228962",
+        "doi": "10.1523/JNEUROSCI.3567-08.2009",
+        "citationLabel": "D'Mello C et al. J Neurosci 2009 — Cerebral microglia recruit monocytes into the brain in response to tumor necrosis factoralpha signaling during peripheral organ inflammation.",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19228962/",
+        "notes": "P1.9 microglia–peripheral TNF hop. PMID 19228962 verified. Mouse — teaching=hypothesized; do not invent human monocyte-trafficking CDS or MS claims. Gate C = human only. Not CDS. No PHI.",
+        "recordedAt": "2026-11-01T19:00:00.000Z"
+      },
+      "bridgeCandidate": false,
+      "seedKind": "placeholder"
     }
   ],
   "honesty": [
     "Systems secondary axis only — Discovery ASK question remains the RA / anti-TNF research question.",
     "SSc dual-track A + gut P1.3 packs untouched; RA Stage 1 scopeLocked packs untouched.",
-    "partnerSigned=true; lockedPilot=true; legalBinding=true; isHypothetical=false — MoU operator-asserted when named; still not CDS.",
+    "partnerSigned=true; lockedPilot=false; legalBinding=false; isHypothetical=true — MoU operator-asserted when named; still not CDS.",
     "Neighbourhood choice: vagus / cholinergic anti-inflammatory reflex — clearest landmark PMID chain vs microglia or BBB atlases.",
     "Human VNS–RA (Koopman) is hypothesized only — never a clinical brain–immune cure claim.",
     "Most mechanism PMIDs are rodent — hsiGrade stays uncertain (source-verified); not human therapeutic claims.",
     "Not clinical decision support. autoApproveIntoKg=false. No PHI.",
     "deepSeedsPresent=true because verified PMID edges landed.",
-    "P2.1 slice: 11 edges · 11 PMIDs."
+    "P2.1 slice: 16 edges · 16 PMIDs.",
+    "P1.4: suppresses_peripheral_inflammation / signals_via_axis / associates_neuroimmune are first-class HSI_EDGE_TYPES; hypothesized human VNS keeps associated_with."
   ]
 }
