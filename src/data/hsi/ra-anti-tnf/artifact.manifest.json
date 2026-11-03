@@ -2,24 +2,24 @@
   "schemaVersion": "hsi-ra-evidence-artifact-1",
   "releaseId": "ra-anti-tnf-evidence",
   "repository": "gnaneshwer23/hsi-core",
-  "commit": "adda82988fe41351eb3af026702cb4ffbc76039e",
+  "commit": "3679fb4efc0489e0cefc5c57435dd6bbb54c79d1",
   "distribution": "research_artifact_snapshot",
   "executable": false,
   "includesProductData": false,
   "scientificReview": "unreviewed",
   "readiness": {
-    "available": false,
-    "sources": 0,
-    "passages": 0,
-    "version": null,
+    "available": true,
+    "sources": 2,
+    "passages": 8,
+    "version": "5553add22202a8ed35bc570c471fbcd7872296cbb477c38fb9529f8ff4e3df36",
     "scientificReview": "unreviewed",
-    "reason": "Europe PMC MED metadata and JATS for PMID 18375541 / PMC2596303 were reachable, but article-level permissions lack an explicit Creative Commons URI (prose Attribution notice only; Europe PMC license field is the unversioned token \"cc by\"). The importer correctly rejects non-URI licence observations. PMID 24586782 / PMC3937352 likewise lacks an explicit CC URI in JATS. No exact passages or reuse-rights grants have been registered. Do not invent licence URIs or weaken the check."
+    "reason": null
   },
-  "bundleVersion": null,
+  "bundleVersion": "5553add22202a8ed35bc570c471fbcd7872296cbb477c38fb9529f8ff4e3df36",
   "files": {
     "release": {
       "path": "release.json",
-      "sha256": "ceefce7520023cfb7959cf9fd53efeea35d67396da87ca738d5e16bc9affc720"
+      "sha256": "4a60838aae1b8315d8a1c2943c56f7b854c4dc785fcb58a643ad8ee053a2edc6"
     },
     "graphContext": {
       "path": "graph-context.json",
@@ -27,11 +27,11 @@
     },
     "guideline": {
       "path": "context-annotation-guideline-v1.md",
-      "sha256": "ffeee2fba75684b390e213b8df68487c7b9885476a90ade6ce9d30d2997234f0"
+      "sha256": "7aa676fcc3a63b38077b0248a873e63a341956c2eb3654dd9c0214a2f80dbd4a"
     },
     "worksheet": {
       "path": "context-annotation-worksheet-v1.json",
-      "sha256": "37e3eccc081912734dcc591b29c8df398e666c3fd23dd8fff448aa79bf295820"
+      "sha256": "8aadcad30d041e540e356dd4b3336b0dbd82f298edbedfd266e03f7e64b16596"
     }
   }
 }

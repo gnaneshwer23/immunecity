@@ -52,6 +52,7 @@ reference lists, prior knowledge or KG neighbourhood text.
 ## Rights and provenance before labelling
 
 Only passages from a release that passes `parseRaEvidenceRelease` may enter a
-frozen evaluation set. Pending releases (`awaiting_verified_source_import`) are
-out of scope for labelling. Preserve PMID/PMCID/DOI, licence URI, authors, title,
-locator, paragraph hash and source version on every worksheet row.
+frozen evaluation set. A rights-verified import is still `scientificReview:
+unreviewed` until independent SME adjudication. Preserve PMID/PMCID/DOI, licence
+URI, authors, title, locator, paragraph hash and source version on every
+worksheet row.

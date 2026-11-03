@@ -2,7 +2,7 @@
   "schemaVersion": "hsi-ra-context-annotation-worksheet-1",
   "guidelineVersion": "hsi-ra-context-annotation-guideline-1",
   "protocolId": "ra-anti-tnf-response",
-  "protocolVersion": "1",
+  "protocolVersion": "2",
   "scientificReview": "unreviewed",
   "containsPhi": false,
   "clinicalAdvice": false,
