@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import CaseGraphExplorer from "@/components/immune/CaseGraphExplorer";
+import { caseGraphContext } from "@/lib/research/caseGraph";
 import {
   generateSyntheticProgramme, parseSyntheticProgramme, programmeDiscovery, programmeTrials, exportProgrammeCase, applyProgrammeScenario,
   type SyntheticProgramme,
@@ -19,6 +21,7 @@ export default function SyntheticConditionProgramme() {
   const [domain, setDomain] = useState("all");
   const [query, setQuery] = useState("");
   const [note, setNote] = useState("");
+  const [graphAnchor, setGraphAnchor] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<ReturnType<typeof programmeDiscovery> | null>(null);
   const [screening, setScreening] = useState<ReturnType<typeof programmeTrials> | null>(null);
   const [message, setMessage] = useState("");
@@ -32,7 +35,7 @@ export default function SyntheticConditionProgramme() {
   const patient = patients.find((p) => p.id === patientId) ?? patients[0]!;
   const latest = patient.visits[patient.visits.length - 1]!;
   const conditions = data.conditions.filter((c) => (domain === "all" || c.domain === domain) && `${c.label} ${c.tissue} ${c.cells.join(" ")}`.toLowerCase().includes(query.toLowerCase()));
-  function clearRuns() { setAnalysis(null); setScreening(null); setNote(""); setError(""); setMessage(""); }
+  function clearRuns() { setAnalysis(null); setScreening(null); setNote(""); setGraphAnchor(null); setError(""); setMessage(""); }
   function choose(id: string) { setConditionId(id); setPatientId(data.patients.find((p) => p.conditionId === id)!.id); clearRuns(); }
   function attempt(action: () => void) { try { action(); setError(""); } catch (e) { setError(e instanceof Error ? e.message : "Operation failed"); } }
   async function importData(file: File | undefined) {
@@ -60,7 +63,7 @@ export default function SyntheticConditionProgramme() {
     <label>Search condition, tissue or cell<input value={query} maxLength={200} onChange={(e) => setQuery(e.target.value)} /></label>{" "}
     <label>Programme domain<select value={domain} onChange={(e) => setDomain(e.target.value)}><option value="all">All domains</option>{[...new Set(data.conditions.map((c) => c.domain))].map((d) => <option key={d}>{d}</option>)}</select></label>
     <p>{conditions.length} condition contexts shown. Filtering changes the catalogue; the selected case remains below until you select another condition.</p>
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }} aria-label="Synthetic condition catalogue">
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }} role="group" aria-label="Synthetic condition catalogue">
       {conditions.map((c) => <button className="btn" key={c.id} aria-pressed={conditionId === c.id} onClick={() => choose(c.id)}>{c.label}</button>)}
     </div>
     {conditions.length === 0 && <p>No synthetic condition context matches this filter.</p>}
@@ -70,6 +73,7 @@ export default function SyntheticConditionProgramme() {
     </select></label>
     <p><strong>{patient.id}</strong> · age {patient.ageYears} · Comorbid context: {patient.comorbidityIds.map((id) => data.conditions.find((c) => c.id === id)?.label).join(", ") || "None recorded in fixture"}</p>
     <p>{patient.familyHistory}. {patient.exposureNote}. Infection-screen record: {patient.infectionScreenNegative === null ? "unknown" : patient.infectionScreenNegative ? "synthetic negative" : "synthetic non-negative"}.</p>
+    <CaseGraphExplorer key={conditionId} conditionId={conditionId} anchor={graphAnchor} onAnchor={setGraphAnchor} />
     <h3 id="programme-observations">2. Longitudinal laboratory and symptom reports</h3>
     <p>Visit days are relative to a fictional baseline. Values have units and specimen provenance, but no clinical reference ranges or diagnostic flags. The symptom index is an invented 0–100 research field, not a validated disease score.</p>
     <div role="region" aria-label="Synthetic laboratory timeline" tabIndex={0} style={{ overflowX: "auto" }}>
@@ -117,7 +121,7 @@ export default function SyntheticConditionProgramme() {
     <h3 id="programme-export">6. Export the synthetic investigation dossier</h3>
     <label style={{ display: "block" }}>Synthetic programme analyst note<textarea maxLength={4000} rows={3} value={note} onChange={(e) => setNote(e.target.value)} style={{ display: "block", width: "100%" }} /></label>
     <button className="btn" onClick={() => attempt(() => {
-      download(`${patient.id}-research-dossier.json`, { ...exportProgrammeCase(data, patient, new Date().toISOString()), analystNote: note });
+      download(`${patient.id}-research-dossier.json`, { ...exportProgrammeCase(data, patient, new Date().toISOString()), analystNote: note, graphContext: caseGraphContext(conditionId, graphAnchor) });
       setMessage("Synthetic dossier prepared with provenance, longitudinal records, discovery plan and fictional criteria. Analysis is recomputed at export and remains unvalidated.");
     })}>Export synthetic case dossier</button>
     <p>No data are written to the real graph, clinical systems or evidence curation. Real-data launch needs source-specific adapters, lawful data access, authenticated review, independent model validation and real protocol verification.</p>

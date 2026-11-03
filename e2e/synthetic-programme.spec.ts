@@ -10,9 +10,13 @@ test("20-condition programme responds to case selection and audited what-if chan
   await expect(programme).toHaveAttribute("aria-busy", "false", { timeout: 30_000 });
   await programme.getByRole("navigation", { name: "Investigation steps" }).getByRole("link", { name: "1 · Context", exact: true }).click();
   await expect(page).toHaveURL(/#programme-context$/);
-  await expect(programme.getByRole("button", { name: "Type 1 diabetes", exact: true })).toBeVisible();
-  await programme.getByRole("button", { name: "Type 1 diabetes", exact: true }).click();
+  await expect(programme.getByRole("group", { name: "Synthetic condition catalogue", exact: true }).getByRole("button", { name: "Type 1 diabetes", exact: true })).toBeVisible();
+  await programme.getByRole("group", { name: "Synthetic condition catalogue", exact: true }).getByRole("button", { name: "Type 1 diabetes", exact: true }).click();
   await programme.getByRole("combobox", { name: "Synthetic case", exact: true }).selectOption("SYN-P-T1D-002");
+  const graph = programme.getByRole("region", { name: "Case knowledge graph" });
+  await expect(graph).toContainText("exact condition");
+  await graph.getByRole("button", { name: "Inspect current concept", exact: true }).click();
+  await page.getByRole("button", { name: "Close scientific detail", exact: true }).click();
   await expect(programme.getByRole("region", { name: "Synthetic laboratory timeline" })).toContainText("HbA1c");
   await programme.getByRole("button", { name: "Run discovery planning demo", exact: true }).click();
   await expect(programme.getByRole("article", { name: "Synthetic discovery plan" })).toContainText("Unusable lab records: 3");
@@ -38,8 +42,8 @@ test("20-condition programme responds to case selection and audited what-if chan
   expect(dossier.confirmedEligible).toBe(false);
   expect(dossier.analystNote).toContain("Synthetic what-if");
   await programme.getByRole("combobox", { name: "Programme domain", exact: true }).selectOption("Gut");
-  await expect(programme.getByRole("button", { name: "Crohn’s disease", exact: true })).toBeVisible();
-  await expect(programme.getByRole("button", { name: "Type 1 diabetes", exact: true })).toHaveCount(0);
+  await expect(programme.getByRole("group", { name: "Synthetic condition catalogue", exact: true }).getByRole("button", { name: "Crohn’s disease", exact: true })).toBeVisible();
+  await expect(programme.getByRole("group", { name: "Synthetic condition catalogue", exact: true }).getByRole("button", { name: "Type 1 diabetes", exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(errors).toEqual([]);
 });

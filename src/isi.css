@@ -1097,3 +1097,9 @@ textarea.community-input { min-height: 120px; padding: 10px; }
 [id^="programme-"] { scroll-margin-top: 100px; }
 @media (max-width: 720px) { .research-journey { grid-template-columns: 1fr; gap: 20px; } }
 @media (max-width: 420px) { .research-journey-steps { grid-template-columns: 1fr; } }
+
+.case-graph { min-width: 0; max-width: 100%; overflow-wrap: anywhere; margin: 24px 0; padding: 16px; border: 1px solid var(--border); border-radius: var(--isi-radius); }
+.case-graph svg [role="button"]:focus { outline: 2px solid var(--primary); }
+.sci-inspector .si-bar { flex-shrink: 0; }
+.sci-inspector .si-bar .id-close { position: relative; z-index: 1; min-width: 44px; min-height: 44px; touch-action: manipulation; }
+.case-graph .btn { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
