@@ -65,5 +65,12 @@ try {
   assert.equal(new Set([...firstPage.items,...secondPage.items].map((r: {key:string})=>r.key)).size,25);
   for (let i=0;i<4;i++) assert.equal((await call(tokens.alice, { action: "start", releaseId: "isi-core-graph", conceptId: "D012" })).status, 200);
   assert.equal((await call(tokens.alice, { action: "start", releaseId: "isi-core-graph", conceptId: "D012" })).status, 429);
+  let limited = false;
+  for (let attempt=0;attempt<130;attempt++) {
+    const response = await call(tokens.bob, list);
+    if (response.status === 429) { limited = true; break; }
+    assert.equal(response.status,200);
+  }
+  assert.equal(limited,true);
   console.log("PASS: ISI signed JWT/stored-role authorization, real graph adapter, PostgreSQL persistence/RLS/CAS/audit, quotas and dossier export");
 } finally { issuer.stop(true); await getSqlClient().end({ timeout: 2 }); }
