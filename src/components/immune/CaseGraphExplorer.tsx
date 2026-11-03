@@ -18,7 +18,7 @@ export default function CaseGraphExplorer({ conditionId, anchor, onAnchor }: {
   const choose = (id: string) => { if (context.anchorId) setHistory([...history, context.anchorId]); onAnchor(id); };
   const visible = context.nodes.filter((n) => filter === "all" || n.node_type === filter);
   const visual = context.nodes.slice(0, 16);
-  const positions = new Map(visual.map((n, i) => [n.id, { x: i === 0 ? 400 : 400 + 280 * Math.cos((i - 1) * 2 * Math.PI / Math.max(1, visual.length - 1)), y: i === 0 ? 220 : 220 + 170 * Math.sin((i - 1) * 2 * Math.PI / Math.max(1, visual.length - 1)) }]));
+  const positions = new Map(visual.map((n, i) => [n.id, { x: i === 0 ? 400 : Math.round((400 + 280 * Math.cos((i - 1) * 2 * Math.PI / Math.max(1, visual.length - 1))) * 100) / 100, y: i === 0 ? 220 : Math.round((220 + 170 * Math.sin((i - 1) * 2 * Math.PI / Math.max(1, visual.length - 1))) * 100) / 100 }]));
   return <section aria-label="Case knowledge graph" className="case-graph">
     <h3>Connected knowledge graph</h3>
     <p>Explore the shared scientific map without leaving this investigation. Case measurements remain separate; they do not establish these relationships in the individual.</p>
@@ -42,7 +42,7 @@ export default function CaseGraphExplorer({ conditionId, anchor, onAnchor }: {
           return a && b ? <line key={id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="var(--border)" strokeWidth={2} /> : null;
         })}
         {visual.map((n) => { const p = positions.get(n.id)!; return <g key={n.id} role="button" tabIndex={0} aria-label={`Explore ${n.name}`} onClick={() => choose(n.id)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(n.id); } }} style={{ cursor: "pointer" }}>
-          <title>{n.name} · {n.node_type}</title><circle cx={p.x} cy={p.y} r={n.id === context.anchorId ? 24 : 16} fill="var(--primary)" />
+          <title>{`${n.name} · ${n.node_type}`}</title><circle cx={p.x} cy={p.y} r={n.id === context.anchorId ? 24 : 16} fill="var(--primary)" />
           <text x={p.x} y={p.y + 38} textAnchor="middle" fill="var(--text)" fontSize={12}>{n.name.length > 23 ? `${n.name.slice(0, 21)}…` : n.name}</text>
         </g>; })}
       </svg>

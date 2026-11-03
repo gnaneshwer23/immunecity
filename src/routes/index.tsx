@@ -204,8 +204,7 @@ function HomeCoverageGlance() {
   if (coverageError || !data) {
     return (
       <p className="home-causal-note" role="alert">
-        Live coverage unavailable
-        {coverageError ? ` (${coverageError})` : ""}. That is a service error, not a finding of zero
+        Reviewed evidence coverage is temporarily unavailable. This does not mean there are zero
         reviewed claims.{" "}
         <Link to="/methods" hash="live-ev-heading">
           Methods coverage
@@ -229,264 +228,68 @@ function HomeCoverageGlance() {
 }
 
 function Home() {
+  const { coverage } = Route.useLoaderData();
   return (
-    <div className="home-page home-page-helix">
-      {/* 1 — Value prop: brand-first hero */}
-      <section className="home-helix-hero isi-dark-band" aria-label={PRODUCT_NAME}>
-        <div className="home-helix-visual" aria-hidden="true">
-          <img className="home-hero-art" src={ART.heroCity} alt="" width={1536} height={1024} />
+    <div className="precision-home">
+      <section className="precision-hero" aria-labelledby="precision-title">
+        <div className="precision-hero-copy">
+          <p className="precision-eyebrow">Immune Super Intelligence · Translational research</p>
+          <h1 id="precision-title">See the connections.<br /><em>Shape the next question.</em></h1>
+          <p className="precision-lede">Bring immune biology, source-linked evidence and research investigations into one connected workspace.</p>
+          <div className="precision-actions">
+            <Link className="btn primary" to="/research" hash="synthetic-programme">Open research workbench <ArrowRight size={18} /></Link>
+            <Link className="precision-text-link" to="/graph">Explore the knowledge graph <ArrowRight size={18} /></Link>
+          </div>
+          <p className="precision-caption">For research and education. Findings and review status remain visible.</p>
         </div>
-        <div className="home-helix-copy">
-          <div className="bio-eyebrow home-helix-eyebrow">
-            <span className="status-dot" /> {BRAND_EYEBROW}
-          </div>
-          <p className="home-brand-signal">{PRODUCT_NAME}</p>
-          <h1>{HERO_HEADLINE}</h1>
-          <p className="hero-description">{HERO_SUPPORT}</p>
-          <div className="bio-actions">
-            <Button asChild className="bio-primary home-helix-primary">
-              <Link to="/research" hash="synthetic-programme">Open research workbench <ArrowRight /></Link>
-            </Button>
-            <Button asChild className="bio-primary home-helix-primary">
-              <Link to="/ask">
-                {ASK_NAME} <ArrowRight />
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" className="bio-secondary home-helix-secondary">
-              <Link to={EXPLORE_PATH}>
-                Explore biology <ArrowRight />
-              </Link>
-            </Button>
-          </div>
-          <p className="home-helix-foot">{HERO_TRUST}</p>
+        <div className="precision-hero-field" aria-label="Connected research workspace preview">
+          <div className="precision-orbit precision-orbit-one" /><div className="precision-orbit precision-orbit-two" />
+          <div className="precision-field-core"><span>ISI</span><small>Connected biology</small></div>
+          <Link className="precision-field-node field-node-a" to="/atlas">01 / Concepts<br /><strong>Knowledge Atlas</strong></Link>
+          <Link className="precision-field-node field-node-b" to="/evidence">02 / Sources<br /><strong>Evidence explorer</strong></Link>
+          <Link className="precision-field-node field-node-c" to="/research" hash="synthetic-programme">03 / Investigations<br /><strong>Research workbench</strong></Link>
+          <span className="precision-field-caption">Concept → relationship → evidence → investigation</span>
         </div>
       </section>
 
-      <div className="bio-content home-sections">
+      <section className="precision-facts" aria-label="Graph release and evidence service">
+        <div><strong>{SNAP.coreNodes}</strong><span>Core graph concepts</span></div>
+        <div><strong>{SNAP.coreRelationships}</strong><span>Core relationships · review varies</span></div>
+        <div><strong>{SNAP.coreVersion}</strong><span>Graph release</span></div>
+        <div><strong>{coverage ? "Retrieved" : "Unavailable"}</strong><span>Server evidence coverage</span></div>
+      </section>
+
+      <section className="precision-section" aria-labelledby="precision-work-heading">
+        <div className="precision-section-head"><p className="precision-eyebrow">One workspace, connected questions</p><h2 id="precision-work-heading">Move between the biology<br />and the evidence behind it.</h2></div>
+        <div className="precision-product-grid">
+          <article><span className="precision-index">01 / Explore</span><h3>A map you can investigate.</h3><p>Follow cells, receptors, pathways, biomarkers, therapies and trials. Inspect direction, context and the review status of each relationship.</p><Link to="/graph">Open the graph <ArrowRight size={16} /></Link></article>
+          <article><span className="precision-index">02 / Ask</span><h3>Questions with context.</h3><p>Use Ask Immune to explore the curated map and source-linked material, with uncertainty and missing evidence kept explicit.</p><Link to="/ask">Ask Immune <ArrowRight size={16} /></Link></article>
+          <article><span className="precision-index">03 / Investigate</span><h3>A question becomes a dossier.</h3><p>Inspect observations, explore graph context, test a scenario and export an investigation with its sources and limitations.</p><Link to="/research" hash="synthetic-programme">Open the workbench <ArrowRight size={16} /></Link></article>
+        </div>
+      </section>
+
+      <section className="precision-section precision-mechanism" aria-labelledby="precision-mechanism-heading">
+        <div><p className="precision-eyebrow">Inside the knowledge graph</p><h2 id="precision-mechanism-heading">A relationship deserves<br />more than a reference.</h2><p>Open a concept to understand its context. Open a relationship to inspect the exact claim and its mapped evidence.</p><Link className="precision-text-link" to="/atlas/$id" params={{ id: "D001" }}>Explore rheumatoid arthritis <ArrowRight size={18} /></Link></div>
+        <div className="precision-mechanism-panel"><HomeCausalPathway /></div>
+      </section>
+
+      <section className="precision-section" aria-labelledby="precision-investigation-heading">
+        <div className="precision-section-head"><p className="precision-eyebrow">Research in practice</p><h2 id="precision-investigation-heading">Follow the investigation.<br />Keep the context.</h2><p>Explore immune, gut, brain and metabolic condition contexts in an interactive demonstration. Fictional records let you test the workflow without entering patient information.</p></div>
         <ResearchJourney />
-        {/* 2 — Prominent Ask entry */}
-        <section className="bio-section" aria-labelledby="ask-gateway-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">{ASK_NAME}</span>
-              <h2 id="ask-gateway-heading">Ask first. Open the graph when you need depth.</h2>
-            </div>
-            <p>
-              {ASK_PUBLIC_LINE} Answers stay educational — missing evidence is stated clearly. From a reply you can open
-              Atlas, Research Radar or a lesson without losing the question.
-            </p>
-          </div>
-          <div className="bio-actions">
-            <Button asChild className="bio-primary">
-              <Link to="/ask">Open {ASK_NAME}</Link>
-            </Button>
-            <Button asChild variant="ghost" className="bio-secondary">
-              <Link to="/ask" search={{ q: "How does TNF drive rheumatoid arthritis?" }}>
-                Try a mechanism question
-              </Link>
-            </Button>
-          </div>
-        </section>
+        <div className="precision-usecases">
+          <Link to="/research" hash="synthetic-programme"><span>Cross-condition investigation</span><strong>Observations → graph context → research plan</strong><p>Compare longitudinal records and inspect the effect of changing scenario inputs.</p></Link>
+          <Link to="/research" hash="melanoma"><span>Melanoma immunotherapy</span><strong>Mechanisms → trial context → hypothesis</strong><p>Explore landmark publication locators and draft a falsifiable investigation.</p></Link>
+        </div>
+      </section>
 
-        {/* 3 — Biological exploration */}
-        <section className="bio-section" aria-labelledby="explore-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">Explore</span>
-              <h2 id="explore-heading">From isolated facts to connected mechanisms.</h2>
-            </div>
-            <p>
-              The curated map shows what a concept connects to, in which direction, and how far claim review has
-              progressed — not a list of papers alone.
-            </p>
-          </div>
-          <div className="home-compare">
-            <div className="home-compare-col home-compare-flat">
-              <span className="home-compare-label">A typical search</span>
-              <p className="home-compare-q">“What does TNF do?”</p>
-              <ul>
-                <li>Lists of papers and definitions</li>
-                <li>Cause and effect look the same</li>
-                <li>No clear path to disease or therapy</li>
-              </ul>
-            </div>
-            <div className="home-compare-col home-compare-connected">
-              <span className="home-compare-label">In {PRODUCT_SHORT}</span>
-              <HomeCausalPathway />
-            </div>
-          </div>
-          <p className="home-causal-note">
-            <Link to={EXPLORE_PATH}>Explore hub</Link>
-            {" · "}
-            <Link to="/atlas">Knowledge Atlas</Link>
-            {" · "}
-            <Link to="/graph">Knowledge graph</Link>
-          </p>
-        </section>
+      <section className="precision-section precision-evidence" aria-labelledby="precision-evidence-heading">
+        <div><p className="precision-eyebrow">Evidence and accountability</p><h2 id="precision-evidence-heading">Trace the claim.<br />See the limits.</h2><p>A graph label is not scientific approval. Supporting evidence must be assessed against the exact relationship, with human review before approval.</p><HomeCoverageGlance /><div className="precision-actions"><Link className="btn" to="/evidence">Evidence explorer</Link><Link className="precision-text-link" to="/methods">Methods & coverage <ArrowRight size={16} /></Link></div></div>
+        <ol className="precision-review-list"><li><span>01</span><div><h3>Source provenance</h3><p>Publication identity, relationship mapping and source context remain distinct.</p></div></li><li><span>02</span><div><h3>Human scientific review</h3><p>Candidates and hypotheses remain unreviewed until an authorised reviewer acts.</p></div></li><li><span>03</span><div><h3>Visible uncertainty</h3><p>Coverage gaps and conflicting findings are part of the investigation, not hidden conclusions.</p></div></li></ol>
+      </section>
 
-        <section className="bio-section" aria-labelledby="mech-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">Mechanism</span>
-              <h2 id="mech-heading">{MECHANISM_EXEMPLAR.title}</h2>
-            </div>
-            <p>
-              Graph links in order. Open a concept for detail, or an arrow for the evidence on that relationship.
-            </p>
-          </div>
-          <InteractiveMechanism />
-          <p className="home-causal-note">
-            <Link to="/mechanism">More mechanisms</Link>
-            {" · "}
-            <Link to="/graph">Full knowledge graph</Link>
-          </p>
-        </section>
+      <section className="precision-section precision-learning" aria-labelledby="precision-learning-heading"><div><p className="precision-eyebrow">Build understanding</p><h2 id="precision-learning-heading">Learn the system.<br />Discuss the science.</h2></div><div><p>Explore immune mechanisms through the Academy and discuss research in journal clubs. Educational discussion stays separate from reviewed evidence.</p><div className="precision-actions"><Link className="btn" to="/academy">Explore Academy</Link><Link className="precision-text-link" to="/community/journal-clubs">Journal clubs <ArrowRight size={16} /></Link></div></div></section>
 
-        {/* 4 — Evidence to discovery */}
-        <section className="bio-section isi-split" aria-labelledby="research-heading">
-          <div>
-            <span className="mkt-section-label">Research</span>
-            <h2 id="research-heading">From evidence to the next defensible question.</h2>
-            <p className="lede">
-              Search journal metadata, organise candidate claims, and open Research Radar for coverage-governed unknowns.
-              Nothing enters the curated graph until a person reviews it.
-            </p>
-            <div className="bio-actions">
-              <Button asChild className="bio-primary">
-                <Link to="/research" hash="library">
-                  <BookOpen /> Research library
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" className="bio-secondary">
-                <Link to="/discovery">Research Radar</Link>
-              </Button>
-            </div>
-            <HomeCoverageGlance />
-          </div>
-          <ol className="isi-ladder" aria-label="How research material is labelled">
-            <li>
-              <b>Source material</b>
-              <span>Journal metadata or provisional literature — identity only until reviewed.</span>
-            </li>
-            <li>
-              <b>Candidate claim</b>
-              <span>A drafted statement mapped to a relationship — still unreviewed.</span>
-            </li>
-            <li>
-              <b>Counterevidence</b>
-              <span>Contradicts and partial assessments stay separate from approved support.</span>
-            </li>
-            <li>
-              <b>Research opportunity</b>
-              <span>Radar candidates from ISI coverage signals — not claimed worldwide absence.</span>
-            </li>
-          </ol>
-        </section>
-
-        {/* 5 — Academy */}
-        <section className="bio-section" aria-labelledby="academy-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">Academy</span>
-              <h2 id="academy-heading">Learn mechanisms as connected systems.</h2>
-            </div>
-            <p>
-              Foundation modules are open to read. Intermediate and advanced tracks are still being written — labelled
-              unfinished, not finished courses.
-            </p>
-          </div>
-          <div className="bio-actions">
-            <Button asChild className="bio-primary">
-              <Link to="/academy">Open Academy</Link>
-            </Button>
-            <Button asChild variant="ghost" className="bio-secondary">
-              <Link to="/mechanism/$id" params={{ id: "tlr4" }}>
-                Start a foundation lesson
-              </Link>
-            </Button>
-          </div>
-        </section>
-
-        {/* 6 — Community */}
-        <section className="bio-section" aria-labelledby="community-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">Community</span>
-              <h2 id="community-heading">Discuss immunology with clear limits.</h2>
-            </div>
-            <p>
-              Educational discussion and journal clubs. Not clinical advice, and not part of the reviewed knowledge
-              graph.
-            </p>
-          </div>
-          <div className="bio-actions">
-            <Button asChild className="bio-primary">
-              <Link to={COMMUNITY_PATH}>Join the conversation</Link>
-            </Button>
-            <Button asChild variant="ghost" className="bio-secondary">
-              <Link to="/community/journal-clubs">Journal clubs</Link>
-            </Button>
-          </div>
-        </section>
-
-        {/* 7 — Trust / governance */}
-        <section className="bio-section" aria-labelledby="trust-heading">
-          <div className="bio-section-heading">
-            <div>
-              <span className="mkt-section-label">Trust</span>
-              <h2 id="trust-heading">Review status stays visible.</h2>
-            </div>
-            <p>
-              Graph today: {SNAP.coreNodes} core concepts and {SNAP.coreRelationships} core links, plus{" "}
-              {SNAP.draftNodes} draft concepts and {SNAP.draftRelationships} draft links awaiting review.
-            </p>
-          </div>
-          <ul className="home-limit-list">
-            <li>
-              <strong>Claim-linked cites</strong>
-              <span>A citation supports a relationship only after it is mapped and reviewed for that claim.</span>
-            </li>
-            <li>
-              <strong>Unreviewed stays labelled</strong>
-              <span>Teaching links remain visible with clear status while review continues.</span>
-            </li>
-            <li>
-              <strong>Human scientific review</strong>
-              <span>No auto-approval into the curated graph. Expert workspaces stay behind account access.</span>
-            </li>
-          </ul>
-          <WontClaimList />
-          <p className="home-trust-link">
-            <Link to="/methods" hash="live-ev-heading">
-              Methods & live coverage
-            </Link>
-            <Link to="/disclaimer">Educational disclaimer</Link>
-          </p>
-        </section>
-
-        {/* 8 — Simple CTA */}
-        <section className="bio-banner home-final-cta" aria-labelledby="cta-heading">
-          <div>
-            <div className="bio-eyebrow">{VISION_MOTTO.join(" · ")}</div>
-            <h2 id="cta-heading">Start with a question.</h2>
-            <p>Ask Immune answers from the curated map — then open biology or research when you need more.</p>
-          </div>
-          <nav className="isi-final-links" aria-label="Start">
-            <Link to="/ask">
-              {ASK_NAME} <ArrowRight size={16} />
-            </Link>
-            <Link to={EXPLORE_PATH}>
-              Explore biology <ArrowRight size={16} />
-            </Link>
-            <Link to="/research">
-              Research <ArrowRight size={16} />
-            </Link>
-            <Link to="/methods" hash="live-ev-heading">
-              Methods <ArrowRight size={16} />
-            </Link>
-          </nav>
-        </section>
-      </div>
+      <section className="precision-close" aria-labelledby="precision-close-heading"><p className="precision-eyebrow">From connected biology to a better question</p><h2 id="precision-close-heading">Start your next investigation.</h2><div className="precision-actions"><Link className="btn primary" to="/research" hash="synthetic-programme">Open research workbench <ArrowRight size={18} /></Link><Link className="precision-text-link" to="/ask">Ask Immune <ArrowRight size={18} /></Link></div><p className="precision-caption">Research use only. Clinical decisions and trial eligibility require qualified review.</p></section>
     </div>
   );
 }
