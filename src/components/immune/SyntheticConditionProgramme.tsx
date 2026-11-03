@@ -12,12 +12,12 @@ function download(name: string, value: unknown) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }));
   const a = document.createElement("a"); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-export default function SyntheticConditionProgramme() {
+export default function SyntheticConditionProgramme({ initialData = starter }: { initialData?: SyntheticProgramme }) {
   const [ready, setReady] = useState(false);
   useEffect(() => { setReady(true); }, []);
-  const [data, setData] = useState<SyntheticProgramme>(starter);
-  const [conditionId, setConditionId] = useState(starter.conditions[0]!.id);
-  const [patientId, setPatientId] = useState(starter.patients[0]!.id);
+  const [data, setData] = useState<SyntheticProgramme>(initialData);
+  const [conditionId, setConditionId] = useState(initialData.conditions[0]!.id);
+  const [patientId, setPatientId] = useState(initialData.patients[0]!.id);
   const [domain, setDomain] = useState("all");
   const [query, setQuery] = useState("");
   const [note, setNote] = useState("");

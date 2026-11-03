@@ -1,19 +1,18 @@
 import { Link } from "@tanstack/react-router";
 
 export default function ResearchJourney({ compact = false }: { compact?: boolean }) {
-  return <section className={`research-journey${compact ? " research-journey-compact" : ""}`} aria-label="Research workbench journey">
+  return <section className={`research-journey${compact ? " research-journey-compact" : ""}`} aria-label="Explore biology and evidence">
     {!compact && <div className="research-journey-intro">
-      <span className="mkt-section-label">Research workbench</span>
-      <h2>Follow a question from context to investigation.</h2>
-      <p>Explore conditions, inspect longitudinal observations, test a research scenario and prepare a reviewable dossier.</p>
-      <Link className="btn primary" to="/research" hash="synthetic-programme">Open research workbench →</Link>
-      <p className="xs muted">Interactive demonstration with fictional records. Research use only.</p>
+      <span className="mkt-section-label">Connected immunology</span>
+      <h2>Follow the biology. Inspect the evidence.</h2>
+      <p>Move from concepts and mechanisms to relationship-specific sources and a better-informed research question.</p>
+      <Link className="btn primary" to="/graph">Explore knowledge graph →</Link>
     </div>}
     <ol className="research-journey-steps">
-      <li><span>01</span><Link to="/research" hash="synthetic-programme">Choose a condition</Link><p>20 contexts across immune, gut, brain and metabolic research.</p></li>
-      <li><span>02</span><Link to="/research" hash="programme-observations">Inspect the record</Link><p>Follow labs, lifestyle, medications and immune measurements over time.</p></li>
-      <li><span>03</span><Link to="/research" hash="programme-discovery">Investigate a hypothesis</Link><p>Change scenario inputs and inspect a testable research plan.</p></li>
-      <li><span>04</span><Link to="/research" hash="programme-trials">Review criteria & export</Link><p>Inspect fictional protocol checks and download a traceable dossier.</p></li>
+      <li><span>01</span><Link to="/atlas">Explore a concept</Link><p>Find cells, pathways, diseases and interventions in the shared Atlas.</p></li>
+      <li><span>02</span><Link to="/graph">Follow its relationships</Link><p>Inspect direction, context and the limits of the mapped mechanism.</p></li>
+      <li><span>03</span><Link to="/evidence">Read the evidence</Link><p>Keep source identity, claim support and review status distinct.</p></li>
+      <li><span>04</span><Link to="/ask">Ask a research question</Link><p>Explore the map with context, sources and uncertainty in view.</p></li>
     </ol>
   </section>;
 }

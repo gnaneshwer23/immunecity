@@ -31,7 +31,6 @@ import { seoHead } from "@/lib/seo";
 import { inspect } from "@/lib/immune/inspector";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import ResearchJourney from "@/components/immune/ResearchJourney";
-import { SYNTHETIC_CONDITION_CATALOGUE } from "@/data/syntheticConditions";
 
 const HOME_DRAFT_TEASERS = [
   {
@@ -258,8 +257,8 @@ function Home() {
           <h1 id="precision-title">Immunology,<br /><em>connected.</em></h1>
           <p className="precision-lede">Explore mechanisms. Follow the evidence. Turn a research question into a traceable investigation.</p>
           <div className="precision-actions">
-            <Link className="btn primary" to="/research" hash="synthetic-programme">Open research workbench <ArrowRight size={18} /></Link>
-            <Link className="precision-text-link" to="/graph">Explore the knowledge graph <ArrowRight size={18} /></Link>
+            <Link className="btn primary" to="/graph">Explore knowledge graph <ArrowRight size={18} /></Link>
+            <Link className="precision-text-link" to="/evidence">Explore the evidence <ArrowRight size={18} /></Link>
           </div>
           <p className="precision-caption">A research workspace for translational teams.<br />Source context and scientific review stay in view.</p>
         </div>
@@ -272,7 +271,7 @@ function Home() {
         <div><strong>{SNAP.coreNodes}</strong><span>Core graph concepts</span></div>
         <div><strong>{SNAP.coreRelationships}</strong><span>Core relationships · review varies</span></div>
         <div><strong>{SNAP.coreVersion}</strong><span>Graph release</span></div>
-        <div><strong>{SYNTHETIC_CONDITION_CATALOGUE.length}</strong><span>Condition contexts · demonstration</span></div>
+        <div><strong>{SNAP.draftRelationships}</strong><span>Draft relationships · review required</span></div>
       </section>
 
       <section className="precision-section" aria-labelledby="precision-work-heading">
@@ -280,7 +279,7 @@ function Home() {
         <div className="precision-product-grid">
           <article><span className="precision-index">01 / Explore</span><h3>A map you can investigate.</h3><p>Follow cells, receptors, pathways, biomarkers, therapies and trials. Inspect direction, context and the review status of each relationship.</p><Link to="/graph">Open the graph <ArrowRight size={16} /></Link></article>
           <article><span className="precision-index">02 / Ask</span><h3>Questions with context.</h3><p>Use Ask Immune to explore the curated map and source-linked material, with uncertainty and missing evidence kept explicit.</p><Link to="/ask">Ask Immune <ArrowRight size={16} /></Link></article>
-          <article><span className="precision-index">03 / Investigate</span><h3>A question becomes a dossier.</h3><p>Inspect observations, explore graph context, test a scenario and export an investigation with its sources and limitations.</p><Link to="/research" hash="synthetic-programme">Open the workbench <ArrowRight size={16} /></Link></article>
+          <article><span className="precision-index">03 / Investigate</span><h3>Follow a research question.</h3><p>Explore source-linked concepts and use the research library to follow the literature behind a question.</p><Link to="/research" hash="library">Explore research library <ArrowRight size={16} /></Link></article>
         </div>
       </section>
 
@@ -290,11 +289,11 @@ function Home() {
       </section>
 
       <section className="precision-section" aria-labelledby="precision-investigation-heading">
-        <div className="precision-section-head"><p className="precision-eyebrow">Research in practice</p><h2 id="precision-investigation-heading">Follow the investigation.<br />Keep the context.</h2><p>Explore immune, gut, brain and metabolic condition contexts in an interactive demonstration. Fictional records let you test the workflow without entering patient information.</p></div>
+        <div className="precision-section-head"><p className="precision-eyebrow">Research in practice</p><h2 id="precision-investigation-heading">Follow the biology.<br />Inspect the evidence.</h2><p>Start with an immune mechanism, inspect its mapped relationships and follow the supporting sources. Ask Immune helps you explore the question with context and uncertainty retained.</p></div>
         <ResearchJourney compact />
         <div className="precision-usecases">
-          <Link to="/research" hash="synthetic-programme"><span>Cross-condition investigation</span><strong>Observations → graph context → research plan</strong><p>Compare longitudinal records and inspect the effect of changing scenario inputs.</p></Link>
-          <Link to="/research" hash="melanoma"><span>Melanoma immunotherapy</span><strong>Mechanisms → trial context → hypothesis</strong><p>Explore landmark publication locators and draft a falsifiable investigation.</p></Link>
+          <Link to="/atlas/$id" params={{ id: "D001" }}><span>Rheumatoid arthritis</span><strong>Immune cells → TNF → disease context</strong><p>Explore the existing graph neighbourhood and inspect relationship-specific evidence.</p></Link>
+          <Link to="/atlas/$id" params={{ id: "D012" }}><span>Melanoma immunotherapy</span><strong>Mechanisms → interventions → trial context</strong><p>Explore the melanoma graph neighbourhood, with evidence status visible.</p></Link>
         </div>
       </section>
 
@@ -305,7 +304,7 @@ function Home() {
 
       <section className="precision-section precision-learning" aria-labelledby="precision-learning-heading"><div><p className="precision-eyebrow">Build understanding</p><h2 id="precision-learning-heading">Learn the system.<br />Discuss the science.</h2></div><div><p>Explore immune mechanisms through the Academy and discuss research in journal clubs. Educational discussion stays separate from reviewed evidence.</p><div className="precision-actions"><Link className="btn" to="/academy">Explore Academy</Link><Link className="precision-text-link" to="/community/journal-clubs">Journal clubs <ArrowRight size={16} /></Link></div></div></section>
 
-      <section className="precision-close" aria-labelledby="precision-close-heading"><p className="precision-eyebrow">From connected biology to a better question</p><h2 id="precision-close-heading">Start your next investigation.</h2><div className="precision-actions"><Link className="btn primary" to="/research" hash="synthetic-programme">Open research workbench <ArrowRight size={18} /></Link><Link className="precision-text-link" to="/ask">Ask Immune <ArrowRight size={18} /></Link></div><p className="precision-caption">Research use only. Clinical decisions and trial eligibility require qualified review.</p></section>
+      <section className="precision-close" aria-labelledby="precision-close-heading"><p className="precision-eyebrow">From connected biology to a better question</p><h2 id="precision-close-heading">Start your next investigation.</h2><div className="precision-actions"><Link className="btn primary" to="/graph">Explore knowledge graph <ArrowRight size={18} /></Link><Link className="precision-text-link" to="/ask">Ask Immune <ArrowRight size={18} /></Link></div><p className="precision-caption">Research use only. Clinical decisions and trial eligibility require qualified review.</p></section>
     </div>
   );
 }

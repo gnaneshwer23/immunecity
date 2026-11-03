@@ -1,5 +1,7 @@
 # Working synthetic project and real-data handover
 
+> Access update: the case demos and draft workbenches have moved to administrator-only `/internal-research`. Earlier public walkthrough URLs below describe the previous testing setup and no longer expose these tools. See [Internal research access](INTERNAL_RESEARCH_ACCESS.md).
+
 The functional research sandbox is at `/research#melanoma`, above the separate
 published-trial reference context. It demonstrates a translational-team
 investigation into PD-1 nonresponse. It contains no patient records and no real

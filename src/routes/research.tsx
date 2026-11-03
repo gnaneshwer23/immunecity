@@ -1,6 +1,6 @@
 import { ART } from "@/components/immune/explain";
-import { useCallback, useState } from "react";
-import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { CONTENT } from "@/data/content";
@@ -8,13 +8,9 @@ import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { byId } from "@/lib/immune/engine";
 import { PageHead, NodeChip } from "@/components/immune/ui";
 import { PageToc, Section } from "@/components/immune/page";
-import ScientificWorkbench from "@/components/immune/ScientificWorkbench";
 import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ResearchLibrary from "@/components/immune/ResearchLibrary";
 import EvidenceCollectionsPanel from "@/components/immune/EvidenceCollectionsPanel";
-import ResearchBriefPanel from "@/components/immune/ResearchBriefPanel";
-import MelanomaEvidenceExplorer from "@/components/immune/MelanomaEvidenceExplorer";
-import SyntheticConditionProgramme from "@/components/immune/SyntheticConditionProgramme";
 import ResearchJourney from "@/components/immune/ResearchJourney";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import PhoneFold from "@/components/immune/PhoneFold";
@@ -25,13 +21,9 @@ import type { SearchMetadata } from "@/lib/research/literatureWorkflow";
 const TOC = [
   { id: "discover", label: "Discover" },
   { id: "evidence", label: "Evidence" },
-  { id: "synthetic-programme", label: "20-condition programme" },
-  { id: "melanoma", label: "Melanoma pilot" },
   { id: "library", label: "Library" },
   { id: "literature", label: "Literature" },
   { id: "collections", label: "Collections" },
-  { id: "workbench", label: "Workbench" },
-  { id: "brief", label: "Draft brief" },
   { id: "tools", label: "Contextual tools" },
   { id: "model-registry", label: "Models" },
   { id: "roadmap", label: "Roadmap" },
@@ -93,9 +85,9 @@ export const Route = createFileRoute("/research")({
   ),
   head: () =>
     seoHead({
-      title: `Research Library & Workbench | ${PRODUCT_NAME}`,
+      title: `Research Library & Evidence | ${PRODUCT_NAME}`,
       description:
-        "Search Nature Portfolio immunology journal metadata, save evidence collections, draft source-traceable research briefs, and organise hypotheses on a partial workbench spine. Nothing is auto-approved or auto-published to the knowledge graph.",
+        "Search immunology journal metadata, explore evidence and organise source-linked research. Nothing is automatically approved into the knowledge graph.",
       path: "/research",
     }),
   component: Research,
@@ -106,8 +98,6 @@ function Research() {
   const roadmap = (CONTENT["roadmap"] ?? []) as Road[];
   const phaseE = IMPLEMENTATION_PHASES.find((p) => p.id === "E");
   const search = Route.useSearch();
-  const [litHandoff, setLitHandoff] = useState<string | null>(null);
-  const clearLitHandoff = useCallback(() => setLitHandoff(null), []);
   const [litSeed, setLitSeed] = useState<{ key: string; seed: Partial<SearchMetadata> } | null>(null);
 
   const seed = {
@@ -122,7 +112,7 @@ function Research() {
       <PageHead
         art={ART.researchArt}
         kicker="Research"
-        title="Turn a research question into a reviewable investigation."
+        title="Explore the evidence behind immune biology."
         lede="Start from Research Radar and dossiers, then organise evidence collections and draft briefs. Literature candidates stay local until imported at Curation. Nothing from this page writes the curated knowledge graph."
         stats={[
           { v: "Radar", l: "START HERE" },
@@ -177,14 +167,6 @@ function Research() {
         </p>
       </Section>
 
-      <Section id="synthetic-programme" title="20-condition synthetic research programme" lede="Explore fictional cases, laboratory timelines, lifestyle and medication context, discovery planning and trial-criteria screening.">
-        <SyntheticConditionProgramme />
-      </Section>
-
-      <Section id="melanoma" title="Melanoma Immunotherapy Evidence Explorer" lede="A bounded research pilot: graph context, trial sources and falsifiable hypotheses.">
-        <MelanomaEvidenceExplorer />
-      </Section>
-
       <Section
         id="library"
         n={1}
@@ -219,11 +201,11 @@ function Research() {
         />
       </Section>
 
-      <Section id="literature" n={2} title="Literature intelligence" lede="Local metadata and candidate claims — not bulk PubMed ingest. Export candidates or send them into the workbench evidence step; they remain drafts.">
+      <Section id="literature" n={2} title="Literature intelligence" lede="Local metadata and candidate claims — not bulk PubMed ingest. Export candidates for authenticated curation; they remain drafts.">
         {litSeed ? (
           <p className="small" role="status">Started a candidate from <b>{litSeed.seed.title}</b> (DOI {litSeed.seed.doi}). Status: unreviewed.</p>
         ) : null}
-        <PhoneFold label="Show literature queue"><LiteratureQueue key={litSeed?.key ?? "blank"} seed={litSeed?.seed} onSendToWorkbench={setLitHandoff} /></PhoneFold>
+        <PhoneFold label="Show literature queue"><LiteratureQueue key={litSeed?.key ?? "blank"} seed={litSeed?.seed} /></PhoneFold>
       </Section>
 
       <Section
@@ -233,48 +215,6 @@ function Research() {
         lede="Signed-in members can save named sets of graph concepts plus optional evidence record refs. Collections sync across devices for your account. Additive storage only — never a knowledge-graph write. Gap labels describe ISI curated coverage, not worldwide literature absence."
       >
         <EvidenceCollectionsPanel />
-      </Section>
-
-      <Section
-        id="workbench"
-        n={4}
-        title="Workbench"
-        lede={
-          <>
-            Guided steps from question through search, extract, assess, hypothesis and export. Local drafts stay on this device until you export them. Candidates and counterevidence hints stay drafts until human review at{" "}
-            <Link to="/curation">Curation</Link>. Nothing is automatically published to the knowledge graph. See{" "}
-            <Link to="/methods" hash="models">
-              Methods · models
-            </Link>
-            .
-          </>
-        }
-      >
-        <ClientOnly fallback={<p>Loading local research draft…</p>}><ScientificWorkbench
-          pendingLitImport={litHandoff}
-          onPendingLitImportConsumed={clearLitHandoff}
-          seed={seed}
-        /></ClientOnly>
-      </Section>
-
-      <Section
-        id="brief"
-        n={5}
-        title="Research brief (AI/draft)"
-        lede={
-          <>
-            Manual workbench draft (rationale, evidence, hypotheses, biomarkers, trials, limitations) cites retrieved
-            concepts only and fails closed on unsupported references. For the Scientific Intelligence MVP (Workflow B /
-            M1 Biomedical Discovery Brief — entities, mechanisms, claim categories), ask a scientific question on{" "}
-            <Link to="/ask">Ask Immune</Link> and choose <em>Generate investigation brief</em>. Available research
-            capability only — not clinical claims. Exports stay unreviewed and cannot approve into the KG.
-          </>
-        }
-      >
-        <ResearchBriefPanel
-          seedQuestion={search.q || undefined}
-          seedConceptIds={[search.start, search.perturb, search.outcome].filter((id): id is string => Boolean(id && byId[id]))}
-        />
       </Section>
 
       <Section

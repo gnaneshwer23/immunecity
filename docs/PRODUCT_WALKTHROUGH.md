@@ -1,5 +1,7 @@
 # Landing-page research walkthrough
 
+> Access update: the case demos and draft workbenches have moved to administrator-only `/internal-research`. Earlier public walkthrough URLs below describe the previous testing setup and no longer expose these tools. See [Internal research access](INTERNAL_RESEARCH_ACCESS.md).
+
 Run the app with `bun run dev` using ISI's configuration, then open the local URL
 printed by Vite. Start at `/`. These changes are on the feature branch until a
 deployment is explicitly completed; the public domain may show an older release.

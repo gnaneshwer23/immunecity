@@ -1,5 +1,7 @@
 # Interactive 20-condition research programme
 
+> Access update: the case demos and draft workbenches have moved to administrator-only `/internal-research`. Earlier public walkthrough URLs below describe the previous testing setup and no longer expose these tools. See [Internal research access](INTERNAL_RESEARCH_ACCESS.md).
+
 Open `/research#synthetic-programme`. This is a functional synthetic research
 workbench, isolated from the single knowledge graph, real evidence curation,
 Ask retrieval and clinical systems. It is not a live clinical application.

@@ -1,5 +1,7 @@
 # Case-to-graph investigation
 
+> Access update: the case demos and draft workbenches have moved to administrator-only `/internal-research`. Earlier public walkthrough URLs below describe the previous testing setup and no longer expose these tools. See [Internal research access](INTERNAL_RESEARCH_ACCESS.md).
+
 The programme at `/research#synthetic-programme` embeds an interactive view of
 the existing single KG. It does not add case records, invented disease links or
 another graph database.

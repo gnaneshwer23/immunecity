@@ -1,0 +1,27 @@
+import { lazy, Suspense, useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { loadInternalResearchProgramme } from "@/lib/research/internalProgramme.functions";
+import type { SyntheticProgramme } from "@/lib/research/syntheticProgramme";
+import { seoHead } from "@/lib/seo";
+
+const Programme = lazy(() => import("@/components/immune/SyntheticConditionProgramme"));
+const Melanoma = lazy(() => import("@/components/immune/MelanomaEvidenceExplorer"));
+const Workbench = lazy(() => import("@/components/immune/ScientificWorkbench"));
+const Brief = lazy(() => import("@/components/immune/ResearchBriefPanel"));
+export const Route = createFileRoute("/internal-research")({
+  head: () => seoHead({ title: "Internal research workspace", description: "Restricted internal testing workspace.", path: "/internal-research", noIndex: true }),
+  component: InternalResearch,
+});
+function InternalResearch() {
+  const load = useServerFn(loadInternalResearchProgramme);
+  const [data, setData] = useState<SyntheticProgramme | null>(null);
+  const [pending, setPending] = useState(true);
+  useEffect(() => {
+    let active = true;
+    load().then((result) => { if (active) setData(result); }).catch(() => { if (active) setData(null); }).finally(() => { if (active) setPending(false); });
+    return () => { active = false; };
+  }, [load]);
+  if (!data) return <main className="page"><h1>Internal research workspace</h1><p role="status">{pending ? "Checking access…" : "Administrator access is required. Your session and stored role must be verified before this workspace can load."}</p></main>;
+  return <main className="page"><h1>Internal research workspace</h1><p>Administrator-only workflow testing. Nothing here approves scientific evidence.</p><Suspense fallback={<p>Loading workspace…</p>}><Programme initialData={data} /><Melanoma /><h2>Investigation workbench</h2><Workbench /><h2>Draft brief</h2><Brief /></Suspense></main>;
+}

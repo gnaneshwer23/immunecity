@@ -1,15 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { signInWithEmail } from "./auth-helpers";
+const admin = { email: process.env.E2E_ADMIN_EMAIL ?? "", password: process.env.E2E_ADMIN_PASSWORD ?? "" };
 
 test("20-condition programme responds to case selection and audited what-if changes", async ({ page }) => {
+  test.skip(!admin.email || !admin.password, "Not a pass: requires a real provisioned admin and working ISI Auth/database.");
+  await signInWithEmail(page, admin, "/internal-research");
   const errors: string[] = []; page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Immunology,");
-  const homeGraph = page.getByRole("region", { name: "Interactive rheumatoid arthritis graph preview" });
-  await homeGraph.getByRole("button", { name: /^Inspect / }).first().click();
-  await page.getByRole("button", { name: "Close scientific detail", exact: true }).click();
-  await page.getByRole("link", { name: /Open research workbench/ }).first().click();
-  await expect(page).toHaveURL(/\/research(?:\?[^#]*)?#synthetic-programme$/);
+  await page.goto("/internal-research");
   const programme = page.getByTestId("synthetic-programme");
   await expect(programme).toHaveAttribute("aria-busy", "false", { timeout: 30_000 });
   await programme.getByRole("navigation", { name: "Investigation steps" }).getByRole("link", { name: "1 · Context", exact: true }).click();

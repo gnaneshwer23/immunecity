@@ -1,10 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { signInWithEmail } from "./auth-helpers";
+const admin = { email: process.env.E2E_ADMIN_EMAIL ?? "", password: process.env.E2E_ADMIN_PASSWORD ?? "" };
 
 test("synthetic project: analyse, save/restore, import and export with provenance", async ({ page }) => {
+  test.skip(!admin.email || !admin.password, "Not a pass: requires a real provisioned admin and working ISI Auth/database.");
+  await signInWithEmail(page, admin, "/internal-research");
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/research#melanoma");
+  await page.goto("/internal-research");
   const project = page.getByTestId("synthetic-project");
   await expect(project.getByRole("button", { name: "Load worked example", exact: true })).toBeEnabled({ timeout: 30_000 });
   await expect(project.getByText("SYNTHETIC DATA ONLY.", { exact: true })).toBeVisible();

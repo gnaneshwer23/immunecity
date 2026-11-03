@@ -13,20 +13,17 @@ bun run dev
 
 Stack: TanStack Start, React, TypeScript, Tailwind CSS 3.4, Neon Auth + Postgres.
 
-## Functional research demo
+## Internal research testing
 
-Open `/research#synthetic-programme` for the [interactive 20-condition programme](docs/SYNTHETIC_20_CONDITION_PROGRAMME.md):
-120 fictional cases, longitudinal labs/lifestyle/medications, audited what-if
-edits, deterministic discovery planning and HSI five-state fictional trial screening.
+Public pages introduce the knowledge graph, evidence, Ask Immune and research
+library. Case fixtures and draft workbenches are not public product entry points.
+The testing tools are at `/internal-research`, with server-side Neon session and
+stored administrator-role verification before programme data are returned.
+No test workspace is linked from the public landing or navigation.
 
-Open `/research#melanoma` and choose **Load worked example** in the synthetic
-project. Inspect conflicting findings, record analysis notes, compare fictional
-cohorts, save/restore locally and export an investigation brief. All demo data
-are invented; no evidence approval or graph writes occur.
-
-See the [workflow and real-data handover guide](docs/SYNTHETIC_PROJECT_AND_LAUNCH_DATA.md)
-and [empty data collection templates](docs/launch-data/README.md) for replacement
-fields and the remaining production requirements.
+See [the access boundary](docs/INTERNAL_RESEARCH_ACCESS.md) for setup and checks.
+The [data handover guide](docs/SYNTHETIC_PROJECT_AND_LAUNCH_DATA.md) and
+[collection templates](docs/launch-data/README.md) remain implementation references.
 
 ## Brand assets
 

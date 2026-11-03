@@ -26,6 +26,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as HsiConsumeRouteImport } from './routes/hsi-consume'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as InternalResearchRouteImport } from './routes/internal-research'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as MethodsRouteImport } from './routes/methods'
 import { Route as OverviewRouteImport } from './routes/overview'
@@ -153,6 +154,11 @@ const HsiConsumeRoute = HsiConsumeRouteImport.update({
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InternalResearchRoute = InternalResearchRouteImport.update({
+  id: '/internal-research',
+  path: '/internal-research',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -393,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
   '/insights': typeof InsightsRoute
+  '/internal-research': typeof InternalResearchRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
   '/overview': typeof OverviewRoute
@@ -455,6 +462,7 @@ export interface FileRoutesByTo {
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
   '/insights': typeof InsightsRoute
+  '/internal-research': typeof InternalResearchRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
   '/overview': typeof OverviewRoute
@@ -519,6 +527,7 @@ export interface FileRoutesById {
   '/graph': typeof GraphRoute
   '/hsi-consume': typeof HsiConsumeRoute
   '/insights': typeof InsightsRoute
+  '/internal-research': typeof InternalResearchRoute
   '/learn': typeof LearnRoute
   '/methods': typeof MethodsRoute
   '/overview': typeof OverviewRoute
@@ -583,6 +592,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/hsi-consume'
     | '/insights'
+    | '/internal-research'
     | '/learn'
     | '/methods'
     | '/overview'
@@ -645,6 +655,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/hsi-consume'
     | '/insights'
+    | '/internal-research'
     | '/learn'
     | '/methods'
     | '/overview'
@@ -708,6 +719,7 @@ export interface FileRouteTypes {
     | '/graph'
     | '/hsi-consume'
     | '/insights'
+    | '/internal-research'
     | '/learn'
     | '/methods'
     | '/overview'
@@ -772,6 +784,7 @@ export interface RootRouteChildren {
   GraphRoute: typeof GraphRoute
   HsiConsumeRoute: typeof HsiConsumeRoute
   InsightsRoute: typeof InsightsRoute
+  InternalResearchRoute: typeof InternalResearchRoute
   LearnRoute: typeof LearnRoute
   MethodsRoute: typeof MethodsRoute
   OverviewRoute: typeof OverviewRoute
@@ -934,6 +947,13 @@ declare module '@tanstack/react-router' {
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/internal-research': {
+      id: '/internal-research'
+      path: '/internal-research'
+      fullPath: '/internal-research'
+      preLoaderRoute: typeof InternalResearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -1289,6 +1309,7 @@ const rootRouteChildren: RootRouteChildren = {
   GraphRoute: GraphRoute,
   HsiConsumeRoute: HsiConsumeRoute,
   InsightsRoute: InsightsRoute,
+  InternalResearchRoute: InternalResearchRoute,
   LearnRoute: LearnRoute,
   MethodsRoute: MethodsRoute,
   OverviewRoute: OverviewRoute,
