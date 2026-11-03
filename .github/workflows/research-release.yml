@@ -6,6 +6,23 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: hsi-test-only-password
+          POSTGRES_DB: hsi_step3_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      HSI_TEST_ADMIN_DB_URL: postgresql://postgres:hsi-test-only-password@127.0.0.1:5432/hsi_step3_test
+      HSI_TEST_DB_URL: postgresql://hsi_app_test:hsi-test-only-password@127.0.0.1:5432/hsi_step3_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,4 +35,6 @@ jobs:
       - run: bun run typecheck
       - run: bun scripts/verify-hsi-release.ts
       - run: bun run test
+      - run: bun scripts/setup-investigation-test-db.ts --reset
+      - run: bun scripts/test-investigation-backend.ts
       - run: bun run build

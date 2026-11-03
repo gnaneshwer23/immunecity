@@ -65,6 +65,7 @@ import { Route as PipelineIndexRouteImport } from './routes/pipeline.index'
 import { Route as PipelineDiseaseRouteImport } from './routes/pipeline.$disease'
 import { Route as ApiAskPrepareRouteImport } from './routes/api/ask.prepare'
 import { Route as ApiCronDiscoveryMonitorRouteImport } from './routes/api/cron/discovery-monitor'
+import { Route as ApiInternalInvestigationsRouteImport } from './routes/api/internal.investigations'
 import { Route as CommunityPostPostIdRouteImport } from './routes/community.post.$postId'
 import { Route as CommunityProfileIndexRouteImport } from './routes/community.profile.index'
 import { Route as CommunityProfileUserIdRouteImport } from './routes/community.profile.$userId'
@@ -351,6 +352,12 @@ const ApiCronDiscoveryMonitorRoute = ApiCronDiscoveryMonitorRouteImport.update({
   path: '/api/cron/discovery-monitor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiInternalInvestigationsRoute =
+  ApiInternalInvestigationsRouteImport.update({
+    id: '/api/internal/investigations',
+    path: '/api/internal/investigations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CommunityPostPostIdRoute = CommunityPostPostIdRouteImport.update({
   id: '/community/post/$postId',
   path: '/community/post/$postId',
@@ -438,6 +445,7 @@ export interface FileRoutesByFullPath {
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
   '/api/cron/discovery-monitor': typeof ApiCronDiscoveryMonitorRoute
+  '/api/internal/investigations': typeof ApiInternalInvestigationsRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
@@ -501,6 +509,7 @@ export interface FileRoutesByTo {
   '/pipeline': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
   '/api/cron/discovery-monitor': typeof ApiCronDiscoveryMonitorRoute
+  '/api/internal/investigations': typeof ApiInternalInvestigationsRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
@@ -566,6 +575,7 @@ export interface FileRoutesById {
   '/pipeline/': typeof PipelineIndexRoute
   '/api/ask/prepare': typeof ApiAskPrepareRoute
   '/api/cron/discovery-monitor': typeof ApiCronDiscoveryMonitorRoute
+  '/api/internal/investigations': typeof ApiInternalInvestigationsRoute
   '/community/post/$postId': typeof CommunityPostPostIdRoute
   '/community/profile/$userId': typeof CommunityProfileUserIdRoute
   '/community/topic/$slug': typeof CommunityTopicSlugRoute
@@ -631,6 +641,7 @@ export interface FileRouteTypes {
     | '/pipeline/'
     | '/api/ask/prepare'
     | '/api/cron/discovery-monitor'
+    | '/api/internal/investigations'
     | '/community/post/$postId'
     | '/community/profile/$userId'
     | '/community/topic/$slug'
@@ -694,6 +705,7 @@ export interface FileRouteTypes {
     | '/pipeline'
     | '/api/ask/prepare'
     | '/api/cron/discovery-monitor'
+    | '/api/internal/investigations'
     | '/community/post/$postId'
     | '/community/profile/$userId'
     | '/community/topic/$slug'
@@ -758,6 +770,7 @@ export interface FileRouteTypes {
     | '/pipeline/'
     | '/api/ask/prepare'
     | '/api/cron/discovery-monitor'
+    | '/api/internal/investigations'
     | '/community/post/$postId'
     | '/community/profile/$userId'
     | '/community/topic/$slug'
@@ -820,6 +833,7 @@ export interface RootRouteChildren {
   MechanismIndexRoute: typeof MechanismIndexRoute
   PipelineIndexRoute: typeof PipelineIndexRoute
   ApiCronDiscoveryMonitorRoute: typeof ApiCronDiscoveryMonitorRoute
+  ApiInternalInvestigationsRoute: typeof ApiInternalInvestigationsRoute
   CommunityPostPostIdRoute: typeof CommunityPostPostIdRoute
   CommunityProfileUserIdRoute: typeof CommunityProfileUserIdRoute
   CommunityTopicSlugRoute: typeof CommunityTopicSlugRoute
@@ -1222,6 +1236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCronDiscoveryMonitorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/internal/investigations': {
+      id: '/api/internal/investigations'
+      path: '/api/internal/investigations'
+      fullPath: '/api/internal/investigations'
+      preLoaderRoute: typeof ApiInternalInvestigationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/community/post/$postId': {
       id: '/community/post/$postId'
       path: '/community/post/$postId'
@@ -1345,6 +1366,7 @@ const rootRouteChildren: RootRouteChildren = {
   MechanismIndexRoute: MechanismIndexRoute,
   PipelineIndexRoute: PipelineIndexRoute,
   ApiCronDiscoveryMonitorRoute: ApiCronDiscoveryMonitorRoute,
+  ApiInternalInvestigationsRoute: ApiInternalInvestigationsRoute,
   CommunityPostPostIdRoute: CommunityPostPostIdRoute,
   CommunityProfileUserIdRoute: CommunityProfileUserIdRoute,
   CommunityTopicSlugRoute: CommunityTopicSlugRoute,

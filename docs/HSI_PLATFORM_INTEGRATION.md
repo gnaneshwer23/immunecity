@@ -1,5 +1,18 @@
 # HSI platform connection
 
+## Authenticated backend and internal workflow
+
+The investigation runner now has an authenticated product API, private PostgreSQL
+checkpoints, audit rows, RLS, revision checks, quotas and an internal UI at
+`/internal-research`. No public landing-page link is added. Source passages are
+absent until a rights-verified release is supplied; the UI reports that gap and
+does not invent scientific support.
+
+See the [activation instructions and verification limits](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/INVESTIGATION_PRODUCT_BACKENDS.md).
+The new migration must run on this product's database before the workflow is
+available. Missing configuration fails closed; there is no file/sample fallback.
+
+
 ## Shared investigation service
 
 `investigationService.ts` is the canonical HSI server-side runner, with Git and
@@ -9,8 +22,10 @@ using the same contract fixture. The Node-only module must stay in backend code.
 
 It requires an authorisation adapter on every action and a store with atomic
 revision checks. The memory store in conformance tests is intentionally local;
-this milestone does not connect product login, a live DB, literature API or model.
-Product backend/storage adapters are step 3. No public page is added. See the
+the shared library alone does not establish a live deployment, literature API
+or model connection.
+Product backend/storage adapters are implemented above; live activation still
+requires the product migration and account provisioning. No public page is added. See the
 [execution and recovery semantics](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/INVESTIGATION_SERVICE.md).
 
 
@@ -23,9 +38,8 @@ and run history. The new consumer conformance test validates an abstract synthet
 fixture and rejects unsafe or inconsistent envelopes. No public UI is added.
 
 This supplies the common boundary for the investigation service above. The validator does not
-itself call a provider or move product data. The product
-backend must authenticate reviewers, exclude PHI, verify passage rights/digests
-and persist actual execution history. Structural approval metadata is not an
+itself call a provider or move product data. The product backend authenticates reviewers and persists execution history and
+digests. Operators must exclude PHI and verify source rights. Structural approval metadata is not an
 authorisation check. See HSI's
 [contract semantics and limits](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/SHARED_RESEARCH_CONTRACT.md).
 The older research snapshot contract below serves its existing exchange and is
