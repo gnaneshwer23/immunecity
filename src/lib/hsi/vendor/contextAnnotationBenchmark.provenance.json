@@ -1,0 +1,10 @@
+{
+  "repository": "gnaneshwer23/hsi-core",
+  "commit": "758b14f82736b349e5b137e6d328a808c6da0964",
+  "path": "src/contextAnnotationBenchmark.ts",
+  "version": "hsi-ra-context-annotation-benchmark-1",
+  "sha256": "ccfb70be8ea8ae5e7b133d4e200033f9fe03e2db6e3e32606983ebba8a915bd7",
+  "distribution": "exact_source_snapshot",
+  "executable": true,
+  "includesProductData": false
+}

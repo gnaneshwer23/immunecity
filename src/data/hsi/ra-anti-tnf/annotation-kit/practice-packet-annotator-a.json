@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "hsi-ra-context-annotation-benchmark-1",
+  "packetId": "PKT-68518e06e3e187d2-A",
+  "annotatorSlot": "annotator_a",
+  "doubleBlind": true,
+  "guidelineVersion": "hsi-ra-context-annotation-guideline-1",
+  "rows": [
+    {
+      "rowId": "PRACTICE-3f027c499c792d5f",
+      "partition": "practice_not_evaluation",
+      "sourceId": "SYN-RA-SRC-0001",
+      "passageId": "SYN-RA-SRC-0001-ABSTRACT-1",
+      "passageSha256": "b57a28cacc44e7071c8573c4b05b22ec40fbf972e608162da7d8cf53e3d423e5",
+      "passageLocator": "RESEARCH/abstract/p[1]",
+      "sourceVersion": "6a57faf798cd82662b201b207bb7a3b5b654a200b78f3d673c97e7471632b191",
+      "pmid": null,
+      "pmcid": null,
+      "doi": null,
+      "licenceIdentifier": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "authors": [],
+      "articleTitle": "RS-0001 — Research working-set cohort abstract on RF/anti-CCP and anti-TNF response heterogeneity (synthetic research source)",
+      "passageText": "In this research working-set cohort abstract for adults with rheumatoid arthritis receiving anti-TNF therapy, RF and anti-CCP serostatus were recorded at baseline. Any association with response heterogeneity described here is illustrative for investigation workflows only and must not be cited as scientific evidence. Source label: RS-0001.",
+      "groundingSpan": null,
+      "tags": {
+        "species": null,
+        "tissue_or_sample": null,
+        "setting_or_model": null,
+        "intervention": null,
+        "outcome": null,
+        "timepoint": null
+      },
+      "annotatorId": null,
+      "labelledAt": null,
+      "scientificReview": "unreviewed",
+      "containsPhi": false,
+      "clinicalAdvice": false,
+      "kgWrite": false
+    },
+    {
+      "rowId": "PRACTICE-af8543b373c63373",
+      "partition": "practice_not_evaluation",
+      "sourceId": "SYN-RA-SRC-0002",
+      "passageId": "SYN-RA-SRC-0002-ABSTRACT-1",
+      "passageSha256": "142f6c37ddd5f931ff555a3a1c6721959819effd717a3d1fc646b672b629b2f7",
+      "passageLocator": "RESEARCH/abstract/p[1]",
+      "sourceVersion": "16a30239a65496d6fb210522b1fbb042befda9fc39aa970e99b2f222c1ffbacc",
+      "pmid": null,
+      "pmcid": null,
+      "doi": null,
+      "licenceIdentifier": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "authors": [],
+      "articleTitle": "RS-0002 — Research working-set meta-analysis style abstract contrasting serology frames with anti-TNF efficacy (synthetic research source)",
+      "passageText": "This research working-set abstract notes that a null predictive association for RF/anti-CCP does not refute anti-TNF efficacy in rheumatoid arthritis. Keep serology-response prediction distinct from treatment efficacy. Graph anchors remain related context only. Source label: RS-0002.",
+      "groundingSpan": null,
+      "tags": {
+        "species": null,
+        "tissue_or_sample": null,
+        "setting_or_model": null,
+        "intervention": null,
+        "outcome": null,
+        "timepoint": null
+      },
+      "annotatorId": null,
+      "labelledAt": null,
+      "scientificReview": "unreviewed",
+      "containsPhi": false,
+      "clinicalAdvice": false,
+      "kgWrite": false
+    }
+  ]
+}
