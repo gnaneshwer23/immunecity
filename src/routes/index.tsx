@@ -31,6 +31,8 @@ import { seoHead } from "@/lib/seo";
 import { inspect } from "@/lib/immune/inspector";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import ResearchJourney from "@/components/immune/ResearchJourney";
+import HomeExploreNavigator from "@/components/immune/HomeExploreNavigator";
+import immuneCellImage from "@/assets/immune-cell.jpg";
 
 const HOME_DRAFT_TEASERS = [
   {
@@ -252,6 +254,7 @@ function Home() {
   return (
     <div className="precision-home">
       <section className="precision-hero isi-dark-band" aria-labelledby="precision-title">
+        <img className="landing-hero-science" src={immuneCellImage} alt="" aria-hidden="true" width={1536} height={1024} decoding="async" />
         <div className="precision-hero-copy">
           <p className="precision-eyebrow">Immune Super Intelligence · Translational research</p>
           <h1 id="precision-title">Immunology,<br /><em>connected.</em></h1>
@@ -267,6 +270,7 @@ function Home() {
         </div>
       </section>
 
+      <nav className="landing-section-nav" aria-label="On this page"><span>Discover ISI</span><a href="#landing-explore">Explore biology</a><a href="#precision-work-heading">Research tools</a><a href="#precision-evidence-heading">Evidence & trust</a><a href="#precision-learning-heading">Learn & discuss</a></nav>
       <section className="precision-facts" aria-label="Graph release and evidence service">
         <div><strong>{SNAP.coreNodes}</strong><span>Core graph concepts</span></div>
         <div><strong>{SNAP.coreRelationships}</strong><span>Core relationships · review varies</span></div>
@@ -274,18 +278,15 @@ function Home() {
         <div><strong>{SNAP.draftRelationships}</strong><span>Draft relationships · review required</span></div>
       </section>
 
+      <HomeExploreNavigator />
+
       <section className="precision-section" aria-labelledby="precision-work-heading">
         <div className="precision-section-head"><p className="precision-eyebrow">One workspace, connected questions</p><h2 id="precision-work-heading">Move between the biology<br />and the evidence behind it.</h2></div>
         <div className="precision-product-grid">
-          <article><span className="precision-index">01 / Explore</span><h3>A map you can investigate.</h3><p>Follow cells, receptors, pathways, biomarkers, therapies and trials. Inspect direction, context and the review status of each relationship.</p><Link to="/graph">Open the graph <ArrowRight size={16} /></Link></article>
-          <article><span className="precision-index">02 / Ask</span><h3>Questions with context.</h3><p>Use Ask Immune to explore the curated map and source-linked material, with uncertainty and missing evidence kept explicit.</p><Link to="/ask">Ask Immune <ArrowRight size={16} /></Link></article>
-          <article><span className="precision-index">03 / Investigate</span><h3>Follow a research question.</h3><p>Explore source-linked concepts and use the research library to follow the literature behind a question.</p><Link to="/research" hash="library">Explore research library <ArrowRight size={16} /></Link></article>
+          <Link className="landing-product-card" to="/graph" aria-label="Open knowledge graph"><img src={ART.moleculesArt} alt="" width={1024} height={768} loading="lazy" decoding="async" /><div><span className="precision-index">01 / Explore</span><h3>A map you can investigate.</h3><p>Follow cells, receptors, pathways, biomarkers, therapies and trials. Inspect the context and review status of each relationship.</p><span className="landing-card-action">Open the graph <ArrowRight size={17} /></span></div></Link>
+          <Link className="landing-product-card" to="/ask" aria-label="Open Ask Immune"><img src={ART.cellsArt} alt="" width={1024} height={768} loading="lazy" decoding="async" /><div><span className="precision-index">02 / Ask</span><h3>Questions with context.</h3><p>Explore the curated map and source-linked material, with uncertainty and missing evidence kept explicit.</p><span className="landing-card-action">Ask Immune <ArrowRight size={17} /></span></div></Link>
+          <Link className="landing-product-card" to="/research" hash="library" aria-label="Open research library"><img src={ART.researchArt} alt="" width={1024} height={768} loading="lazy" decoding="async" /><div><span className="precision-index">03 / Investigate</span><h3>Follow a research question.</h3><p>Explore source-linked concepts and follow the literature behind a question in the research library.</p><span className="landing-card-action">Explore research library <ArrowRight size={17} /></span></div></Link>
         </div>
-      </section>
-
-      <section className="precision-section precision-mechanism" aria-labelledby="precision-mechanism-heading">
-        <div><p className="precision-eyebrow">Inside the knowledge graph</p><h2 id="precision-mechanism-heading">A relationship deserves<br />more than a reference.</h2><p>Open a concept to understand its context. Open a relationship to inspect the exact claim and its mapped evidence.</p><Link className="precision-text-link" to="/atlas/$id" params={{ id: "D001" }}>Explore rheumatoid arthritis <ArrowRight size={18} /></Link></div>
-        <div className="precision-mechanism-panel"><HomeCausalPathway /></div>
       </section>
 
       <section className="precision-section" aria-labelledby="precision-investigation-heading">
