@@ -360,6 +360,65 @@ export function openAdjudicationRecord(rowId: string, a: ContextTagSet, b: Conte
   };
 }
 
+function assertFilledTags(tags: ContextTagSet, path: string) {
+  if (!tags.species || !SPECIES.includes(tags.species)) throw new ContextAnnotationBenchmarkError(`${path}.species`);
+  if (!tags.setting_or_model || !SETTINGS.includes(tags.setting_or_model)) {
+    throw new ContextAnnotationBenchmarkError(`${path}.setting_or_model`);
+  }
+  for (const key of ["tissue_or_sample", "intervention", "outcome", "timepoint"] as const) {
+    const value = tags[key];
+    if (typeof value !== "string" || !value.trim() || value.length > 500) {
+      throw new ContextAnnotationBenchmarkError(`${path}.${key}`);
+    }
+  }
+}
+
+/** Close an adjudication record with human final tags. Practice-only unless caller partitions separately. */
+export function finalizeAdjudicationRecord(
+  open: AdjudicationRecord,
+  input: { finalTags: ContextTagSet; adjudicatorId: string; rationale: string; adjudicatedAt: string },
+): AdjudicationRecord {
+  if (open.finalTags !== null) throw new ContextAnnotationBenchmarkError("already_finalized");
+  if (!input.adjudicatorId.trim()) throw new ContextAnnotationBenchmarkError("adjudicatorId");
+  if (!input.rationale.trim() || input.rationale.length > 4000) throw new ContextAnnotationBenchmarkError("rationale");
+  if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z$/.test(input.adjudicatedAt)) {
+    throw new ContextAnnotationBenchmarkError("adjudicatedAt");
+  }
+  assertFilledTags(input.finalTags, "finalTags");
+  return {
+    ...open,
+    finalTags: {
+      species: input.finalTags.species,
+      tissue_or_sample: input.finalTags.tissue_or_sample!.trim(),
+      setting_or_model: input.finalTags.setting_or_model,
+      intervention: input.finalTags.intervention!.trim(),
+      outcome: input.finalTags.outcome!.trim(),
+      timepoint: input.finalTags.timepoint!.trim(),
+    },
+    adjudicatorId: input.adjudicatorId.trim(),
+    rationale: input.rationale.trim(),
+    adjudicatedAt: input.adjudicatedAt,
+    fabricatedLabelsPermitted: false,
+  };
+}
+
+/** Build open adjudication records from two accepted practice packets (same row set). */
+export function buildPracticeAdjudicationQueue(
+  packetA: AcceptedPracticePacket,
+  packetB: AcceptedPracticePacket,
+): AdjudicationRecord[] {
+  if (packetA.partition !== "practice_not_evaluation" || packetB.partition !== "practice_not_evaluation") {
+    throw new ContextAnnotationBenchmarkError("practice_only");
+  }
+  if (packetA.rows.length !== packetB.rows.length) throw new ContextAnnotationBenchmarkError("row_count_mismatch");
+  const byB = new Map(packetB.rows.map((row) => [row.rowId, row]));
+  return packetA.rows.map((rowA) => {
+    const rowB = byB.get(rowA.rowId);
+    if (!rowB || !rowA.tags.species || !rowB.tags.species) throw new ContextAnnotationBenchmarkError("unlabelled_row");
+    return openAdjudicationRecord(rowA.rowId, rowA.tags, rowB.tags);
+  });
+}
+
 /** Assign scaffold rows to partitions by stable hash — does not invent labels. */
 export function assignPartitionsByPolicy(
   rows: AnnotationWorksheetRow[],

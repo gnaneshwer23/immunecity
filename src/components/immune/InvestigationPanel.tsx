@@ -354,6 +354,15 @@ export default function InvestigationPanel() {
                   </button>
                 </div>
               )}
+              {snapshot.bundle.passages.length > 0 && (
+                <article className={styles.card}>
+                  <h3>Next: context annotation practice</h3>
+                  <p className={styles.status}>
+                    Use the scenario steps above to label these passages as Annotator A then B, adjudicate disagreements,
+                    and export. Practice labels stay out of evaluation_frozen; workflow accept is not Gate C.
+                  </p>
+                </article>
+              )}
             </>
           ) : (
             <p className={styles.empty}>Select an investigation or start one from an available corpus.</p>
