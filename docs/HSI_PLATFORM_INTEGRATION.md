@@ -1,5 +1,23 @@
 # HSI platform connection
 
+## Shared research contracts
+
+`researchContracts.ts` beside the shared algorithm is an exact HSI source snapshot,
+with Git revision and SHA-256 provenance. It defines versioned research context,
+source/passages, existing graph relationships, claim assessments, human review
+and run history. The new consumer conformance test validates an abstract synthetic
+fixture and rejects unsafe or inconsistent envelopes. No public UI is added.
+
+This supplies the common boundary for the next investigation service. It does not
+connect a live provider, execute investigations or move product data. The product
+backend must authenticate reviewers, exclude PHI, verify passage rights/digests
+and persist actual execution history. Structural approval metadata is not an
+authorisation check. See HSI's
+[contract semantics and limits](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/SHARED_RESEARCH_CONTRACT.md).
+The older research snapshot contract below serves its existing exchange and is
+not silently replaced by this new investigation contract.
+
+
 ## Shared executable technology
 
 The existing `getGraphNeighbourhood` now calls HSI's canonical bounded traversal

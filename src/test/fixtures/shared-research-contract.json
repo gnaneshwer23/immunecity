@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "hsi-research-contract-1",
+  "containsPhi": false,
+  "clinicalAdvice": false,
+  "kgWrite": false,
+  "context": { "id": "SYN-CONTEXT-1", "question": "How should a workflow preserve source and graph references?", "conceptIds": ["SYN-NODE-A"], "dataClass": "synthetic", "purpose": "research_only", "containsPhi": false, "provenance": { "product": "hsi", "datasetId": "SYN-DATASET", "version": "1", "retrievedAt": "2026-11-03T00:00:00Z" } },
+  "sources": [{ "id": "SYN-SOURCE-1", "title": "Invented contract-testing source; no scientific findings", "kind": "synthetic_fixture", "dataClass": "synthetic", "pmid": null, "doi": null, "url": null, "licence": { "status": "permitted", "identifier": "synthetic-test-only", "passageUsePermitted": true }, "provenance": { "product": "hsi", "datasetId": "SYN-DATASET", "version": "1", "retrievedAt": "2026-11-03T00:00:00Z" } }],
+  "passages": [{ "id": "SYN-PASSAGE-1", "sourceId": "SYN-SOURCE-1", "sourceVersion": "1", "text": "Invented text used to test contract references, not biological evidence.", "locator": "Fixture paragraph 1", "dataClass": "synthetic", "sha256": null }],
+  "entities": [
+    { "id": "SYN-NODE-A", "label": "Fixture concept A", "type": "other", "dataClass": "synthetic", "provenance": { "product": "isi", "datasetId": "SYN-GRAPH", "version": "1", "retrievedAt": "2026-11-03T00:00:00Z" } },
+    { "id": "SYN-NODE-B", "label": "Fixture concept B", "type": "other", "dataClass": "synthetic", "provenance": { "product": "isi", "datasetId": "SYN-GRAPH", "version": "1", "retrievedAt": "2026-11-03T00:00:00Z" } }
+  ],
+  "relationships": [{ "id": "SYN-REL-AB", "subjectId": "SYN-NODE-A", "predicate": "related_to", "objectId": "SYN-NODE-B", "dataClass": "synthetic", "context": { "species": null, "experimentalSystem": null, "tissueId": null, "assay": null, "timepoint": null }, "provenance": { "product": "isi", "datasetId": "SYN-GRAPH", "version": "1", "retrievedAt": "2026-11-03T00:00:00Z" } }],
+  "claims": [{ "id": "SYN-CLAIM-1", "statement": "Fixture-only candidate relationship.", "relationshipId": "SYN-REL-AB", "passageIds": ["SYN-PASSAGE-1"], "dataClass": "synthetic", "support": "unassessed", "assessmentKind": "unassessed", "curation": "unreviewed", "review": null }],
+  "runs": [{ "id": "SYN-RUN-1", "contextId": "SYN-CONTEXT-1", "dataClass": "synthetic", "createdAt": "2026-11-03T00:00:00Z", "artifacts": [], "history": [] }]
+}
