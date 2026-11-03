@@ -1,5 +1,19 @@
 # HSI platform connection
 
+## Shared investigation service
+
+`investigationService.ts` is the canonical HSI server-side runner, with Git and
+SHA-256 provenance. Its consumer test executes corpus retrieval → graph context →
+explicit counterevidence → unvalidated research questions → human review → dossier
+using the same contract fixture. The Node-only module must stay in backend code.
+
+It requires an authorisation adapter on every action and a store with atomic
+revision checks. The memory store in conformance tests is intentionally local;
+this milestone does not connect product login, a live DB, literature API or model.
+Product backend/storage adapters are step 3. No public page is added. See the
+[execution and recovery semantics](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/INVESTIGATION_SERVICE.md).
+
+
 ## Shared research contracts
 
 `researchContracts.ts` beside the shared algorithm is an exact HSI source snapshot,
@@ -8,8 +22,8 @@ source/passages, existing graph relationships, claim assessments, human review
 and run history. The new consumer conformance test validates an abstract synthetic
 fixture and rejects unsafe or inconsistent envelopes. No public UI is added.
 
-This supplies the common boundary for the next investigation service. It does not
-connect a live provider, execute investigations or move product data. The product
+This supplies the common boundary for the investigation service above. The validator does not
+itself call a provider or move product data. The product
 backend must authenticate reviewers, exclude PHI, verify passage rights/digests
 and persist actual execution history. Structural approval metadata is not an
 authorisation check. See HSI's

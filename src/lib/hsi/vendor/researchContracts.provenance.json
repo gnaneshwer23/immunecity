@@ -1,9 +1,9 @@
 {
   "repository": "gnaneshwer23/hsi-core",
-  "commit": "904c8c0354ba39f20e75b3d3a8af5538ff709fa1",
+  "commit": "2464cd90e235f74823fe335db1efd1a2bde72b18",
   "path": "src/researchContracts.ts",
   "version": "hsi-research-contract-1",
-  "sha256": "df3694d43b09604430f912411f170ecdf40067315213f172f0dda42bed361479",
+  "sha256": "9a9670925512fcb5a6215c39bd2e946a64cfc118801144031a4f70cec480491e",
   "distribution": "exact_source_snapshot",
   "executable": true,
   "includesProductData": false

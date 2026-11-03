@@ -97,6 +97,7 @@ export function researchRunState(run: ResearchRun): "pending" | "running" | "fai
   if (run.history.some((e) => e.status === "failed")) return "failed";
   const last = run.history[run.history.length - 1]!;
   if (last.stage === "review" && last.status === "started") return "awaiting_human_review";
+  if (last.stage === "hypothesis" && last.status === "completed") return "awaiting_human_review";
   const terminal = run.history.filter((e) => e.status === "completed" || e.status === "skipped");
   if (terminal.length === RESEARCH_STAGES.length) return terminal.some((e) => e.status === "skipped") ? "partial" : "completed";
   return "running";
