@@ -150,8 +150,8 @@
   color: #7fd99a;
 }
 
-input,
-select {
+.panel input,
+.panel select {
   padding: 0.45rem 0.55rem;
   border-radius: 0.35rem;
   border: 1px solid color-mix(in oklab, var(--isi-border, #2a3a4a) 90%, transparent);
