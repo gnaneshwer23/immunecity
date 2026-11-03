@@ -1,6 +1,6 @@
 /**
  * Phase 5 proof-point smoke (ISI): authenticated start → passages → reload → review → export,
- * pending evidence_not_ready, and cross-owner denial. Disposable local DB only.
+ * rights-verified evidence corpus start, and cross-owner denial. Disposable local DB only.
  */
 import assert from "node:assert/strict";
 import { generateKeyPair, exportJWK, SignJWT } from "jose";
@@ -63,10 +63,14 @@ try {
   const aliceTok = await token(alice);
   const bobTok = await token(bob);
 
-  const pending = await call(aliceTok, { action: "start", releaseId: RA_RELEASE_ID, conceptId: null });
-  assert.equal(pending.status, 422);
-  assert.equal((await pending.json()).error, "evidence_not_ready");
-  checks.push("pending_evidence_not_ready");
+  const evidenceStarted = await call(aliceTok, { action: "start", releaseId: RA_RELEASE_ID, conceptId: null });
+  assert.equal(evidenceStarted.status, 200);
+  const evidenceRun = await evidenceStarted.json();
+  assert.ok((evidenceRun.snapshot.payloads.retrieval?.passageIds?.length ?? 0) >= 2);
+  assert.equal(evidenceRun.snapshot.bundle.claims.length, 0);
+  assert.equal(evidenceRun.snapshot.bundle.context.dataClass, "public_real");
+  assert.ok(evidenceRun.snapshot.bundle.sources.every((s: { kind: string; pmid: string | null }) => s.kind === "publication" && s.pmid));
+  checks.push("evidence_start_passages");
 
   const started = await call(aliceTok, { action: "start", releaseId: RA_RESEARCH_RELEASE_ID, conceptId: null });
   assert.equal(started.status, 200);

@@ -1,17 +1,15 @@
-/** Corpus-level verification: pending evidence_not_ready + research working set loads. No Neon required. */
+/** Corpus-level verification: rights-verified evidence + research working set. No Neon required. */
 import { isiInvestigationReleases, loadIsiInvestigationRelease } from "../src/lib/hsi/investigation-corpus.server";
-import { InvestigationRequestError } from "../src/lib/hsi/vendor/investigationBackend";
 import { RA_RELEASE_ID } from "../src/lib/hsi/vendor/raEvidenceRelease";
 import { RA_RESEARCH_RELEASE_ID } from "../src/lib/hsi/vendor/raResearchEvidenceRelease";
 
-const pending = isiInvestigationReleases.find((r) => r.id === RA_RELEASE_ID);
-if (!pending || pending.readiness?.available !== false) throw new Error("pending RA must stay unavailable");
-try {
-  await loadIsiInvestigationRelease(RA_RELEASE_ID, null);
-  throw new Error("expected evidence_not_ready");
-} catch (error) {
-  if (!(error instanceof InvestigationRequestError) || error.code !== "evidence_not_ready") throw error;
-}
+const evidenceListing = isiInvestigationReleases.find((r) => r.id === RA_RELEASE_ID);
+if (!evidenceListing?.readiness?.available) throw new Error("rights-verified RA evidence must be available");
+if (evidenceListing.readiness.scientificReview !== "unreviewed") throw new Error("evidence must stay unreviewed");
+const evidence = await loadIsiInvestigationRelease(RA_RELEASE_ID, null);
+if (evidence.context.dataClass !== "public_real" || evidence.passages.length < 2) throw new Error("evidence passages missing");
+if (evidence.claims.length !== 0) throw new Error("evidence must not invent claims");
+if (!evidence.sources.every((s) => s.kind === "publication" && s.pmid)) throw new Error("evidence sources must be real publications");
 
 const researchListing = isiInvestigationReleases.find((r) => r.id === RA_RESEARCH_RELEASE_ID);
 if (!researchListing?.readiness?.available) throw new Error("research corpus must be available");
@@ -26,9 +24,11 @@ console.log(
     {
       ok: true,
       product: "isi",
-      pending: RA_RELEASE_ID,
+      evidence: RA_RELEASE_ID,
+      evidencePassages: evidence.passages.length,
       research: RA_RESEARCH_RELEASE_ID,
       researchPassages: research.passages.length,
+      scientificReview: "unreviewed",
       note: "Apply drizzle/migrations/0029_hsi_investigations.sql with ISI .env.local before live UI verification.",
     },
     null,

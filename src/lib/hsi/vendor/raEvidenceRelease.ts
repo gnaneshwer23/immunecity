@@ -8,18 +8,21 @@ export const RA_SOURCE_IDENTITIES = [
   { pmid: "18375541", pmcid: "PMC2596303", doi: "10.1136/ard.2007.084715", role: "cohort_candidate" },
   { pmid: "24586782", pmcid: "PMC3937352", doi: "10.1371/journal.pone.0089442", role: "meta_analysis_candidate" },
 ] as const;
+export type RaRetrievalProof = { url: string; responseUrl: string; status: 200; sha256: string; retrievedAt: string };
 export interface RaSourceReceipt {
   sourceId: string; pmcid: string;
-  metadata: { url: string; responseUrl: string; status: 200; sha256: string; retrievedAt: string };
-  articleXml: { url: string; responseUrl: string; status: 200; sha256: string; retrievedAt: string };
+  metadata: RaRetrievalProof;
+  articleXml: RaRetrievalProof;
   authors: string[]; articleTitle: string; licenceUrl: string; licenceNotice: string; normalization: "xml_itertext_whitespace_collapse";
+  licenceAttestation: "jats" | "crossref_works";
+  crossref: RaRetrievalProof | null;
 }
 export interface RaReviewCandidate {
   sourceId: string; passageIds: string[]; plannedRole: "cohort_candidate" | "meta_analysis_candidate";
   studyDesign: "unassessed"; claimSupport: "unassessed"; scientificReview: "unreviewed"; graphMapping: "related_context_only";
 }
 export interface RaEvidenceRelease {
-  schemaVersion: typeof RA_EVIDENCE_RELEASE_VERSION; protocolId: "ra-anti-tnf-response"; protocolVersion: "1";
+  schemaVersion: typeof RA_EVIDENCE_RELEASE_VERSION; protocolId: "ra-anti-tnf-response"; protocolVersion: "2";
   version: string; question: typeof RA_QUESTION; containsPhi: false; clinicalAdvice: false; kgWrite: false;
   scientificReview: "unreviewed"; sources: ResearchSource[]; passages: ResearchPassage[];
   receipts: RaSourceReceipt[]; candidates: RaReviewCandidate[];
@@ -43,7 +46,7 @@ export function parseRaEvidenceRelease(input: unknown): RaEvidenceRelease {
   requireValue(typeof encoded === "string" && Buffer.byteLength(encoded) <= 500_000);
   const value: unknown = typeof input === "string" ? JSON.parse(input) : input;
   exact(value, ["schemaVersion", "protocolId", "protocolVersion", "version", "question", "containsPhi", "clinicalAdvice", "kgWrite", "scientificReview", "sources", "passages", "receipts", "candidates"]);
-  requireValue(value.schemaVersion === RA_EVIDENCE_RELEASE_VERSION && value.protocolId === "ra-anti-tnf-response" && value.protocolVersion === "1" && value.question === RA_QUESTION);
+  requireValue(value.schemaVersion === RA_EVIDENCE_RELEASE_VERSION && value.protocolId === "ra-anti-tnf-response" && value.protocolVersion === "2" && value.question === RA_QUESTION);
   requireValue(value.containsPhi === false && value.clinicalAdvice === false && value.kgWrite === false && value.scientificReview === "unreviewed");
   const { version, ...content } = value;
   requireValue(sha(version) && version === hash(canonical(content)));
@@ -56,8 +59,9 @@ export function parseRaEvidenceRelease(input: unknown): RaEvidenceRelease {
     requireValue(source && receipt && candidate && !selected.has(sourceId)); selected.add(sourceId);
     requireValue(source.pmid === expected.pmid && source.doi === expected.doi && source.url === `https://europepmc.org/articles/${expected.pmcid}` && source.kind === "publication" && source.dataClass === "public_real");
     requireValue(source.licence.status === "permitted" && source.licence.passageUsePermitted === true && /^https:\/\/creativecommons\.org\/(?:licenses\/by\/(?:1\.0|2\.0|2\.5|3\.0|4\.0)|publicdomain\/zero\/1\.0)\/$/.test(source.licence.identifier ?? ""));
-    exact(receipt, ["sourceId", "pmcid", "metadata", "articleXml", "authors", "articleTitle", "licenceUrl", "licenceNotice", "normalization"]);
+    exact(receipt, ["sourceId", "pmcid", "metadata", "articleXml", "authors", "articleTitle", "licenceUrl", "licenceNotice", "normalization", "licenceAttestation", "crossref"]);
     requireValue(receipt.pmcid === expected.pmcid && receipt.licenceUrl === source.licence.identifier && text(receipt.licenceNotice, 20000) && !/non[ -]?commercial|no derivatives|all rights reserved/i.test(receipt.licenceNotice) && receipt.normalization === "xml_itertext_whitespace_collapse");
+    requireValue(receipt.licenceAttestation === "jats" || receipt.licenceAttestation === "crossref_works");
     requireValue(Array.isArray(receipt.authors) && receipt.authors.length > 0 && receipt.authors.length <= 500 && receipt.authors.every((a) => text(a, 256)));
     requireValue(text(receipt.articleTitle) && source.title === `${receipt.authors.join(", ")} — ${receipt.articleTitle}`);
     for (const [kind, proof] of [["metadata", receipt.metadata], ["articleXml", receipt.articleXml]] as const) {
@@ -67,6 +71,16 @@ export function parseRaEvidenceRelease(input: unknown): RaEvidenceRelease {
       requireValue(url.origin === "https://www.ebi.ac.uk" && !url.username && !url.password && !url.hash);
       if (kind === "articleXml") requireValue(url.pathname === `/europepmc/webservices/rest/${expected.pmcid}/fullTextXML` && !url.search);
       else requireValue(url.pathname === "/europepmc/webservices/rest/search" && url.searchParams.get("query") === `EXT_ID:${expected.pmid} AND SRC:MED` && url.searchParams.get("format") === "json" && url.searchParams.get("resultType") === "core" && url.searchParams.get("pageSize") === "2" && [...url.searchParams].length === 4);
+    }
+    if (receipt.licenceAttestation === "jats") {
+      requireValue(receipt.crossref === null);
+    } else {
+      requireValue(receipt.crossref && typeof receipt.crossref === "object");
+      exact(receipt.crossref, ["url", "responseUrl", "status", "sha256", "retrievedAt"]); stamp(receipt.crossref.retrievedAt);
+      requireValue(receipt.crossref.status === 200 && sha(receipt.crossref.sha256) && receipt.crossref.url === receipt.crossref.responseUrl);
+      const crossrefUrl = new URL(receipt.crossref.url);
+      requireValue(crossrefUrl.origin === "https://api.crossref.org" && !crossrefUrl.username && !crossrefUrl.password && !crossrefUrl.hash);
+      requireValue(crossrefUrl.pathname === `/works/${expected.doi}` && !crossrefUrl.search);
     }
     requireValue(source.provenance.product === "hsi" && source.provenance.datasetId === "ra-anti-tnf-source-release" && source.provenance.version === receipt.articleXml.sha256 && source.provenance.retrievedAt === receipt.articleXml.retrievedAt);
     exact(candidate, ["sourceId", "passageIds", "plannedRole", "studyDesign", "claimSupport", "scientificReview", "graphMapping"]);

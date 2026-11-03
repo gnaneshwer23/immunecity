@@ -1,7 +1,6 @@
 import { test, expect } from "bun:test";
 import { isiInvestigationReleases, loadIsiInvestigationRelease } from "@/lib/hsi/investigation-corpus.server";
 import { getGraphNeighbourhood } from "@/lib/immune/neighbourhood";
-import { InvestigationRequestError } from "@/lib/hsi/vendor/investigationBackend";
 import { RA_RELEASE_ID } from "@/lib/hsi/vendor/raEvidenceRelease";
 import { RA_RESEARCH_RELEASE_ID } from "@/lib/hsi/vendor/raResearchEvidenceRelease";
 
@@ -26,20 +25,18 @@ test("internal corpus accepts only known server releases and existing core conce
   }
 });
 
-test("RA evidence corpus is registered with explicit pending readiness and fails as evidence_not_ready", async () => {
+test("RA evidence corpus is rights-verified, unreviewed, and loads real passages", async () => {
   const listing = isiInvestigationReleases.find((release) => release.id === RA_RELEASE_ID);
   expect(listing).toBeTruthy();
-  expect(listing?.readiness?.available).toBe(false);
-  expect(listing?.readiness?.reason).toContain("Creative Commons URI");
-  try {
-    await loadIsiInvestigationRelease(RA_RELEASE_ID, null);
-    throw new Error("expected evidence_not_ready");
-  } catch (error) {
-    expect(error).toBeInstanceOf(InvestigationRequestError);
-    expect((error as InvestigationRequestError).status).toBe(422);
-    expect((error as InvestigationRequestError).code).toBe("evidence_not_ready");
-  }
-  // Existing corpus remains usable beside the pending RA release.
+  expect(listing?.readiness?.available).toBe(true);
+  expect(listing?.readiness?.scientificReview).toBe("unreviewed");
+  expect(listing?.readiness?.passages).toBeGreaterThanOrEqual(2);
+  const evidence = await loadIsiInvestigationRelease(RA_RELEASE_ID, null);
+  expect(evidence.context.dataClass).toBe("public_real");
+  expect(evidence.passages.length).toBeGreaterThanOrEqual(2);
+  expect(evidence.sources.every((source) => source.kind === "publication" && source.pmid)).toBe(true);
+  expect(evidence.claims).toHaveLength(0);
+  // Existing core corpus remains usable beside the rights-verified RA release.
   const core = await loadIsiInvestigationRelease("isi-core-graph", "D001");
   expect(core.passages).toHaveLength(0);
   expect(core.relationships.some((r) => r.id === "REL-I032-treats-D001")).toBe(true);
