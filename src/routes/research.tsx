@@ -1,6 +1,6 @@
 import { ART } from "@/components/immune/explain";
 import { useCallback, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { CONTENT } from "@/data/content";
@@ -13,6 +13,7 @@ import LiteratureQueue from "@/components/immune/LiteratureQueue";
 import ResearchLibrary from "@/components/immune/ResearchLibrary";
 import EvidenceCollectionsPanel from "@/components/immune/EvidenceCollectionsPanel";
 import ResearchBriefPanel from "@/components/immune/ResearchBriefPanel";
+import MelanomaEvidenceExplorer from "@/components/immune/MelanomaEvidenceExplorer";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { PRODUCT_NAME } from "@/lib/brand";
@@ -22,6 +23,7 @@ import type { SearchMetadata } from "@/lib/research/literatureWorkflow";
 const TOC = [
   { id: "discover", label: "Discover" },
   { id: "evidence", label: "Evidence" },
+  { id: "melanoma", label: "Melanoma pilot" },
   { id: "library", label: "Library" },
   { id: "literature", label: "Literature" },
   { id: "collections", label: "Collections" },
@@ -171,6 +173,10 @@ function Research() {
         </p>
       </Section>
 
+      <Section id="melanoma" title="Melanoma Immunotherapy Evidence Explorer" lede="A bounded research pilot: graph context, trial sources and falsifiable hypotheses.">
+        <MelanomaEvidenceExplorer />
+      </Section>
+
       <Section
         id="library"
         n={1}
@@ -236,11 +242,11 @@ function Research() {
           </>
         }
       >
-        <ScientificWorkbench
+        <ClientOnly fallback={<p>Loading local research draft…</p>}><ScientificWorkbench
           pendingLitImport={litHandoff}
           onPendingLitImportConsumed={clearLitHandoff}
           seed={seed}
-        />
+        /></ClientOnly>
       </Section>
 
       <Section
