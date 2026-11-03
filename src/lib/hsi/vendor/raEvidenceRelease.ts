@@ -89,7 +89,51 @@ export function buildRaEvidenceBundle(graph: ResearchBundle, input: unknown): Re
   for (const [id, subject, predicate, object] of anchors) requireValue(base.relationships.some((r) => r.id === id && r.subjectId === subject && r.predicate === predicate && r.objectId === object));
   return parseResearchBundle({ ...structuredClone(base), context: { ...base.context, id: "RA-EVIDENCE-CONTEXT", question: RA_QUESTION, conceptIds: ["D001", "I032", "M001"], dataClass: "public_real", provenance: { product: "hsi", datasetId: "ra-anti-tnf-source-release", version: release.version, retrievedAt: release.receipts[0]!.articleXml.retrievedAt } }, sources: structuredClone(release.sources), passages: structuredClone(release.passages), claims: [], runs: [] });
 }
-export function raEvidenceReadiness(input: unknown) {
-  try { const r = parseRaEvidenceRelease(input); return { available: true, sources: r.sources.length, passages: r.passages.length, version: r.version, scientificReview: "unreviewed" as const }; }
-  catch { return { available: false, sources: 0, passages: 0, version: null, scientificReview: "unreviewed" as const }; }
+export type RaEvidenceReadiness = {
+  available: boolean;
+  sources: number;
+  passages: number;
+  version: string | null;
+  scientificReview: "unreviewed";
+  reason: string | null;
+};
+
+export function raEvidenceReadiness(input: unknown): RaEvidenceReadiness {
+  if (input && typeof input === "object" && !Array.isArray(input) && (input as { status?: unknown }).status === "awaiting_verified_source_import") {
+    const reason = (input as { reason?: unknown }).reason;
+    return {
+      available: false,
+      sources: 0,
+      passages: 0,
+      version: null,
+      scientificReview: "unreviewed",
+      reason: typeof reason === "string" && reason.trim() ? reason.trim().slice(0, 2000) : "awaiting_verified_source_import",
+    };
+  }
+  try {
+    const r = parseRaEvidenceRelease(input);
+    return { available: true, sources: r.sources.length, passages: r.passages.length, version: r.version, scientificReview: "unreviewed", reason: null };
+  } catch (error) {
+    return {
+      available: false,
+      sources: 0,
+      passages: 0,
+      version: null,
+      scientificReview: "unreviewed",
+      reason: error instanceof RaEvidenceUnavailableError ? error.message : "RA evidence release failed validation",
+    };
+  }
+}
+
+/** Product corpus listing metadata. Never claims scientific approval. */
+export function raEvidenceReleaseListing(input: unknown) {
+  const readiness = raEvidenceReadiness(input);
+  return {
+    id: RA_RELEASE_ID,
+    title: "RA / anti-TNF evidence (rights-verified)",
+    description: readiness.available
+      ? `Two rights-verified abstract sources (${readiness.passages} passages, version ${readiness.version}). Graph anchors are related context only; serology-response is not mapped as anti-TNF efficacy. Scientific support remains unreviewed; workflow acceptance is not Gate C approval.`
+      : `Not ready for investigation start: ${readiness.reason ?? "awaiting verified source import"}. Keep existing corpora usable; do not treat this as an empty successful search.`,
+    readiness,
+  };
 }

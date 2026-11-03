@@ -2,11 +2,25 @@
 import { randomUUID } from "node:crypto";
 import { createInvestigationService, createCorpusRetrievalProvider, validateInvestigationSnapshot, InvestigationAccessError, InvestigationConflictError, type ResearchActor, type StoredInvestigation, type InvestigationStore } from "./investigationService";
 import { researchRunState, type ResearchBundle } from "./researchContracts";
+import { RaEvidenceUnavailableError } from "./raEvidenceRelease";
 export const INVESTIGATION_BACKEND_VERSION = "hsi-investigation-backend-1" as const;
 export interface InvestigationSql { query(text: string, parameters: unknown[]): Promise<Array<Record<string, unknown>>> }
 export interface InvestigationDatabase extends InvestigationSql { transaction<T>(work: (sql: InvestigationSql) => Promise<T>): Promise<T> }
 export interface InvestigationPrincipal { ownerId: string; actor: ResearchActor }
-export interface InvestigationRelease { id: string; title: string; description: string }
+export interface InvestigationRelease {
+  id: string;
+  title: string;
+  description: string;
+  /** Explicit corpus readiness. Unavailable RA evidence must not look like an empty successful search. */
+  readiness?: {
+    available: boolean;
+    sources: number;
+    passages: number;
+    version: string | null;
+    scientificReview: "unreviewed";
+    reason: string | null;
+  };
+}
 export interface InvestigationCursor { createdAt: string; key: string }
 export type InvestigationCommand =
   | { action: "list"; cursor: InvestigationCursor | null }
@@ -153,6 +167,8 @@ export function investigationJson(value: unknown, status = 200) {
 }
 export function investigationError(error: unknown) {
   if (error instanceof InvestigationRequestError) return investigationJson({ error: error.code }, error.status);
+  // Distinct from revision conflicts and empty successful retrieval.
+  if (error instanceof RaEvidenceUnavailableError) return investigationJson({ error: "evidence_not_ready" }, 422);
   if (error instanceof InvestigationAccessError) return investigationJson({ error: "investigation_access_denied" }, 403);
   if (error instanceof InvestigationConflictError) return investigationJson({ error: "investigation_revision_conflict" }, 409);
   return investigationJson({ error: "investigation_unavailable" }, 503);

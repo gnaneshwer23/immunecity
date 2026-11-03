@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "hsi-ra-evidence-artifact-1",
+  "releaseId": "ra-anti-tnf-evidence",
+  "repository": "gnaneshwer23/hsi-core",
+  "commit": "247861297a4598c2c9cbe7f6356102ee5252328e",
+  "distribution": "research_artifact_snapshot",
+  "executable": false,
+  "includesProductData": false,
+  "scientificReview": "unreviewed",
+  "readiness": {
+    "available": false,
+    "sources": 0,
+    "passages": 0,
+    "version": null,
+    "scientificReview": "unreviewed",
+    "reason": "Europe PMC MED metadata and JATS for PMID 18375541 / PMC2596303 were reachable, but article-level permissions lack an explicit Creative Commons URI (prose Attribution notice only; Europe PMC license field is the unversioned token \"cc by\"). The importer correctly rejects non-URI licence observations. PMID 24586782 / PMC3937352 likewise lacks an explicit CC URI in JATS. No exact passages or reuse-rights grants have been registered. Do not invent licence URIs or weaken the check."
+  },
+  "bundleVersion": null,
+  "files": {
+    "release": {
+      "path": "release.json",
+      "sha256": "ceefce7520023cfb7959cf9fd53efeea35d67396da87ca738d5e16bc9affc720"
+    },
+    "graphContext": {
+      "path": "graph-context.json",
+      "sha256": "ba9376e84b6c94c27fddf951ffabdc61b315f815a5bfbbd84513a4aa24ea8dac"
+    },
+    "guideline": {
+      "path": "context-annotation-guideline-v1.md",
+      "sha256": "ffeee2fba75684b390e213b8df68487c7b9885476a90ade6ce9d30d2997234f0"
+    },
+    "worksheet": {
+      "path": "context-annotation-worksheet-v1.json",
+      "sha256": "37e3eccc081912734dcc591b29c8df398e666c3fd23dd8fff448aa79bf295820"
+    }
+  }
+}

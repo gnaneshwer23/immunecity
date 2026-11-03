@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "hsi-research-contract-1",
+  "containsPhi": false,
+  "clinicalAdvice": false,
+  "kgWrite": false,
+  "context": {
+    "id": "RA-ANCHOR-CONTEXT",
+    "question": "Research context for RA and TNF blockade; not a new global graph.",
+    "conceptIds": [
+      "D001",
+      "I032",
+      "M001"
+    ],
+    "dataClass": "public_real",
+    "purpose": "research_only",
+    "containsPhi": false,
+    "provenance": {
+      "product": "isi",
+      "datasetId": "isi-core-graph",
+      "version": "0.3",
+      "retrievedAt": "2026-11-03T11:23:13.236Z"
+    }
+  },
+  "sources": [],
+  "passages": [],
+  "entities": [
+    {
+      "id": "D001",
+      "label": "Rheumatoid arthritis",
+      "type": "disease",
+      "dataClass": "public_real",
+      "provenance": {
+        "product": "isi",
+        "datasetId": "isi-core-graph",
+        "version": "0.3",
+        "retrievedAt": "2026-11-03T11:23:13.236Z"
+      }
+    },
+    {
+      "id": "I032",
+      "label": "TNF blockade (class)",
+      "type": "intervention",
+      "dataClass": "public_real",
+      "provenance": {
+        "product": "isi",
+        "datasetId": "isi-core-graph",
+        "version": "0.3",
+        "retrievedAt": "2026-11-03T11:23:13.236Z"
+      }
+    },
+    {
+      "id": "M001",
+      "label": "TNF",
+      "type": "molecule",
+      "dataClass": "public_real",
+      "provenance": {
+        "product": "isi",
+        "datasetId": "isi-core-graph",
+        "version": "0.3",
+        "retrievedAt": "2026-11-03T11:23:13.236Z"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "REL-I032-treats-D001",
+      "subjectId": "I032",
+      "predicate": "treats",
+      "objectId": "D001",
+      "dataClass": "public_real",
+      "context": {
+        "species": null,
+        "experimentalSystem": null,
+        "tissueId": null,
+        "assay": null,
+        "timepoint": null
+      },
+      "provenance": {
+        "product": "isi",
+        "datasetId": "isi-core-graph",
+        "version": "0.3",
+        "retrievedAt": "2026-11-03T11:23:13.236Z"
+      }
+    },
+    {
+      "id": "REL-I032-targets-M001",
+      "subjectId": "I032",
+      "predicate": "targets",
+      "objectId": "M001",
+      "dataClass": "public_real",
+      "context": {
+        "species": null,
+        "experimentalSystem": null,
+        "tissueId": null,
+        "assay": null,
+        "timepoint": null
+      },
+      "provenance": {
+        "product": "isi",
+        "datasetId": "isi-core-graph",
+        "version": "0.3",
+        "retrievedAt": "2026-11-03T11:23:13.236Z"
+      }
+    },
+    {
+      "id": "REL-M001-contributes_to-D001",
+      "subjectId": "M001",
+      "predicate": "contributes_to",
+      "objectId": "D001",
+      "dataClass": "public_real",
+      "context": {
+        "species": null,
+        "experimentalSystem": null,
+        "tissueId": null,
+        "assay": null,
+        "timepoint": null
+      },
+      "provenance": {
+        "product": "isi",
+        "datasetId": "isi-core-graph",
+        "version": "0.3",
+        "retrievedAt": "2026-11-03T11:23:13.236Z"
+      }
+    }
+  ],
+  "claims": [],
+  "runs": []
+}

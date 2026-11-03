@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "hsi-ra-evidence-release-1",
+  "status": "awaiting_verified_source_import",
+  "reason": "Europe PMC MED metadata and JATS for PMID 18375541 / PMC2596303 were reachable, but article-level permissions lack an explicit Creative Commons URI (prose Attribution notice only; Europe PMC license field is the unversioned token \"cc by\"). The importer correctly rejects non-URI licence observations. PMID 24586782 / PMC3937352 likewise lacks an explicit CC URI in JATS. No exact passages or reuse-rights grants have been registered. Do not invent licence URIs or weaken the check.",
+  "scientificReview": "unreviewed",
+  "containsPhi": false,
+  "clinicalAdvice": false,
+  "kgWrite": false
+}

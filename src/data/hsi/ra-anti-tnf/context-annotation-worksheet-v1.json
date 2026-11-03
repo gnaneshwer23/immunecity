@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "hsi-ra-context-annotation-worksheet-1",
+  "guidelineVersion": "hsi-ra-context-annotation-guideline-1",
+  "protocolId": "ra-anti-tnf-response",
+  "protocolVersion": "1",
+  "scientificReview": "unreviewed",
+  "containsPhi": false,
+  "clinicalAdvice": false,
+  "kgWrite": false,
+  "status": "template_only_no_expert_labels",
+  "notes": [
+    "Rows are added only after a rights-verified RA evidence release is installed.",
+    "Do not invent passage text, licence URIs, expert labels or adjudication outcomes.",
+    "Keep training corrections separate from any frozen evaluation partition."
+  ],
+  "requiredTags": [
+    "species",
+    "tissue_or_sample",
+    "setting_or_model",
+    "intervention",
+    "outcome",
+    "timepoint"
+  ],
+  "labelSets": {
+    "species": [
+      "human",
+      "mouse",
+      "other",
+      "missing",
+      "mixed"
+    ],
+    "setting_or_model": [
+      "clinical_observational",
+      "clinical_trial",
+      "meta_analysis",
+      "in_vitro",
+      "in_vivo",
+      "in_silico",
+      "missing",
+      "mixed",
+      "other"
+    ],
+    "missingOrMixedAllowed": [
+      "tissue_or_sample",
+      "intervention",
+      "outcome",
+      "timepoint"
+    ]
+  },
+  "rows": [],
+  "adjudication": {
+    "independentAnnotatorsRequired": 2,
+    "adjudicatorRequiredOnDisagreement": true,
+    "fabricatedLabelsPermitted": false
+  }
+}
