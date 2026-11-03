@@ -1,0 +1,23 @@
+/** Real disease names are scenario labels. These tags are NOT reviewed mechanistic claims or prescribing advice. */
+export const SYNTHETIC_CONDITION_CATALOGUE = [
+  { key: "RA", label: "Rheumatoid arthritis", domain: "Immunology", tissue: "Synovium", cells: ["CD4 T cells", "B cells", "Macrophages"], medications: ["Methotrexate", "Adalimumab"], marker: "CRP", unit: "mg/L" },
+  { key: "SLE", label: "Systemic lupus erythematosus", domain: "Immunology", tissue: "Blood / kidney", cells: ["B cells", "Plasmacytoid dendritic cells", "T cells"], medications: ["Hydroxychloroquine", "Mycophenolate"], marker: "Complement C3", unit: "g/L" },
+  { key: "PSO", label: "Psoriasis", domain: "Immunology", tissue: "Skin", cells: ["Th17 cells", "Dendritic cells", "Neutrophils"], medications: ["Methotrexate", "Secukinumab"], marker: "CRP", unit: "mg/L" },
+  { key: "SJOGREN", label: "Sjögren’s syndrome", domain: "Immunology", tissue: "Salivary gland", cells: ["B cells", "CD4 T cells", "Plasma cells"], medications: ["Pilocarpine", "Hydroxychloroquine"], marker: "IgG", unit: "g/L" },
+  { key: "SSC", label: "Systemic sclerosis", domain: "Immunology", tissue: "Skin / lung", cells: ["Macrophages", "B cells", "T cells"], medications: ["Mycophenolate", "Nintedanib"], marker: "CRP", unit: "mg/L" },
+  { key: "CROHN", label: "Crohn’s disease", domain: "Gut", tissue: "Ileum / colon", cells: ["Th17 cells", "Macrophages", "Innate lymphoid cells"], medications: ["Infliximab", "Ustekinumab"], marker: "Faecal calprotectin", unit: "µg/g" },
+  { key: "UC", label: "Ulcerative colitis", domain: "Gut", tissue: "Colon", cells: ["Neutrophils", "T cells", "Macrophages"], medications: ["Mesalazine", "Vedolizumab"], marker: "Faecal calprotectin", unit: "µg/g" },
+  { key: "CELIAC", label: "Coeliac disease", domain: "Gut", tissue: "Small intestine", cells: ["Intraepithelial lymphocytes", "CD4 T cells", "B cells"], medications: ["Oral iron", "Vitamin D"], marker: "tTG IgA", unit: "U/mL" },
+  { key: "IBS", label: "Irritable bowel syndrome", domain: "Gut", tissue: "Gut–brain axis", cells: ["Mast cells", "Macrophages"], medications: ["Mebeverine", "Peppermint oil"], marker: "Faecal calprotectin", unit: "µg/g" },
+  { key: "MS", label: "Multiple sclerosis", domain: "Brain", tissue: "Central nervous system", cells: ["T cells", "B cells", "Microglia"], medications: ["Ocrelizumab", "Dimethyl fumarate"], marker: "Neurofilament light", unit: "pg/mL" },
+  { key: "ENCEPH", label: "Autoimmune encephalitis", domain: "Brain", tissue: "Central nervous system", cells: ["B cells", "Plasma cells", "T cells"], medications: ["Methylprednisolone", "Intravenous immunoglobulin"], marker: "CSF white-cell count", unit: "cells/µL" },
+  { key: "ALZ", label: "Alzheimer’s disease", domain: "Brain", tissue: "Brain", cells: ["Microglia", "Peripheral monocytes"], medications: ["Donepezil", "Memantine"], marker: "Neurofilament light", unit: "pg/mL" },
+  { key: "PARK", label: "Parkinson’s disease", domain: "Brain", tissue: "Brain / gut–brain axis", cells: ["Microglia", "T cells"], medications: ["Levodopa/carbidopa", "Rasagiline"], marker: "CRP", unit: "mg/L" },
+  { key: "MDD", label: "Major depressive disorder", domain: "Brain", tissue: "Brain / peripheral blood", cells: ["Monocytes", "T cells", "Microglia"], medications: ["Sertraline", "Escitalopram"], marker: "CRP", unit: "mg/L" },
+  { key: "T1D", label: "Type 1 diabetes", domain: "Metabolic / endocrine", tissue: "Pancreatic islet", cells: ["CD8 T cells", "CD4 T cells", "B cells"], medications: ["Insulin glargine", "Insulin aspart"], marker: "HbA1c", unit: "mmol/mol" },
+  { key: "T2D", label: "Type 2 diabetes", domain: "Metabolic / endocrine", tissue: "Adipose / liver / pancreas", cells: ["Adipose macrophages", "T cells"], medications: ["Metformin", "Empagliflozin"], marker: "HbA1c", unit: "mmol/mol" },
+  { key: "HASHI", label: "Hashimoto’s thyroiditis", domain: "Metabolic / endocrine", tissue: "Thyroid", cells: ["T cells", "B cells"], medications: ["Levothyroxine"], marker: "TSH", unit: "mIU/L" },
+  { key: "GRAVES", label: "Graves’ disease", domain: "Metabolic / endocrine", tissue: "Thyroid", cells: ["B cells", "T cells", "Plasma cells"], medications: ["Carbimazole", "Propranolol"], marker: "TSH", unit: "mIU/L" },
+  { key: "ASTHMA", label: "Asthma", domain: "Allergy / barrier", tissue: "Airway", cells: ["Eosinophils", "Th2 cells", "Type 2 innate lymphoid cells"], medications: ["Budesonide", "Salbutamol"], marker: "Blood eosinophils", unit: "10^9/L" },
+  { key: "AD", label: "Atopic dermatitis", domain: "Allergy / barrier", tissue: "Skin", cells: ["Th2 cells", "Dendritic cells", "Eosinophils"], medications: ["Topical hydrocortisone", "Dupilumab"], marker: "Total IgE", unit: "kU/L" },
+] as const;

@@ -1,0 +1,9 @@
+{
+  "repository": "gnaneshwer23/hsi-core",
+  "commit": "bceff52425e1d18a13e758d82551ecd25e1d168f",
+  "purpose": "Unmodified browser-safe five-state criterion engine; synthetic screening only",
+  "files": {
+    "trialsCriteriaMvp.ts": "b56812074cf8351152bb3f239a5930923ec9074ff3401fe35d5829b29384c9db",
+    "cdsPhiBoundary.ts": "d71ba821d1587012a7ffd7826caed547ef8647d4bed1055db72854d43aebc7e4"
+  }
+}

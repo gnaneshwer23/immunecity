@@ -14,6 +14,7 @@ import ResearchLibrary from "@/components/immune/ResearchLibrary";
 import EvidenceCollectionsPanel from "@/components/immune/EvidenceCollectionsPanel";
 import ResearchBriefPanel from "@/components/immune/ResearchBriefPanel";
 import MelanomaEvidenceExplorer from "@/components/immune/MelanomaEvidenceExplorer";
+import SyntheticConditionProgramme from "@/components/immune/SyntheticConditionProgramme";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { PRODUCT_NAME } from "@/lib/brand";
@@ -23,6 +24,7 @@ import type { SearchMetadata } from "@/lib/research/literatureWorkflow";
 const TOC = [
   { id: "discover", label: "Discover" },
   { id: "evidence", label: "Evidence" },
+  { id: "synthetic-programme", label: "20-condition programme" },
   { id: "melanoma", label: "Melanoma pilot" },
   { id: "library", label: "Library" },
   { id: "literature", label: "Literature" },
@@ -171,6 +173,10 @@ function Research() {
             Methods · live coverage
           </Link>
         </p>
+      </Section>
+
+      <Section id="synthetic-programme" title="20-condition synthetic research programme" lede="Explore fictional cases, laboratory timelines, lifestyle and medication context, discovery planning and trial-criteria screening.">
+        <SyntheticConditionProgramme />
       </Section>
 
       <Section id="melanoma" title="Melanoma Immunotherapy Evidence Explorer" lede="A bounded research pilot: graph context, trial sources and falsifiable hypotheses.">

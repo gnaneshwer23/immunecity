@@ -15,6 +15,10 @@ Stack: TanStack Start, React, TypeScript, Tailwind CSS 3.4, Neon Auth + Postgres
 
 ## Functional research demo
 
+Open `/research#synthetic-programme` for the [interactive 20-condition programme](docs/SYNTHETIC_20_CONDITION_PROGRAMME.md):
+120 fictional cases, longitudinal labs/lifestyle/medications, audited what-if
+edits, deterministic discovery planning and HSI five-state fictional trial screening.
+
 Open `/research#melanoma` and choose **Load worked example** in the synthetic
 project. Inspect conflicting findings, record analysis notes, compare fictional
 cohorts, save/restore locally and export an investigation brief. All demo data
