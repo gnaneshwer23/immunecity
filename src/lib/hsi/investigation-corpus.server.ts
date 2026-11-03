@@ -9,8 +9,14 @@ import {
   raEvidenceReleaseListing,
   RaEvidenceUnavailableError,
 } from "./vendor/raEvidenceRelease";
+import {
+  RA_DEMO_RELEASE_ID,
+  buildRaDemoEvidenceBundle,
+  raDemoEvidenceReleaseListing,
+} from "./vendor/raDemoEvidenceRelease";
 import raReleaseArtifact from "@/data/hsi/ra-anti-tnf/release.json";
 import raGraphContext from "@/data/hsi/ra-anti-tnf/graph-context.json";
+import raDemoReleaseArtifact from "@/data/hsi/ra-anti-tnf-demo/release.json";
 
 const typeMap: Record<string, ResearchEntity["type"]> = {
   CELL: "cell",
@@ -40,10 +46,15 @@ const coreRelease: InvestigationRelease = {
 };
 
 const raListing = raEvidenceReleaseListing(raReleaseArtifact);
+const raDemoListing = raDemoEvidenceReleaseListing(raDemoReleaseArtifact);
 
-export const isiInvestigationReleases: InvestigationRelease[] = [coreRelease, raListing];
+export const isiInvestigationReleases: InvestigationRelease[] = [coreRelease, raDemoListing, raListing];
 
 export async function loadIsiInvestigationRelease(id: string, conceptId: string | null): Promise<ResearchBundle> {
+  if (id === RA_DEMO_RELEASE_ID) {
+    // Synthetic SYN-* mirrors only — not the rights-verified release and not original KG rows.
+    return buildRaDemoEvidenceBundle(raDemoReleaseArtifact);
+  }
   if (id === RA_RELEASE_ID) {
     try {
       // Preserve original ISI KG identifiers from the exported graph-context working set.

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "hsi-ra-demo-evidence-artifact-1",
+  "releaseId": "ra-anti-tnf-demo",
+  "corpusKind": "demo_fixture",
+  "notForScientificClaim": true,
+  "repository": "gnaneshwer23/hsi-core",
+  "commit": "adda82988fe41351eb3af026702cb4ffbc76039e",
+  "distribution": "research_artifact_snapshot",
+  "executable": false,
+  "includesProductData": false,
+  "scientificReview": "unreviewed",
+  "readiness": {
+    "available": true,
+    "sources": 2,
+    "passages": 2,
+    "version": "e60711d53aeff4cea6d5547ba0d641eed2e36d7de897cd6111950d93cc1313e1",
+    "scientificReview": "unreviewed",
+    "reason": "Demo/fixture corpus only — not_for_scientific_claim; scientific validation deferred.",
+    "corpusKind": "demo_fixture",
+    "notForScientificClaim": true
+  },
+  "bundleVersion": "e60711d53aeff4cea6d5547ba0d641eed2e36d7de897cd6111950d93cc1313e1",
+  "files": {
+    "release": {
+      "path": "release.json",
+      "sha256": "4e2e284d057a08d73c6007e0ffc607995a45e04738b212c92c26c4ecba3f1cac"
+    },
+    "readme": {
+      "path": "README.md",
+      "sha256": "c073e479d60dfc6004b9416cece3ebd2b47e47f37a9b789cc11932dcc1a8b1fe"
+    }
+  }
+}
