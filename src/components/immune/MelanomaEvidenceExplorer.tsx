@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { buildMelanomaInvestigationPath } from "@/lib/immune/melanomaInvestigationPath";
 import { MELANOMA_PILOT_TRIALS } from "@/data/trialIntelligence";
 import { buildMelanomaExplorerBrief, type MelanomaHypothesisInput } from "@/lib/research/melanomaExplorer";
+import SyntheticMelanomaProject from "@/components/immune/SyntheticMelanomaProject";
 
 export default function MelanomaEvidenceExplorer() {
   const path = buildMelanomaInvestigationPath();
@@ -26,6 +27,8 @@ export default function MelanomaEvidenceExplorer() {
     } catch (e) { setError(e instanceof Error ? e.message : "Export failed."); }
   }
   return <div>
+    <SyntheticMelanomaProject />
+    <h3>Published-trial reference context · separate from the synthetic project</h3>
     <p>Explore existing graph relationships and landmark trial context, then write a testable research hypothesis. Educational pilot · unreviewed · no treatment advice.</p>
     <details>
       <summary>Mechanism map · {path.typedRelations.length} relationships</summary>

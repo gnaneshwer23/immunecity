@@ -13,6 +13,9 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "on-first-retry",
+    ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? {
+      launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE, args: ["--no-sandbox"] },
+    } : {}),
   },
   webServer: process.env.E2E_BASE_URL
     ? undefined
