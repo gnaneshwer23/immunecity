@@ -1142,3 +1142,26 @@ textarea.community-input { min-height: 120px; padding: 10px; }
 .precision-mechanism-panel .home-draft-teaser-list { display: none; }
 .precision-home .research-journey h2 { font-size: clamp(25px, 2.5vw, 36px); }
 .precision-mechanism-panel .bio-section-heading { display: block; }
+
+/* Homepage audit refinement: product-first opening and a real, navigable graph preview. */
+.precision-home .precision-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 640px; gap: 40px; padding: clamp(32px, 5.5vw, 80px); align-items: center; }
+.precision-home .precision-hero-copy { padding: 0; }
+.precision-home .precision-hero h1 { font-size: clamp(52px, 6.7vw, 96px); line-height: 1.02; margin-bottom: 28px; }
+.precision-home .precision-hero h1 em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-style: italic; letter-spacing: -.05em; }
+.precision-home .precision-hero .precision-lede { font-size: clamp(18px, 1.5vw, 22px); max-width: 35ch; }
+.precision-home .precision-hero .precision-caption { font-size: 12px; }
+.precision-home .precision-hero-field { min-height: 0; background: transparent; overflow: visible; }
+.precision-home .precision-hero-field::before { display: none; }
+.precision-science-preview { position: relative; padding: 28px; border: 1px solid var(--border-strong); border-radius: 12px; background: color-mix(in oklab, var(--surface) 92%, var(--primary)); box-shadow: 0 24px 60px color-mix(in oklab, var(--text) 5%, transparent); }
+.precision-preview-top { display: flex; justify-content: space-between; gap: 16px; font-size: 11px; color: var(--muted); letter-spacing: .04em; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.precision-preview-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--primary); margin-right: 8px; }
+.precision-preview-heading { padding: 24px 0; }.precision-preview-heading p { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--primary); margin-bottom: 10px; }.precision-preview-heading h2 { font-size: clamp(24px, 2.6vw, 36px); font-weight: 450; line-height: 1.2; letter-spacing: -.025em; }
+.precision-preview-relations { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.precision-preview-relations li { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; gap: 10px; padding: 16px 12px; border: 1px solid var(--border); border-radius: 6px; background: color-mix(in oklab, var(--surface) 96%, var(--text)); }
+.precision-preview-relations a { color: var(--text); font-size: 13px; line-height: 1.4; font-weight: 550; overflow-wrap: anywhere; }.precision-preview-relations small { display: block; font-size: 10px; font-weight: 400; color: var(--muted); margin-top: 5px; text-transform: capitalize; }
+.precision-preview-relations button { min-width: 0; display: flex; flex-direction: column; align-items: center; color: var(--primary); font-size: 10px; text-align: center; min-height: 44px; }.precision-preview-relations button span:last-child { font-size: 25px; line-height: 1; }
+.precision-preview-bottom { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); }.precision-preview-bottom a { color: var(--primary); display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }.precision-preview-note { color: var(--muted); font-size: 10px; line-height: 1.6; margin-top: 16px; }
+.precision-home .research-journey-compact { display: block; padding: 0; border: none; background: transparent; margin-bottom: 36px; }.research-journey-compact .research-journey-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.precision-home .precision-section { padding-top: clamp(40px, 6vw, 80px); padding-bottom: clamp(40px, 6vw, 80px); }
+@media (max-width: 1000px) { .precision-home .precision-hero { grid-template-columns: 1fr; gap: 36px; padding: 48px 32px; }.precision-home .precision-hero h1 { font-size: clamp(56px, 9vw, 84px); }.precision-home .precision-hero-copy { max-width: 640px; }.precision-home .precision-hero-field { max-width: 640px; width: 100%; }.research-journey-compact .research-journey-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .precision-home .precision-hero { padding: 36px 20px; gap: 28px; }.precision-science-preview { padding: 18px; }.precision-home .precision-hero h1 { font-size: clamp(48px, 13vw, 68px); }.precision-preview-top { font-size: 10px; }.precision-preview-relations li { padding: 12px 8px; gap: 6px; }.precision-preview-relations a { font-size: 11px; }.precision-preview-relations button { font-size: 9px; }.precision-preview-bottom { align-items: flex-start; flex-direction: column; gap: 10px; } }

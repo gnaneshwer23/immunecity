@@ -4,6 +4,10 @@ import { readFile } from "node:fs/promises";
 test("20-condition programme responds to case selection and audited what-if changes", async ({ page }) => {
   const errors: string[] = []; page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Immunology,");
+  const homeGraph = page.getByRole("region", { name: "Interactive rheumatoid arthritis graph preview" });
+  await homeGraph.getByRole("button", { name: /^Inspect / }).first().click();
+  await page.getByRole("button", { name: "Close scientific detail", exact: true }).click();
   await page.getByRole("link", { name: /Open research workbench/ }).first().click();
   await expect(page).toHaveURL(/\/research(?:\?[^#]*)?#synthetic-programme$/);
   const programme = page.getByTestId("synthetic-programme");

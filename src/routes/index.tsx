@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { ART } from "@/components/immune/explain";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ import { seoHead } from "@/lib/seo";
 import { inspect } from "@/lib/immune/inspector";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import ResearchJourney from "@/components/immune/ResearchJourney";
+import { SYNTHETIC_CONDITION_CATALOGUE } from "@/data/syntheticConditions";
 
 const HOME_DRAFT_TEASERS = [
   {
@@ -227,28 +229,42 @@ function HomeCoverageGlance() {
   );
 }
 
+function HomeGraphPreview() {
+  const [interactive, setInteractive] = useState(false);
+  useEffect(() => { setInteractive(true); }, []);
+  const { data: cites = [], isSuccess, isError } = useQuery(approvedQuery);
+  const report = reportExemplar(HOME_EXEMPLAR, cites);
+  const seen = new Set<string>();
+  const rows = report.segments.flatMap((segment) => (segment.steps ?? []).map((step, index) => ({ edge: step.r, id: segment.relIds[index]! }))).filter((row) => !seen.has(row.id) && Boolean(seen.add(row.id)));
+  return <div className="precision-science-preview" role="region" aria-label="Interactive rheumatoid arthritis graph preview">
+    <div className="precision-preview-top"><span><span className="precision-preview-dot" />Knowledge graph</span><span>RA / TNF axis</span></div>
+    <div className="precision-preview-heading"><p>Explore a mechanism</p><h2>From immune cell<br />to disease context.</h2></div>
+    <ol className="precision-preview-relations">{rows.map(({ edge, id }) => <li key={id}>
+      <Link to="/atlas/$id" params={{ id: edge.subject_id }}>{byId[edge.subject_id]!.name}<small>{byId[edge.subject_id]!.node_type.toLowerCase()}</small></Link>
+      <button disabled={!interactive} onClick={() => inspect({ kind: "relationship", id })} aria-label={`Inspect ${byId[edge.subject_id]!.name} ${human(edge.relation)} ${byId[edge.object_id]!.name}`}><span>{human(edge.relation)}</span><span aria-hidden="true">⟶</span></button>
+      <Link to="/atlas/$id" params={{ id: edge.object_id }}>{byId[edge.object_id]!.name}<small>{byId[edge.object_id]!.node_type.toLowerCase()}</small></Link>
+    </li>)}</ol>
+    <div className="precision-preview-bottom"><p>{isSuccess ? EXEMPLAR_MATURITY_LABEL[report.maturity] : isError ? "Evidence review status unavailable" : "Loading evidence review status…"}</p><Link to="/graph" search={{ focus: "D001" }}>Open full graph <ArrowRight size={15} /></Link></div>
+    <p className="precision-preview-note">Existing graph relationships. A teaching axis, not a complete disease model.</p>
+  </div>;
+}
+
 function Home() {
-  const { coverage } = Route.useLoaderData();
   return (
     <div className="precision-home">
-      <section className="precision-hero" aria-labelledby="precision-title">
+      <section className="precision-hero isi-dark-band" aria-labelledby="precision-title">
         <div className="precision-hero-copy">
           <p className="precision-eyebrow">Immune Super Intelligence · Translational research</p>
-          <h1 id="precision-title">See the connections.<br /><em>Shape the next question.</em></h1>
-          <p className="precision-lede">Bring immune biology, source-linked evidence and research investigations into one connected workspace.</p>
+          <h1 id="precision-title">Immunology,<br /><em>connected.</em></h1>
+          <p className="precision-lede">Explore mechanisms. Follow the evidence. Turn a research question into a traceable investigation.</p>
           <div className="precision-actions">
             <Link className="btn primary" to="/research" hash="synthetic-programme">Open research workbench <ArrowRight size={18} /></Link>
             <Link className="precision-text-link" to="/graph">Explore the knowledge graph <ArrowRight size={18} /></Link>
           </div>
-          <p className="precision-caption">For research and education. Findings and review status remain visible.</p>
+          <p className="precision-caption">A research workspace for translational teams.<br />Source context and scientific review stay in view.</p>
         </div>
         <div className="precision-hero-field" aria-label="Connected research workspace preview">
-          <div className="precision-orbit precision-orbit-one" /><div className="precision-orbit precision-orbit-two" />
-          <div className="precision-field-core"><span>ISI</span><small>Connected biology</small></div>
-          <Link className="precision-field-node field-node-a" to="/atlas">01 / Concepts<br /><strong>Knowledge Atlas</strong></Link>
-          <Link className="precision-field-node field-node-b" to="/evidence">02 / Sources<br /><strong>Evidence explorer</strong></Link>
-          <Link className="precision-field-node field-node-c" to="/research" hash="synthetic-programme">03 / Investigations<br /><strong>Research workbench</strong></Link>
-          <span className="precision-field-caption">Concept → relationship → evidence → investigation</span>
+          <HomeGraphPreview />
         </div>
       </section>
 
@@ -256,7 +272,7 @@ function Home() {
         <div><strong>{SNAP.coreNodes}</strong><span>Core graph concepts</span></div>
         <div><strong>{SNAP.coreRelationships}</strong><span>Core relationships · review varies</span></div>
         <div><strong>{SNAP.coreVersion}</strong><span>Graph release</span></div>
-        <div><strong>{coverage ? "Retrieved" : "Unavailable"}</strong><span>Server evidence coverage</span></div>
+        <div><strong>{SYNTHETIC_CONDITION_CATALOGUE.length}</strong><span>Condition contexts · demonstration</span></div>
       </section>
 
       <section className="precision-section" aria-labelledby="precision-work-heading">
@@ -275,7 +291,7 @@ function Home() {
 
       <section className="precision-section" aria-labelledby="precision-investigation-heading">
         <div className="precision-section-head"><p className="precision-eyebrow">Research in practice</p><h2 id="precision-investigation-heading">Follow the investigation.<br />Keep the context.</h2><p>Explore immune, gut, brain and metabolic condition contexts in an interactive demonstration. Fictional records let you test the workflow without entering patient information.</p></div>
-        <ResearchJourney />
+        <ResearchJourney compact />
         <div className="precision-usecases">
           <Link to="/research" hash="synthetic-programme"><span>Cross-condition investigation</span><strong>Observations → graph context → research plan</strong><p>Compare longitudinal records and inspect the effect of changing scenario inputs.</p></Link>
           <Link to="/research" hash="melanoma"><span>Melanoma immunotherapy</span><strong>Mechanisms → trial context → hypothesis</strong><p>Explore landmark publication locators and draft a falsifiable investigation.</p></Link>
