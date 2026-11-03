@@ -1,5 +1,19 @@
 # HSI platform connection
 
+## Shared executable technology
+
+The existing `getGraphNeighbourhood` now calls HSI's canonical bounded traversal
+algorithm. Its adapter supplies ISI's sole graph and preserves relationship IDs,
+typed metadata and evidence presentation. `src/lib/hsi/vendor/sharedTechnology*`
+contains the exact deployed source and HSI Git/SHA-256 provenance; integrity and
+graph regression tests cover the consumer. Edit the canonical HSI module and
+regenerate this snapshot rather than fork its algorithm. This source distribution
+is transitional until a versioned private package release is configured.
+
+This is code reuse, distinct from the older JSON exchange below. No graph store,
+authentication or database moves to HSI. The HSI discovery and diagnostic routes
+described below are now administrator-protected internal tools, not public entry points.
+
 This checkout reuses the existing HSI Discovery bridge. HSI links from `/for-isi` to this app's `/hsi/discovery` when `VITE_ISI_APP_URL` is configured. `/hsi-consume` remains the diagnostic view. Both loaders now consume validated bundled JSON, so SSR needs neither a self-request to a hard-coded local port nor access to a private GitHub URL.
 
 Refresh from the sibling checkout with:
