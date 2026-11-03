@@ -1,3 +1,4 @@
+import InternalResearchGate from "@/components/immune/InternalResearchGate";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -9,8 +10,9 @@ import { DetailToggle } from "@/components/immune/InlineDetail";
 import TherapyDetail from "@/components/immune/TherapyDetail";
 
 export const Route = createFileRoute("/patient")({
-  head: () => seoHead({ title: "Patient: precision immunology — Immune Super Intelligence", description: "Select patient features and see which therapies the mechanism supports or cautions against, rule by rule.", path: "/patient" }),
-  component: Patient,
+  ssr: false,
+  head: () => seoHead({ title: "Patient: precision immunology — Immune Super Intelligence", description: "Select patient features and see which therapies the mechanism supports or cautions against, rule by rule.", path: "/patient", noIndex: true }),
+  component: () => <InternalResearchGate><Patient /></InternalResearchGate>,
 });
 
 const GROUPS = ["Comorbidity", "Biomarker", "Clinical state", "Life stage & immune status"];

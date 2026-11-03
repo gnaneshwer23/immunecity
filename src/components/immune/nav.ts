@@ -1,3 +1,4 @@
+import { isInternalToolPath } from "@/lib/publicSurfaces";
 export const NAV_GROUPS = [
   { label: "Foundations", items: [
     { n: "00", path: "/", title: "Home", desc: "Mission, pathways and how to begin." },
@@ -23,4 +24,4 @@ export const NAV_GROUPS = [
 ] as const;
 
 type NavItem = (typeof NAV_GROUPS)[number]["items"][number];
-export const ALL_NAV: readonly NavItem[] = NAV_GROUPS.flatMap((g) => g.items as readonly NavItem[]);
+export const ALL_NAV: readonly NavItem[] = NAV_GROUPS.flatMap((g) => g.items as readonly NavItem[]).filter((item) => !isInternalToolPath(item.path));

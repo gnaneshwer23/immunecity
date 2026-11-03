@@ -4,8 +4,6 @@ import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { PROMPT_VERSION } from "@/lib/askGrounding";
 import { ASK_RATE_LIMIT_STATUS } from "@/lib/askRateLimitStatus";
 import { STATUS_INFO, type ReviewStatus } from "@/lib/immune/evidenceStatus";
-import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
-import AskQualityDashboard from "@/components/immune/AskQualityDashboard";
 import { IMPLEMENTATION_PHASES } from "@/data/implementation-phases";
 import { loadEvidenceCoverage } from "@/lib/citations.functions";
 import { FLAGSHIP_NAME, pageTitle } from "@/lib/brand";
@@ -37,7 +35,7 @@ function LiveEvidencePanel() {
         <h3 id="live-ev-heading">Live evidence coverage</h3>
         <p>
           Evidence database unavailable
-          {coverageError ? ` (${coverageError})` : ""}. This is a service error, not a finding of zero reviewed
+          . This is a service error, not a finding of zero reviewed
           citations.
         </p>
       </div>
@@ -91,7 +89,6 @@ function LiveEvidencePanel() {
 const METHODS_TOC = [
   { href: "#lifecycle", label: "Evidence lifecycle" },
   { href: "#live-ev-heading", label: "Live coverage" },
-  { href: "#ask-quality", label: "Ask quality (admin)" },
   { href: "#statuses", label: "Review statuses" },
   { href: "#hsi-grades", label: "HSI grades" },
   { href: "#ontology", label: "Graph ontology" },
@@ -145,7 +142,7 @@ function Methods() {
               <Link to="/ask">Ask Immune</Link>
             </Button>
             <Button asChild variant="ghost" className="bio-secondary">
-              <Link to="/curation">Curation (admin)</Link>
+              <Link to="/evidence">Evidence explorer</Link>
             </Button>
           </>
         }
@@ -196,7 +193,6 @@ function Methods() {
             </div>
             <LiveEvidencePanel />
           </div>
-          <AskQualityDashboard />
         </MarketingSection>
 
         <MarketingSection
@@ -288,7 +284,7 @@ function Methods() {
               fully evidence-grounded AI. Answers can still be wrong.{" "}
               <Link to="/ask">Open Ask</Link>
               {" · "}
-              <Link to="/reasoning" hash="how-ai-works">
+              <Link to="/ask">
                 How the AI works
               </Link>
             </li>
@@ -304,19 +300,6 @@ function Methods() {
               — never auto-promoted into the curated graph. Omics and molecular AI adapters are planned interfaces;
               dry-runs report not available.
             </li>
-          </ul>
-          <ModelRegistryPanel compact />
-          <h3 className="mkt-subhead">Platform phases</h3>
-          <ul className="mkt-phase-list">
-            {IMPLEMENTATION_PHASES.map((p) => (
-              <li key={p.id}>
-                <span className="badge rs">
-                  Phase {p.id} · {p.status.replace("_", " ")}
-                </span>
-                <strong>{p.title}</strong>
-                <span>{p.notes}</span>
-              </li>
-            ))}
           </ul>
         </MarketingSection>
 
@@ -344,7 +327,7 @@ function Methods() {
             </li>
           </ul>
           <p className="mkt-aside">
-            Curators: <Link to="/curation">Citation curation</Link> (admin). Accessibility: the knowledge graph has a{" "}
+            Read the mapped sources in the <Link to="/evidence">Evidence explorer</Link>. Accessibility: the knowledge graph has a{" "}
             <Link to="/graph">text table view</Link>; keyboard focus is always visible; detail drawers close with Escape.
           </p>
         </MarketingSection>

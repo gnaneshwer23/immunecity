@@ -1,3 +1,4 @@
+import { isInternalToolPath } from "./publicSurfaces";
 /* sitemap.xml built from the graph at request time, so every indexable concept, pipeline
    and mechanism page is listed and the file can never drift from the routes. Pure and
    browser-safe for unit tests; served by src/routes/sitemap[.]xml.ts. */
@@ -10,7 +11,7 @@ import { absoluteUrl } from "@/lib/seo";
 type Entry = { path: string; changefreq: "daily" | "weekly" | "monthly" | "yearly"; priority: number };
 
 /** Hub and trust pages (formerly the static public/sitemap.xml). */
-export const STATIC_SITEMAP: Entry[] = [
+const STATIC_DEFINITIONS: Entry[] = [
   { path: "/", changefreq: "weekly", priority: 1.0 },
   { path: "/overview", changefreq: "weekly", priority: 0.9 },
   { path: "/ask", changefreq: "weekly", priority: 0.9 },
@@ -47,6 +48,8 @@ export const STATIC_SITEMAP: Entry[] = [
   { path: "/disclaimer", changefreq: "yearly", priority: 0.3 },
   { path: "/accessibility", changefreq: "yearly", priority: 0.3 },
 ];
+
+export const STATIC_SITEMAP = STATIC_DEFINITIONS.filter((entry) => !isInternalToolPath(entry.path));
 
 const escapeXml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 

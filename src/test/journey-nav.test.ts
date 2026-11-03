@@ -25,10 +25,10 @@ describe("journey navigation", () => {
 });
 
 describe("merged pages", () => {
-  it("has no separate Scientific AI entry; Reasoning covers it under Research", () => {
+  it("keeps internal reasoning and Scientific AI out of public navigation", () => {
     const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path as string));
     expect(paths).not.toContain("/scientific-ai");
-    expect(paths).toContain("/reasoning");
+    expect(paths).not.toContain("/reasoning");
   });
 });
 
@@ -49,31 +49,32 @@ describe("primary entries", () => {
     const research = JOURNEY_NAV.find((g) => g.label === "Research")!.items.map((i) => i.path);
     expect(explore).toEqual(expect.arrayContaining(["/explore", "/atlas", "/graph", "/mechanism"]));
     expect(research).toEqual(
-      expect.arrayContaining(["/research", "/discovery", "/hsi/discovery", "/evidence", "/simulator"]),
+      expect.arrayContaining(["/research", "/discovery", "/evidence"]),
     );
+    expect(research).not.toContain("/hsi/discovery");
+    expect(research).not.toContain("/simulator");
   });
   it("Ask Immune pillar is the chatbot; Reasoning is tools, not a second chat", () => {
     const ask = JOURNEY_NAV.find((g) => g.label === "Ask Immune")!.items;
     expect(ask).toHaveLength(1);
     expect(ask[0]!.path).toBe("/ask");
     const reasoning = JOURNEY_NAV.find((g) => g.label === "Research")!.items.find((i) => i.path === "/reasoning");
-    expect(reasoning?.title).toBe("Scientific reasoning");
-    expect(reasoning?.desc.toLowerCase()).toMatch(/not a second chatbot/);
+    expect(reasoning).toBeUndefined();
   });
 });
 
 describe("brief simplification mapping", () => {
   const find = (label: string) => JOURNEY_NAV.find((g) => g.label === label)!.items.map((i) => i.title);
-  it("puts Research library, Simulator and Research Radar under Research", () => {
+  it("keeps public research destinations and excludes testing tools", () => {
     expect(find("Research")).toEqual(
       expect.arrayContaining([
-        "System simulator",
         "Research library",
         "Evidence explorer",
         "Research Radar",
-        "HSI Discovery",
       ]),
     );
+    expect(find("Research")).not.toContain("System simulator");
+    expect(find("Research")).not.toContain("HSI Discovery");
   });
   it("keeps Methods in secondary chrome, not a sixth science pillar", () => {
     expect(JOURNEY_NAV.map((g) => g.label)).not.toContain("Trust");

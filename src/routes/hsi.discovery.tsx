@@ -1,3 +1,4 @@
+import InternalResearchGate from "@/components/immune/InternalResearchGate";
 /**
  * Product HSI Discovery surface — ASK → MAP → REVIEW (+ optional VALIDATE / TRANSLATE).
  * Distinct from Research Radar at /discovery. Research / HITL only — not CDS.
@@ -19,6 +20,7 @@ type LoaderData =
   | { ok: false; error: string };
 
 export const Route = createFileRoute("/hsi/discovery")({
+  ssr: false,
   loader: async (): Promise<LoaderData> => {
     try {
       const result = await loadVendoredHsiDiscovery();
@@ -35,9 +37,9 @@ export const Route = createFileRoute("/hsi/discovery")({
       title: `HSI Discovery | ${PRODUCT_NAME}`,
       description:
         "ASK → MAP → REVIEW on published HSI Discovery packs — research / HITL only. Not clinical decision support. Gate C never auto-approves.",
-      path: "/hsi/discovery",
+      path: "/hsi/discovery", noIndex: true,
     }),
-  component: HsiDiscoveryPage,
+  component: () => <InternalResearchGate><HsiDiscoveryPage /></InternalResearchGate>,
 });
 
 function HsiDiscoveryPage() {

@@ -1,3 +1,4 @@
+import { isInternalToolPath } from "@/lib/publicSurfaces";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useState } from "react";
@@ -165,7 +166,7 @@ function Overview() {
   const featured = CONTENT.routes.slice(0, 4);
   const selected = featured[activeRoute];
   const snap = graphReleaseSnapshot();
-  const layers = NAV_GROUPS.flatMap((g) => g.items.filter((l) => l.path !== "/"));
+  const layers = NAV_GROUPS.flatMap((g) => g.items.filter((l) => l.path !== "/" && !isInternalToolPath(l.path)));
   const primaryExemplar = EXEMPLAR_PATHWAYS.find((p) => p.id === "ex-tnf-ra") ?? EXEMPLAR_PATHWAYS[0]!;
   const { data: approvedCites = [], isPending: citesPending, isError: citesError } = useQuery(approvedQuery);
   const primaryReport = reportExemplar(primaryExemplar, approvedCites);

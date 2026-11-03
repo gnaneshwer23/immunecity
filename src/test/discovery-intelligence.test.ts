@@ -619,7 +619,8 @@ describe("Discovery IA + migrations + route tree", () => {
     () => {
       const research = JOURNEY_NAV.find((g) => g.label === "Research")!;
       expect(research.items.some((i) => i.path === "/discovery" && i.title === "Research Radar")).toBe(true);
-      expect(research.items.some((i) => i.path === "/hsi/discovery" && i.title === "HSI Discovery")).toBe(true);
+      expect(research.items.some((i) => i.path === "/hsi/discovery")).toBe(false);
+      expect(source("src/routes/hsi.discovery.tsx")).toContain("InternalResearchGate");
       const agents = source("src/lib/discovery/AGENTS.md");
       expect(agents).toMatch(/never a second graph/i);
       expect(agents).toMatch(/reviewed_gap/i);

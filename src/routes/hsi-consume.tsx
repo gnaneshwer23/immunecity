@@ -1,3 +1,4 @@
+import InternalResearchGate from "@/components/immune/InternalResearchGate";
 /**
  * HSI Discovery consume diagnostics (load order, honesty, licensing).
  * Product ASK→MAP→REVIEW UI lives at /hsi/discovery.
@@ -28,6 +29,7 @@ type LoaderData =
   | { ok: false; error: string };
 
 export const Route = createFileRoute("/hsi-consume")({
+  ssr: false,
   loader: async (): Promise<LoaderData> => {
     try {
       const result = await loadVendoredHsiDiscovery();
@@ -44,9 +46,9 @@ export const Route = createFileRoute("/hsi-consume")({
       title: `HSI Discovery diagnostics | ${PRODUCT_NAME}`,
       description:
         "Diagnostics for HSI Discovery JSON consume — research / HITL only. Product loop is /hsi/discovery. Not clinical decision support.",
-      path: "/hsi-consume",
+      path: "/hsi-consume", noIndex: true,
     }),
-  component: HsiConsumePage,
+  component: () => <InternalResearchGate><HsiConsumePage /></InternalResearchGate>,
 });
 
 function HsiConsumePage() {

@@ -1,3 +1,4 @@
+import { isInternalToolPath } from "@/lib/publicSurfaces";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { neonAuth } from "@/integrations/neon/auth-client";
 import { BookOpen, ChevronDown, FlaskConical, Menu, MessageCircle, Network, Users, UserRound, X, Youtube } from "lucide-react";
@@ -326,7 +327,7 @@ function MarketingCompactNav({
           ) : null}
           <details className="marketing-compact-group marketing-compact-layers">
             <summary className="marketing-compact-label">All twelve science layers</summary>
-            {NAV_GROUPS.flatMap((g) => [...g.items] as { n: string; path: string; title: string }[]).filter((l) => l.path !== "/").map((l) => (
+            {NAV_GROUPS.flatMap((g) => [...g.items] as { n: string; path: string; title: string }[]).filter((l) => l.path !== "/" && !isInternalToolPath(l.path)).map((l) => (
               <Link key={l.path} to={l.path as "/"} activeProps={{ className: "active" }} onClick={onClose}>
                 <span className="num">{l.n}</span> {l.title}
               </Link>

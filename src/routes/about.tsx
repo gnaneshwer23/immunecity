@@ -85,7 +85,7 @@ function About() {
                   until human review.{" "}
                   <Link to="/ask">Ask Immune</Link>
                   {" · "}
-                  <Link to="/research" hash="workbench">Workbench</Link>
+                  <Link to="/research" hash="library">Research library</Link>
                 </p>
               </div>
             </li>
@@ -111,14 +111,8 @@ function About() {
           </p>
         </MarketingSection>
 
-        <MarketingSection id="roadmap" eyebrow="Status" title="Shipped where it works. Labelled where it does not.">
-          <p className="mkt-prose">
-            Graph exploration, cell atlas content, mechanism walks and several teaching tools are available today.
-            Ask Immune draws on graph context and labelled sources — it is not fully evidence-grounded AI. Most
-            relationship claims are not yet claim-reviewed. The research workbench remains a guided draft workflow.
-            Fully evidence-grounded AI, denser counterevidence curation and omics integrations remain planned. Details
-            on <Link to="/methods" hash="live-ev-heading">Evidence &amp; Methods</Link>.
-          </p>
+        <MarketingSection id="scientific-scope" eyebrow="Scope" title="Research with visible limits.">
+          <p className="mkt-prose">Explore immune concepts, mechanisms and source-linked evidence. Review status remains visible; a graph relationship is not automatically an approved scientific claim. Read <Link to="/methods" hash="live-ev-heading">Evidence &amp; Methods</Link> for coverage and limitations.</p>
         </MarketingSection>
 
         <MarketingCta

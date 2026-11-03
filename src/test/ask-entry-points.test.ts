@@ -14,8 +14,8 @@ describe("Ask Immune entry points", () => {
     const paths = JOURNEY_NAV.flatMap((g) => g.items.map((i) => i.path));
     expect(paths.filter((p) => p === "/ask")).toHaveLength(1);
     const reasoning = JOURNEY_NAV.find((g) => g.label === "Research")!.items.find((i) => i.path === "/reasoning");
-    expect(reasoning?.title).toBe("Scientific reasoning");
-    expect(reasoning?.desc.toLowerCase()).not.toContain("ask immune");
+    expect(reasoning).toBeUndefined();
+    expect(source("src/routes/reasoning.tsx")).toContain("InternalResearchGate");
   });
 
   it("hosts AskAtlas only on /ask and the Shell corner assistant", () => {

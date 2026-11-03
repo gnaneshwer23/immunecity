@@ -9,6 +9,9 @@ const Programme = lazy(() => import("@/components/immune/SyntheticConditionProgr
 const Melanoma = lazy(() => import("@/components/immune/MelanomaEvidenceExplorer"));
 const Workbench = lazy(() => import("@/components/immune/ScientificWorkbench"));
 const Brief = lazy(() => import("@/components/immune/ResearchBriefPanel"));
+const Models = lazy(() => import("@/components/immune/ModelRegistryPanel"));
+const Quality = lazy(() => import("@/components/immune/AskQualityDashboard"));
+const Literature = lazy(() => import("@/components/immune/LiteratureQueue"));
 export const Route = createFileRoute("/internal-research")({
   head: () => seoHead({ title: "Internal research workspace", description: "Restricted internal testing workspace.", path: "/internal-research", noIndex: true }),
   component: InternalResearch,
@@ -23,5 +26,7 @@ function InternalResearch() {
     return () => { active = false; };
   }, [load]);
   if (!data) return <main className="page"><h1>Internal research workspace</h1><p role="status">{pending ? "Checking access…" : "Administrator access is required. Your session and stored role must be verified before this workspace can load."}</p></main>;
-  return <main className="page"><h1>Internal research workspace</h1><p>Administrator-only workflow testing. Nothing here approves scientific evidence.</p><Suspense fallback={<p>Loading workspace…</p>}><Programme initialData={data} /><Melanoma /><h2>Investigation workbench</h2><Workbench /><h2>Draft brief</h2><Brief /></Suspense></main>;
+  return <main className="page"><h1>Internal research workspace</h1><p>Administrator-only workflow testing. Nothing here approves scientific evidence.</p>
+    <nav aria-label="Internal tools"><a href="/reasoning">Reasoning tools</a>{" · "}<a href="/simulator">Simulation</a>{" · "}<a href="/patient">Patient-rule testing</a>{" · "}<a href="/hsi/discovery">HSI integration</a>{" · "}<a href="/hsi-consume">Integration diagnostics</a></nav>
+    <Suspense fallback={<p>Loading workspace…</p>}><Programme initialData={data} /><Melanoma /><h2>Investigation workbench</h2><Workbench /><h2>Draft brief</h2><Brief /><h2>Literature curation queue</h2><Literature /><h2>Model interfaces</h2><Models /><h2>Quality diagnostics</h2><Quality /></Suspense></main>;
 }

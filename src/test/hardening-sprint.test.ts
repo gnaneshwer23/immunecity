@@ -94,7 +94,9 @@ describe("P1 persistence clarity", () => {
     expect(wb).toMatch(/does not sync to Neon|does not sync/i);
     const route = source("src/routes/research.tsx");
     expect(route).toMatch(/sync across devices/i);
-    expect(route).toMatch(/Local drafts stay on this[\s\S]*device/i);
+    expect(route).not.toContain("ScientificWorkbench");
+    expect(source("src/routes/internal-research.tsx")).toContain("ScientificWorkbench");
+    expect(wb).toMatch(/localStorage/);
   });
 });
 

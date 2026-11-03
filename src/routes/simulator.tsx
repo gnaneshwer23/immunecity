@@ -1,3 +1,4 @@
+import InternalResearchGate from "@/components/immune/InternalResearchGate";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -11,8 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Section } from "@/components/immune/page";
 
 export const Route = createFileRoute("/simulator")({
-  head: () => seoHead({ title: "System simulator — Immune Super Intelligence", description: "Run an infection over 30 days: tune pathogen growth, innate and adaptive strength, and add steroids, antibiotics or checkpoint blockade.", path: "/simulator" }),
-  component: Simulator,
+  ssr: false,
+  head: () => seoHead({ title: "System simulator — Immune Super Intelligence", description: "Run an infection over 30 days: tune pathogen growth, innate and adaptive strength, and add steroids, antibiotics or checkpoint blockade.", path: "/simulator", noIndex: true }),
+  component: () => <InternalResearchGate><Simulator /></InternalResearchGate>,
 });
 
 type Preset = { label: string; p: Record<string, number>; note: string };

@@ -1,3 +1,4 @@
+import InternalResearchGate from "@/components/immune/InternalResearchGate";
 import { seoHead } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -34,15 +35,16 @@ import { AiPrinciples, CapabilityRegistry, ResearchWorkspace } from "@/component
 import { SpecialistDrafts } from "@/components/immune/SpecialistDrafts";
 
 export const Route = createFileRoute("/reasoning")({
+  ssr: false,
   validateSearch: zodValidator(z.object({ from: fallback(z.string(), "").default("") })),
   head: () =>
     seoHead({
       title: "Reasoning & Scientific AI — Immune Super Intelligence",
       description:
         "Inspect Ask retrieval grounding, walk curated pathways, trace paths and run start–perturbation–outcome reasoning. Chat lives on Ask Immune. Educational resource — not fully evidence-grounded AI.",
-      path: "/reasoning",
+      path: "/reasoning", noIndex: true,
     }),
-  component: Reasoning,
+  component: () => <InternalResearchGate><Reasoning /></InternalResearchGate>,
 });
 
 const SORTED = [...KG.nodes].sort((a, b) => a.name.localeCompare(b.name));

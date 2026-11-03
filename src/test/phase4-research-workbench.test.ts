@@ -151,14 +151,16 @@ describe("Phase 4 exit gate — reproducible, reviewable, source-traceable", () 
     expect(draftResearchBrief({ question: "Empty", sources: { conceptIds: [] } }).ok).toBe(false);
   });
 
-  it("wires collections and brief UI on /research without a second backend or KG approve path", () => {
+  it("keeps collections public and brief drafting in the protected internal workspace without a second KG", () => {
     // Source-contract reads can be slow under parallel KG loads.
     const route = source("src/routes/research.tsx");
     expect(route).toContain('id="collections"');
     expect(route).toContain("EvidenceCollectionsPanel");
-    expect(route).toContain('id="brief"');
-    expect(route).toContain("ResearchBriefPanel");
-    expect(route).toMatch(/cannot approve into the KG/i);
+    expect(route).not.toContain("ResearchBriefPanel");
+    const internal = source("src/routes/internal-research.tsx");
+    expect(internal).toContain("ResearchBriefPanel");
+    expect(internal).toContain("loadInternalResearchProgramme");
+    expect(source("src/lib/research/internalProgramme.functions.ts")).toContain("assertAdministrator(context.userId)");
     expect(route).toMatch(/never a knowledge-graph write/i);
 
     const briefUi = source("src/components/immune/ResearchBriefPanel.tsx");

@@ -1,3 +1,4 @@
+import { isInternalToolPath } from "@/lib/publicSurfaces";
 /** Public marketing IA — separate from the twelve atlas layer groups in nav.ts. */
 
 /** Footer item: internal path or outbound href (learning / social). */
@@ -30,7 +31,7 @@ export const MARKETING_NAV = [
   MARKETING_NAV_ACTION,
 ] as const;
 
-export const FOOTER_GROUPS: readonly { label: string; items: readonly FooterItem[] }[] = [
+const FOOTER_GROUP_DEFINITIONS: readonly { label: string; items: readonly FooterItem[] }[] = [
   {
     label: "Explore",
     items: [
@@ -121,7 +122,7 @@ export function journeyKey(i: { path: string; hash?: string }): string {
  * Five primary pillars. Expert workspaces (SME/curation) and Trust/Methods live in
  * secondary/account/footer chrome — not competing science destinations.
  */
-export const JOURNEY_NAV: readonly { label: string; items: readonly JourneyItem[] }[] = [
+const JOURNEY_DEFINITIONS: readonly { label: string; items: readonly JourneyItem[] }[] = [
   {
     label: "Explore",
     items: [
@@ -190,3 +191,6 @@ export const JOURNEY_SECONDARY = [
   { label: "Vision", path: "/vision" },
   { label: "About", path: "/about" },
 ] as const;
+
+export const FOOTER_GROUPS = FOOTER_GROUP_DEFINITIONS.map((group) => ({ ...group, items: group.items.filter((item) => !("path" in item) || !isInternalToolPath(item.path)) }));
+export const JOURNEY_NAV = JOURNEY_DEFINITIONS.map((group) => ({ ...group, items: group.items.filter((item) => !isInternalToolPath(item.path)) }));

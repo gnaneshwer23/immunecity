@@ -23,7 +23,7 @@ function LiveNeonCoverage() {
   if (coverageError || !data) {
     return (
       <p className="callout" role="alert">
-        Evidence database unavailable{coverageError ? ` (${coverageError})` : ""}.
+        Evidence coverage is temporarily unavailable.
         This is a service error — not a finding that coverage is zero.
       </p>
     );
