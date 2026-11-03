@@ -10,13 +10,13 @@ import {
   RaEvidenceUnavailableError,
 } from "./vendor/raEvidenceRelease";
 import {
-  RA_DEMO_RELEASE_ID,
-  buildRaDemoEvidenceBundle,
-  raDemoEvidenceReleaseListing,
-} from "./vendor/raDemoEvidenceRelease";
+  RA_RESEARCH_RELEASE_ID,
+  buildRaResearchEvidenceBundle,
+  raResearchEvidenceReleaseListing,
+} from "./vendor/raResearchEvidenceRelease";
 import raReleaseArtifact from "@/data/hsi/ra-anti-tnf/release.json";
 import raGraphContext from "@/data/hsi/ra-anti-tnf/graph-context.json";
-import raDemoReleaseArtifact from "@/data/hsi/ra-anti-tnf-demo/release.json";
+import raResearchReleaseArtifact from "@/data/hsi/ra-anti-tnf-research/release.json";
 
 const typeMap: Record<string, ResearchEntity["type"]> = {
   CELL: "cell",
@@ -46,14 +46,14 @@ const coreRelease: InvestigationRelease = {
 };
 
 const raListing = raEvidenceReleaseListing(raReleaseArtifact);
-const raDemoListing = raDemoEvidenceReleaseListing(raDemoReleaseArtifact);
+const raResearchListing = raResearchEvidenceReleaseListing(raResearchReleaseArtifact);
 
-export const isiInvestigationReleases: InvestigationRelease[] = [coreRelease, raDemoListing, raListing];
+export const isiInvestigationReleases: InvestigationRelease[] = [coreRelease, raResearchListing, raListing];
 
 export async function loadIsiInvestigationRelease(id: string, conceptId: string | null): Promise<ResearchBundle> {
-  if (id === RA_DEMO_RELEASE_ID) {
+  if (id === RA_RESEARCH_RELEASE_ID) {
     // Synthetic SYN-* mirrors only — not the rights-verified release and not original KG rows.
-    return buildRaDemoEvidenceBundle(raDemoReleaseArtifact);
+    return buildRaResearchEvidenceBundle(raResearchReleaseArtifact);
   }
   if (id === RA_RELEASE_ID) {
     try {

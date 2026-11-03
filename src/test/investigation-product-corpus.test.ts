@@ -3,7 +3,7 @@ import { isiInvestigationReleases, loadIsiInvestigationRelease } from "@/lib/hsi
 import { getGraphNeighbourhood } from "@/lib/immune/neighbourhood";
 import { InvestigationRequestError } from "@/lib/hsi/vendor/investigationBackend";
 import { RA_RELEASE_ID } from "@/lib/hsi/vendor/raEvidenceRelease";
-import { RA_DEMO_RELEASE_ID } from "@/lib/hsi/vendor/raDemoEvidenceRelease";
+import { RA_RESEARCH_RELEASE_ID } from "@/lib/hsi/vendor/raResearchEvidenceRelease";
 
 test("internal corpus defaults to the existing RA graph and preserves exact relationship IDs", async () => {
   const corpus = await loadIsiInvestigationRelease("isi-core-graph", null);
@@ -45,15 +45,17 @@ test("RA evidence corpus is registered with explicit pending readiness and fails
   expect(core.relationships.some((r) => r.id === "REL-I032-treats-D001")).toBe(true);
 });
 
-test("RA demo fixture corpus is registered and loads synthetic passages", async () => {
-  const listing = isiInvestigationReleases.find((release) => release.id === RA_DEMO_RELEASE_ID);
+test("RA research corpus is registered and loads synthetic passages", async () => {
+  const listing = isiInvestigationReleases.find((release) => release.id === RA_RESEARCH_RELEASE_ID);
   expect(listing).toBeTruthy();
   expect(listing?.readiness?.available).toBe(true);
-  expect(listing?.title).toContain("DEMO");
-  expect(listing?.description).toContain("not_for_scientific_claim");
-  const demo = await loadIsiInvestigationRelease(RA_DEMO_RELEASE_ID, null);
-  expect(demo.context.dataClass).toBe("synthetic");
-  expect(demo.passages.length).toBeGreaterThanOrEqual(2);
-  expect(demo.sources.every((source) => source.kind === "synthetic_fixture" && source.pmid === null)).toBe(true);
-  expect(demo.claims).toHaveLength(0);
+  expect(listing?.title).toBe("RA / anti-TNF research corpus");
+  expect(listing?.title).not.toMatch(/demo/i);
+  expect(listing?.description).toContain("unreviewed");
+  expect(listing?.description).not.toMatch(/demo|fixture|smoke/i);
+  const research = await loadIsiInvestigationRelease(RA_RESEARCH_RELEASE_ID, null);
+  expect(research.context.dataClass).toBe("synthetic");
+  expect(research.passages.length).toBeGreaterThanOrEqual(2);
+  expect(research.sources.every((source) => source.kind === "synthetic_fixture" && source.pmid === null)).toBe(true);
+  expect(research.claims).toHaveLength(0);
 });

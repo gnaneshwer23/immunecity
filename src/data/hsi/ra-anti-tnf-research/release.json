@@ -1,0 +1,208 @@
+{
+  "schemaVersion": "hsi-ra-research-evidence-release-1",
+  "protocolId": "ra-anti-tnf-response-research",
+  "protocolVersion": "1",
+  "releaseId": "ra-anti-tnf-research",
+  "corpusKind": "research_working_set",
+  "status": "available_working_set",
+  "notForScientificClaim": true,
+  "question": "How should RF/anti-CCP serostatus evidence be interpreted in rheumatoid arthritis anti-TNF response research? (research working set; scientific claim support unreviewed)",
+  "containsPhi": false,
+  "clinicalAdvice": false,
+  "kgWrite": false,
+  "scientificReview": "unreviewed",
+  "sources": [
+    {
+      "id": "SYN-RA-SRC-0001",
+      "title": "RS-0001 — Research working-set cohort abstract on RF/anti-CCP and anti-TNF response heterogeneity (synthetic research source)",
+      "kind": "synthetic_fixture",
+      "dataClass": "synthetic",
+      "pmid": null,
+      "doi": null,
+      "url": null,
+      "licence": {
+        "status": "permitted",
+        "identifier": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "passageUsePermitted": true
+      },
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "6a57faf798cd82662b201b207bb7a3b5b654a200b78f3d673c97e7471632b191",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    },
+    {
+      "id": "SYN-RA-SRC-0002",
+      "title": "RS-0002 — Research working-set meta-analysis style abstract contrasting serology frames with anti-TNF efficacy (synthetic research source)",
+      "kind": "synthetic_fixture",
+      "dataClass": "synthetic",
+      "pmid": null,
+      "doi": null,
+      "url": null,
+      "licence": {
+        "status": "permitted",
+        "identifier": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "passageUsePermitted": true
+      },
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "16a30239a65496d6fb210522b1fbb042befda9fc39aa970e99b2f222c1ffbacc",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    }
+  ],
+  "passages": [
+    {
+      "id": "SYN-RA-SRC-0001-ABSTRACT-1",
+      "sourceId": "SYN-RA-SRC-0001",
+      "sourceVersion": "6a57faf798cd82662b201b207bb7a3b5b654a200b78f3d673c97e7471632b191",
+      "text": "In this research working-set cohort abstract for adults with rheumatoid arthritis receiving anti-TNF therapy, RF and anti-CCP serostatus were recorded at baseline. Any association with response heterogeneity described here is illustrative for investigation workflows only and must not be cited as scientific evidence. Source label: RS-0001.",
+      "locator": "RESEARCH/abstract/p[1]",
+      "dataClass": "synthetic",
+      "sha256": "b57a28cacc44e7071c8573c4b05b22ec40fbf972e608162da7d8cf53e3d423e5"
+    },
+    {
+      "id": "SYN-RA-SRC-0002-ABSTRACT-1",
+      "sourceId": "SYN-RA-SRC-0002",
+      "sourceVersion": "16a30239a65496d6fb210522b1fbb042befda9fc39aa970e99b2f222c1ffbacc",
+      "text": "This research working-set abstract notes that a null predictive association for RF/anti-CCP does not refute anti-TNF efficacy in rheumatoid arthritis. Keep serology-response prediction distinct from treatment efficacy. Graph anchors remain related context only. Source label: RS-0002.",
+      "locator": "RESEARCH/abstract/p[1]",
+      "dataClass": "synthetic",
+      "sha256": "142f6c37ddd5f931ff555a3a1c6721959819effd717a3d1fc646b672b629b2f7"
+    }
+  ],
+  "entities": [
+    {
+      "id": "SYN-D001",
+      "label": "Rheumatoid arthritis (research mirror of D001)",
+      "type": "disease",
+      "dataClass": "synthetic",
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "a5db70249c4d33a0b2e77d90b85f40ea5c2d25dc92f3298cf77acd803cb63743",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    },
+    {
+      "id": "SYN-I032",
+      "label": "TNF blockade class (research mirror of I032)",
+      "type": "intervention",
+      "dataClass": "synthetic",
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "a5db70249c4d33a0b2e77d90b85f40ea5c2d25dc92f3298cf77acd803cb63743",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    },
+    {
+      "id": "SYN-M001",
+      "label": "TNF (research mirror of M001)",
+      "type": "molecule",
+      "dataClass": "synthetic",
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "a5db70249c4d33a0b2e77d90b85f40ea5c2d25dc92f3298cf77acd803cb63743",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "SYN-REL-I032-treats-D001",
+      "subjectId": "SYN-I032",
+      "predicate": "treats",
+      "objectId": "SYN-D001",
+      "dataClass": "synthetic",
+      "context": {
+        "species": null,
+        "experimentalSystem": null,
+        "tissueId": null,
+        "assay": null,
+        "timepoint": null
+      },
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "a5db70249c4d33a0b2e77d90b85f40ea5c2d25dc92f3298cf77acd803cb63743",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    },
+    {
+      "id": "SYN-REL-I032-targets-M001",
+      "subjectId": "SYN-I032",
+      "predicate": "targets",
+      "objectId": "SYN-M001",
+      "dataClass": "synthetic",
+      "context": {
+        "species": null,
+        "experimentalSystem": null,
+        "tissueId": null,
+        "assay": null,
+        "timepoint": null
+      },
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "a5db70249c4d33a0b2e77d90b85f40ea5c2d25dc92f3298cf77acd803cb63743",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    },
+    {
+      "id": "SYN-REL-M001-contributes_to-D001",
+      "subjectId": "SYN-M001",
+      "predicate": "contributes_to",
+      "objectId": "SYN-D001",
+      "dataClass": "synthetic",
+      "context": {
+        "species": null,
+        "experimentalSystem": null,
+        "tissueId": null,
+        "assay": null,
+        "timepoint": null
+      },
+      "provenance": {
+        "product": "hsi",
+        "datasetId": "ra-anti-tnf-research-working-set",
+        "version": "a5db70249c4d33a0b2e77d90b85f40ea5c2d25dc92f3298cf77acd803cb63743",
+        "retrievedAt": "2026-11-03T16:00:00.000Z"
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "sourceId": "SYN-RA-SRC-0001",
+      "passageIds": [
+        "SYN-RA-SRC-0001-ABSTRACT-1"
+      ],
+      "plannedRole": "cohort_candidate",
+      "studyDesign": "unassessed",
+      "claimSupport": "unassessed",
+      "scientificReview": "unreviewed",
+      "graphMapping": "related_context_only"
+    },
+    {
+      "sourceId": "SYN-RA-SRC-0002",
+      "passageIds": [
+        "SYN-RA-SRC-0002-ABSTRACT-1"
+      ],
+      "plannedRole": "meta_analysis_candidate",
+      "studyDesign": "unassessed",
+      "claimSupport": "unassessed",
+      "scientificReview": "unreviewed",
+      "graphMapping": "related_context_only"
+    }
+  ],
+  "honesty": [
+    "corpusKind=research_working_set; notForScientificClaim=true; status=available_working_set.",
+    "Human-facing source labels are RS-0001 / RS-0002; contract source IDs are SYN-RA-SRC-* with pmid/doi/url null.",
+    "SYN-D001 / SYN-I032 / SYN-M001 mirror ISI D001 / I032 / M001 for investigation workflows only; Inspector on the core corpus still uses original IDs.",
+    "Passage text is authored working-set content under CC0 for investigation workflows; it is not a quotation from any publication and never clears real PMIDs 18375541 / 24586782.",
+    "Scientific validation, SME labels, Gate C approval and licence-cleared real import remain deferred."
+  ],
+  "version": "9bf5630a894540a663d3ea940d4677c97e2787a02fef2adfac1f11f0c7779904"
+}

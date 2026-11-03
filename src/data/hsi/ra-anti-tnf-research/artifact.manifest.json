@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "hsi-ra-research-evidence-artifact-1",
+  "releaseId": "ra-anti-tnf-research",
+  "corpusKind": "research_working_set",
+  "notForScientificClaim": true,
+  "repository": "gnaneshwer23/hsi-core",
+  "commit": "95adc56d1c354664484c2cf7700256e1a351878d",
+  "distribution": "research_artifact_snapshot",
+  "executable": false,
+  "includesProductData": false,
+  "scientificReview": "unreviewed",
+  "readiness": {
+    "available": true,
+    "sources": 2,
+    "passages": 2,
+    "version": "9bf5630a894540a663d3ea940d4677c97e2787a02fef2adfac1f11f0c7779904",
+    "scientificReview": "unreviewed",
+    "reason": "Research working set — scientific claim support unreviewed; workflow acceptance is not Gate C approval.",
+    "corpusKind": "research_working_set",
+    "notForScientificClaim": true
+  },
+  "bundleVersion": "9bf5630a894540a663d3ea940d4677c97e2787a02fef2adfac1f11f0c7779904",
+  "files": {
+    "release": {
+      "path": "release.json",
+      "sha256": "1d2c849d919315c9777fae0d546f5ce2da6923809dd7ce6e7bc3f25edf20b630"
+    },
+    "readme": {
+      "path": "README.md",
+      "sha256": "abe544544314954e2b706d98de06a9181f628ef4935454dd7318725f0f08ba0a"
+    }
+  }
+}

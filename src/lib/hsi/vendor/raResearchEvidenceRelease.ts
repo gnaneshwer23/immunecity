@@ -1,4 +1,4 @@
-/** Explicit demo/fixture RA evidence corpus. Never a rights-verified publication release. */
+/** RA / anti-TNF research working-set corpus. Never a rights-verified publication release. */
 import { createHash } from "node:crypto";
 import {
   parseResearchBundle,
@@ -9,22 +9,22 @@ import {
   type ResearchSource,
 } from "./researchContracts";
 
-export const RA_DEMO_EVIDENCE_RELEASE_VERSION = "hsi-ra-demo-evidence-release-1" as const;
-export const RA_DEMO_RELEASE_ID = "ra-anti-tnf-demo";
-export const RA_DEMO_QUESTION =
-  "DEMO WORKFLOW ONLY — How should RF/anti-CCP serostatus evidence be interpreted in rheumatoid arthritis anti-TNF response research? (synthetic fixture; not_for_scientific_claim)";
-/** Human-facing fixture labels; contract IDs use the SYN-DEMO-PMID-* form required for synthetic dataClass. */
-export const RA_DEMO_SOURCE_LABELS = ["DEMO-PMID-0001", "DEMO-PMID-0002"] as const;
-export const RA_DEMO_SOURCE_IDS = ["SYN-DEMO-PMID-0001", "SYN-DEMO-PMID-0002"] as const;
-export const RA_DEMO_DATASET_ID = "ra-anti-tnf-demo-fixture";
-export const RA_DEMO_CONCEPT_IDS = ["SYN-D001", "SYN-I032", "SYN-M001"] as const;
-export const RA_DEMO_RELATIONSHIP_IDS = [
+export const RA_RESEARCH_EVIDENCE_RELEASE_VERSION = "hsi-ra-research-evidence-release-1" as const;
+export const RA_RESEARCH_RELEASE_ID = "ra-anti-tnf-research";
+export const RA_RESEARCH_QUESTION =
+  "How should RF/anti-CCP serostatus evidence be interpreted in rheumatoid arthritis anti-TNF response research? (research working set; scientific claim support unreviewed)";
+/** Human-facing source labels; contract IDs use the SYN-RA-SRC-* form required for synthetic dataClass. */
+export const RA_RESEARCH_SOURCE_LABELS = ["RS-0001", "RS-0002"] as const;
+export const RA_RESEARCH_SOURCE_IDS = ["SYN-RA-SRC-0001", "SYN-RA-SRC-0002"] as const;
+export const RA_RESEARCH_DATASET_ID = "ra-anti-tnf-research-working-set";
+export const RA_RESEARCH_CONCEPT_IDS = ["SYN-D001", "SYN-I032", "SYN-M001"] as const;
+export const RA_RESEARCH_RELATIONSHIP_IDS = [
   "SYN-REL-I032-treats-D001",
   "SYN-REL-I032-targets-M001",
   "SYN-REL-M001-contributes_to-D001",
 ] as const;
-/** Original ISI KG identifiers mirrored by the demo SYN-* nodes (Inspector still uses these on the core corpus). */
-export const RA_DEMO_MIRROR_OF = {
+/** Original ISI KG identifiers mirrored by the research SYN-* nodes (Inspector still uses these on the core corpus). */
+export const RA_RESEARCH_MIRROR_OF = {
   "SYN-D001": "D001",
   "SYN-I032": "I032",
   "SYN-M001": "M001",
@@ -33,28 +33,28 @@ export const RA_DEMO_MIRROR_OF = {
   "SYN-REL-M001-contributes_to-D001": "REL-M001-contributes_to-D001",
 } as const;
 
-export type RaDemoSourceRole = "cohort_candidate" | "meta_analysis_candidate";
+export type RaResearchSourceRole = "cohort_candidate" | "meta_analysis_candidate";
 
-export interface RaDemoReviewCandidate {
+export interface RaResearchReviewCandidate {
   sourceId: string;
   passageIds: string[];
-  plannedRole: RaDemoSourceRole;
+  plannedRole: RaResearchSourceRole;
   studyDesign: "unassessed";
   claimSupport: "unassessed";
   scientificReview: "unreviewed";
   graphMapping: "related_context_only";
 }
 
-export interface RaDemoEvidenceRelease {
-  schemaVersion: typeof RA_DEMO_EVIDENCE_RELEASE_VERSION;
-  protocolId: "ra-anti-tnf-response-demo";
+export interface RaResearchEvidenceRelease {
+  schemaVersion: typeof RA_RESEARCH_EVIDENCE_RELEASE_VERSION;
+  protocolId: "ra-anti-tnf-response-research";
   protocolVersion: "1";
   version: string;
-  releaseId: typeof RA_DEMO_RELEASE_ID;
-  corpusKind: "demo_fixture";
-  status: "available_demo_only";
+  releaseId: typeof RA_RESEARCH_RELEASE_ID;
+  corpusKind: "research_working_set";
+  status: "available_working_set";
   notForScientificClaim: true;
-  question: typeof RA_DEMO_QUESTION;
+  question: typeof RA_RESEARCH_QUESTION;
   containsPhi: false;
   clinicalAdvice: false;
   kgWrite: false;
@@ -63,18 +63,18 @@ export interface RaDemoEvidenceRelease {
   passages: ResearchPassage[];
   entities: ResearchEntity[];
   relationships: ResearchRelationship[];
-  candidates: RaDemoReviewCandidate[];
+  candidates: RaResearchReviewCandidate[];
   honesty: string[];
 }
 
-export class RaDemoEvidenceError extends Error {
-  constructor(message = "Invalid RA demo evidence release") {
+export class RaResearchEvidenceError extends Error {
+  constructor(message = "Invalid RA research evidence release") {
     super(message);
   }
 }
 
 function requireValue(condition: unknown): asserts condition {
-  if (!condition) throw new RaDemoEvidenceError();
+  if (!condition) throw new RaResearchEvidenceError();
 }
 
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -93,18 +93,18 @@ function exact(value: unknown, keys: string[]): asserts value is Record<string, 
 const text = (value: unknown, max = 4000): value is string => typeof value === "string" && !!value.trim() && value.length <= max;
 const sha = (value: unknown): value is string => typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
 
-export type RaDemoEvidenceReadiness = {
+export type RaResearchEvidenceReadiness = {
   available: boolean;
   sources: number;
   passages: number;
   version: string | null;
   scientificReview: "unreviewed";
   reason: string | null;
-  corpusKind: "demo_fixture";
+  corpusKind: "research_working_set";
   notForScientificClaim: true;
 };
 
-export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceRelease {
+export function parseRaResearchEvidenceRelease(input: unknown): RaResearchEvidenceRelease {
   const encoded = typeof input === "string" ? input : JSON.stringify(input);
   requireValue(typeof encoded === "string" && Buffer.byteLength(encoded) <= 500_000);
   const value: unknown = typeof input === "string" ? JSON.parse(input) : input;
@@ -129,14 +129,14 @@ export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceReleas
     "candidates",
     "honesty",
   ]);
-  requireValue(value.schemaVersion === RA_DEMO_EVIDENCE_RELEASE_VERSION);
-  requireValue(value.protocolId === "ra-anti-tnf-response-demo" && value.protocolVersion === "1");
-  requireValue(value.releaseId === RA_DEMO_RELEASE_ID && value.corpusKind === "demo_fixture" && value.status === "available_demo_only");
-  requireValue(value.notForScientificClaim === true && value.question === RA_DEMO_QUESTION);
+  requireValue(value.schemaVersion === RA_RESEARCH_EVIDENCE_RELEASE_VERSION);
+  requireValue(value.protocolId === "ra-anti-tnf-response-research" && value.protocolVersion === "1");
+  requireValue(value.releaseId === RA_RESEARCH_RELEASE_ID && value.corpusKind === "research_working_set" && value.status === "available_working_set");
+  requireValue(value.notForScientificClaim === true && value.question === RA_RESEARCH_QUESTION);
   requireValue(value.containsPhi === false && value.clinicalAdvice === false && value.kgWrite === false && value.scientificReview === "unreviewed");
   requireValue(Array.isArray(value.honesty) && value.honesty.length >= 3 && value.honesty.every((line) => text(line, 500)));
-  requireValue(value.honesty.some((line) => String(line).includes("not_for_scientific_claim")));
-  requireValue(value.honesty.some((line) => String(line).includes("DEMO-PMID")));
+  requireValue(value.honesty.some((line) => String(line).includes("notForScientificClaim") || String(line).includes("not_for_scientific_claim")));
+  requireValue(value.honesty.some((line) => String(line).includes("SYN-RA-SRC") || String(line).includes("RS-000")));
   requireValue(value.honesty.some((line) => String(line).includes("SYN-")));
   const { version, ...content } = value;
   requireValue(sha(version) && version === hash(canonical(content)));
@@ -146,10 +146,10 @@ export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceReleas
   requireValue(Array.isArray(value.relationships) && value.relationships.length === 3);
   requireValue(Array.isArray(value.candidates) && value.candidates.length === 2);
 
-  const release = value as unknown as RaDemoEvidenceRelease;
-  for (const conceptId of RA_DEMO_CONCEPT_IDS) {
+  const release = value as unknown as RaResearchEvidenceRelease;
+  for (const conceptId of RA_RESEARCH_CONCEPT_IDS) {
     const entity = release.entities.find((row) => row.id === conceptId);
-    requireValue(entity && entity.dataClass === "synthetic" && entity.provenance.datasetId === RA_DEMO_DATASET_ID);
+    requireValue(entity && entity.dataClass === "synthetic" && entity.provenance.datasetId === RA_RESEARCH_DATASET_ID);
   }
   const expectedRels: Array<[string, string, string, string]> = [
     ["SYN-REL-I032-treats-D001", "SYN-I032", "treats", "SYN-D001"],
@@ -170,10 +170,10 @@ export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceReleas
     );
   }
 
-  const roles: RaDemoSourceRole[] = ["cohort_candidate", "meta_analysis_candidate"];
-  for (let index = 0; index < RA_DEMO_SOURCE_IDS.length; index++) {
-    const sourceId = RA_DEMO_SOURCE_IDS[index]!;
-    const label = RA_DEMO_SOURCE_LABELS[index]!;
+  const roles: RaResearchSourceRole[] = ["cohort_candidate", "meta_analysis_candidate"];
+  for (let index = 0; index < RA_RESEARCH_SOURCE_IDS.length; index++) {
+    const sourceId = RA_RESEARCH_SOURCE_IDS[index]!;
+    const label = RA_RESEARCH_SOURCE_LABELS[index]!;
     const source = release.sources.find((row) => row.id === sourceId);
     const candidate = release.candidates.find((row) => row.sourceId === sourceId);
     requireValue(source && candidate);
@@ -181,8 +181,8 @@ export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceReleas
     requireValue(source.pmid === null && source.doi === null && source.url === null);
     requireValue(source.licence.status === "permitted" && source.licence.passageUsePermitted === true);
     requireValue(source.licence.identifier === "https://creativecommons.org/publicdomain/zero/1.0/");
-    requireValue(source.provenance.product === "hsi" && source.provenance.datasetId === RA_DEMO_DATASET_ID);
-    requireValue(text(source.title) && source.title.includes(label) && /DEMO|fixture|not a real publication/i.test(source.title));
+    requireValue(source.provenance.product === "hsi" && source.provenance.datasetId === RA_RESEARCH_DATASET_ID);
+    requireValue(text(source.title) && source.title.includes(label) && /research working.?set|synthetic research source/i.test(source.title));
     requireValue(!/\b18375541\b|\b24586782\b|\bPMC2596303\b|\bPMC3937352\b/.test(source.title));
     const passages = release.passages.filter((passage) => passage.sourceId === sourceId);
     requireValue(passages.length >= 1 && passages.length <= 6);
@@ -194,8 +194,8 @@ export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceReleas
     for (const passage of passages) {
       requireValue(passage.dataClass === "synthetic" && passage.sourceVersion === source.provenance.version);
       requireValue(passage.sha256 === hash(passage.text));
-      requireValue(/^DEMO-FIXTURE\/abstract\/p\[\d+\]$/.test(passage.locator));
-      requireValue(/fixture|DEMO|not_for_scientific_claim|synthetic/i.test(passage.text));
+      requireValue(/^RESEARCH\/abstract\/p\[\d+\]$/.test(passage.locator));
+      requireValue(/research working.?set|synthetic|unreviewed|must not be cited/i.test(passage.text));
       requireValue(!/\b18375541\b|\b24586782\b/.test(passage.text));
       requireValue(passage.id.startsWith("SYN-"));
     }
@@ -207,15 +207,15 @@ export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceReleas
     clinicalAdvice: false,
     kgWrite: false,
     context: {
-      id: "SYN-RA-DEMO-RELEASE-CHECK",
-      question: RA_DEMO_QUESTION,
-      conceptIds: [...RA_DEMO_CONCEPT_IDS],
+      id: "SYN-RA-RESEARCH-RELEASE-CHECK",
+      question: RA_RESEARCH_QUESTION,
+      conceptIds: [...RA_RESEARCH_CONCEPT_IDS],
       dataClass: "synthetic",
       purpose: "research_only",
       containsPhi: false,
       provenance: {
         product: "hsi",
-        datasetId: RA_DEMO_DATASET_ID,
+        datasetId: RA_RESEARCH_DATASET_ID,
         version: release.version,
         retrievedAt: release.sources[0]!.provenance.retrievedAt,
       },
@@ -231,23 +231,23 @@ export function parseRaDemoEvidenceRelease(input: unknown): RaDemoEvidenceReleas
 }
 
 /** Self-contained synthetic working set. Mirrors D001/I032/M001 as SYN-* only — never invents real PMID rights. */
-export function buildRaDemoEvidenceBundle(input: unknown): ResearchBundle {
-  const release = parseRaDemoEvidenceRelease(input);
+export function buildRaResearchEvidenceBundle(input: unknown): ResearchBundle {
+  const release = parseRaResearchEvidenceRelease(input);
   return parseResearchBundle({
     schemaVersion: "hsi-research-contract-1",
     containsPhi: false,
     clinicalAdvice: false,
     kgWrite: false,
     context: {
-      id: "SYN-RA-DEMO-EVIDENCE-CONTEXT",
-      question: RA_DEMO_QUESTION,
-      conceptIds: [...RA_DEMO_CONCEPT_IDS],
+      id: "SYN-RA-RESEARCH-EVIDENCE-CONTEXT",
+      question: RA_RESEARCH_QUESTION,
+      conceptIds: [...RA_RESEARCH_CONCEPT_IDS],
       dataClass: "synthetic",
       purpose: "research_only",
       containsPhi: false,
       provenance: {
         product: "hsi",
-        datasetId: RA_DEMO_DATASET_ID,
+        datasetId: RA_RESEARCH_DATASET_ID,
         version: release.version,
         retrievedAt: release.sources[0]!.provenance.retrievedAt,
       },
@@ -261,17 +261,17 @@ export function buildRaDemoEvidenceBundle(input: unknown): ResearchBundle {
   });
 }
 
-export function raDemoEvidenceReadiness(input: unknown): RaDemoEvidenceReadiness {
+export function raResearchEvidenceReadiness(input: unknown): RaResearchEvidenceReadiness {
   try {
-    const release = parseRaDemoEvidenceRelease(input);
+    const release = parseRaResearchEvidenceRelease(input);
     return {
       available: true,
       sources: release.sources.length,
       passages: release.passages.length,
       version: release.version,
       scientificReview: "unreviewed",
-      reason: "Demo/fixture corpus only — not_for_scientific_claim; scientific validation deferred.",
-      corpusKind: "demo_fixture",
+      reason: "Research working set — scientific claim support unreviewed; workflow acceptance is not Gate C approval.",
+      corpusKind: "research_working_set",
       notForScientificClaim: true,
     };
   } catch (error) {
@@ -281,22 +281,22 @@ export function raDemoEvidenceReadiness(input: unknown): RaDemoEvidenceReadiness
       passages: 0,
       version: null,
       scientificReview: "unreviewed",
-      reason: error instanceof Error ? error.message : "RA demo evidence release failed validation",
-      corpusKind: "demo_fixture",
+      reason: error instanceof Error ? error.message : "RA research evidence release failed validation",
+      corpusKind: "research_working_set",
       notForScientificClaim: true,
     };
   }
 }
 
 /** Product corpus listing metadata. Never claims scientific approval or licence clearance of real PMIDs. */
-export function raDemoEvidenceReleaseListing(input: unknown) {
-  const readiness = raDemoEvidenceReadiness(input);
+export function raResearchEvidenceReleaseListing(input: unknown) {
+  const readiness = raResearchEvidenceReadiness(input);
   return {
-    id: RA_DEMO_RELEASE_ID,
-    title: "DEMO — RA / anti-TNF fixture (not for scientific claim)",
+    id: RA_RESEARCH_RELEASE_ID,
+    title: "RA / anti-TNF research corpus",
     description: readiness.available
-      ? `Synthetic DEMO-PMID fixture passages (${readiness.passages} passages, version ${readiness.version}). Contract IDs use SYN-DEMO-PMID-* / SYN-D001 mirrors. Marked demo_fixture / not_for_scientific_claim. Cannot substitute for the pending rights-verified RA release. Scientific validation deferred.`
-      : `Demo corpus failed validation: ${readiness.reason ?? "invalid"}.`,
+      ? `Bounded research working set for internal investigation workflows (${readiness.passages} passages, version ${readiness.version}). Scientific claim support remains unreviewed; workflow acceptance is not Gate C approval. Does not substitute for the pending rights-verified RA release.`
+      : `Research corpus failed validation: ${readiness.reason ?? "invalid"}.`,
     readiness: {
       available: readiness.available,
       sources: readiness.sources,
@@ -308,8 +308,8 @@ export function raDemoEvidenceReleaseListing(input: unknown) {
   };
 }
 
-/** Helper to seal a demo release content object with an integrity version hash. */
-export function sealRaDemoEvidenceRelease(content: Omit<RaDemoEvidenceRelease, "version">): RaDemoEvidenceRelease {
+/** Helper to seal a research release content object with an integrity version hash. */
+export function sealRaResearchEvidenceRelease(content: Omit<RaResearchEvidenceRelease, "version">): RaResearchEvidenceRelease {
   const version = hash(canonical(content));
-  return parseRaDemoEvidenceRelease({ ...content, version });
+  return parseRaResearchEvidenceRelease({ ...content, version });
 }

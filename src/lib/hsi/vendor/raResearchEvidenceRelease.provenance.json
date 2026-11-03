@@ -1,0 +1,10 @@
+{
+  "repository": "gnaneshwer23/hsi-core",
+  "commit": "95adc56d1c354664484c2cf7700256e1a351878d",
+  "path": "src/raResearchEvidenceRelease.ts",
+  "version": "hsi-ra-research-evidence-release-1",
+  "sha256": "b131528a6b86e9075e08dded3ec4077c1333664a6a62cecd3ce1f425bc83f9fd",
+  "distribution": "exact_source_snapshot",
+  "executable": true,
+  "includesProductData": false
+}

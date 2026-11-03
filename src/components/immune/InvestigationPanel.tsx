@@ -186,9 +186,9 @@ export default function InvestigationPanel() {
                 {activeRelease.readiness.reason ? ` · ${activeRelease.readiness.reason}` : ""}
               </p>
             )}
-            {releaseId === "ra-anti-tnf-demo" && (
+            {releaseId === "ra-anti-tnf-research" && (
               <p className={styles.empty} role="note">
-                DEMO fixture corpus only (not_for_scientific_claim). Synthetic DEMO-PMID / SYN-* passages are for engineering smoke; they do not clear real PMIDs or replace scientific review.
+                Research working set — scientific claim support remains unreviewed. Workflow acceptance is not Gate C approval and does not clear real PMIDs.
               </p>
             )}
             <label>

@@ -316,7 +316,7 @@ export function renderInvestigationDossier(snapshot: StoredInvestigation): strin
     "", "## Exact retrieved passages"];
   for (const id of d.passageIds) {
     const p = s.bundle.passages.find((p) => p.id === id)!, source = s.bundle.sources.find((source) => source.id === p.sourceId)!;
-    lines.push(`### ${p.id}`, `${source.title} [${source.id}@${p.sourceVersion}] — ${p.locator}`, `Source locator: ${source.pmid ? "PMID " + source.pmid : source.doi ?? source.url ?? "synthetic fixture; no publication locator"}`, `Article URL: ${source.url ?? "not supplied"}`, `Reuse licence: ${source.licence.identifier ?? "not supplied"}`, p.text, "");
+    lines.push(`### ${p.id}`, `${source.title} [${source.id}@${p.sourceVersion}] — ${p.locator}`, `Source locator: ${source.pmid ? "PMID " + source.pmid : source.doi ?? source.url ?? "synthetic research source; no publication locator"}`, `Article URL: ${source.url ?? "not supplied"}`, `Reuse licence: ${source.licence.identifier ?? "not supplied"}`, p.text, "");
   }
   lines.push("## Limitations", ...d.limitations.map((l) => `- ${l}`), "", "Research only. No clinical advice or KG write.");
   return lines.join("\n");
