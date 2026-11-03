@@ -29,6 +29,7 @@ import {
 import { seoHead } from "@/lib/seo";
 import { inspect } from "@/lib/immune/inspector";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
+import ResearchJourney from "@/components/immune/ResearchJourney";
 
 const HOME_DRAFT_TEASERS = [
   {
@@ -244,6 +245,9 @@ function Home() {
           <p className="hero-description">{HERO_SUPPORT}</p>
           <div className="bio-actions">
             <Button asChild className="bio-primary home-helix-primary">
+              <Link to="/research" hash="synthetic-programme">Open research workbench <ArrowRight /></Link>
+            </Button>
+            <Button asChild className="bio-primary home-helix-primary">
               <Link to="/ask">
                 {ASK_NAME} <ArrowRight />
               </Link>
@@ -259,6 +263,7 @@ function Home() {
       </section>
 
       <div className="bio-content home-sections">
+        <ResearchJourney />
         {/* 2 — Prominent Ask entry */}
         <section className="bio-section" aria-labelledby="ask-gateway-heading">
           <div className="bio-section-heading">

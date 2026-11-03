@@ -15,6 +15,7 @@ import EvidenceCollectionsPanel from "@/components/immune/EvidenceCollectionsPan
 import ResearchBriefPanel from "@/components/immune/ResearchBriefPanel";
 import MelanomaEvidenceExplorer from "@/components/immune/MelanomaEvidenceExplorer";
 import SyntheticConditionProgramme from "@/components/immune/SyntheticConditionProgramme";
+import ResearchJourney from "@/components/immune/ResearchJourney";
 import ModelRegistryPanel from "@/components/immune/ModelRegistryPanel";
 import PhoneFold from "@/components/immune/PhoneFold";
 import { PRODUCT_NAME } from "@/lib/brand";
@@ -130,6 +131,7 @@ function Research() {
         ]}
       />
       <PageToc items={TOC} />
+      <ResearchJourney />
 
       <Section
         id="discover"

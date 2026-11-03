@@ -3,9 +3,13 @@ import { readFile } from "node:fs/promises";
 
 test("20-condition programme responds to case selection and audited what-if changes", async ({ page }) => {
   const errors: string[] = []; page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/research#synthetic-programme");
+  await page.goto("/");
+  await page.getByRole("link", { name: /Open research workbench/ }).first().click();
+  await expect(page).toHaveURL(/\/research(?:\?[^#]*)?#synthetic-programme$/);
   const programme = page.getByTestId("synthetic-programme");
   await expect(programme).toHaveAttribute("aria-busy", "false", { timeout: 30_000 });
+  await programme.getByRole("navigation", { name: "Investigation steps" }).getByRole("link", { name: "1 · Context", exact: true }).click();
+  await expect(page).toHaveURL(/#programme-context$/);
   await expect(programme.getByRole("button", { name: "Type 1 diabetes", exact: true })).toBeVisible();
   await programme.getByRole("button", { name: "Type 1 diabetes", exact: true }).click();
   await programme.getByRole("combobox", { name: "Synthetic case", exact: true }).selectOption("SYN-P-T1D-002");

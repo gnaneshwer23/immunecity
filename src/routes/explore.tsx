@@ -6,6 +6,7 @@ import { PRODUCT_NAME } from "@/lib/brand";
 import { byId } from "@/lib/immune/engine";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
 import { seoHead } from "@/lib/seo";
+import ResearchJourney from "@/components/immune/ResearchJourney";
 
 const TOC = [
   { id: "path", label: "Suggested path" },
@@ -55,6 +56,7 @@ function ExploreHub() {
         ]}
       />
       <PageToc items={TOC} />
+      <ResearchJourney />
 
       <Section
         id="path"

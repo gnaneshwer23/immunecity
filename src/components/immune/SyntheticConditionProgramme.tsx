@@ -53,7 +53,10 @@ export default function SyntheticConditionProgramme() {
       <label>Import synthetic programme JSON<input type="file" accept=".json,application/json" onChange={(e) => { void importData(e.target.files?.[0]); e.target.value = ""; }} /></label>
     </div>
     <p role="status">{message}</p>{error && <p role="alert">{error}</p>}
-    <h3>1. Choose a condition and synthetic case</h3>
+    <nav className="programme-flow" aria-label="Investigation steps">
+      <a href="#programme-context">1 · Context</a><a href="#programme-observations">2 · Observations</a><a href="#programme-exposures">3 · Exposures</a><a href="#programme-discovery">4 · Discovery</a><a href="#programme-trials">5 · Criteria</a><a href="#programme-export">6 · Dossier</a>
+    </nav>
+    <h3 id="programme-context">1. Choose a condition and synthetic case</h3>
     <label>Search condition, tissue or cell<input value={query} maxLength={200} onChange={(e) => setQuery(e.target.value)} /></label>{" "}
     <label>Programme domain<select value={domain} onChange={(e) => setDomain(e.target.value)}><option value="all">All domains</option>{[...new Set(data.conditions.map((c) => c.domain))].map((d) => <option key={d}>{d}</option>)}</select></label>
     <p>{conditions.length} condition contexts shown. Filtering changes the catalogue; the selected case remains below until you select another condition.</p>
@@ -67,20 +70,20 @@ export default function SyntheticConditionProgramme() {
     </select></label>
     <p><strong>{patient.id}</strong> · age {patient.ageYears} · Comorbid context: {patient.comorbidityIds.map((id) => data.conditions.find((c) => c.id === id)?.label).join(", ") || "None recorded in fixture"}</p>
     <p>{patient.familyHistory}. {patient.exposureNote}. Infection-screen record: {patient.infectionScreenNegative === null ? "unknown" : patient.infectionScreenNegative ? "synthetic negative" : "synthetic non-negative"}.</p>
-    <h3>2. Longitudinal laboratory and symptom reports</h3>
+    <h3 id="programme-observations">2. Longitudinal laboratory and symptom reports</h3>
     <p>Visit days are relative to a fictional baseline. Values have units and specimen provenance, but no clinical reference ranges or diagnostic flags. The symptom index is an invented 0–100 research field, not a validated disease score.</p>
     <div role="region" aria-label="Synthetic laboratory timeline" tabIndex={0} style={{ overflowX: "auto" }}>
       <table><caption>{patient.id} · synthetic lab reports</caption><thead><tr><th scope="col">Visit / symptom index</th><th scope="col">Test / specimen</th><th scope="col">Value / units</th><th scope="col">Quality / provenance</th></tr></thead>
         <tbody>{patient.visits.flatMap((v) => v.labs.map((l) => <tr key={l.id}><td>Day {v.day}<br />Symptom index {v.symptomIndex}/100</td><th scope="row">{l.label}<br />{l.specimen}</th><td>{l.value === null ? "Not recorded" : l.value} {l.unit}{l.alternateValue !== null && <><br />Conflicting result: {l.alternateValue} {l.unit}</>}</td><td>{l.quality} · specimen day {l.specimenDay}<br />{l.id}<br />{l.source}</td></tr>))}</tbody>
       </table>
     </div>
-    <h3>3. Lifestyle, medication and immune-measurement context</h3>
+    <h3 id="programme-exposures">3. Lifestyle, medication and immune-measurement context</h3>
     <div role="region" aria-label="Synthetic lifestyle timeline" tabIndex={0} style={{ overflowX: "auto" }}>
       <table><caption>Fictional lifestyle observations; no causal interpretation</caption><thead><tr><th scope="col">Day</th><th scope="col">Sleep / activity</th><th scope="col">Diet / smoking</th><th scope="col">Other context</th></tr></thead><tbody>{patient.visits.map((v) => <tr key={v.id}><th scope="row">{v.day}</th><td>{v.lifestyle.sleepHours} hours/night<br />{v.lifestyle.activityMinutesWeekly} minutes/week</td><td>{v.lifestyle.diet}<br />{v.lifestyle.smoking}</td><td>Stress index {v.lifestyle.stressIndex}/10<br />Antibiotics: {v.lifestyle.recentAntibiotics === null ? "unknown" : v.lifestyle.recentAntibiotics ? "recorded" : "not recorded as recent"}<br />Alcohol: {v.lifestyle.alcoholUnitsWeekly ?? "unknown"} units/week</td></tr>)}</tbody></table>
     </div>
     {patient.medications.map((m) => <article className="card" key={m.id}><h4>{m.name} · synthetic background exposure</h4><p>Start day {m.startDay}; end {m.endDay ?? "not recorded"}; adherence {m.adherencePercent === null ? "unknown" : `${m.adherencePercent}%`}.</p><p>{m.safetyNote} No dose or medication change is recommended.</p></article>)}
     <ul>{latest.immuneMeasurements.map((m) => <li key={m.cell}>{m.cell}: {m.percentOfParentGate === null ? "not measured" : `${m.percentOfParentGate}% of parent gate`} · {m.assay}</li>)}</ul>
-    <h3>4. AI-ready discovery planning demonstration</h3>
+    <h3 id="programme-discovery">4. AI-ready discovery planning demonstration</h3>
     <details><summary>Interactive what-if editor · synthetic records only</summary>
       <p>Change the latest marker and sleep observation, then rerun planning or screening. These are invented inputs, not biological predictions. Previous run results are cleared; the export retains an edit log.</p>
       <label>What-if marker value<input type="number" min={0} step="any" value={editValue} onChange={(e) => setEditValue(e.target.value)} /></label>{" "}
@@ -104,14 +107,14 @@ export default function SyntheticConditionProgramme() {
       <Link to="/ask" search={{ q: `What reviewed evidence and uncertainties concern immune mechanisms in ${condition.label}?` }}>Ask Immune about real evidence separately</Link>
       <p>This link sends only the general disease question; it does not submit the synthetic dossier.</p>
     </article>}
-    <h3>5. Fictional clinical-trial criteria screening</h3>
+    <h3 id="programme-trials">5. Fictional clinical-trial criteria screening</h3>
     <p>Two fictional protocols per condition. No NCT identifiers, live recruitment or real eligibility criteria. Uses HSI’s five-state engine: satisfied, not_satisfied, unknown, ambiguous and requires_investigator_review. No match score or confirmed eligibility is produced.</p>
     <button className="btn" onClick={() => attempt(() => { setScreening(programmeTrials(data, patient, new Date().toISOString())); setMessage("Fictional criterion assessments generated; investigator review remains required."); })}>Screen fictional trial criteria</button>
     {screening?.map((trial) => <article key={trial.report.trialId} className="card"><h4>{trial.title}</h4><p>{trial.registryStatus} · protocol v{trial.protocolVersion} · {trial.report.overallLabel}</p>
       <div role="region" aria-label={`${trial.report.trialId} criteria`} tabIndex={0} style={{ overflowX: "auto" }}><table><thead><tr><th scope="col">Criterion</th><th scope="col">State</th><th scope="col">Fixture value / method</th></tr></thead><tbody>{trial.report.assessments.map((a) => <tr key={a.criterionId}><th scope="row">{a.criterionText}</th><td>{a.state}</td><td>{a.attributeValue === null ? "not available" : String(a.attributeValue)}<br />{a.method}</td></tr>)}</tbody></table></div>
       <p>Missing attributes: {trial.report.missingAttributes.join(", ") || "none among structured checks"}. Investigator review still required. Stale specimens are withheld; conflicting results stay ambiguous.</p>
     </article>)}
-    <h3>6. Export the synthetic investigation dossier</h3>
+    <h3 id="programme-export">6. Export the synthetic investigation dossier</h3>
     <label style={{ display: "block" }}>Synthetic programme analyst note<textarea maxLength={4000} rows={3} value={note} onChange={(e) => setNote(e.target.value)} style={{ display: "block", width: "100%" }} /></label>
     <button className="btn" onClick={() => attempt(() => {
       download(`${patient.id}-research-dossier.json`, { ...exportProgrammeCase(data, patient, new Date().toISOString()), analystNote: note });

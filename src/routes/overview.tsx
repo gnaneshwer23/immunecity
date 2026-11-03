@@ -31,6 +31,7 @@ import {
 } from "@/lib/immune/exemplarPathways";
 import { KNOWLEDGE_DOMAINS } from "@/lib/immune/domainCoverage";
 import { seoHead } from "@/lib/seo";
+import ResearchJourney from "@/components/immune/ResearchJourney";
 
 type DraftRoute = {
   title: string;
@@ -181,6 +182,7 @@ function Overview() {
 
   return (
     <div className="mkt-page overview-page">
+      <ResearchJourney />
       <MarketingHero
         eyebrow={`Platform · ${FLAGSHIP_NAME}`}
         title="One connected view of immunology."
