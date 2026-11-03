@@ -2,7 +2,7 @@
   "schemaVersion": "hsi-ra-evidence-artifact-1",
   "releaseId": "ra-anti-tnf-evidence",
   "repository": "gnaneshwer23/hsi-core",
-  "commit": "247861297a4598c2c9cbe7f6356102ee5252328e",
+  "commit": "adda82988fe41351eb3af026702cb4ffbc76039e",
   "distribution": "research_artifact_snapshot",
   "executable": false,
   "includesProductData": false,

@@ -186,6 +186,11 @@ export default function InvestigationPanel() {
                 {activeRelease.readiness.reason ? ` · ${activeRelease.readiness.reason}` : ""}
               </p>
             )}
+            {releaseId === "ra-anti-tnf-demo" && (
+              <p className={styles.empty} role="note">
+                DEMO fixture corpus only (not_for_scientific_claim). Synthetic DEMO-PMID / SYN-* passages are for engineering smoke; they do not clear real PMIDs or replace scientific review.
+              </p>
+            )}
             <label>
               Existing concept ID (optional)
               <input maxLength={128} value={concept} onChange={(e) => setConcept(e.target.value)} placeholder="Use the corpus default" />
