@@ -1,9 +1,9 @@
 {
   "repository": "gnaneshwer23/hsi-core",
-  "commit": "51ddf519840909dbd42a961745de6e2103506659",
+  "commit": "3113e59bcc4dd29f70914882226a667640a83072",
   "path": "src/investigationBackend.ts",
   "version": "hsi-investigation-backend-1",
-  "sha256": "e9230c4c9a4f907762a63553d5e958480f1a04c563c4589cd9357ee837894aaa",
+  "sha256": "a8df2207af3f8a011f2a8e4ae959e18d95df998790d2c84b79b6ce85a74df5ab",
   "distribution": "exact_source_snapshot",
   "executable": true,
   "includesProductData": false

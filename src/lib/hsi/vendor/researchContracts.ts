@@ -57,7 +57,7 @@ function fail(path: string): never { throw new Error(`Invalid research contract:
 function object(value: unknown, fields: string[], path: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value) || ![Object.prototype, null].includes(Object.getPrototypeOf(value))) fail(path);
   const row = value as Record<string, unknown>;
-  if (Object.keys(row).some((key) => !fields.includes(key)) || fields.some((key) => !Object.hasOwn(row, key))) fail(`${path}.fields`);
+  if (Object.keys(row).some((key) => !fields.includes(key)) || fields.some((key) => !Object.prototype.hasOwnProperty.call(row, key))) fail(`${path}.fields`);
   return row;
 }
 function text(value: unknown, path: string, max = 4000): string {

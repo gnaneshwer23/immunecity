@@ -1,5 +1,16 @@
 # HSI platform connection
 
+## RA evidence import foundation
+
+The pinned shared `raEvidenceRelease.ts` validator is available for the next
+research corpus integration. It checks source identities, passage hashes,
+attribution and article-level licence declarations. Dossier Markdown retains
+article and licence links. This code does not register a verified RA corpus or
+claim a completed context benchmark: source import remains pending, and scientific
+support stays unassessed. See the
+[implementation status](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/RA_ANTI_TNF_EVIDENCE_RELEASE.md).
+
+
 ## Authenticated backend and internal workflow
 
 The investigation runner now has an authenticated product API, private PostgreSQL

@@ -3,12 +3,14 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import fixture from "./fixtures/shared-research-contract.json";
 import provenance from "@/lib/hsi/vendor/investigationService.provenance.json";
+import raProvenance from "@/lib/hsi/vendor/raEvidenceRelease.provenance.json";
 import { researchRunState, parseResearchBundle } from "@/lib/hsi/vendor/researchContracts";
 import { createInvestigationService, createMemoryInvestigationStore, createCorpusRetrievalProvider, INVESTIGATION_SERVICE_VERSION } from "@/lib/hsi/vendor/investigationService";
 
 test("ISI pins the canonical executable investigation service", () => {
   expect(createHash("sha256").update(readFileSync("src/lib/hsi/vendor/investigationService.ts")).digest("hex")).toBe(provenance.sha256);
   expect(provenance.version).toBe(INVESTIGATION_SERVICE_VERSION);
+  expect(createHash("sha256").update(readFileSync("src/lib/hsi/vendor/raEvidenceRelease.ts")).digest("hex")).toBe(raProvenance.sha256);
   expect(provenance.includesProductData).toBe(false);
 });
 test("ISI executes shared investigation through review and dossier without changing its graph", async () => {

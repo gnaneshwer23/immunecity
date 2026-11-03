@@ -21,7 +21,7 @@ function bad(): never { throw new InvestigationRequestError(400, "invalid_reques
 function fields(value: unknown, names: string[]): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) bad();
   const row = value as Record<string, unknown>;
-  if (Object.keys(row).length !== names.length || names.some((n) => !Object.hasOwn(row, n))) bad();
+  if (Object.keys(row).length !== names.length || names.some((n) => !Object.prototype.hasOwnProperty.call(row, n))) bad();
   return row;
 }
 export function parseInvestigationCommand(value: unknown): InvestigationCommand {

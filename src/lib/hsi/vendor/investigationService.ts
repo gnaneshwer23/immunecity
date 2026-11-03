@@ -61,7 +61,7 @@ const validId = (value: unknown): value is string => typeof value === "string" &
 function assert(condition: unknown): asserts condition { if (!condition) throw new Error("Invalid investigation state or provider output"); }
 function exact(value: unknown, keys: string[]): asserts value is Record<string, unknown> {
   assert(value && typeof value === "object" && !Array.isArray(value));
-  assert(Object.keys(value).length === keys.length && keys.every((k) => Object.hasOwn(value, k)));
+  assert(Object.keys(value).length === keys.length && keys.every((k) => Object.prototype.hasOwnProperty.call(value, k)));
 }
 function ids(value: unknown, allowed: string[], max = 120): asserts value is string[] {
   assert(Array.isArray(value) && value.length <= max && new Set(value).size === value.length && value.every((id) => allowed.includes(id)));
@@ -165,7 +165,7 @@ export function validateInvestigationSnapshot(value: StoredInvestigation): Store
   assert(Object.keys(s.payloads).length === run.artifacts.length);
   for (const a of run.artifacts) {
     const stage = Object.entries(kinds).find(([, kind]) => kind === a.kind)?.[0] as ResearchStage;
-    assert(stage && Object.hasOwn(s.payloads, stage) && a.sha256 === digest(s.payloads[stage]));
+    assert(stage && Object.prototype.hasOwnProperty.call(s.payloads, stage) && a.sha256 === digest(s.payloads[stage]));
   }
   if (s.payloads.context) assert(digest(s.payloads.context) === digest(s.bundle.context));
   if (s.payloads.retrieval) validateRetrieval(s.payloads.retrieval, s.bundle);
@@ -316,7 +316,7 @@ export function renderInvestigationDossier(snapshot: StoredInvestigation): strin
     "", "## Exact retrieved passages"];
   for (const id of d.passageIds) {
     const p = s.bundle.passages.find((p) => p.id === id)!, source = s.bundle.sources.find((source) => source.id === p.sourceId)!;
-    lines.push(`### ${p.id}`, `${source.title} [${source.id}@${p.sourceVersion}] — ${p.locator}`, `Source locator: ${source.pmid ? "PMID " + source.pmid : source.doi ?? source.url ?? "synthetic fixture; no publication locator"}`, p.text, "");
+    lines.push(`### ${p.id}`, `${source.title} [${source.id}@${p.sourceVersion}] — ${p.locator}`, `Source locator: ${source.pmid ? "PMID " + source.pmid : source.doi ?? source.url ?? "synthetic fixture; no publication locator"}`, `Article URL: ${source.url ?? "not supplied"}`, `Reuse licence: ${source.licence.identifier ?? "not supplied"}`, p.text, "");
   }
   lines.push("## Limitations", ...d.limitations.map((l) => `- ${l}`), "", "Research only. No clinical advice or KG write.");
   return lines.join("\n");
