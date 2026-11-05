@@ -54,7 +54,9 @@
     "db:ontology-backfill": "bun scripts/backfill-ontology-mappings.ts",
     "db:hardening:verify": "bun scripts/verify-hardening-migrations.ts",
     "smoke:neon": "bun scripts/smoke-neon-cutover.ts",
-    "seo:indexnow": "bun scripts/ping-indexnow.ts"
+    "seo:indexnow": "bun scripts/ping-indexnow.ts",
+    "hsi:verify-artifact": "bun --no-env-file scripts/verify-hsi-artifact-acceptance.ts",
+    "hsi:import-artifact": "bun --no-env-file scripts/import-hsi-corpus-artifact.ts"
   },
   "overrides": {
     "rolldown": "1.2.1",

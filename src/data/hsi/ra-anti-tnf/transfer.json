@@ -1,0 +1,396 @@
+{
+  "schemaVersion": "hsi-research-corpus-artifact-1",
+  "releaseId": "ra-anti-tnf-evidence",
+  "sequence": 1,
+  "producer": {
+    "repository": "gnaneshwer23/hsi-core",
+    "commit": "7d1e7aedf0b70f8858d52479f9efd12f91898d36",
+    "workingTree": "clean"
+  },
+  "contracts": {
+    "research": "hsi-research-contract-1",
+    "sourceRelease": "hsi-ra-evidence-release-1"
+  },
+  "scope": "research_sources_only",
+  "scientificReview": "unreviewed",
+  "containsPhi": false,
+  "clinicalAdvice": false,
+  "kgWrite": false,
+  "payload": {
+    "release": {
+      "schemaVersion": "hsi-ra-evidence-release-1",
+      "protocolId": "ra-anti-tnf-response",
+      "protocolVersion": "2",
+      "question": "How should RF/anti-CCP serostatus evidence be interpreted in rheumatoid arthritis anti-TNF response research?",
+      "containsPhi": false,
+      "clinicalAdvice": false,
+      "kgWrite": false,
+      "scientificReview": "unreviewed",
+      "sources": [
+        {
+          "id": "PMID-18375541",
+          "title": "Potter C, Hyrich K L, Tracey A, Lunt M, Plant D, Symmons D P M, Thomson W, Worthington J, Emery P, Morgan A W, Wilson A G, Isaacs J, Barton A, BRAGGSS — Association of rheumatoid factor and anti-cyclic citrullinated peptide positivity, but not carriage of shared epitope or PTPN22 susceptibility variants, with anti-tumour necrosis factor response in rheumatoid arthritis",
+          "kind": "publication",
+          "dataClass": "public_real",
+          "pmid": "18375541",
+          "doi": "10.1136/ard.2007.084715",
+          "url": "https://europepmc.org/articles/PMC2596303",
+          "licence": {
+            "status": "permitted",
+            "identifier": "https://creativecommons.org/licenses/by/2.0/",
+            "passageUsePermitted": true
+          },
+          "provenance": {
+            "product": "hsi",
+            "datasetId": "ra-anti-tnf-source-release",
+            "version": "103e8c947ccb82702f90e4f53e7a0189096109cdb3234509943443065936360b",
+            "retrievedAt": "2026-11-03T18:36:10Z"
+          }
+        },
+        {
+          "id": "PMID-24586782",
+          "title": "Lv Qianwen, Yin Yufeng, Li Xin, Shan Guangliang, Wu Xiangni, Liang Di, Li Yongzhe, Zhang Xuan — The Status of Rheumatoid Factor and Anti-Cyclic Citrullinated Peptide Antibody Are Not Associated with the Effect of Anti-TNFα Agent Treatment in Patients with Rheumatoid Arthritis: A Meta-Analysis",
+          "kind": "publication",
+          "dataClass": "public_real",
+          "pmid": "24586782",
+          "doi": "10.1371/journal.pone.0089442",
+          "url": "https://europepmc.org/articles/PMC3937352",
+          "licence": {
+            "status": "permitted",
+            "identifier": "https://creativecommons.org/licenses/by/4.0/",
+            "passageUsePermitted": true
+          },
+          "provenance": {
+            "product": "hsi",
+            "datasetId": "ra-anti-tnf-source-release",
+            "version": "071c97933fa0edbe4e75ed68b07fe57bee308809c34a3b660ac878c866e6dc7b",
+            "retrievedAt": "2026-11-03T18:36:11Z"
+          }
+        }
+      ],
+      "passages": [
+        {
+          "id": "PMID-18375541-ABSTRACT-1",
+          "sourceId": "PMID-18375541",
+          "sourceVersion": "103e8c947ccb82702f90e4f53e7a0189096109cdb3234509943443065936360b",
+          "text": "To determine whether rheumatoid factor (RF), anti-cyclic citrullinated peptide (CCP) antibodies, or carriage of shared epitope (SE) and PTPN22 genetic susceptibility variants predict response to therapy in patients with rheumatoid arthritis (RA) treated with anti-tumour necrosis factor (TNF) agents.",
+          "locator": "/article/front/article-meta/abstract[1]/sec[1]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "cd64ed03416e37c9815d3031714604ed111c009ed6c16d4552498d770748fd74"
+        },
+        {
+          "id": "PMID-18375541-ABSTRACT-2",
+          "sourceId": "PMID-18375541",
+          "sourceVersion": "103e8c947ccb82702f90e4f53e7a0189096109cdb3234509943443065936360b",
+          "text": "UK-wide multicentre collaborations were established to recruit a large cohort of patients treated with anti-TNF drugs for RA. Serum RF, anti-CCP antibody and SE status were determined using commercially available kits. PTPN22 R620W genotyping was performed by Sequenom MassArray. Linear regression analyses were performed to investigate the role of these four factors in predicting response to treatment by 6 months, defined as the absolute change in 28-joint Disease Activity Score (DAS28).",
+          "locator": "/article/front/article-meta/abstract[1]/sec[2]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "165c2b6be9e8bfaa46ce117749a371bde1ebb8c10f4d2e3bec7dae258c510975"
+        },
+        {
+          "id": "PMID-18375541-ABSTRACT-3",
+          "sourceId": "PMID-18375541",
+          "sourceVersion": "103e8c947ccb82702f90e4f53e7a0189096109cdb3234509943443065936360b",
+          "text": "Of the 642 patients analysed, 46% received infliximab, 43% etanercept and 11% adalimumab. In all, 89% and 82% of patients were RF and anti-CCP positive, respectively. Patients that were RF negative had a 0.48 (95% CI 0.08 to 0.87) greater mean improvement in DAS28 compared to patients that were RF positive. A better response was also seen among patients that were anti-CCP negative. No association was demonstrated between drug response and SE or PTPN22 620W carriage.",
+          "locator": "/article/front/article-meta/abstract[1]/sec[3]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "ff39e3db8d10d19ab39e3bc36099637f5e4ae13db43978d6cf1d93e5923e4fd8"
+        },
+        {
+          "id": "PMID-18375541-ABSTRACT-4",
+          "sourceId": "PMID-18375541",
+          "sourceVersion": "103e8c947ccb82702f90e4f53e7a0189096109cdb3234509943443065936360b",
+          "text": "The presence of RF or anti-CCP antibodies was associated with a reduced response to anti-TNF drugs. However, these antibodies only account for a small proportion of the variance in treatment response. It is likely that genetic factors will contribute to treatment response, but these do not include the well established RA susceptibility loci, SE and PTPN22.",
+          "locator": "/article/front/article-meta/abstract[1]/sec[4]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "d791cca32a787fbbc21647fbfcb180864a05ca279896990e88b89315c065a486"
+        },
+        {
+          "id": "PMID-24586782-ABSTRACT-1",
+          "sourceId": "PMID-24586782",
+          "sourceVersion": "071c97933fa0edbe4e75ed68b07fe57bee308809c34a3b660ac878c866e6dc7b",
+          "text": "This meta-analysis was conducted to investigate whether the status of rheumatoid factor (RF) and anti-cyclic citrullinated peptide (anti-CCP) antibody are associated with the clinical response to anti-tumor necrosis factor (TNF) alpha treatment in rheumatoid arthritis (RA).",
+          "locator": "/article/front/article-meta/abstract[1]/sec[1]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "ca5b746f6048cf7c86dd29446d04e204efe147025ee024f1a894dff4ca750df7"
+        },
+        {
+          "id": "PMID-24586782-ABSTRACT-2",
+          "sourceId": "PMID-24586782",
+          "sourceVersion": "071c97933fa0edbe4e75ed68b07fe57bee308809c34a3b660ac878c866e6dc7b",
+          "text": "A systemic literature review was performed using the MEDLINE, SCOPUS, Cochrane Library, ISI Web of Knowledge, and Clinical Trials Register databases, and Hayden's criteria of quality assessment for prognostic studies were used to evaluate all of the studies. The correlation between the RF and anti-CCP antibody status with the treatment effect of anti-TNFα agents was analyzed separately using the Mantel Haenszel method. A fixed-effects model was used when there was no significant heterogeneity; otherwise, a random-effects model was applied. Publication bias was assessed using Egger's linear regression and a funnel plot.",
+          "locator": "/article/front/article-meta/abstract[1]/sec[2]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "dfd31a98aa4d9235479449e613af462091784eb38244339c3d017e32b50d297e"
+        },
+        {
+          "id": "PMID-24586782-ABSTRACT-3",
+          "sourceId": "PMID-24586782",
+          "sourceVersion": "071c97933fa0edbe4e75ed68b07fe57bee308809c34a3b660ac878c866e6dc7b",
+          "text": "A total of 14 studies involving 5561 RA patients meeting the inclusion criteria were included. The overall analysis showed that the pooled relative risk for the predictive effects of the RF and anti-CCP antibody status on patient response to anti-TNFα agents was 0.98 (95% CI: 0.91–1.05, p = 0.54) and 0.88 (95% CI: 0.76–1.03, p = 0.11), respectively, with I2 values of 43% (p = 0.05) and 67% (p<0.01), respectively. Subgroup analyses of different anti-TNFα treatments (infliximab vs. etanercept vs. adalimumab vs. golimumab), response criteria (DAS28 vs. ACR20 vs. EULAR response), follow-up period (≥6 vs. <6 months), and ethnic group did not reveal a significant association for the status of RF and anti-CCP.",
+          "locator": "/article/front/article-meta/abstract[1]/sec[3]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "32b73c40f8f4de7f27d76aaabb0bc6368e7cd9730ad5faea665673ec96d97487"
+        },
+        {
+          "id": "PMID-24586782-ABSTRACT-4",
+          "sourceId": "PMID-24586782",
+          "sourceVersion": "071c97933fa0edbe4e75ed68b07fe57bee308809c34a3b660ac878c866e6dc7b",
+          "text": "Neither the RF nor anti-CCP antibody status in RA patients is associated with a clinical response to anti-TNFα treatment.",
+          "locator": "/article/front/article-meta/abstract[1]/sec[4]/p[1]; XML itertext with whitespace collapsed",
+          "dataClass": "public_real",
+          "sha256": "66868b5d548a2c83058472d0f0ebf8254c183bb2faecf907b210a073d1fe326f"
+        }
+      ],
+      "receipts": [
+        {
+          "sourceId": "PMID-18375541",
+          "pmcid": "PMC2596303",
+          "metadata": {
+            "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A18375541+AND+SRC%3AMED&format=json&resultType=core&pageSize=2",
+            "responseUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A18375541+AND+SRC%3AMED&format=json&resultType=core&pageSize=2",
+            "status": 200,
+            "sha256": "828b62bb1c2a1dbe5c74d966bb60cff31b6f351cdf06a07563c7e7711b8af29d",
+            "retrievedAt": "2026-11-03T18:36:10Z"
+          },
+          "articleXml": {
+            "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2596303/fullTextXML",
+            "responseUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2596303/fullTextXML",
+            "status": 200,
+            "sha256": "103e8c947ccb82702f90e4f53e7a0189096109cdb3234509943443065936360b",
+            "retrievedAt": "2026-11-03T18:36:10Z"
+          },
+          "authors": [
+            "Potter C",
+            "Hyrich K L",
+            "Tracey A",
+            "Lunt M",
+            "Plant D",
+            "Symmons D P M",
+            "Thomson W",
+            "Worthington J",
+            "Emery P",
+            "Morgan A W",
+            "Wilson A G",
+            "Isaacs J",
+            "Barton A",
+            "BRAGGSS"
+          ],
+          "articleTitle": "Association of rheumatoid factor and anti-cyclic citrullinated peptide positivity, but not carriage of shared epitope or PTPN22 susceptibility variants, with anti-tumour necrosis factor response in rheumatoid arthritis",
+          "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "licenceNotice": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.",
+          "normalization": "xml_itertext_whitespace_collapse",
+          "licenceAttestation": "crossref_works",
+          "crossref": {
+            "url": "https://api.crossref.org/works/10.1136/ard.2007.084715",
+            "responseUrl": "https://api.crossref.org/works/10.1136/ard.2007.084715",
+            "status": 200,
+            "sha256": "18c5ec49186d735996fcc2101e623a456c029cf5c0f0b7f64995069e27a4f5ba",
+            "retrievedAt": "2026-11-03T18:36:10Z"
+          }
+        },
+        {
+          "sourceId": "PMID-24586782",
+          "pmcid": "PMC3937352",
+          "metadata": {
+            "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A24586782+AND+SRC%3AMED&format=json&resultType=core&pageSize=2",
+            "responseUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A24586782+AND+SRC%3AMED&format=json&resultType=core&pageSize=2",
+            "status": 200,
+            "sha256": "b6c5515d51a5306b2a62a4b3763e69a6b1ab960960223a7d5992ac3528c9bb3f",
+            "retrievedAt": "2026-11-03T18:36:10Z"
+          },
+          "articleXml": {
+            "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3937352/fullTextXML",
+            "responseUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3937352/fullTextXML",
+            "status": 200,
+            "sha256": "071c97933fa0edbe4e75ed68b07fe57bee308809c34a3b660ac878c866e6dc7b",
+            "retrievedAt": "2026-11-03T18:36:11Z"
+          },
+          "authors": [
+            "Lv Qianwen",
+            "Yin Yufeng",
+            "Li Xin",
+            "Shan Guangliang",
+            "Wu Xiangni",
+            "Liang Di",
+            "Li Yongzhe",
+            "Zhang Xuan"
+          ],
+          "articleTitle": "The Status of Rheumatoid Factor and Anti-Cyclic Citrullinated Peptide Antibody Are Not Associated with the Effect of Anti-TNFα Agent Treatment in Patients with Rheumatoid Arthritis: A Meta-Analysis",
+          "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "licenceNotice": "This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are properly credited.",
+          "normalization": "xml_itertext_whitespace_collapse",
+          "licenceAttestation": "crossref_works",
+          "crossref": {
+            "url": "https://api.crossref.org/works/10.1371/journal.pone.0089442",
+            "responseUrl": "https://api.crossref.org/works/10.1371/journal.pone.0089442",
+            "status": 200,
+            "sha256": "48883c44e71ee142189f72909d3ee118b291fbe842eb1d7c722060366c2236a1",
+            "retrievedAt": "2026-11-03T18:36:11Z"
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "sourceId": "PMID-18375541",
+          "passageIds": [
+            "PMID-18375541-ABSTRACT-1",
+            "PMID-18375541-ABSTRACT-2",
+            "PMID-18375541-ABSTRACT-3",
+            "PMID-18375541-ABSTRACT-4"
+          ],
+          "plannedRole": "cohort_candidate",
+          "studyDesign": "unassessed",
+          "claimSupport": "unassessed",
+          "scientificReview": "unreviewed",
+          "graphMapping": "related_context_only"
+        },
+        {
+          "sourceId": "PMID-24586782",
+          "passageIds": [
+            "PMID-24586782-ABSTRACT-1",
+            "PMID-24586782-ABSTRACT-2",
+            "PMID-24586782-ABSTRACT-3",
+            "PMID-24586782-ABSTRACT-4"
+          ],
+          "plannedRole": "meta_analysis_candidate",
+          "studyDesign": "unassessed",
+          "claimSupport": "unassessed",
+          "scientificReview": "unreviewed",
+          "graphMapping": "related_context_only"
+        }
+      ],
+      "version": "5553add22202a8ed35bc570c471fbcd7872296cbb477c38fb9529f8ff4e3df36"
+    },
+    "graphContext": {
+      "schemaVersion": "hsi-research-contract-1",
+      "containsPhi": false,
+      "clinicalAdvice": false,
+      "kgWrite": false,
+      "context": {
+        "id": "RA-ANCHOR-CONTEXT",
+        "question": "Research context for RA and TNF blockade; not a new global graph.",
+        "conceptIds": [
+          "D001",
+          "I032",
+          "M001"
+        ],
+        "dataClass": "public_real",
+        "purpose": "research_only",
+        "containsPhi": false,
+        "provenance": {
+          "product": "isi",
+          "datasetId": "isi-core-graph",
+          "version": "0.3",
+          "retrievedAt": "2026-11-03T11:23:13.236Z"
+        }
+      },
+      "sources": [],
+      "passages": [],
+      "entities": [
+        {
+          "id": "D001",
+          "label": "Rheumatoid arthritis",
+          "type": "disease",
+          "dataClass": "public_real",
+          "provenance": {
+            "product": "isi",
+            "datasetId": "isi-core-graph",
+            "version": "0.3",
+            "retrievedAt": "2026-11-03T11:23:13.236Z"
+          }
+        },
+        {
+          "id": "I032",
+          "label": "TNF blockade (class)",
+          "type": "intervention",
+          "dataClass": "public_real",
+          "provenance": {
+            "product": "isi",
+            "datasetId": "isi-core-graph",
+            "version": "0.3",
+            "retrievedAt": "2026-11-03T11:23:13.236Z"
+          }
+        },
+        {
+          "id": "M001",
+          "label": "TNF",
+          "type": "molecule",
+          "dataClass": "public_real",
+          "provenance": {
+            "product": "isi",
+            "datasetId": "isi-core-graph",
+            "version": "0.3",
+            "retrievedAt": "2026-11-03T11:23:13.236Z"
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "REL-I032-treats-D001",
+          "subjectId": "I032",
+          "predicate": "treats",
+          "objectId": "D001",
+          "dataClass": "public_real",
+          "context": {
+            "species": null,
+            "experimentalSystem": null,
+            "tissueId": null,
+            "assay": null,
+            "timepoint": null
+          },
+          "provenance": {
+            "product": "isi",
+            "datasetId": "isi-core-graph",
+            "version": "0.3",
+            "retrievedAt": "2026-11-03T11:23:13.236Z"
+          }
+        },
+        {
+          "id": "REL-I032-targets-M001",
+          "subjectId": "I032",
+          "predicate": "targets",
+          "objectId": "M001",
+          "dataClass": "public_real",
+          "context": {
+            "species": null,
+            "experimentalSystem": null,
+            "tissueId": null,
+            "assay": null,
+            "timepoint": null
+          },
+          "provenance": {
+            "product": "isi",
+            "datasetId": "isi-core-graph",
+            "version": "0.3",
+            "retrievedAt": "2026-11-03T11:23:13.236Z"
+          }
+        },
+        {
+          "id": "REL-M001-contributes_to-D001",
+          "subjectId": "M001",
+          "predicate": "contributes_to",
+          "objectId": "D001",
+          "dataClass": "public_real",
+          "context": {
+            "species": null,
+            "experimentalSystem": null,
+            "tissueId": null,
+            "assay": null,
+            "timepoint": null
+          },
+          "provenance": {
+            "product": "isi",
+            "datasetId": "isi-core-graph",
+            "version": "0.3",
+            "retrievedAt": "2026-11-03T11:23:13.236Z"
+          }
+        }
+      ],
+      "claims": [],
+      "runs": []
+    }
+  },
+  "artifactHash": "bfa69bf56689bd00c6df1a5f329b207bf573ad67234082cce8ec2842b59ed72b",
+  "signature": null
+}

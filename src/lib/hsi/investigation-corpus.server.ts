@@ -1,3 +1,4 @@
+import {loadPinnedRaCorpus,raCorpusArtifactListing} from "./raCorpusArtifact.server";
 import { byId } from "@/lib/immune/engine";
 import { getGraphNeighbourhood } from "@/lib/immune/neighbourhood";
 import { graphReleaseSnapshot } from "@/lib/immune/graphRelease";
@@ -5,17 +6,12 @@ import { parseResearchBundle, RESEARCH_CONTRACT_VERSION, type ResearchBundle, ty
 import { InvestigationRequestError, type InvestigationRelease } from "./vendor/investigationBackend";
 import {
   RA_RELEASE_ID,
-  buildRaEvidenceBundle,
-  raEvidenceReleaseListing,
-  RaEvidenceUnavailableError,
 } from "./vendor/raEvidenceRelease";
 import {
   RA_RESEARCH_RELEASE_ID,
   buildRaResearchEvidenceBundle,
   raResearchEvidenceReleaseListing,
 } from "./vendor/raResearchEvidenceRelease";
-import raReleaseArtifact from "@/data/hsi/ra-anti-tnf/release.json";
-import raGraphContext from "@/data/hsi/ra-anti-tnf/graph-context.json";
 import raResearchReleaseArtifact from "@/data/hsi/ra-anti-tnf-research/release.json";
 
 const typeMap: Record<string, ResearchEntity["type"]> = {
@@ -45,7 +41,7 @@ const coreRelease: InvestigationRelease = {
   },
 };
 
-const raListing = raEvidenceReleaseListing(raReleaseArtifact);
+const raListing = raCorpusArtifactListing();
 const raResearchListing = raResearchEvidenceReleaseListing(raResearchReleaseArtifact);
 
 export const isiInvestigationReleases: InvestigationRelease[] = [coreRelease, raResearchListing, raListing];
@@ -56,16 +52,10 @@ export async function loadIsiInvestigationRelease(id: string, conceptId: string 
     return buildRaResearchEvidenceBundle(raResearchReleaseArtifact);
   }
   if (id === RA_RELEASE_ID) {
-    try {
-      // Preserve original ISI KG identifiers from the exported graph-context working set.
-      return buildRaEvidenceBundle(parseResearchBundle(raGraphContext), raReleaseArtifact);
-    } catch (error) {
-      if (error instanceof RaEvidenceUnavailableError) {
-        throw new InvestigationRequestError(422, "evidence_not_ready");
-      }
-      throw error;
-    }
+    try { return loadPinnedRaCorpus(); }
+    catch { throw new InvestigationRequestError(422, "research_artifact_not_ready"); }
   }
+
   if (id !== "isi-core-graph") throw new InvestigationRequestError(400, "unknown_research_release");
   const selected = conceptId ?? "D001";
   if (!byId[selected] || byId[selected].draft) throw new InvestigationRequestError(400, "unknown_core_concept");
