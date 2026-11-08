@@ -88,3 +88,12 @@ The production audit resolved all 136 original TypeScript diagnostics; full type
 The frozen lock's registry mirror is blocked in this cloud instance. Dependencies are installed through a disposable lock copy resolving identical integrity-pinned public packages at registry.npmjs.org. The repository lockfile and package manifest are unchanged. The tested helper is `/workspace/install-immunecity.sh`, also captured in the cloud environment configuration draft.
 
 See `hsi-core/docs/IMMUNECITY_PLATFORM_INTEGRATION.md` for the complete local startup, architecture and release notes. Do not merge HSI/ISI/Aksh databases, send patient records to HSI or treat a source locator as exact claim verification. No deployment or publication has occurred.
+
+
+## Delivery Phase F: product-owned source artifact acceptance
+
+The RA rights-verified server loader now verifies the same `hsi-research-corpus-artifact-1` transfer as the other product, using a separately installed product-owned hash/commit/minimum-sequence policy. It refuses modified, incompatible or stale artifacts, and preserves unrelated local corpora. Source passages and graph anchors remain research context: **scientificReview=unreviewed; zero approved claims**. No HSI role, scientific decision or clinical applicability is transferred.
+
+Run `bun --no-env-file run hsi:verify-artifact` from the application directory for actual-loader parity, source-provenance and unsafe-input checks. An optional `hsi:import-artifact PATH` uses the separately installed policy, an exclusive lock and atomic single-file replacement; it does not update the trust policy from the incoming file. Source/annotation legacy files remain for the existing annotation workflow. The active RA runtime uses `data/hsi/ra-anti-tnf/transfer.json` (under `src/` in ISI).
+
+Current trust mode is **pinned_digest**, not a signed-release claim. Required-signature mode exists in the canonical verifier but needs operator-provisioned Ed25519 public-key policy and an independently signed artifact. No production keys, signatures, database migrations or grants were created. Details and live gates: [HSI Phase F](https://github.com/gnaneshwer23/hsi-core/blob/main/docs/PHASE_F_PRODUCT_ACCEPTANCE.md).

@@ -1,0 +1,10 @@
+{
+  "repository": "gnaneshwer23/hsi-core",
+  "commit": "7d1e7aedf0b70f8858d52479f9efd12f91898d36",
+  "path": "src/researchArtifactStore.ts",
+  "version": "hsi-research-artifact-acceptance-1",
+  "sha256": "abd02363dd937dfa332f8b96764b0601a29482d7125cceecd6da9675ac2d312b",
+  "distribution": "exact_source_snapshot",
+  "executable": true,
+  "includesProductData": false
+}
