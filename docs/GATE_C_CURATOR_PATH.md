@@ -7,18 +7,20 @@
 
 This is the concrete curator path after Discovery consume wiring. It does **not** auto-approve evidence into the public cite graph.
 
-### Live snapshot (2026-11-02, autumn-snow `--neon`)
+### Live snapshot
 
-| Metric | Count |
-|--------|------:|
-| Discovery Gate C `human_approved` (pin) | 13 |
-| Cite candidates `hsi-gate-c-cite-*` | 13 |
-| Identifier **verified** | **13** |
-| `claim_support=unassessed` | **13** |
-| Approve-eligible (`verified` + mapped REL + `claim_support=supports`) | **0** |
-| `publicCiteApproved` / Neon `publicApprovedSupports` | **0** |
+| Metric | 2026-11-02 (`--neon`) | 2026-11-08 (pin / Audit #3) |
+|--------|----------------------:|----------------------------:|
+| Discovery Gate C `human_approved` (pin) | 13 | 13 |
+| Cite candidates `hsi-gate-c-cite-*` | 13 | 13 |
+| Identifier **verified** | **13** | **13** |
+| `claim_support=unassessed` | **13** | **13** |
+| Approve-eligible (`verified` + mapped REL + `claim_support=supports`) | **0** | **0** |
+| `publicCiteApproved` / Neon `publicApprovedSupports` | **0** | **0** |
 
 **Remeasure (2026-11-02 later):** Founder reported cite `claim_support`/Approve done → `bun run hsi:curator-status -- --neon` still **13 verified / 13 unassessed / 0 supports / 0 publicCiteApproved** (all `hsi-gate-c-cite-*` rows unchanged since Check). Before = after. Do **not** invent counts; human S-P-O → `claim_support=supports` → Approve still required on `/curation?hsi=cite` (**Claim support** is on the row Check column; Approve stays replaced by “Set supports first” until supports).
+
+**Audit #3 (2026-11-08):** Engineering path re-verified ENG CLEARED (seed → Check → inline Claim support → Approve UX + server invariants + dry-run status). Pin remeasure still **0** supports / **0** publicCiteApproved. Agent host lacked `.env.local` `DATABASE_URL` (`neon_skip`); operator should re-run `--neon` on autumn-snow before claiming live clears. Receipt: [`docs/engineering/AUDIT_3_ISI_CITE_HITL_2026-11-08.md`](./engineering/AUDIT_3_ISI_CITE_HITL_2026-11-08.md).
 
 **Founder authorization (2026-11-02):** public cite **Approve** is authorized **only** for rows that already meet eligibility (verified + mapped + `claim_support=supports`). That does **not** authorize inventing `supports` or bulk-approving the 13 verified-but-unassessed rows. Agent/script path: none that can write Approve without Neon Auth reviewer session — use `/curation?hsi=cite` after human S-P-O assess.
 
@@ -199,7 +201,7 @@ Tests: `src/test/hsi-gate-c-queue.test.ts`, `src/test/hsi-gate-c-curator-status.
 |------|-----|-------------|
 | Ask-edu-gold-v0 SME | `docs/ASK_EDUCATIONAL_GOLD_SET.md`, `docs/SME_GOLD_SET_SIGNOFF.md` | `founder_sme_interim` (protocol); named SME still open for `signed_off` |
 | M1 G-Ask/G-Mech | `docs/M1_GOLDEN_EVAL_SME_SIGNOFF.md` | Founder interim for protocol; external SME open |
-| **This path** | Cite Approve on autumn-snow | Check done (13/13); remeasure still **0** supports / **0** publicCiteApproved — **blocked** on human `claim_support` then Approve |
+| **This path** | Cite Approve on autumn-snow | Audit #3 eng CLEARED (2026-11-08); Check done (13/13); still **0** supports / **0** publicCiteApproved — **blocked** on human `claim_support` then Approve |
 | Partner lock | hsi-core partner fixture | No invented MoU |
 
 Upstream map checklist (hsi-core checkout `~/Projects/hsi-core`): `docs/IMMUNECITY_GATE_C_COMMIT_MANUAL.md` · `docs/ISI_IMMUNICITY_WIRING_PLAYBOOK.md` (§4, P2.2–P2.3).

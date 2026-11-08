@@ -1,12 +1,13 @@
 {
   "schemaVersion": "hsi-cite-check-worksheet-1",
   "generatedAt": "2026-11-02T06:31:11.366Z",
+  "remeasuredAt": "2026-11-08T00:00:00.000Z",
   "neonTarget": "autumn-snow",
   "autoApprove": false,
   "mayFlipHsiGrade": false,
   "productionApproved": false,
   "notCds": true,
-  "note": "Identifier Check complete for Gate C cite candidates. claim_support and curation still require human assessment on /curation?hsi=cite. Never invent supports.",
+  "note": "Identifier Check complete for Gate C cite candidates. Audit #3 (2026-11-08) pin remeasure: still 13 unassessed / 0 publicCiteApproved. claim_support and curation still require human assessment on /curation?hsi=cite. Never invent supports.",
   "summary": {
     "rows": 13,
     "citeReadyFromPin": 13,
@@ -14,7 +15,9 @@
     "ambiguous": 0,
     "other": 0,
     "stillUnassessedClaimSupport": 13,
-    "stillUnreviewed": 13
+    "stillUnreviewed": 13,
+    "readyForHumanSupportsAssess": 13,
+    "publicCiteApproved": 0
   },
   "items": [
     {

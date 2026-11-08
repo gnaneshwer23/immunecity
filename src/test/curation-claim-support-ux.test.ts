@@ -53,6 +53,18 @@ describe("Curation claim-support UX (Gate C cite path)", () => {
     expect(curatorPath).toMatch(/Set supports first|Claim support/);
     expect(curatorPath).not.toMatch(/\b13 supports\b/);
     expect(curatorPath).toMatch(/never invent|Do \*\*not\*\* invent|no bulk invent/i);
+    expect(curatorPath).toMatch(/AUDIT_3_ISI_CITE_HITL_2026-11-08/);
+  });
+
+  it("Audit #3 receipt keeps eng CLEARED / HITL BLOCKED honesty", () => {
+    const receipt = source("docs/engineering/AUDIT_3_ISI_CITE_HITL_2026-11-08.md");
+    expect(receipt).toMatch(/ENG CLEARED/i);
+    expect(receipt).toMatch(/HITL BLOCKED/i);
+    expect(receipt).toMatch(/publicCiteApproved/);
+    expect(receipt).toMatch(/`autoApprove=false`/);
+    expect(receipt).not.toMatch(/autoApprove\s*=\s*true/);
+    expect(receipt).toMatch(/never invent `claim_support=supports`/i);
+    expect(receipt).toMatch(/Forbidden/i);
   });
 
   it("eligibility helper still requires verified + mapped + supports", () => {
