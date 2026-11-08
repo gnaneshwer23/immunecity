@@ -22,6 +22,8 @@ This is the concrete curator path after Discovery consume wiring. It does **not*
 
 **Audit #3 (2026-11-08):** Engineering path re-verified ENG CLEARED (seed → Check → inline Claim support → Approve UX + server invariants + dry-run status). Pin remeasure still **0** supports / **0** publicCiteApproved. Agent host lacked `.env.local` `DATABASE_URL` (`neon_skip`); operator should re-run `--neon` on autumn-snow before claiming live clears. Receipt: [`docs/engineering/AUDIT_3_ISI_CITE_HITL_2026-11-08.md`](./engineering/AUDIT_3_ISI_CITE_HITL_2026-11-08.md).
 
+**HUMAN QUEUE deepen (2026-11-08):** Curator runbook + empty residual assess log — [`docs/engineering/CITE_HITL_CURATOR_RUNBOOK.md`](./engineering/CITE_HITL_CURATOR_RUNBOOK.md) · `public/hsi-discovery/cite-hitl-residual-worksheet.json` · `bun run hsi:cite-hitl:check`. Still **0/0**; do not invent supports.
+
 **Founder authorization (2026-11-02):** public cite **Approve** is authorized **only** for rows that already meet eligibility (verified + mapped + `claim_support=supports`). That does **not** authorize inventing `supports` or bulk-approving the 13 verified-but-unassessed rows. Agent/script path: none that can write Approve without Neon Auth reviewer session — use `/curation?hsi=cite` after human S-P-O assess.
 
 **Dry-run status (no writes):**

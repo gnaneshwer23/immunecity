@@ -69,6 +69,18 @@ Row table: [`GATE_C_CURATOR_PATH.md`](../GATE_C_CURATOR_PATH.md) § “Rows read
 - Pointing cite writes at red-wave or HSI migrations at autumn-snow
 - Live CDS / PHI / invented MoU / DeliverX
 
+## HUMAN QUEUE deepen (2026-11-08)
+
+Eng-safe residual surfaces (still HITL BLOCKED / 0/0):
+
+| Artifact | Role |
+|----------|------|
+| [`CITE_HITL_CURATOR_RUNBOOK.md`](./CITE_HITL_CURATOR_RUNBOOK.md) | Operator runbook for Claim support → Approve |
+| `public/hsi-discovery/cite-hitl-residual-worksheet.json` | Empty assess log (13 rows; all `humanAssess` null) |
+| `bun run hsi:cite-hitl:check` | Offline honesty — refuses invented supports/Approve |
+
+No claim_support invent · no Approve invent · autumn-snow only.
+
 ## Next audit item (recommended)
 
-hsi-core production-readiness next-build **#4**: Recruit SMEs; freeze N3 calibration labels (20–50) then pilot plan — GO only with real reviewers.
+hsi-core HUMAN QUEUE residuals remain parallel: N1 rights (#2), N3 SMEs (#4), staging two-account (#5), founder MoU (#8). Cite HITL residual stays human-only on this path.

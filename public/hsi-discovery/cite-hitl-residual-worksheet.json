@@ -1,0 +1,283 @@
+{
+  "schemaVersion": "hsi-cite-hitl-residual-worksheet-1",
+  "residualId": "audit_3_isi_cite_hitl",
+  "generatedAt": "2026-11-08T14:00:00.000Z",
+  "neonTarget": "autumn-snow",
+  "engineeringScaffold": "CLEARED",
+  "hitlAcceptance": "BLOCKED",
+  "autoApprove": false,
+  "mayFlipHsiGrade": false,
+  "notCds": true,
+  "honesty": {
+    "emptyAssessLogIsNotSupports": true,
+    "noInventedClaimSupport": true,
+    "noInventedApprove": true,
+    "autumnSnowOnly": true,
+    "neverEditWorksheetToClearCounters": true
+  },
+  "pinSummary": {
+    "rows": 13,
+    "verifiedOrMatched": 13,
+    "stillUnassessedClaimSupport": 13,
+    "readyForHumanSupportsAssess": 13,
+    "publicCiteApproved": 0,
+    "claimSupportSupports": 0
+  },
+  "rows": [
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-AU-001",
+      "relationshipId": "REL-B015-predicts_eligibility_for-I013",
+      "spo": "Islet autoantibodies —predicts_eligibility_for→ Teplizumab",
+      "pmid": "31180194",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/31180194/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-IM-002",
+      "relationshipId": "REL-M001-contributes_to-D001",
+      "spo": "TNF —contributes_to→ Rheumatoid arthritis",
+      "pmid": "11244034",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/11244034/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-IM-003",
+      "relationshipId": "REL-M003-contributes_to-D001",
+      "spo": "IL-6 —contributes_to→ Rheumatoid arthritis",
+      "pmid": "18625622",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/18625622/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-IM-004",
+      "relationshipId": "REL-P021-produces-B001",
+      "spo": "Acute-phase response —produces→ C-reactive protein (CRP)",
+      "pmid": "12813013",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/12813013/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-IM-005",
+      "relationshipId": "REL-C003-produces-M001",
+      "spo": "Macrophage —produces→ TNF",
+      "pmid": "2993897",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/2993897/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-IM-006",
+      "relationshipId": "REL-R004-activates-P003",
+      "spo": "NLRP3 —activates→ NLRP3 inflammasome",
+      "pmid": "15030775",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/15030775/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-IM-010",
+      "relationshipId": "REL-I023-targets-M002",
+      "spo": "Canakinumab —targets→ IL-1β",
+      "pmid": "28845751",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/28845751/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-IO-001",
+      "relationshipId": "REL-R011-drives-P015",
+      "spo": "PD-1 —drives→ T-cell exhaustion programme",
+      "pmid": "16382236",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/16382236/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-RA-001",
+      "relationshipId": "REL-M001-contributes_to-D001",
+      "spo": "TNF —contributes_to→ Rheumatoid arthritis",
+      "pmid": "11244034",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/11244034/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-RA-004",
+      "relationshipId": "REL-M003-contributes_to-D001",
+      "spo": "IL-6 —contributes_to→ Rheumatoid arthritis",
+      "pmid": "18625622",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/18625622/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-RA-005",
+      "relationshipId": "REL-M003-contributes_to-D001",
+      "spo": "IL-6 —contributes_to→ Rheumatoid arthritis",
+      "pmid": "18625622",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/18625622/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-RA-006",
+      "relationshipId": "REL-C003-produces-M001",
+      "spo": "Macrophage —produces→ TNF",
+      "pmid": "2993897",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/2993897/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    },
+    {
+      "evidenceId": "hsi-gate-c-cite-HSI-E-T2D-010",
+      "relationshipId": "REL-I010-suppresses-P001",
+      "spo": "Corticosteroid —suppresses→ NF-κB signalling",
+      "pmid": "7569976",
+      "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/7569976/",
+      "checkStatus": "verified",
+      "curation": "unreviewed",
+      "claimSupport": "unassessed",
+      "humanAssess": {
+        "decision": null,
+        "claimSupportSetTo": null,
+        "approved": false,
+        "principal": null,
+        "assessedAt": null,
+        "rationale": null
+      },
+      "curatorPrompt": "Neon Auth reviewer only: re-read paper vs S-P-O → set Claim support → Approve only if supports. Shared PMIDs need per-row assessment."
+    }
+  ],
+  "stopList": [
+    "Do not invent claim_support=supports",
+    "Do not Approve without verified + mapped + supports",
+    "Do not edit worksheet JSON to bump publicCiteApproved",
+    "Do not write cite Approve against red-wave",
+    "Do not Gate C auto-approve / flip hsiGrade / invent MoU"
+  ],
+  "worksheetHash": "a9b459b42344a14186784e6ea3304fd5ef6d2b8faa32fc3ee92c0514ee050c0f"
+}
