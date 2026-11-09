@@ -6,11 +6,13 @@ alwaysApply: false
 
 # SEO skills
 
-For public SEO / AEO work on ISI:
+For public SEO / AEO work on ISI (OpenSEO pack + agency):
 
 - `~/.cursor/skills/seo-audit/SKILL.md`
 - `~/.cursor/skills/keyword-research/SKILL.md`
+- `~/.cursor/skills/seo-project-setup/SKILL.md`
 - `~/.cursor/skills/ai-visibility-audit/SKILL.md`
 - `~/.cursor/skills/agency-seo-specialist/SKILL.md`
+- Optional connect: `~/.cursor/skills/setup-openseo/SKILL.md`
 
-Leaf routes own canonical via `seoHead`. Do not invent scientific records. Map: `docs/AGENT_SKILLS.md`.
+Leaf routes own canonical via `seoHead`. Do not invent scientific records. Live discovery checklist: `docs/SEO.md`. Map: `docs/AGENT_SKILLS.md`.
