@@ -10,7 +10,8 @@ Built-ins: `~/.cursor/skills-cursor/`
 
 | When | Load | Notes |
 |------|------|--------|
-| SEO / keywords / competitor SERP for immune-super-intelligence.co.uk | `seo-audit`, `keyword-research`, `competitive-landscape`, `agency-seo-specialist` | Leaf routes own `seoHead`; do not invent science |
+| SEO / keywords / competitor SERP for immune-super-intelligence.co.uk | `seo-audit`, `keyword-research`, `competitive-landscape`, `seo-project-setup`, `seo-coach`, `seo-report`, `agency-seo-specialist` | OpenSEO pack from [every-app/open-seo](https://github.com/every-app/open-seo) (symlinked under `~/.cursor/skills/`); leaf routes own `seoHead`; do not invent science. See `docs/SEO.md` |
+| OpenSEO MCP / plugin connect | `setup-openseo` | Optional hosted MCP at app.openseo.so — not required for repo SEO; Ubersuggest MCP is separate |
 | AEO / AI citation visibility | `ai-visibility-audit`, `agency-ai-citation-strategist` | Educational brand — not clinical advice |
 | React UI, Ask Atlas, journey pages | `vercel-react-best-practices`, `agency-frontend-developer`, `agency-minimal-change-engineer` | Keep `JOURNEY_NAV`, `PageHead` anatomy |
 | Visual / a11y polish | `hallmark`, `taste-skill`, `better-ui`, `better-accessibility`, `web-design-guidelines`, `ui-ux-pro-max` | Tokens in `biotech.css` / `isi.css` |

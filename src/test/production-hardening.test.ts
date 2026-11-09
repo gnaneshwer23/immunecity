@@ -27,6 +27,13 @@ describe("sitemap", () => {
     for (const d of pipelineDiseases()) expect(paths).toContain(`/pipeline/${d.node.id}`);
   });
 
+  it("includes public vision and excludes internal noindex tools", () => {
+    expect(paths).toContain("/vision");
+    for (const p of ["/reasoning", "/simulator", "/patient", "/scientific-ai", "/internal-research"]) {
+      expect(paths).not.toContain(p);
+    }
+  });
+
   it("lists indexable concept pages only (no drafts, no sparse pages)", () => {
     const indexable = KG.nodes.filter((n) => !n.draft && !isSparse(n.id));
     expect(indexable.length).toBeGreaterThan(100);
@@ -52,8 +59,22 @@ describe("robots.txt", () => {
     const robots = readFileSync(resolve(__dirname, "../../public/robots.txt"), "utf8");
     expect(robots.match(/^User-agent:/gim)).toHaveLength(1);
     expect(robots).toMatch(/User-agent: \*/);
-    for (const p of ["/auth", "/workspace", "/curation", "/community/new", "/community/notifications", "/community/moderation", "/community/profile", "/api/"]) {
+    for (const p of [
+      "/auth",
+      "/workspace",
+      "/curation",
+      "/community/new",
+      "/community/notifications",
+      "/community/moderation",
+      "/community/profile",
+      "/api/",
+      "/patient",
+      "/simulator",
+      "/reasoning",
+      "/scientific-ai",
+    ]) {
       expect(robots).toContain(`Disallow: ${p}`);
     }
+    expect(robots).toContain("Sitemap: https://www.immune-super-intelligence.co.uk/sitemap.xml");
   });
 });

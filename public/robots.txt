@@ -11,5 +11,14 @@ Disallow: /community/saved
 Disallow: /community/moderation
 Disallow: /community/profile
 Disallow: /api/
+# Internal / gated teaching tools (also meta noindex) — save crawl budget
+Disallow: /patient
+Disallow: /simulator
+Disallow: /reasoning
+Disallow: /scientific-ai
+Disallow: /internal-research
+Disallow: /hsi/discovery
+Disallow: /hsi-consume
+Disallow: /research-workbench
 
 Sitemap: https://www.immune-super-intelligence.co.uk/sitemap.xml
